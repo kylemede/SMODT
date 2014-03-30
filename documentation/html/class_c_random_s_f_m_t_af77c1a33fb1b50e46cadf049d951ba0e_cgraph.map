@@ -1,0 +1,7 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$rnd_2sfmt_8cpp.html#a4c995d884c911ea326dd7b5dac69df52" title="func1" alt="" coords="310,5,365,32"/>
+<area shape="rect" id="node5" href="$rnd_2sfmt_8cpp.html#abbf9b5910c59f1aebf5739f26d87f6a3" title="func2" alt="" coords="310,56,365,83"/>
+<area shape="rect" id="node7" href="$class_c_random_s_f_m_t.html#a141ec3a9ead61ec97ceeea77260ad07c" title="CRandomSFMT::Init2" alt="" coords="262,107,413,133"/>
+<area shape="rect" id="node9" href="$class_c_random_s_f_m_t.html#a1ceb204d05dbe26290b2496558c4d7ca" title="CRandomSFMT::Generate" alt="" coords="461,107,640,133"/>
+<area shape="rect" id="node11" href="$rnd_2sfmt_8cpp.html#af2d4c3659818d2c1232424a29c24a52d" title="sfmt_recursion" alt="" coords="689,107,797,133"/>
+</map>

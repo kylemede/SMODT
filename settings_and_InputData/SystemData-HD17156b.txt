@@ -1,0 +1,44 @@
+# These are the settings for the system under investigation
+
+# System distance [PC]
+Sys_Dist_PC = 78.24
+# Mass of primary star [Msun]#1.285
+Mass1 = 1.24
+# Error in primary stat's mass [Msun]#0.026
+Mass1_error = 0.1
+
+# Further settings to properly set up RV part of simulations.
+# RULES: -If using 3D, the RV data must be of the same companion as the DI data.
+#	 -If RV calculations for a two companion system are needed 
+#	  (ie. Primary star, secondary star AND planet around primary star)
+#	  a complete set of orbital parameters for the companion that 
+#         is NOT being simulated (ie. not the companion that the RV data is for)
+#	  must be provided so it can be properly included in residual velocity calculations.
+#	  This is common when investingating a secondary star's orbit in 3D and a planet
+#	  exists around the primary as well.
+
+# Orbital parameters for a known and well studied planet around the primary in a 3 body system. 
+# Use when investigating the orbit of a companion star, else leave all = zero.
+# planet's semi-major axis [m/s][double]-
+planet_K = 0
+# planet's semi-major axis error [m/s][double]
+planet_K_error = 0
+# Planet's Eccentricity [double]-
+planet_e = 0
+# Planet's time of last pariapsis [JD][double]
+planet_T = 0
+# Planet's time of center of transit [JD][double]
+planet_Tc = 0
+# Planet's period [years][double]
+planet_P = 0.05808923946315045
+# Planet's M.sin(i) ie, Mass times sine of the inclination. [Msun][double]
+planet_MsinI = 0.0030461285999999997
+# Planet's M.sin(i) error [Msun][double]
+planet_MsinI_error = 9.546000000000001e-05
+# Planet's argument of pariapsis [degrees][double]
+planet_argPeri = 0
+# Planet's inclination if able to measure separately [degrees][double]
+planet_inc = 0
+# Planet's inclination if able to measure separately error [degrees][double]
+planet_inc_error = 0
+

@@ -1,0 +1,4 @@
+#!/bin/bash
+python mcmcOrbSimDaisyChainScript1.py
+python mcmcOrbSimDaisyChainScript2.py
+python daisyChainFinisher.py

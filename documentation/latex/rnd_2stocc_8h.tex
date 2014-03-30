@@ -1,0 +1,325 @@
+\section{/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/rnd/stocc.h File Reference}
+\label{rnd_2stocc_8h}\index{/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/rnd/stocc.\-h@{/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/rnd/stocc.\-h}}
+{\ttfamily \#include $<$math.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}randomc.\-h\char`\"{}}\\*
+Include dependency graph for stocc.\-h\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=226pt]{rnd_2stocc_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{rnd_2stocc_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class {\bf Stochastic\-Lib1}
+\item 
+class {\bf Stochastic\-Lib2}
+\item 
+class {\bf Stochastic\-Lib3}
+\item 
+class {\bf C\-Wallenius\-N\-C\-Hypergeometric}
+\item 
+class {\bf C\-Multi\-Wallenius\-N\-C\-Hypergeometric}
+\item 
+class {\bf C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-Moments}
+\item 
+class {\bf C\-Fishers\-N\-C\-Hypergeometric}
+\item 
+class {\bf C\-Multi\-Fishers\-N\-C\-Hypergeometric}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define {\bf S\-T\-O\-C\-\_\-\-B\-A\-S\-E}~C\-Random\-Mersenne
+\item 
+\#define {\bf M\-A\-X\-C\-O\-L\-O\-R\-S}~32
+\item 
+\#define {\bf W\-A\-L\-L\-\_\-\-T\-A\-B\-L\-E\-L\-E\-N\-G\-T\-H}~512
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+double {\bf Ln\-Fac} ({\bf int32\-\_\-t} {\bf n})
+\item 
+double {\bf Ln\-Facr} (double x)
+\item 
+double {\bf Falling\-Factorial} (double a, double b)
+\item 
+double {\bf Erf} (double x)
+\item 
+{\bf int32\-\_\-t} {\bf Floor\-Log2} (float x)
+\item 
+int {\bf Num\-S\-D} (double accuracy)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+static const int {\bf F\-A\-K\-\_\-\-L\-E\-N} = 1024
+\item 
+static const int {\bf E\-R\-F\-R\-E\-S\-\_\-\-B} = 16
+\item 
+static const int {\bf E\-R\-F\-R\-E\-S\-\_\-\-E} = 40
+\item 
+static const int {\bf E\-R\-F\-R\-E\-S\-\_\-\-S} = 2
+\item 
+static const int {\bf E\-R\-F\-R\-E\-S\-\_\-\-N} = ({\bf E\-R\-F\-R\-E\-S\-\_\-\-E}-\/{\bf E\-R\-F\-R\-E\-S\-\_\-\-B})/{\bf E\-R\-F\-R\-E\-S\-\_\-\-S}+1
+\item 
+static const int {\bf E\-R\-F\-R\-E\-S\-\_\-\-L} = 48
+\item 
+double {\bf Erf\-Res} [{\bf E\-R\-F\-R\-E\-S\-\_\-\-N}][{\bf E\-R\-F\-R\-E\-S\-\_\-\-L}]
+\item 
+double {\bf Num\-S\-Dev} [{\bf E\-R\-F\-R\-E\-S\-\_\-\-N}]
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!M\-A\-X\-C\-O\-L\-O\-R\-S@{M\-A\-X\-C\-O\-L\-O\-R\-S}}
+\index{M\-A\-X\-C\-O\-L\-O\-R\-S@{M\-A\-X\-C\-O\-L\-O\-R\-S}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{M\-A\-X\-C\-O\-L\-O\-R\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\-A\-X\-C\-O\-L\-O\-R\-S~32}\label{rnd_2stocc_8h_a653a781f54d9d640c5dc8eb5360892a9}
+
+
+Definition at line 249 of file stocc.\-h.
+
+
+
+Referenced by C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::findpars(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::laplace(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::mean(), Stochastic\-Lib3\-::\-Multi\-Compl\-Wallenius\-N\-C\-Hyp(), Stochastic\-Lib3\-::\-Multi\-Fishers\-N\-C\-Hyp(), Stochastic\-Lib3\-::\-Multi\-Wallenius\-N\-C\-Hyp(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::search\-\_\-inflect(), and C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::variance().
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!S\-T\-O\-C\-\_\-\-B\-A\-S\-E@{S\-T\-O\-C\-\_\-\-B\-A\-S\-E}}
+\index{S\-T\-O\-C\-\_\-\-B\-A\-S\-E@{S\-T\-O\-C\-\_\-\-B\-A\-S\-E}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{S\-T\-O\-C\-\_\-\-B\-A\-S\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-T\-O\-C\-\_\-\-B\-A\-S\-E~C\-Random\-Mersenne}\label{rnd_2stocc_8h_ae92ade333504bafa01e6ee3a8945eb64}
+
+
+Definition at line 217 of file stocc.\-h.
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!W\-A\-L\-L\-\_\-\-T\-A\-B\-L\-E\-L\-E\-N\-G\-T\-H@{W\-A\-L\-L\-\_\-\-T\-A\-B\-L\-E\-L\-E\-N\-G\-T\-H}}
+\index{W\-A\-L\-L\-\_\-\-T\-A\-B\-L\-E\-L\-E\-N\-G\-T\-H@{W\-A\-L\-L\-\_\-\-T\-A\-B\-L\-E\-L\-E\-N\-G\-T\-H}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{W\-A\-L\-L\-\_\-\-T\-A\-B\-L\-E\-L\-E\-N\-G\-T\-H}]{\setlength{\rightskip}{0pt plus 5cm}\#define W\-A\-L\-L\-\_\-\-T\-A\-B\-L\-E\-L\-E\-N\-G\-T\-H~512}\label{rnd_2stocc_8h_a84dc7bdd140e3283b2cc357a8b8c2a71}
+
+
+Definition at line 434 of file stocc.\-h.
+
+
+
+Referenced by Stochastic\-Lib3\-::\-Wallenius\-N\-C\-Hyp\-Table().
+
+
+
+\subsection{Function Documentation}
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!Erf@{Erf}}
+\index{Erf@{Erf}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{Erf}]{\setlength{\rightskip}{0pt plus 5cm}double Erf (
+\begin{DoxyParamCaption}
+\item[{double}]{x}
+\end{DoxyParamCaption}
+)}\label{rnd_2stocc_8h_afdccacd25f77cf72908008d3181f37f3}
+
+
+Definition at line 69 of file erfresmk.\-cpp.
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!Falling\-Factorial@{Falling\-Factorial}}
+\index{Falling\-Factorial@{Falling\-Factorial}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{Falling\-Factorial}]{\setlength{\rightskip}{0pt plus 5cm}double Falling\-Factorial (
+\begin{DoxyParamCaption}
+\item[{double}]{a, }
+\item[{double}]{b}
+\end{DoxyParamCaption}
+)}\label{rnd_2stocc_8h_a95b4950f7e6c1bac8e2e4e406d56f29a}
+
+
+Definition at line 209 of file wnchyppr.\-cpp.
+
+
+
+Referenced by C\-Wallenius\-N\-C\-Hypergeometric\-::binoexpand(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::binoexpand(), and C\-Fishers\-N\-C\-Hypergeometric\-::probability\-Ratio().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{rnd_2stocc_8h_a95b4950f7e6c1bac8e2e4e406d56f29a_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!Floor\-Log2@{Floor\-Log2}}
+\index{Floor\-Log2@{Floor\-Log2}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{Floor\-Log2}]{\setlength{\rightskip}{0pt plus 5cm}{\bf int32\-\_\-t} Floor\-Log2 (
+\begin{DoxyParamCaption}
+\item[{float}]{x}
+\end{DoxyParamCaption}
+)}\label{rnd_2stocc_8h_adc719217569af653923333b0d23c9c8d}
+
+
+Definition at line 279 of file wnchyppr.\-cpp.
+
+
+
+Referenced by C\-Wallenius\-N\-C\-Hypergeometric\-::laplace(), and C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::laplace().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{rnd_2stocc_8h_adc719217569af653923333b0d23c9c8d_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!Ln\-Fac@{Ln\-Fac}}
+\index{Ln\-Fac@{Ln\-Fac}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{Ln\-Fac}]{\setlength{\rightskip}{0pt plus 5cm}double Ln\-Fac (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t}}]{n}
+\end{DoxyParamCaption}
+)}\label{rnd_2stocc_8h_a1a00e98fecbda89aebeea3ae04d20748}
+
+
+Definition at line 39 of file stoc1.\-cpp.
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!Ln\-Facr@{Ln\-Facr}}
+\index{Ln\-Facr@{Ln\-Facr}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{Ln\-Facr}]{\setlength{\rightskip}{0pt plus 5cm}double Ln\-Facr (
+\begin{DoxyParamCaption}
+\item[{double}]{x}
+\end{DoxyParamCaption}
+)}\label{rnd_2stocc_8h_a64ce71ad11d653c50ff0a510c150249c}
+
+
+Definition at line 187 of file wnchyppr.\-cpp.
+
+
+
+Referenced by Falling\-Factorial().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=248pt]{rnd_2stocc_8h_a64ce71ad11d653c50ff0a510c150249c_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!Num\-S\-D@{Num\-S\-D}}
+\index{Num\-S\-D@{Num\-S\-D}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{Num\-S\-D}]{\setlength{\rightskip}{0pt plus 5cm}int Num\-S\-D (
+\begin{DoxyParamCaption}
+\item[{double}]{accuracy}
+\end{DoxyParamCaption}
+)}\label{rnd_2stocc_8h_a22da2efdc41134140fc138d6ba53385c}
+
+
+Definition at line 303 of file wnchyppr.\-cpp.
+
+
+
+Referenced by C\-Wallenius\-N\-C\-Hypergeometric\-::\-Make\-Table(), and C\-Fishers\-N\-C\-Hypergeometric\-::\-Make\-Table().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{rnd_2stocc_8h_a22da2efdc41134140fc138d6ba53385c_icgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Variable Documentation}
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!Erf\-Res@{Erf\-Res}}
+\index{Erf\-Res@{Erf\-Res}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{Erf\-Res}]{\setlength{\rightskip}{0pt plus 5cm}double Erf\-Res[{\bf E\-R\-F\-R\-E\-S\-\_\-\-N}][{\bf E\-R\-F\-R\-E\-S\-\_\-\-L}]}\label{rnd_2stocc_8h_a532e3be570cd6f91d0e35bf278570579}
+
+
+Definition at line 271 of file stocc.\-h.
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!E\-R\-F\-R\-E\-S\-\_\-\-B@{E\-R\-F\-R\-E\-S\-\_\-\-B}}
+\index{E\-R\-F\-R\-E\-S\-\_\-\-B@{E\-R\-F\-R\-E\-S\-\_\-\-B}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{E\-R\-F\-R\-E\-S\-\_\-\-B}]{\setlength{\rightskip}{0pt plus 5cm}const int E\-R\-F\-R\-E\-S\-\_\-\-B = 16\hspace{0.3cm}{\ttfamily [static]}}\label{rnd_2stocc_8h_aa889b5bc8e66f3c0ab1f4913b1cf084e}
+
+
+Definition at line 264 of file stocc.\-h.
+
+
+
+Referenced by C\-Wallenius\-N\-C\-Hypergeometric\-::laplace(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::laplace(), and main().
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!E\-R\-F\-R\-E\-S\-\_\-\-E@{E\-R\-F\-R\-E\-S\-\_\-\-E}}
+\index{E\-R\-F\-R\-E\-S\-\_\-\-E@{E\-R\-F\-R\-E\-S\-\_\-\-E}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{E\-R\-F\-R\-E\-S\-\_\-\-E}]{\setlength{\rightskip}{0pt plus 5cm}const int E\-R\-F\-R\-E\-S\-\_\-\-E = 40\hspace{0.3cm}{\ttfamily [static]}}\label{rnd_2stocc_8h_ac041927fd5715439e8ca6144832adb55}
+
+
+Definition at line 265 of file stocc.\-h.
+
+
+
+Referenced by main().
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!E\-R\-F\-R\-E\-S\-\_\-\-L@{E\-R\-F\-R\-E\-S\-\_\-\-L}}
+\index{E\-R\-F\-R\-E\-S\-\_\-\-L@{E\-R\-F\-R\-E\-S\-\_\-\-L}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{E\-R\-F\-R\-E\-S\-\_\-\-L}]{\setlength{\rightskip}{0pt plus 5cm}const int E\-R\-F\-R\-E\-S\-\_\-\-L = 48\hspace{0.3cm}{\ttfamily [static]}}\label{rnd_2stocc_8h_a628049f07f497de2031e3c9611221083}
+
+
+Definition at line 268 of file stocc.\-h.
+
+
+
+Referenced by C\-Wallenius\-N\-C\-Hypergeometric\-::laplace(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::laplace(), and main().
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!E\-R\-F\-R\-E\-S\-\_\-\-N@{E\-R\-F\-R\-E\-S\-\_\-\-N}}
+\index{E\-R\-F\-R\-E\-S\-\_\-\-N@{E\-R\-F\-R\-E\-S\-\_\-\-N}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{E\-R\-F\-R\-E\-S\-\_\-\-N}]{\setlength{\rightskip}{0pt plus 5cm}const int E\-R\-F\-R\-E\-S\-\_\-\-N = ({\bf E\-R\-F\-R\-E\-S\-\_\-\-E}-\/{\bf E\-R\-F\-R\-E\-S\-\_\-\-B})/{\bf E\-R\-F\-R\-E\-S\-\_\-\-S}+1\hspace{0.3cm}{\ttfamily [static]}}\label{rnd_2stocc_8h_a384024d60d6dadea524477459ed635be}
+
+
+Definition at line 267 of file stocc.\-h.
+
+
+
+Referenced by C\-Wallenius\-N\-C\-Hypergeometric\-::laplace(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::laplace(), and main().
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!E\-R\-F\-R\-E\-S\-\_\-\-S@{E\-R\-F\-R\-E\-S\-\_\-\-S}}
+\index{E\-R\-F\-R\-E\-S\-\_\-\-S@{E\-R\-F\-R\-E\-S\-\_\-\-S}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{E\-R\-F\-R\-E\-S\-\_\-\-S}]{\setlength{\rightskip}{0pt plus 5cm}const int E\-R\-F\-R\-E\-S\-\_\-\-S = 2\hspace{0.3cm}{\ttfamily [static]}}\label{rnd_2stocc_8h_a9ca2af6f4bf433ea1a00fcccd447ef35}
+
+
+Definition at line 266 of file stocc.\-h.
+
+
+
+Referenced by C\-Wallenius\-N\-C\-Hypergeometric\-::laplace(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::laplace(), and main().
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!F\-A\-K\-\_\-\-L\-E\-N@{F\-A\-K\-\_\-\-L\-E\-N}}
+\index{F\-A\-K\-\_\-\-L\-E\-N@{F\-A\-K\-\_\-\-L\-E\-N}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{F\-A\-K\-\_\-\-L\-E\-N}]{\setlength{\rightskip}{0pt plus 5cm}const int F\-A\-K\-\_\-\-L\-E\-N = 1024\hspace{0.3cm}{\ttfamily [static]}}\label{rnd_2stocc_8h_a6e8359e381f35500bd0278dbd2a79554}
+
+
+Definition at line 253 of file stocc.\-h.
+
+
+
+Referenced by C\-Wallenius\-N\-C\-Hypergeometric\-::lnbico(), Ln\-Fac(), and C\-Fishers\-N\-C\-Hypergeometric\-::lng().
+
+\index{rnd/stocc.\-h@{rnd/stocc.\-h}!Num\-S\-Dev@{Num\-S\-Dev}}
+\index{Num\-S\-Dev@{Num\-S\-Dev}!rnd/stocc.h@{rnd/stocc.\-h}}
+\subsubsection[{Num\-S\-Dev}]{\setlength{\rightskip}{0pt plus 5cm}double Num\-S\-Dev[{\bf E\-R\-F\-R\-E\-S\-\_\-\-N}]}\label{rnd_2stocc_8h_a29461f93b72e58f78d8347360167bb79}
+
+
+Definition at line 274 of file stocc.\-h.
+

@@ -1,0 +1,82 @@
+\section{/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/python\-Side/\-Binary\-Orb\-Sim\-Starter\-Duo.py File Reference}
+\label{_binary_orb_sim_starter_duo_8py}\index{/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/python\-Side/\-Binary\-Orb\-Sim\-Starter\-Duo.\-py@{/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/python\-Side/\-Binary\-Orb\-Sim\-Starter\-Duo.\-py}}
+\subsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace {\bf Binary\-Orb\-Sim\-Starter\-Duo}
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-python\-Code\-Dir} = dicts.\-hardcoded\-Settings\-Dict['python\-Code\-Dir']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-cplusplus\-Code\-Dir} = dicts.\-hardcoded\-Settings\-Dict['cplusplus\-Code\-Dir']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-settings\-\_\-and\-\_\-\-Input\-Data\-Dir} = dicts.\-hardcoded\-Settings\-Dict['settings\-\_\-and\-\_\-\-Input\-Data\-Dir']
+\item 
+{\bf Binary\-Orb\-Sim\-Starter\-Duo.\-verbose\-Internal} = False
+\begin{DoxyCompactList}\small\item\em V\-E\-R\-Y I\-M\-P\-O\-R\-T\-A\-N\-T\-: -\/\-Settings file must be called 'Sim\-Settings.\-txt' -\/\-R\-V data file must be called 'R\-Vdata.\-dat' -\/\-D\-I data file must be called 'D\-Idata.\-dat' -\/\-Binary system data file must be called 'System\-Data.\-txt'. \end{DoxyCompactList}\item 
+tuple {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-input\-Settings\-File} = os.\-path.\-join(settings\-\_\-and\-\_\-\-Input\-Data\-Dir,'Sim\-Settings.\-txt')
+\item 
+string {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-output\-Settings\-File} = '\-\_\-\-Duo\-Version'
+\item 
+tuple {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-param\-Settings\-Dict} = tools.\-gen.\-c\-File\-To\-Sim\-Settings\-Dict(input\-Settings\-File, output\-Settings\-File)
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-mc\-O\-N\-L\-Y} = param\-Settings\-Dict['mc\-O\-N\-L\-Y']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-num\-Samples} = param\-Settings\-Dict['num\-Samples']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-silent} = param\-Settings\-Dict['silent']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-verbose} = param\-Settings\-Dict['verbose']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-data\-\_\-dir} = param\-Settings\-Dict['output\-Data\-\_\-dir']
+\begin{DoxyCompactList}\small\item\em Make a directory (folder) to place all the files from this simulation run Ensure directories provided have a final '/' character. \end{DoxyCompactList}\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-filename\-Root} = param\-Settings\-Dict['output\-Data\-\_\-filename\-Root']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-Calc\-Burn\-In} = param\-Settings\-Dict['Calc\-Burn\-In']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-calc\-Corr\-Lengths} = param\-Settings\-Dict['calc\-Corr\-Lengths']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-D\-Ionly} = param\-Settings\-Dict['D\-Ionly']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-R\-Vonly} = param\-Settings\-Dict['R\-Vonly']
+\item 
+tuple {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-num\-Cores} = multiprocessing.\-cpu\-\_\-count()
+\item 
+int {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-num\-Processes} = 1
+\item 
+{\bf Binary\-Orb\-Sim\-Starter\-Duo.\-num\-Samples\-T\-O\-T\-A\-L} = num\-Samples$\ast$num\-Processes
+\item 
+tuple {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-num\-Samples\-String} = str(int(num\-Samples\-T\-O\-T\-A\-L/int(1e9)))
+\item 
+string {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-filename\-Root\-Moded} = '-\/-\/'
+\item 
+string {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-filename} = '.txt'
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-final\-Folder} = data\-\_\-dir+filename[\-:-\/4]
+\item 
+tuple {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-Y\-N} = raw\-\_\-input('\textbackslash{}n\-O\-V\-E\-R\-W\-R\-I\-T\-E current folder (y/{\bf n})\-:')
+\item 
+tuple {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-final\-Folder2} = os.\-path.\-join('/mnt/Data1/Todai\-\_\-\-Work/Dropbox/S\-M\-O\-D\-T-\/output\-Copies/',filename[\-:-\/4]+'/')
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-python\-Files} = ['Binary\-Orb\-Sim\-Starter\-Duo.\-py','Dicts/H\-A\-R\-D\-C\-O\-D\-E\-Dsettings\-Dict.\-py']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-python\-Toolbox\-Files} = ['orbit\-Toolbox\-Duo.\-py','D\-Itoolbox.\-py','plotting\-Toolbox.\-py','R\-Vtoolbox.\-py']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-cplusplus\-Files}
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-settings\-Files} = ['System\-Data.\-txt','Sim\-Settings.\-txt']
+\item 
+list {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-all\-Files} = [$\,$]
+\item 
+tuple {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-toolbox\-Dir} = os.\-path.\-join(python\-Code\-Dir,'Toolboxes')
+\item 
+tuple {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-fullpath\-Use} = os.\-path.\-join(toolbox\-Dir , file)
+\item 
+tuple {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-filebasename} = os.\-path.\-basename(file)
+\item 
+string {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-outputfilename} = 'code-\/used/'
+\item 
+string {\bf Binary\-Orb\-Sim\-Starter\-Duo.\-outputfilename2} = 'code-\/used/'
+\end{DoxyCompactItemize}

@@ -1,0 +1,1042 @@
+\section{/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/toolboxes/\-Orb\-Sim\-General\-Toolbox.cpp File Reference}
+\label{_orb_sim_general_toolbox_8cpp}\index{/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/toolboxes/\-Orb\-Sim\-General\-Toolbox.\-cpp@{/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/toolboxes/\-Orb\-Sim\-General\-Toolbox.\-cpp}}
+{\ttfamily \#include $<$iostream$>$}\\*
+{\ttfamily \#include $<$iomanip$>$}\\*
+{\ttfamily \#include $<$limits$>$}\\*
+{\ttfamily \#include $<$stdio.\-h$>$}\\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\\*
+{\ttfamily \#include $<$vector$>$}\\*
+{\ttfamily \#include $<$math.\-h$>$}\\*
+{\ttfamily \#include $<$sstream$>$}\\*
+{\ttfamily \#include $<$string$>$}\\*
+{\ttfamily \#include $<$fstream$>$}\\*
+{\ttfamily \#include $<$functional$>$}\\*
+{\ttfamily \#include $<$algorithm$>$}\\*
+{\ttfamily \#include $<$numeric$>$}\\*
+{\ttfamily \#include \char`\"{}orb\-Toolboxes.\-h\char`\"{}}\\*
+Include dependency graph for Orb\-Sim\-General\-Toolbox.\-cpp\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp__incl}
+\end{center}
+\end{figure}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bf output\-Data\-Type} {\bf odt\-Start} ({\bf output\-Data\-Type} O\-D\-T, int num\-Total\-Samples)
+\item 
+{\bf output\-Data\-Type} {\bf odt\-Finish} ({\bf output\-Data\-Type} O\-D\-T)
+\item 
+{\bf ecc\-Arg\-Peri2\-To\-Tc\-Type} {\bf ecc\-Arg\-Peri2\-To\-Tc\-Calc} ({\bf ecc\-Arg\-Peri2\-To\-Tc\-Type} E\-A\-T\-T)
+\item 
+double {\bf atan\-Top\-Btm} (double top, double btm)
+\item 
+{\bf ecc\-Arg\-Peri\-Calc\-Type} {\bf ecc\-Arg\-Peri\-Calc} ({\bf ecc\-Arg\-Peri\-Calc\-Type} E\-A\-C\-T)
+\item 
+{\bf T\-Acalc\-Return\-Type} {\bf T\-Acalculator} ({\bf T\-Acalc\-Input\-Type} T\-A\-C\-I\-T)
+\item 
+double {\bf chi\-Squared\-Calc} (double real, double inv\-\_\-var, double model)
+\item 
+void {\bf file\-Writer} ({\bf output\-Data\-Type} O\-D\-T)
+\item 
+void {\bf log\-File\-Writer} (string filename, string L\-O\-Glines)
+\item 
+{\bf D\-Itools} {\bf D\-Itools\-Param\-Load\-Up} ({\bf D\-Idata\-Obj} D\-Ido)
+\item 
+{\bf V\-Rcalc\-Star\-Star} {\bf V\-Rcalc\-Star\-Star\-Load\-Up} ({\bf R\-Vdata\-Obj} R\-Vdo)
+\item 
+{\bf V\-Rcalc\-Star\-Planet} {\bf V\-Rcalc\-Star\-Planet\-Load\-Up} ({\bf R\-Vdata\-Obj} R\-Vdo)
+\item 
+{\bf semi\-Major\-Type} {\bf semi\-Major\-Converter} ({\bf semi\-Major\-Type} S\-M\-T)
+\item 
+double {\bf earliest\-Epoch\-Finder} ({\bf D\-Idata\-Obj} D\-Ido, {\bf R\-Vdata\-Obj} R\-Vdo)
+\item 
+string {\bf Correlation\-Length\-Calc} (vector$<$ double $>$ data, string param\-Name, vector$<$ int $>$ times\-Been\-Here)
+\item 
+double {\bf standard\-Deviation} (vector$<$ double $>$ v)
+\item 
+double {\bf mean\-Calc} (vector$<$ double $>$ v, int last\-Point)
+\item 
+void {\bf gelman\-Rubin\-Stage1} ({\bf output\-Data\-Type} O\-D\-T, int num\-Times)
+\item 
+vector$<$ double $>$ {\bf fill\-Out\-Data\-Vector} (vector$<$ double $>$ data, vector$<$ int $>$ times\-Been\-Here)
+\item 
+{\bf G\-Rfunc\-Return\-Type} {\bf gelman\-Rubin\-Stage1func} (vector$<$ double $>$ data, vector$<$ int $>$ times\-Been\-Here, int num\-Times)
+\item 
+int {\bf corr\-Length\-Jumpy\-Calc} (vector$<$ double $>$ data)
+\item 
+double {\bf variance\-Calc} (vector$<$ double $>$ data, int last\-Point)
+\item 
+string {\bf num\-Samples\-String\-Maker} (int num\-Samples)
+\item 
+string {\bf find\-Directory} (string str)
+\item 
+string {\bf file\-Basename} (string str)
+\item 
+string {\bf find\-Chain\-Number\-Str} (string str)
+\item 
+string {\bf filename\-End\-Append} (string input\-String, string end\-Append\-String)
+\item 
+string {\bf filename\-Prepend} (string input\-String, string prepend\-String)
+\item 
+string {\bf bool\-To\-Str} (bool bool\-I\-N)
+\item 
+string {\bf time\-Str} (int time\-Elapsed)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition in file {\bf Orb\-Sim\-General\-Toolbox.\-cpp}.
+
+
+
+\subsection{Function Documentation}
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!atan\-Top\-Btm@{atan\-Top\-Btm}}
+\index{atan\-Top\-Btm@{atan\-Top\-Btm}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{atan\-Top\-Btm}]{\setlength{\rightskip}{0pt plus 5cm}double atan\-Top\-Btm (
+\begin{DoxyParamCaption}
+\item[{double}]{top, }
+\item[{double}]{btm}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_ad30e05e55963bb0614e3a87be9eba2df}
+
+
+Definition at line 220 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References P\-I.
+
+
+
+Referenced by ecc\-Arg\-Peri\-Calc().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=272pt]{_orb_sim_general_toolbox_8cpp_ad30e05e55963bb0614e3a87be9eba2df_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!bool\-To\-Str@{bool\-To\-Str}}
+\index{bool\-To\-Str@{bool\-To\-Str}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{bool\-To\-Str}]{\setlength{\rightskip}{0pt plus 5cm}string bool\-To\-Str (
+\begin{DoxyParamCaption}
+\item[{bool}]{bool\-I\-N}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a5971e4b8e8d4a8289d1faa74cfecd82c}
+Convert a boolean into a \char`\"{}true\char`\"{}/\char`\"{}false\char`\"{} string.
+
+Definition at line 1499 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+Referenced by sim\-Aneal\-Orb\-Func\-Obj\-::simulator(), and M\-C\-M\-Corb\-Func\-Obj\-::simulator().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_a5971e4b8e8d4a8289d1faa74cfecd82c_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!chi\-Squared\-Calc@{chi\-Squared\-Calc}}
+\index{chi\-Squared\-Calc@{chi\-Squared\-Calc}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{chi\-Squared\-Calc}]{\setlength{\rightskip}{0pt plus 5cm}double chi\-Squared\-Calc (
+\begin{DoxyParamCaption}
+\item[{double}]{real, }
+\item[{double}]{inv\-\_\-var, }
+\item[{double}]{model}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_abac365c4d82d1b17b82dc0da0ba73637}
+Calculate the Chi Squared value. Note\-: inv\-\_\-var is the inverse variance.
+
+Definition at line 458 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+Referenced by main(), D\-Itools\-::multi\-Epoch\-Orb\-Calc(), toolboxes.\-D\-Itoolbox\-::multi\-Epoch\-Orb\-Calc(), toolboxes.\-D\-Itoolbox\-::multi\-Epoch\-Orb\-Calc3(), toolboxes.\-D\-Itoolbox\-::multi\-Epoch\-Orb\-Calc\-T\-H\-\_\-\-I(), toolboxes.\-D\-Itoolbox\-::multi\-Epoch\-Orb\-Calc\-T\-H\-\_\-\-I3(), toolboxes.\-R\-Vtoolbox\-::rv1body\-Calculator(), toolboxes.\-R\-Vtoolbox\-::rv1body\-Calculator2(), toolboxes.\-R\-Vtoolbox\-::rv2body\-Calculator3(), toolboxes.\-R\-Vtoolbox\-::rv2body\-Calculator4(), toolboxes.\-plot\-Toolbox\-::rv\-Fit\-Plotter1\-Body(), toolboxes.\-plot\-Toolbox\-::rv\-Mod\-Dataset\-Maker\-Duo(), toolboxes.\-plot\-Toolbox\-::rv\-Plotter\-Duo(), sim\-Aneal\-Orb\-Func\-Obj\-::simulator(), and M\-C\-M\-Corb\-Func\-Obj\-::simulator().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_abac365c4d82d1b17b82dc0da0ba73637_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!Correlation\-Length\-Calc@{Correlation\-Length\-Calc}}
+\index{Correlation\-Length\-Calc@{Correlation\-Length\-Calc}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{Correlation\-Length\-Calc}]{\setlength{\rightskip}{0pt plus 5cm}string Correlation\-Length\-Calc (
+\begin{DoxyParamCaption}
+\item[{vector$<$ double $>$}]{data, }
+\item[{string}]{param\-Name, }
+\item[{vector$<$ int $>$}]{times\-Been\-Here}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a76e378ebb3005b37942c27aa07091c8d}
+Given a single column of data from an M\-C\-M\-C chain, and the associated times\-Been\-Here column, this function will calculate its Correlation Length. To speed up this process, a 'jumpy' calculator has been written that takes jumps ahead in the chain until it has passed the correlation length and will go back to the previous jump and calculate it for each individual step till it finds the exact step that the correlation length reached the (Variance at this step) = (variance of entire chain)/2.0.
+
+Definition at line 799 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References corr\-Length\-Jumpy\-Calc(), and fill\-Out\-Data\-Vector().
+
+
+
+Referenced by main().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_a76e378ebb3005b37942c27aa07091c8d_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=268pt]{_orb_sim_general_toolbox_8cpp_a76e378ebb3005b37942c27aa07091c8d_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!corr\-Length\-Jumpy\-Calc@{corr\-Length\-Jumpy\-Calc}}
+\index{corr\-Length\-Jumpy\-Calc@{corr\-Length\-Jumpy\-Calc}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{corr\-Length\-Jumpy\-Calc}]{\setlength{\rightskip}{0pt plus 5cm}int corr\-Length\-Jumpy\-Calc (
+\begin{DoxyParamCaption}
+\item[{vector$<$ double $>$}]{data}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_aa8acc83bf338d9620efe8c41ab562932}
+a 'jumpy' calculator has been written that takes jumps ahead in the chain until it has passed the correlation length and will go back to the previous jump and calculate it for each individual step till it finds the exact step that the correlation length reached the (Variance at this step) = (variance of entire chain)/2.0.
+
+Definition at line 1276 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References variance\-Calc().
+
+
+
+Referenced by Correlation\-Length\-Calc().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_aa8acc83bf338d9620efe8c41ab562932_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_aa8acc83bf338d9620efe8c41ab562932_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!D\-Itools\-Param\-Load\-Up@{D\-Itools\-Param\-Load\-Up}}
+\index{D\-Itools\-Param\-Load\-Up@{D\-Itools\-Param\-Load\-Up}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{D\-Itools\-Param\-Load\-Up}]{\setlength{\rightskip}{0pt plus 5cm}{\bf D\-Itools} D\-Itools\-Param\-Load\-Up (
+\begin{DoxyParamCaption}
+\item[{{\bf D\-Idata\-Obj}}]{D\-Ido}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a4882512cf24e88d069e69f1f1d5fab3d}
+A function to load up a \doxyref{D\-Itools}{p.}{class_d_itools} object with the values in a \doxyref{D\-Idata\-Obj}{p.}{class_d_idata_obj}.
+
+Definition at line 577 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References D\-Itools\-::epochs\-\_\-\-D\-I, D\-Idata\-Obj\-::epochs\-\_\-\-D\-I, Data\-Obj\-::\-Mass1, D\-Itools\-::\-Mass1, D\-Itools\-::\-Mass2, D\-Itools\-::\-P\-A\-\_\-errors, D\-Idata\-Obj\-::\-P\-A\-\_\-errors, D\-Itools\-::\-P\-As\-\_\-deg\-\_\-observed, D\-Idata\-Obj\-::\-P\-As\-\_\-deg\-\_\-observed, Data\-Obj\-::planet\-\_\-\-Msin\-I, D\-Itools\-::\-S\-A\-\_\-errors, D\-Idata\-Obj\-::\-S\-A\-\_\-errors, D\-Itools\-::\-S\-As\-\_\-arcsec\-\_\-observed, D\-Idata\-Obj\-::\-S\-As\-\_\-arcsec\-\_\-observed, Data\-Obj\-::star\-\_\-\-Mass2, Data\-Obj\-::\-Sys\-\_\-\-Dist\-\_\-\-P\-C, D\-Itools\-::\-Sys\-\_\-\-Dist\-\_\-\-P\-C, and Binary\-Orb\-Sim\-Starter\-Duo\-::verbose\-Internal.
+
+
+
+Referenced by main().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=264pt]{_orb_sim_general_toolbox_8cpp_a4882512cf24e88d069e69f1f1d5fab3d_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!earliest\-Epoch\-Finder@{earliest\-Epoch\-Finder}}
+\index{earliest\-Epoch\-Finder@{earliest\-Epoch\-Finder}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{earliest\-Epoch\-Finder}]{\setlength{\rightskip}{0pt plus 5cm}double earliest\-Epoch\-Finder (
+\begin{DoxyParamCaption}
+\item[{{\bf D\-Idata\-Obj}}]{D\-Ido, }
+\item[{{\bf R\-Vdata\-Obj}}]{R\-Vdo}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_ae1920a3f4b18e3bf02bdc70aa21e2a9b}
+In order to ensure that the date ranges being used for the Time of Last Periapsis has an appropriate latest value, it the earliest value between the R\-V and D\-I data must be found, as done by this function. The J\-D value of the earliest epoch is returned as a double.
+
+Definition at line 755 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References D\-Idata\-Obj\-::epochs\-\_\-\-D\-I, R\-Vdata\-Obj\-::epochs\-\_\-\-R\-V, and Binary\-Orb\-Sim\-Starter\-Duo\-::verbose.
+
+
+
+Referenced by main().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=258pt]{_orb_sim_general_toolbox_8cpp_ae1920a3f4b18e3bf02bdc70aa21e2a9b_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!ecc\-Arg\-Peri2\-To\-Tc\-Calc@{ecc\-Arg\-Peri2\-To\-Tc\-Calc}}
+\index{ecc\-Arg\-Peri2\-To\-Tc\-Calc@{ecc\-Arg\-Peri2\-To\-Tc\-Calc}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{ecc\-Arg\-Peri2\-To\-Tc\-Calc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf ecc\-Arg\-Peri2\-To\-Tc\-Type} ecc\-Arg\-Peri2\-To\-Tc\-Calc (
+\begin{DoxyParamCaption}
+\item[{{\bf ecc\-Arg\-Peri2\-To\-Tc\-Type}}]{E\-A\-T\-T}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_aeadf9710cfb825b3d0c7c6e9c225a809}
+Convert the provided Eccentricity and Argument of Periapsis into Time of Center transit and Time of Last Periapsis.
+
+Definition at line 71 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References ecc\-Arg\-Peri2\-To\-Tc\-Type\-::arg\-Peri\-\_\-deg, ecc\-Arg\-Peri2\-To\-Tc\-Type\-::e, ecc\-Arg\-Peri2\-To\-Tc\-Type\-::period, P\-I, ecc\-Arg\-Peri2\-To\-Tc\-Type\-::\-Tc, ecc\-Arg\-Peri2\-To\-Tc\-Type\-::\-To, and Binary\-Orb\-Sim\-Starter\-Duo\-::verbose.
+
+
+
+Referenced by toolboxes.\-plot\-Toolbox\-::rv\-Plotter\-Duo(), sim\-Aneal\-Orb\-Func\-Obj\-::simulator(), and M\-C\-M\-Corb\-Func\-Obj\-::simulator().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_aeadf9710cfb825b3d0c7c6e9c225a809_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!ecc\-Arg\-Peri\-Calc@{ecc\-Arg\-Peri\-Calc}}
+\index{ecc\-Arg\-Peri\-Calc@{ecc\-Arg\-Peri\-Calc}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{ecc\-Arg\-Peri\-Calc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf ecc\-Arg\-Peri\-Calc\-Type} ecc\-Arg\-Peri\-Calc (
+\begin{DoxyParamCaption}
+\item[{{\bf ecc\-Arg\-Peri\-Calc\-Type}}]{E\-A\-C\-T}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a869f8be2351c44973b2a74ae310cf91c}
+Calculate the Eccentricity and Argument of Periapsis from the provided sqrt(e$\ast$sin(Arg\-Peri)) and sqrt(e$\ast$cos(Arg\-Peri)) values.
+
+Definition at line 249 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References ecc\-Arg\-Peri\-Calc\-Type\-::arg\-Peri\-\_\-deg, atan\-Top\-Btm(), ecc\-Arg\-Peri\-Calc\-Type\-::e, P\-I, ecc\-Arg\-Peri\-Calc\-Type\-::sqrt\-Ecos\-Arg\-Peri, ecc\-Arg\-Peri\-Calc\-Type\-::sqrt\-Esin\-Arg\-Peri, and Binary\-Orb\-Sim\-Starter\-Duo\-::verbose.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=272pt]{_orb_sim_general_toolbox_8cpp_a869f8be2351c44973b2a74ae310cf91c_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!file\-Basename@{file\-Basename}}
+\index{file\-Basename@{file\-Basename}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{file\-Basename}]{\setlength{\rightskip}{0pt plus 5cm}string file\-Basename (
+\begin{DoxyParamCaption}
+\item[{string}]{str}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a34409b72f3a3882cc0ef1e152770c588}
+Given a string of the full path to a file, this will find and return the basename of the file without the path.
+
+Definition at line 1399 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!filename\-End\-Append@{filename\-End\-Append}}
+\index{filename\-End\-Append@{filename\-End\-Append}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{filename\-End\-Append}]{\setlength{\rightskip}{0pt plus 5cm}string filename\-End\-Append (
+\begin{DoxyParamCaption}
+\item[{string}]{input\-String, }
+\item[{string}]{end\-Append\-String}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a35dc7f59f9538729c95a15fad27c8d67}
+A function to append a string onto the end of a file name taking the extension and path properly into account.
+
+N\-O\-T\-E\-: $\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$ T\-H\-I\-S C\-O\-U\-L\-D P\-R\-O\-B\-A\-B\-L\-Y B\-E R\-E-\/\-W\-R\-I\-T\-T\-E\-N T\-O U\-S\-E S\-T\-R.\-F\-I\-N\-D() A\-N\-D S\-T\-R.\-S\-U\-B\-S\-T\-R() $\ast$$\ast$$\ast$
+
+Definition at line 1426 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References Binary\-Orb\-Sim\-Starter\-Duo\-::verbose\-Internal.
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!filename\-Prepend@{filename\-Prepend}}
+\index{filename\-Prepend@{filename\-Prepend}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{filename\-Prepend}]{\setlength{\rightskip}{0pt plus 5cm}string filename\-Prepend (
+\begin{DoxyParamCaption}
+\item[{string}]{input\-String, }
+\item[{string}]{prepend\-String}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a43c7f0cff57f5e26495323c640bffacb}
+A function to append a string onto the beginning of a file name taking the path properly into account.
+
+N\-O\-T\-E\-: $\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$$\ast$ T\-H\-I\-S C\-O\-U\-L\-D P\-R\-O\-B\-A\-B\-L\-Y B\-E R\-E-\/\-W\-R\-I\-T\-T\-E\-N T\-O U\-S\-E S\-T\-R.\-F\-I\-N\-D() A\-N\-D S\-T\-R.\-S\-U\-B\-S\-T\-R() $\ast$$\ast$$\ast$
+
+Definition at line 1460 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References Binary\-Orb\-Sim\-Starter\-Duo\-::verbose\-Internal.
+
+
+
+Referenced by main().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=244pt]{_orb_sim_general_toolbox_8cpp_a43c7f0cff57f5e26495323c640bffacb_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!file\-Writer@{file\-Writer}}
+\index{file\-Writer@{file\-Writer}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{file\-Writer}]{\setlength{\rightskip}{0pt plus 5cm}void file\-Writer (
+\begin{DoxyParamCaption}
+\item[{{\bf output\-Data\-Type}}]{O\-D\-T}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a05e6dc3408f42d3fe6259e6d6b946e56}
+Write an \doxyref{output\-Data\-Type}{p.}{structoutput_data_type} to an output txt or dat file (default is dat). This file will have the variables in the object written with one value per column and one step in the chain per line. The precision of each variable has been turned to minimize file size while retaining the ability to ensure calculations from these values will be sufficiently accurate. The spacing between each column has also been perfected to produce nice looking output files.
+
+Format will be\-: long\-A\-N [deg] e [N/\-A] To [julian date] Tc [julian date] period [yrs] inclination [deg] arg\-Peri [deg] a\-\_\-total [A\-U] chi\-Squared K [m/s] R\-Vorigin\-\_\-$\ast$ [m/s] times\-Been\-Here
+
+Note\-: There will be one column for each R\-Vorigin.
+
+Definition at line 479 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References output\-Data\-Type\-::a\-\_\-totals, output\-Data\-Type\-::arg\-Peri\-\_\-degs, output\-Data\-Type\-::chi\-Squareds, output\-Data\-Type\-::data\-\_\-filename, output\-Data\-Type\-::es, output\-Data\-Type\-::inclination\-\_\-degs, output\-Data\-Type\-::\-Ks, output\-Data\-Type\-::long\-A\-N\-\_\-degs, output\-Data\-Type\-::num\-Samples\-Accepted, output\-Data\-Type\-::periods, output\-Data\-Type\-::\-R\-Voffsets, output\-Data\-Type\-::\-Tcs, output\-Data\-Type\-::times\-Been\-Heres, and output\-Data\-Type\-::\-Ts.
+
+
+
+Referenced by main().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=210pt]{_orb_sim_general_toolbox_8cpp_a05e6dc3408f42d3fe6259e6d6b946e56_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!fill\-Out\-Data\-Vector@{fill\-Out\-Data\-Vector}}
+\index{fill\-Out\-Data\-Vector@{fill\-Out\-Data\-Vector}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{fill\-Out\-Data\-Vector}]{\setlength{\rightskip}{0pt plus 5cm}vector$<$double$>$ fill\-Out\-Data\-Vector (
+\begin{DoxyParamCaption}
+\item[{vector$<$ double $>$}]{data, }
+\item[{vector$<$ int $>$}]{times\-Been\-Here}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_ae225d41f6d4efa7923141d546294b763}
+Puts data into proper vector taking times\-Been\-Here into account.
+
+Note\-: Caution, the times\-Been\-Here feature compacts the vector size to be approximately 30\% of its total size and this function expands it to its full size.
+
+Definition at line 1177 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+Referenced by Correlation\-Length\-Calc(), and gelman\-Rubin\-Stage1func().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_ae225d41f6d4efa7923141d546294b763_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!find\-Chain\-Number\-Str@{find\-Chain\-Number\-Str}}
+\index{find\-Chain\-Number\-Str@{find\-Chain\-Number\-Str}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{find\-Chain\-Number\-Str}]{\setlength{\rightskip}{0pt plus 5cm}string find\-Chain\-Number\-Str (
+\begin{DoxyParamCaption}
+\item[{string}]{str}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a0be0c010614ef5a0a9dcc26835a1c8ad}
+Python provides the a log file name to C\-P\-P when it makes the call to start a M\-C\-M\-C or Sim\-Anneal run. This function will find the chain number from that string and return it.
+
+Definition at line 1412 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+Referenced by gelman\-Rubin\-Stage1().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_a0be0c010614ef5a0a9dcc26835a1c8ad_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!find\-Directory@{find\-Directory}}
+\index{find\-Directory@{find\-Directory}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{find\-Directory}]{\setlength{\rightskip}{0pt plus 5cm}string find\-Directory (
+\begin{DoxyParamCaption}
+\item[{string}]{str}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a2f57756ffafba872d2334241ce0df4c7}
+Given a string of the full path to a file, this will find and return the directory the file is in.
+
+Definition at line 1387 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+Referenced by gelman\-Rubin\-Stage1().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_a2f57756ffafba872d2334241ce0df4c7_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!gelman\-Rubin\-Stage1@{gelman\-Rubin\-Stage1}}
+\index{gelman\-Rubin\-Stage1@{gelman\-Rubin\-Stage1}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{gelman\-Rubin\-Stage1}]{\setlength{\rightskip}{0pt plus 5cm}void gelman\-Rubin\-Stage1 (
+\begin{DoxyParamCaption}
+\item[{{\bf output\-Data\-Type}}]{O\-D\-T, }
+\item[{int}]{num\-Times}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_ad63719cf7b5624f9d3fb4f7b957618fa}
+This function will calculate the variance and mean num\-Times times for each parameter and then write output to a file to be read in by Python function 'gelman\-Rubin\-Stage2' to finish the calculations and write the final file to disk. It utilizes the gelman\-Rubin\-Stage1\-Func to perform the actual calculations requested to assist in keeping the code in this function cleaner. In an attempt to save R\-A\-M while making these heavy calculations, the 'empty' columns of data in the \doxyref{output\-Data\-Type}{p.}{structoutput_data_type} are found and cleared and swapped with empty vectors, but it is not sure yet if the method implemented to do this works completely. As such, this function could see some future upgrades if a better method is found.
+
+Note\-: Feel free to contact the author ({\tt kylemede@astron.\-s.\-u-\/tokyo.\-ac.\-jp}) with any suggestions for fixing the memory saving sections in this function.
+
+Definition at line 883 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References output\-Data\-Type\-::a\-\_\-totals, output\-Data\-Type\-::arg\-Peri\-\_\-degs, output\-Data\-Type\-::chi\-Squareds, output\-Data\-Type\-::data\-\_\-filename, output\-Data\-Type\-::es, find\-Chain\-Number\-Str(), find\-Directory(), gelman\-Rubin\-Stage1func(), output\-Data\-Type\-::inclination\-\_\-degs, output\-Data\-Type\-::\-Ks, G\-Rfunc\-Return\-Type\-::\-Lcs, output\-Data\-Type\-::long\-A\-N\-\_\-degs, G\-Rfunc\-Return\-Type\-::means, output\-Data\-Type\-::periods, output\-Data\-Type\-::\-R\-Voffsets, output\-Data\-Type\-::\-Tcs, output\-Data\-Type\-::times\-Been\-Heres, output\-Data\-Type\-::\-Ts, G\-Rfunc\-Return\-Type\-::vars, and Binary\-Orb\-Sim\-Starter\-Duo\-::verbose.
+
+
+
+Referenced by main().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_ad63719cf7b5624f9d3fb4f7b957618fa_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=258pt]{_orb_sim_general_toolbox_8cpp_ad63719cf7b5624f9d3fb4f7b957618fa_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!gelman\-Rubin\-Stage1func@{gelman\-Rubin\-Stage1func}}
+\index{gelman\-Rubin\-Stage1func@{gelman\-Rubin\-Stage1func}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{gelman\-Rubin\-Stage1func}]{\setlength{\rightskip}{0pt plus 5cm}{\bf G\-Rfunc\-Return\-Type} gelman\-Rubin\-Stage1func (
+\begin{DoxyParamCaption}
+\item[{vector$<$ double $>$}]{data, }
+\item[{vector$<$ int $>$}]{times\-Been\-Here, }
+\item[{int}]{num\-Times}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a0592aa2faeeeda2f3f2e4f8419238ed3}
+This function will calculate the variance and mean num\-Times times for a single parameter and pass it back to gelman\-Rubin\-Stage1 which called it.
+
+Definition at line 1205 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References fill\-Out\-Data\-Vector(), G\-Rfunc\-Return\-Type\-::\-Lcs, mean\-Calc(), G\-Rfunc\-Return\-Type\-::means, variance\-Calc(), G\-Rfunc\-Return\-Type\-::vars, and Binary\-Orb\-Sim\-Starter\-Duo\-::verbose.
+
+
+
+Referenced by gelman\-Rubin\-Stage1().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_a0592aa2faeeeda2f3f2e4f8419238ed3_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_a0592aa2faeeeda2f3f2e4f8419238ed3_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!log\-File\-Writer@{log\-File\-Writer}}
+\index{log\-File\-Writer@{log\-File\-Writer}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{log\-File\-Writer}]{\setlength{\rightskip}{0pt plus 5cm}void log\-File\-Writer (
+\begin{DoxyParamCaption}
+\item[{string}]{filename, }
+\item[{string}]{L\-O\-Glines}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a41b9c9ec407c9d984e5eae3438d726bd}
+Throughout the C\-P\-P code, the log lines are stored into a stringstream which is then passed into this function to be written to an output file.
+
+Definition at line 531 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+Referenced by main().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=226pt]{_orb_sim_general_toolbox_8cpp_a41b9c9ec407c9d984e5eae3438d726bd_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!mean\-Calc@{mean\-Calc}}
+\index{mean\-Calc@{mean\-Calc}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{mean\-Calc}]{\setlength{\rightskip}{0pt plus 5cm}double mean\-Calc (
+\begin{DoxyParamCaption}
+\item[{vector$<$ double $>$}]{v, }
+\item[{int}]{last\-Point}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a908cfc620698daa3ab132f7ee322649b}
+A very simple function that simply adds up the total of all the elements in a vector$<$double$>$ and divides it by the number of elements to give the mean value. The precision of the calculation is checked to make sure the result is sufficiently precise.
+
+Definition at line 855 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References Binary\-Orb\-Sim\-Starter\-Duo\-::verbose.
+
+
+
+Referenced by gelman\-Rubin\-Stage1func(), and variance\-Calc().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_a908cfc620698daa3ab132f7ee322649b_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!num\-Samples\-String\-Maker@{num\-Samples\-String\-Maker}}
+\index{num\-Samples\-String\-Maker@{num\-Samples\-String\-Maker}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{num\-Samples\-String\-Maker}]{\setlength{\rightskip}{0pt plus 5cm}string num\-Samples\-String\-Maker (
+\begin{DoxyParamCaption}
+\item[{int}]{num\-Samples}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a5e44e70da01395703bd6f83c2d51d7ea}
+A function to take the number of samples as an integer and convert it to a nicely formated string. E\-X. 1,000,000 -\/$>$ \char`\"{}1-\/\-Million\char`\"{}.
+
+Definition at line 1341 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References Binary\-Orb\-Sim\-Starter\-Duo\-::num\-Samples, and Binary\-Orb\-Sim\-Starter\-Duo\-::num\-Samples\-String.
+
+
+
+Referenced by main().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=280pt]{_orb_sim_general_toolbox_8cpp_a5e44e70da01395703bd6f83c2d51d7ea_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!odt\-Finish@{odt\-Finish}}
+\index{odt\-Finish@{odt\-Finish}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{odt\-Finish}]{\setlength{\rightskip}{0pt plus 5cm}{\bf output\-Data\-Type} odt\-Finish (
+\begin{DoxyParamCaption}
+\item[{{\bf output\-Data\-Type}}]{O\-D\-T}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a6095bdbd75b438f04cd646ec98403792}
+An attempt to clear out the extra memory of the space allocated to the variables in an \doxyref{output\-Data\-Type}{p.}{structoutput_data_type} object after a chain is complete. Unfortunately, this function does not seem to be releasing the memory back to the O\-S at the moment... Hopefully it can be fixed or a better method will be implemented in the future to handle this issue.
+
+Definition at line 47 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+Referenced by M\-C\-M\-Corb\-Func\-Obj\-::simulator().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_a6095bdbd75b438f04cd646ec98403792_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!odt\-Start@{odt\-Start}}
+\index{odt\-Start@{odt\-Start}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{odt\-Start}]{\setlength{\rightskip}{0pt plus 5cm}{\bf output\-Data\-Type} odt\-Start (
+\begin{DoxyParamCaption}
+\item[{{\bf output\-Data\-Type}}]{O\-D\-T, }
+\item[{int}]{num\-Total\-Samples}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_af6822af439d315cbaf673a17fd5c1467}
+
+
+Definition at line 18 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References output\-Data\-Type\-::a\-\_\-totals, output\-Data\-Type\-::arg\-Peri\-\_\-degs, output\-Data\-Type\-::chi\-Squareds, output\-Data\-Type\-::es, output\-Data\-Type\-::inclination\-\_\-degs, output\-Data\-Type\-::\-Ks, output\-Data\-Type\-::long\-A\-N\-\_\-degs, output\-Data\-Type\-::periods, output\-Data\-Type\-::\-Tcs, output\-Data\-Type\-::times\-Been\-Heres, and output\-Data\-Type\-::\-Ts.
+
+
+
+Referenced by M\-C\-M\-Corb\-Func\-Obj\-::simulator().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_af6822af439d315cbaf673a17fd5c1467_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!semi\-Major\-Converter@{semi\-Major\-Converter}}
+\index{semi\-Major\-Converter@{semi\-Major\-Converter}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{semi\-Major\-Converter}]{\setlength{\rightskip}{0pt plus 5cm}{\bf semi\-Major\-Type} semi\-Major\-Converter (
+\begin{DoxyParamCaption}
+\item[{{\bf semi\-Major\-Type}}]{S\-M\-T}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_aa5bb32caf9e3631b94bef44194cd8339}
+A function to determine the missing values of the possible semi-\/major axes (a1,a2,a\-\_\-total) given any one of them and the individual masses of the two objects.
+
+Definition at line 680 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References semi\-Major\-Type\-::a1, semi\-Major\-Type\-::a2, semi\-Major\-Type\-::a\-\_\-total, Grav\-Const, K\-Gper\-Msun, semi\-Major\-Type\-::\-Mass1, semi\-Major\-Type\-::\-Mass2, Mper\-A\-U, semi\-Major\-Type\-::period, P\-I, Sec\-Per\-Year, and Binary\-Orb\-Sim\-Starter\-Duo\-::verbose\-Internal.
+
+
+
+Referenced by toolboxes.\-plot\-Toolbox\-::rv\-Fit\-Plotter1\-Body(), toolboxes.\-plot\-Toolbox\-::rv\-Mod\-Dataset\-Maker\-Duo(), toolboxes.\-plot\-Toolbox\-::rv\-Plotter\-Duo(), V\-Rcalc\-Star\-Planet\-Load\-Up(), and V\-Rcalc\-Star\-Star\-Load\-Up().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_aa5bb32caf9e3631b94bef44194cd8339_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!standard\-Deviation@{standard\-Deviation}}
+\index{standard\-Deviation@{standard\-Deviation}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{standard\-Deviation}]{\setlength{\rightskip}{0pt plus 5cm}double standard\-Deviation (
+\begin{DoxyParamCaption}
+\item[{vector$<$ double $>$}]{v}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_ad3ed3bb9599d9b912548af4926c90d9f}
+Calculates the standard deviation utilizing the variance\-Calc based on the code in Numerical Recipes 3rd and simply taking the square root of its output and returning it as a double.
+
+Definition at line 830 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References variance\-Calc().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_ad3ed3bb9599d9b912548af4926c90d9f_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!T\-Acalculator@{T\-Acalculator}}
+\index{T\-Acalculator@{T\-Acalculator}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{T\-Acalculator}]{\setlength{\rightskip}{0pt plus 5cm}{\bf T\-Acalc\-Return\-Type} T\-Acalculator (
+\begin{DoxyParamCaption}
+\item[{{\bf T\-Acalc\-Input\-Type}}]{T\-A\-C\-I\-T}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_aa52ab131755d66056d8deb92e203e4d8}
+Calculate the True Anomaly for a particular epoch of data.
+
+Definition at line 318 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References T\-Acalc\-Input\-Type\-::e, T\-Acalc\-Return\-Type\-::\-E\-\_\-deg, n, T\-Acalc\-Input\-Type\-::period, P\-I, T\-Acalc\-Input\-Type\-::t, T\-Acalc\-Input\-Type\-::\-T, T\-Acalc\-Return\-Type\-::\-T\-A\-\_\-deg, T\-Acalc\-Input\-Type\-::\-Tc, and T\-Acalc\-Input\-Type\-::verbose.
+
+
+
+Referenced by V\-Rcalc\-Star\-Star\-::multi\-Epoch\-Calc(), V\-Rcalc\-Star\-Planet\-::multi\-Epoch\-Calc(), D\-Itools\-::multi\-Epoch\-Orb\-Calc(), toolboxes.\-D\-Itoolbox\-::multi\-Epoch\-Orb\-Calc\-T\-H\-\_\-\-I(), and toolboxes.\-D\-Itoolbox\-::multi\-Epoch\-Orb\-Calc\-T\-H\-\_\-\-I3().
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_aa52ab131755d66056d8deb92e203e4d8_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!time\-Str@{time\-Str}}
+\index{time\-Str@{time\-Str}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{time\-Str}]{\setlength{\rightskip}{0pt plus 5cm}string time\-Str (
+\begin{DoxyParamCaption}
+\item[{int}]{time\-Elapsed}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_ae281f9db27f9dd511af754d8c390c749}
+Convert the time\-Elapsed integer, which is in seconds, into a nicely formated string. E\-X. \char`\"{}$\ast$ hour(s) and $\ast$ minute(s)\char`\"{}
+
+Definition at line 1514 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References toolboxes.\-general\-Toolbox\-::time\-String(), and Binary\-Orb\-Sim\-Starter\-Duo\-::verbose.
+
+
+
+Referenced by main().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=314pt]{_orb_sim_general_toolbox_8cpp_ae281f9db27f9dd511af754d8c390c749_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=202pt]{_orb_sim_general_toolbox_8cpp_ae281f9db27f9dd511af754d8c390c749_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!variance\-Calc@{variance\-Calc}}
+\index{variance\-Calc@{variance\-Calc}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{variance\-Calc}]{\setlength{\rightskip}{0pt plus 5cm}double variance\-Calc (
+\begin{DoxyParamCaption}
+\item[{vector$<$ double $>$}]{data, }
+\item[{int}]{last\-Point}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_ab6faa5c9c43d2dbeb98c6be0e3641d2f}
+This will calculate the \char`\"{}bias-\/corrected sample variance\char`\"{} and uses an advanced \char`\"{}corrected two-\/pass algorithm\char`\"{} to reduce roundoff error, a modified version of function on pg 728 of Numerical Recipes 3rd.
+
+Definition at line 1316 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References mean\-Calc(), and n.
+
+
+
+Referenced by corr\-Length\-Jumpy\-Calc(), gelman\-Rubin\-Stage1func(), and standard\-Deviation().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=252pt]{_orb_sim_general_toolbox_8cpp_ab6faa5c9c43d2dbeb98c6be0e3641d2f_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_ab6faa5c9c43d2dbeb98c6be0e3641d2f_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!V\-Rcalc\-Star\-Planet\-Load\-Up@{V\-Rcalc\-Star\-Planet\-Load\-Up}}
+\index{V\-Rcalc\-Star\-Planet\-Load\-Up@{V\-Rcalc\-Star\-Planet\-Load\-Up}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{V\-Rcalc\-Star\-Planet\-Load\-Up}]{\setlength{\rightskip}{0pt plus 5cm}{\bf V\-Rcalc\-Star\-Planet} V\-Rcalc\-Star\-Planet\-Load\-Up (
+\begin{DoxyParamCaption}
+\item[{{\bf R\-Vdata\-Obj}}]{R\-Vdo}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_ae3b7b9692627e673afc978a986569636}
+A function to load up a \doxyref{V\-Rcalc\-Star\-Planet}{p.}{class_v_rcalc_star_planet} object with the values in the general \doxyref{R\-Vdata\-Obj}{p.}{class_r_vdata_obj}.
+
+Definition at line 636 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References semi\-Major\-Type\-::a1, V\-Rcalc\-Star\-Planet\-::a1, semi\-Major\-Type\-::a2, semi\-Major\-Type\-::a\-\_\-total, V\-Rcalc\-Star\-Planet\-::a\-\_\-total, V\-Rcalc\-Star\-Planet\-::arg\-Peri\-\_\-deg\-\_\-p, V\-Rcalc\-Star\-Planet\-::e\-\_\-p, V\-Rcalc\-Star\-Planet\-::inclination\-\_\-deg\-\_\-p, V\-Rcalc\-Star\-Planet\-::\-K\-\_\-p, V\-Rcalc\-Star\-Planet\-::\-K\-\_\-p\-\_\-error, R\-Vtools\-::\-Mass1, Data\-Obj\-::\-Mass1, semi\-Major\-Type\-::\-Mass1, semi\-Major\-Type\-::\-Mass2, V\-Rcalc\-Star\-Planet\-::\-Mass2sin\-I\-\_\-p, semi\-Major\-Type\-::period, V\-Rcalc\-Star\-Planet\-::period\-\_\-p, Data\-Obj\-::planet\-\_\-arg\-Peri, Data\-Obj\-::planet\-\_\-e, Data\-Obj\-::planet\-\_\-inc, Data\-Obj\-::planet\-\_\-\-K, Data\-Obj\-::planet\-\_\-\-K\-\_\-error, Data\-Obj\-::planet\-\_\-\-Msin\-I, Data\-Obj\-::planet\-\_\-\-P, Data\-Obj\-::planet\-\_\-\-T, Data\-Obj\-::planet\-\_\-\-Tc, semi\-Major\-Converter(), V\-Rcalc\-Star\-Planet\-::\-T\-\_\-p, and V\-Rcalc\-Star\-Planet\-::\-Tc\-\_\-p.
+
+
+
+Referenced by main(), sim\-Aneal\-Orb\-Func\-Obj\-::simulator(), and M\-C\-M\-Corb\-Func\-Obj\-::simulator().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=348pt]{_orb_sim_general_toolbox_8cpp_ae3b7b9692627e673afc978a986569636_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_ae3b7b9692627e673afc978a986569636_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{Orb\-Sim\-General\-Toolbox.\-cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}!V\-Rcalc\-Star\-Star\-Load\-Up@{V\-Rcalc\-Star\-Star\-Load\-Up}}
+\index{V\-Rcalc\-Star\-Star\-Load\-Up@{V\-Rcalc\-Star\-Star\-Load\-Up}!OrbSimGeneralToolbox.cpp@{Orb\-Sim\-General\-Toolbox.\-cpp}}
+\subsubsection[{V\-Rcalc\-Star\-Star\-Load\-Up}]{\setlength{\rightskip}{0pt plus 5cm}{\bf V\-Rcalc\-Star\-Star} V\-Rcalc\-Star\-Star\-Load\-Up (
+\begin{DoxyParamCaption}
+\item[{{\bf R\-Vdata\-Obj}}]{R\-Vdo}
+\end{DoxyParamCaption}
+)}\label{_orb_sim_general_toolbox_8cpp_a192fc147e333fae4e845763c3c515975}
+A function to load up a \doxyref{V\-Rcalc\-Star\-Star}{p.}{class_v_rcalc_star_star} object with the values in the general \doxyref{R\-Vdata\-Obj}{p.}{class_r_vdata_obj}.
+
+Definition at line 603 of file Orb\-Sim\-General\-Toolbox.\-cpp.
+
+
+
+References V\-Rcalc\-Star\-Star\-::a1, semi\-Major\-Type\-::a1, semi\-Major\-Type\-::a2, V\-Rcalc\-Star\-Star\-::a\-\_\-total, semi\-Major\-Type\-::a\-\_\-total, V\-Rcalc\-Star\-Star\-::arg\-Peri\-\_\-deg\-\_\-s, V\-Rcalc\-Star\-Star\-::e\-\_\-s, V\-Rcalc\-Star\-Star\-::inclination\-\_\-deg\-\_\-s, R\-Vtools\-::\-Mass1, Data\-Obj\-::\-Mass1, semi\-Major\-Type\-::\-Mass1, semi\-Major\-Type\-::\-Mass2, V\-Rcalc\-Star\-Star\-::\-Mass2\-\_\-s, semi\-Major\-Type\-::period, V\-Rcalc\-Star\-Star\-::period\-\_\-s, semi\-Major\-Converter(), Data\-Obj\-::star\-\_\-arg\-Peri, Data\-Obj\-::star\-\_\-e, Data\-Obj\-::star\-\_\-inc, Data\-Obj\-::star\-\_\-\-Mass2, Data\-Obj\-::star\-\_\-\-P, Data\-Obj\-::star\-\_\-\-T, Data\-Obj\-::star\-\_\-\-Tc, V\-Rcalc\-Star\-Star\-::\-T\-\_\-s, and V\-Rcalc\-Star\-Star\-::\-Tc\-\_\-s.
+
+
+
+Referenced by main(), sim\-Aneal\-Orb\-Func\-Obj\-::simulator(), and M\-C\-M\-Corb\-Func\-Obj\-::simulator().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=340pt]{_orb_sim_general_toolbox_8cpp_a192fc147e333fae4e845763c3c515975_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{_orb_sim_general_toolbox_8cpp_a192fc147e333fae4e845763c3c515975_icgraph}
+\end{center}
+\end{figure}
+
+

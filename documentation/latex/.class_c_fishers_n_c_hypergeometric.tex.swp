@@ -1,0 +1,115 @@
+\section{C\-Fishers\-N\-C\-Hypergeometric Class Reference}
+\label{class_c_fishers_n_c_hypergeometric}\index{C\-Fishers\-N\-C\-Hypergeometric@{C\-Fishers\-N\-C\-Hypergeometric}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bfseries C\-Fishers\-N\-C\-Hypergeometric} (int32\-\_\-t n, int32\-\_\-t m, int32\-\_\-t N, double odds, double accuracy=1\-E-\/8)\label{class_c_fishers_n_c_hypergeometric_a93e2275641c4cef6b582ff4a2baa635b}
+
+\item 
+double {\bfseries probability} (int32\-\_\-t x)\label{class_c_fishers_n_c_hypergeometric_adac9d5ae09138a0eeb16c1daf9ed5c20}
+
+\item 
+double {\bfseries probability\-Ratio} (int32\-\_\-t x, int32\-\_\-t x0)\label{class_c_fishers_n_c_hypergeometric_a2ee40708d64b6dcd8f751cc53d88e031}
+
+\item 
+double {\bfseries Make\-Table} (double $\ast$table, int32\-\_\-t Max\-Length, int32\-\_\-t $\ast$xfirst, int32\-\_\-t $\ast$xlast, double cutoff=0.)\label{class_c_fishers_n_c_hypergeometric_aabbbb99171028b76285b6b72749f2ea7}
+
+\item 
+double {\bfseries mean} (void)\label{class_c_fishers_n_c_hypergeometric_a7d417df2024bbb7eacfeb08c06f96ed8}
+
+\item 
+double {\bfseries variance} (void)\label{class_c_fishers_n_c_hypergeometric_a352e14d5199e6887e1b4b23eafa3dc7c}
+
+\item 
+int32\-\_\-t {\bfseries mode} (void)\label{class_c_fishers_n_c_hypergeometric_a0cb8bcdf7dc26b336d755bdcb2e0a3cf}
+
+\item 
+double {\bfseries moments} (double $\ast$mean, double $\ast$var)\label{class_c_fishers_n_c_hypergeometric_a7beaf1c7cb78605a21201c57f606096c}
+
+\item 
+{\bfseries C\-Fishers\-N\-C\-Hypergeometric} (int32\-\_\-t n, int32\-\_\-t m, int32\-\_\-t N, double odds, double accuracy=1\-E-\/8)\label{class_c_fishers_n_c_hypergeometric_a93e2275641c4cef6b582ff4a2baa635b}
+
+\item 
+double {\bfseries probability} (int32\-\_\-t x)\label{class_c_fishers_n_c_hypergeometric_adac9d5ae09138a0eeb16c1daf9ed5c20}
+
+\item 
+double {\bfseries probability\-Ratio} (int32\-\_\-t x, int32\-\_\-t x0)\label{class_c_fishers_n_c_hypergeometric_a2ee40708d64b6dcd8f751cc53d88e031}
+
+\item 
+double {\bfseries Make\-Table} (double $\ast$table, int32\-\_\-t Max\-Length, int32\-\_\-t $\ast$xfirst, int32\-\_\-t $\ast$xlast, double cutoff=0.)\label{class_c_fishers_n_c_hypergeometric_aabbbb99171028b76285b6b72749f2ea7}
+
+\item 
+double {\bfseries mean} (void)\label{class_c_fishers_n_c_hypergeometric_a7d417df2024bbb7eacfeb08c06f96ed8}
+
+\item 
+double {\bfseries variance} (void)\label{class_c_fishers_n_c_hypergeometric_a352e14d5199e6887e1b4b23eafa3dc7c}
+
+\item 
+int32\-\_\-t {\bfseries mode} (void)\label{class_c_fishers_n_c_hypergeometric_a0cb8bcdf7dc26b336d755bdcb2e0a3cf}
+
+\item 
+double {\bfseries moments} (double $\ast$mean, double $\ast$var)\label{class_c_fishers_n_c_hypergeometric_a7beaf1c7cb78605a21201c57f606096c}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+double {\bfseries lng} (int32\-\_\-t x)\label{class_c_fishers_n_c_hypergeometric_a9ec30d96fe60d9a203576ad4a37b9ceb}
+
+\item 
+double {\bfseries lng} (int32\-\_\-t x)\label{class_c_fishers_n_c_hypergeometric_a9ec30d96fe60d9a203576ad4a37b9ceb}
+
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+double {\bfseries odds}\label{class_c_fishers_n_c_hypergeometric_a7e3bd41016c9f4368d8cee1481e0ffe9}
+
+\item 
+double {\bfseries logodds}\label{class_c_fishers_n_c_hypergeometric_afd3d5c6e6a098a4a70ea8adef56ef311}
+
+\item 
+double {\bfseries accuracy}\label{class_c_fishers_n_c_hypergeometric_a166bd11c8d637026396d0d13b43fbb7b}
+
+\item 
+int32\-\_\-t {\bfseries n}\label{class_c_fishers_n_c_hypergeometric_ab33abdef674edb97670e773ed3b91c0b}
+
+\item 
+int32\-\_\-t {\bfseries m}\label{class_c_fishers_n_c_hypergeometric_a498bdbd9b41fde5cf5d959a7a78ee0ca}
+
+\item 
+int32\-\_\-t {\bfseries N}\label{class_c_fishers_n_c_hypergeometric_a49af84d35ac4cc8d41e70e54ecb209fc}
+
+\item 
+int32\-\_\-t {\bfseries xmin}\label{class_c_fishers_n_c_hypergeometric_a15eedbf742354964a9eaab5129c053b7}
+
+\item 
+int32\-\_\-t {\bfseries xmax}\label{class_c_fishers_n_c_hypergeometric_a00a8d5f769e31ee0af1f5a8175db7d46}
+
+\item 
+int32\-\_\-t {\bfseries x\-Last}\label{class_c_fishers_n_c_hypergeometric_a4d91db09920205bf20b2d3edad5a2725}
+
+\item 
+double {\bfseries m\-Fac}\label{class_c_fishers_n_c_hypergeometric_af2a34868eb61ad2487638cb955111e86}
+
+\item 
+double {\bfseries x\-Fac}\label{class_c_fishers_n_c_hypergeometric_aae5b151837f1ab4e71266cfee752d922}
+
+\item 
+double {\bfseries scale}\label{class_c_fishers_n_c_hypergeometric_ad20fbfcd86d0f33f23f66e9b79b3f734}
+
+\item 
+double {\bfseries rsum}\label{class_c_fishers_n_c_hypergeometric_a2237d46d2b92c592e3e8d5450ba4af46}
+
+\item 
+int {\bfseries Parameters\-Changed}\label{class_c_fishers_n_c_hypergeometric_a91fefae1dc0d1b58df24faca406d71b0}
+
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/rnd/stocc.\-h\item 
+/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/toolboxes/rnd/stocc.\-h\item 
+/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/rnd/fnchyppr.\-cpp\item 
+/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/toolboxes/rnd/fnchyppr.\-cpp\end{DoxyCompactItemize}

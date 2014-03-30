@@ -1,0 +1,19 @@
+<map id="G" name="G">
+<area shape="rect" id="node3" href="$class_c_wallenius_n_c_hypergeometric.html#a1f5161c78a2e6a0c93efa73bc6dbaa14" title="CWalleniusNCHypergeometric\l::BernouilliH" alt="" coords="507,355,709,397"/>
+<area shape="rect" id="node22" href="$class_c_wallenius_n_c_hypergeometric.html#aa79358e7f1a759c7a528c6294f052323" title="CWalleniusNCHypergeometric\l::probability" alt="" coords="257,261,458,302"/>
+<area shape="rect" id="node5" href="$class_stochastic_lib3.html#aa88622d33b88a9db18170297fc8f4b94" title="StochasticLib3::Wallenius\lNCHypRatioOfUnifoms" alt="" coords="772,219,945,261"/>
+<area shape="rect" id="node7" href="$class_stochastic_lib3.html#a56f994ccc56760268f2c27888707260e" title="StochasticLib3::Wallenius\lNCHyp" alt="" coords="1313,190,1487,231"/>
+<area shape="rect" id="node19" href="$class_stochastic_lib3.html#a385471a74bc1b38ddfdf37e628b995de" title="StochasticLib3::Wallenius\lNCHypTable" alt="" coords="1036,161,1209,202"/>
+<area shape="rect" id="node9" href="$class_stochastic_lib3.html#a488545ceef9f379f4e4da569b9075488" title="StochasticLib3::MultiWallenius\lNCHyp" alt="" coords="1577,435,1778,477"/>
+<area shape="rect" id="node17" href="$rnd_2testwnch_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="main" alt="" coords="1652,71,1703,97"/>
+<area shape="rect" id="node11" href="$class_stochastic_lib3.html#a21e291e7e5d7ddcc80aca4904121d1fb" title="StochasticLib3::MultiCompl\lWalleniusNCHyp" alt="" coords="1841,435,2023,477"/>
+<area shape="rect" id="node15" href="$rnd_2testmwnc_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="main" alt="" coords="1907,509,1957,536"/>
+<area shape="rect" id="node13" href="$rnd_2ex-evol1_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4" title="main" alt="" coords="2072,443,2123,469"/>
+<area shape="rect" id="node25" href="$class_stochastic_lib3.html#a77e6ffa3008b299d446f1b23e57cab8a" title="StochasticLib3::Wallenius\lNCHypInversion" alt="" coords="521,173,695,214"/>
+<area shape="rect" id="node30" href="$class_c_wallenius_n_c_hypergeometric.html#a76d6c814eafca1017e980ac523ed4651" title="CWalleniusNCHypergeometric\l::moments" alt="" coords="758,5,959,46"/>
+<area shape="rect" id="node33" href="$class_c_wallenius_n_c_hypergeometric.html#a44dacaa83e8a46906410a080a8e8e36d" title="CWalleniusNCHypergeometric\l::mode" alt="" coords="507,290,709,331"/>
+<area shape="rect" id="node36" href="$class_c_wallenius_n_c_hypergeometric.html#ab65ef8a6c63733664bca88be1982cf5e" title="CWalleniusNCHypergeometric\l::MakeTable" alt="" coords="758,133,959,174"/>
+<area shape="rect" id="node39" href="$class_c_multi_wallenius_n_c_hypergeometric.html#a46c9c2126eaba314c9f76c9201817a91" title="CMultiWalleniusNCHypergeometric\l::probability" alt="" coords="1008,473,1237,514"/>
+<area shape="rect" id="node41" href="$class_c_multi_wallenius_n_c_hypergeometric_moments.html#a31b46893503a4d7a8235b3d1a77f2573" title="CMultiWalleniusNCHypergeometric\lMoments::loop" alt="" coords="1285,523,1515,565"/>
+<area shape="rect" id="node43" href="$class_c_multi_wallenius_n_c_hypergeometric_moments.html#a53d018c1285c971b0d604d618fb88adc" title="CMultiWalleniusNCHypergeometric\lMoments::moments" alt="" coords="1563,511,1792,553"/>
+</map>

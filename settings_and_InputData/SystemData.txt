@@ -1,0 +1,82 @@
+# These are the settings for the system under investigation
+
+# System distance [PC]
+Sys_Dist_PC = 15.62
+# Mass of primary star [Msun]
+Mass1 = 1.3
+# Error in primary stat's mass [Msun]
+Mass1_error = 0.1
+
+# Further settings to properly set up RV part of simulations.
+# RULES: -If using 3D, the RV data must be of the same companion as the DI data.
+#	 -If RV calculations for a two companion system are needed 
+#	  (ie. Primary star, secondary star AND planet around primary star)
+#	  a complete set of orbital parameters for the companion that 
+#         is NOT being simulated (ie. not the companion that the RV data is for)
+#	  must be provided so it can be properly included in residual velocity calculations.
+#	  This is common when investingating a secondary star's orbit in 3D and a planet
+#	  exists around the primary as well.
+
+# Orbital parameters for a known and well studied planet around the primary in a 3 body system. 
+# Use when investigating the orbit of a companion star, else leave all = zero.
+# planet's semi-major axis [m/s][double] #465.10995039
+planet_K = 0
+# planet's semi-major axis error [m/s][double]
+planet_K_error = 0
+# Planet's Eccentricity [double]
+planet_e = 0.0
+# Planet's Eccentricity error [double]
+planet_e_error = 0.000
+# Planet's time of last pariapsis [JD][double]#2455652.07165
+planet_T = 0
+# Planet's time of last pariapsis error [JD][double]
+planet_T_error = 0.0
+# Planet's time of center of transit [JD][double]#2455652.07165
+planet_Tc = 0
+# Planet's time of last pariapsis error [JD][double]
+planet_Tc_error = 0.0
+# Planet's period [years][double]#0.0090690212183436
+planet_P = 0
+# Planet's period error [years][double]
+planet_P_error = 0
+# Planet's M.sin(i) ie, Mass times sine of the inclination. [Msun][double]
+planet_MsinI = 0.0
+# Planet's M.sin(i) error [Msun][double]
+planet_MsinI_error = 0.0
+# Planet's argument of pariapsis [degrees][double]
+planet_argPeri = 0.0
+# Planet's argument of pariapsis error [degrees][double]
+planet_argPeri_error = 0
+# Planet's inclination if able to measure separately [degrees][double]
+planet_inc = 0.0
+# Planet's inclination if able to measure separately error [degrees][double]
+planet_inc_error = 0
+
+# Orbital parameters for a known and well studies companion star in a 3 body system. 
+# Use when investigating planet's orbit, else leave all = zero.
+# Star's Eccentricity [double]
+star_e = 0
+# Star's Eccentricity error [double]
+star_e_error = 0
+# Star's time of last pariapsis [JD][double]
+star_T = 0
+# Star's time of center transit/inferior conjunction [JD][double]
+star_Tc = 0
+# Star's time of last pariapsis error [JD][double]
+star_T_error = 0
+# Star's period [years][double]
+star_P = 0
+# Star's period error [years][double]
+star_P_error = 0
+# Star's Mass [Msun][double]
+star_Mass2 = 0.4
+# Star's Mass error [Msun][double]
+star_Mass2_error = 0
+# Star's argument of pariapsis [degrees][double]
+star_argPeri = 0
+# Star's argument of pariapsis error [degrees][double]
+star_argPeri_error = 0
+# Star's inclination [degrees][double]
+star_inc = 0 
+# Star's inclination error [degrees][double]
+star_inc_error = 0

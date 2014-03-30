@@ -1,0 +1,1 @@
+from HARDCODEDsettingsDict import hardcodedSettingsDict

@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['w',['w',['../class_c_wallenius_n_c_hypergeometric.html#a34c6c4d6d85019987cb89a6eabefc446',1,'CWalleniusNCHypergeometric::w()'],['../class_c_multi_wallenius_n_c_hypergeometric.html#aa5826deeb6007553af2003a385550c5b',1,'CMultiWalleniusNCHypergeometric::w()']]],
+  ['wall_5ftablelength',['WALL_TABLELENGTH',['../rnd_2stocc_8h.html#a84dc7bdd140e3283b2cc357a8b8c2a71',1,'WALL_TABLELENGTH():&#160;stocc.h'],['../toolboxes_2rnd_2stocc_8h.html#a84dc7bdd140e3283b2cc357a8b8c2a71',1,'WALL_TABLELENGTH():&#160;stocc.h']]],
+  ['wall_5ftablen',['wall_tablen',['../class_stochastic_lib3.html#a626c96e0540b4945e044fd613c2d7f51',1,'StochasticLib3']]],
+  ['wall_5fx1',['wall_x1',['../class_stochastic_lib3.html#aa17a44f6c4c13bfe3a0086bdbe3e33d9',1,'StochasticLib3']]],
+  ['wall_5fytable',['wall_ytable',['../class_stochastic_lib3.html#a2956a1fb1ccb407272a89d36ef561bcc',1,'StochasticLib3']]],
+  ['walleniusnchyp',['WalleniusNCHyp',['../class_stochastic_lib3.html#a56f994ccc56760268f2c27888707260e',1,'StochasticLib3::WalleniusNCHyp(int32_t n, int32_t m, int32_t N, double odds)'],['../class_stochastic_lib3.html#a56f994ccc56760268f2c27888707260e',1,'StochasticLib3::WalleniusNCHyp(int32_t n, int32_t m, int32_t N, double odds)']]],
+  ['walleniusnchypinversion',['WalleniusNCHypInversion',['../class_stochastic_lib3.html#a77e6ffa3008b299d446f1b23e57cab8a',1,'StochasticLib3::WalleniusNCHypInversion(int32_t n, int32_t m, int32_t N, double odds)'],['../class_stochastic_lib3.html#a77e6ffa3008b299d446f1b23e57cab8a',1,'StochasticLib3::WalleniusNCHypInversion(int32_t n, int32_t m, int32_t N, double odds)']]],
+  ['walleniusnchypratioofunifoms',['WalleniusNCHypRatioOfUnifoms',['../class_stochastic_lib3.html#aa88622d33b88a9db18170297fc8f4b94',1,'StochasticLib3::WalleniusNCHypRatioOfUnifoms(int32_t n, int32_t m, int32_t N, double odds)'],['../class_stochastic_lib3.html#aa88622d33b88a9db18170297fc8f4b94',1,'StochasticLib3::WalleniusNCHypRatioOfUnifoms(int32_t n, int32_t m, int32_t N, double odds)']]],
+  ['walleniusnchyptable',['WalleniusNCHypTable',['../class_stochastic_lib3.html#a385471a74bc1b38ddfdf37e628b995de',1,'StochasticLib3::WalleniusNCHypTable(int32_t n, int32_t m, int32_t N, double odds)'],['../class_stochastic_lib3.html#a385471a74bc1b38ddfdf37e628b995de',1,'StochasticLib3::WalleniusNCHypTable(int32_t n, int32_t m, int32_t N, double odds)']]],
+  ['walleniusnchypurn',['WalleniusNCHypUrn',['../class_stochastic_lib3.html#afe62d24fa0d8ac569080cf4b070ab490',1,'StochasticLib3::WalleniusNCHypUrn(int32_t n, int32_t m, int32_t N, double odds)'],['../class_stochastic_lib3.html#afe62d24fa0d8ac569080cf4b070ab490',1,'StochasticLib3::WalleniusNCHypUrn(int32_t n, int32_t m, int32_t N, double odds)']]],
+  ['width',['width',['../classprogressbar_1_1multiprogressbar_1_1_progress_bar.html#a4e747145316bf8409579252c825e9579',1,'progressbar.multiprogressbar.ProgressBar.width()'],['../classprogressbar_1_1progressbar_1_1_progress_bar.html#a95b1e91125c44147373075ef71927001',1,'progressbar.progressbar.ProgressBar.width()'],['../classprogressbar_1_1progressbar__backup_1_1_progress_bar.html#addfaeb1d3c40bf23cb3cf1a005097e55',1,'progressbar.progressbar_backup.ProgressBar.width()']]],
+  ['wlist',['wlist',['../rnd_2testmfnc_8cpp.html#a0f9888e52a4c32fd392577b5e258d45b',1,'wlist():&#160;testmfnc.cpp'],['../rnd_2testmwnc_8cpp.html#a0f9888e52a4c32fd392577b5e258d45b',1,'wlist():&#160;testmwnc.cpp'],['../toolboxes_2rnd_2testmfnc_8cpp.html#a0f9888e52a4c32fd392577b5e258d45b',1,'wlist():&#160;testmfnc.cpp'],['../toolboxes_2rnd_2testmwnc_8cpp.html#a0f9888e52a4c32fd392577b5e258d45b',1,'wlist():&#160;testmwnc.cpp']]],
+  ['wnc_5fa',['wnc_a',['../class_stochastic_lib3.html#ae59ad1c6cb7424de17a1c6593695ff8e',1,'StochasticLib3']]],
+  ['wnc_5fbound1',['wnc_bound1',['../class_stochastic_lib3.html#abfc15e38745c26d7ff6822db0ed20a2a',1,'StochasticLib3']]],
+  ['wnc_5fbound2',['wnc_bound2',['../class_stochastic_lib3.html#a50ca383ca431f6c494e87e24b9e01889',1,'StochasticLib3']]],
+  ['wnc_5fh',['wnc_h',['../class_stochastic_lib3.html#ac137431c1c7fbe69a1c2004f1caaa003',1,'StochasticLib3']]],
+  ['wnc_5fk',['wnc_k',['../class_stochastic_lib3.html#a3a75f638f94d1977ac09ab52b791f6d1',1,'StochasticLib3']]],
+  ['wnc_5fm_5flast',['wnc_m_last',['../class_stochastic_lib3.html#a9a2a8e308d29d86a2becad45f91bea88',1,'StochasticLib3']]],
+  ['wnc_5fmode',['wnc_mode',['../class_stochastic_lib3.html#adb90248ab2200f7477638cf7242cad5f',1,'StochasticLib3']]],
+  ['wnc_5fn_5flast',['wnc_N_last',['../class_stochastic_lib3.html#a34a6b8065067f3ac9891cbf858a2e7fa',1,'StochasticLib3::wnc_N_last()'],['../class_stochastic_lib3.html#a375dba2dbb41b391c95516f5b5336aa6',1,'StochasticLib3::wnc_n_last()']]],
+  ['wnc_5fo_5flast',['wnc_o_last',['../class_stochastic_lib3.html#a13d965331a60fb8bce0607bc3d188aa2',1,'StochasticLib3']]],
+  ['wnchyppr_2ecpp',['wnchyppr.cpp',['../rnd_2wnchyppr_8cpp.html',1,'']]],
+  ['wnchyppr_2ecpp',['wnchyppr.cpp',['../toolboxes_2rnd_2wnchyppr_8cpp.html',1,'']]],
+  ['wr',['wr',['../class_c_wallenius_n_c_hypergeometric.html#ae6fb2d9ae90aede71331e7c2887c5fec',1,'CWalleniusNCHypergeometric::wr()'],['../class_c_multi_wallenius_n_c_hypergeometric.html#a188d160594f215b923ecba589f6b1f68',1,'CMultiWalleniusNCHypergeometric::wr()']]]
+];

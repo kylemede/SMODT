@@ -1,0 +1,647 @@
+\section{C\-Multi\-Fishers\-N\-C\-Hypergeometric Class Reference}
+\label{class_c_multi_fishers_n_c_hypergeometric}\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+
+
+{\ttfamily \#include $<$stocc.\-h$>$}
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bf C\-Multi\-Fishers\-N\-C\-Hypergeometric} ({\bf int32\-\_\-t} {\bf n}, {\bf int32\-\_\-t} $\ast${\bf m}, double $\ast${\bf odds}, int {\bf colors}, double {\bf accuracy}=1\-E-\/9)
+\item 
+double {\bf probability} ({\bf int32\-\_\-t} $\ast$x)
+\item 
+void {\bf mean} (double $\ast$mu)
+\item 
+void {\bf variance} (double $\ast$var)
+\item 
+double {\bf moments} (double $\ast${\bf mean}, double $\ast$stddev, {\bf int32\-\_\-t} $\ast$combinations=0)
+\item 
+{\bf C\-Multi\-Fishers\-N\-C\-Hypergeometric} ({\bf int32\-\_\-t} {\bf n}, {\bf int32\-\_\-t} $\ast${\bf m}, double $\ast${\bf odds}, int {\bf colors}, double {\bf accuracy}=1\-E-\/9)
+\item 
+double {\bf probability} ({\bf int32\-\_\-t} $\ast$x)
+\item 
+void {\bf mean} (double $\ast$mu)
+\item 
+void {\bf variance} (double $\ast$var)
+\item 
+double {\bf moments} (double $\ast${\bf mean}, double $\ast$stddev, {\bf int32\-\_\-t} $\ast$combinations=0)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+double {\bf lng} ({\bf int32\-\_\-t} $\ast$x)
+\item 
+void {\bf Sum\-Of\-All} (void)
+\item 
+double {\bf loop} ({\bf int32\-\_\-t} {\bf n}, int c)
+\item 
+double {\bf lng} ({\bf int32\-\_\-t} $\ast$x)
+\item 
+void {\bf Sum\-Of\-All} (void)
+\item 
+double {\bf loop} ({\bf int32\-\_\-t} {\bf n}, int c)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+{\bf int32\-\_\-t} {\bf n}
+\item 
+{\bf int32\-\_\-t} {\bf N}
+\item 
+{\bf int32\-\_\-t} $\ast$ {\bf m}
+\item 
+double $\ast$ {\bf odds}
+\item 
+int {\bf colors}
+\item 
+double {\bf logodds} [{\bf M\-A\-X\-C\-O\-L\-O\-R\-S}]
+\item 
+double {\bf m\-Fac}
+\item 
+double {\bf scale}
+\item 
+double {\bf rsum}
+\item 
+double {\bf accuracy}
+\item 
+{\bf int32\-\_\-t} {\bf xi} [{\bf M\-A\-X\-C\-O\-L\-O\-R\-S}]
+\item 
+{\bf int32\-\_\-t} {\bf xm} [{\bf M\-A\-X\-C\-O\-L\-O\-R\-S}]
+\item 
+{\bf int32\-\_\-t} {\bf remaining} [{\bf M\-A\-X\-C\-O\-L\-O\-R\-S}]
+\item 
+double {\bf sx} [{\bf M\-A\-X\-C\-O\-L\-O\-R\-S}]
+\item 
+double {\bf sxx} [{\bf M\-A\-X\-C\-O\-L\-O\-R\-S}]
+\item 
+{\bf int32\-\_\-t} {\bf sn}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 593 of file stocc.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{C\-Multi\-Fishers\-N\-C\-Hypergeometric}]{\setlength{\rightskip}{0pt plus 5cm}C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::\-C\-Multi\-Fishers\-N\-C\-Hypergeometric (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t}}]{n, }
+\item[{{\bf int32\-\_\-t} $\ast$}]{m, }
+\item[{double $\ast$}]{odds, }
+\item[{int}]{colors, }
+\item[{double}]{accuracy = {\ttfamily 1E-\/9}}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_fishers_n_c_hypergeometric_a4c1004d1ea001300fc026642ca800366}
+
+
+Definition at line 355 of file fnchyppr.\-cpp.
+
+
+
+References accuracy, colors, Fatal\-Error(), Ln\-Fac(), logodds, m, m\-Fac, n, N, odds, and sn.
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=344pt]{class_c_multi_fishers_n_c_hypergeometric_a4c1004d1ea001300fc026642ca800366_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{C\-Multi\-Fishers\-N\-C\-Hypergeometric}]{\setlength{\rightskip}{0pt plus 5cm}C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::\-C\-Multi\-Fishers\-N\-C\-Hypergeometric (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t}}]{n, }
+\item[{{\bf int32\-\_\-t} $\ast$}]{m, }
+\item[{double $\ast$}]{odds, }
+\item[{int}]{colors, }
+\item[{double}]{accuracy = {\ttfamily 1E-\/9}}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_fishers_n_c_hypergeometric_a4c1004d1ea001300fc026642ca800366}
+
+
+\subsection{Member Function Documentation}
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!lng@{lng}}
+\index{lng@{lng}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{lng}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::lng (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t} $\ast$}]{x}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_a5588e29d42480a1ec0a42956bb03143a}
+
+
+Definition at line 594 of file fnchyppr.\-cpp.
+
+
+
+References colors, Ln\-Fac(), logodds, m, m\-Fac, and scale.
+
+
+
+Referenced by loop(), probability(), and Sum\-Of\-All().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=340pt]{class_c_multi_fishers_n_c_hypergeometric_a5588e29d42480a1ec0a42956bb03143a_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_fishers_n_c_hypergeometric_a5588e29d42480a1ec0a42956bb03143a_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!lng@{lng}}
+\index{lng@{lng}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{lng}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::lng (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t} $\ast$}]{x}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_a5588e29d42480a1ec0a42956bb03143a}
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!loop@{loop}}
+\index{loop@{loop}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{loop}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::loop (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t}}]{n, }
+\item[{int}]{c}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_af1bd4346cbfd3c9e3d5f1696ff9c7b17}
+
+
+Definition at line 549 of file fnchyppr.\-cpp.
+
+
+
+References accuracy, colors, lng(), m, n, remaining, sn, sx, sxx, xi, and xm.
+
+
+
+Referenced by Sum\-Of\-All().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_fishers_n_c_hypergeometric_af1bd4346cbfd3c9e3d5f1696ff9c7b17_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_fishers_n_c_hypergeometric_af1bd4346cbfd3c9e3d5f1696ff9c7b17_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!loop@{loop}}
+\index{loop@{loop}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{loop}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::loop (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t}}]{n, }
+\item[{int}]{c}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_af1bd4346cbfd3c9e3d5f1696ff9c7b17}
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!mean@{mean}}
+\index{mean@{mean}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{mean}]{\setlength{\rightskip}{0pt plus 5cm}void C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::mean (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{mu}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_fishers_n_c_hypergeometric_a3d3cf562f448c2b03c0bbf5ae8faa093}
+
+
+Definition at line 380 of file fnchyppr.\-cpp.
+
+
+
+References colors, Fatal\-Error(), m, C\-Fishers\-N\-C\-Hypergeometric\-::mean(), n, N, and odds.
+
+
+
+Referenced by main(), Sum\-Of\-All(), and variance().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_fishers_n_c_hypergeometric_a3d3cf562f448c2b03c0bbf5ae8faa093_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_fishers_n_c_hypergeometric_a3d3cf562f448c2b03c0bbf5ae8faa093_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!mean@{mean}}
+\index{mean@{mean}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{mean}]{\setlength{\rightskip}{0pt plus 5cm}void C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::mean (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{mu}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_fishers_n_c_hypergeometric_a3d3cf562f448c2b03c0bbf5ae8faa093}
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!moments@{moments}}
+\index{moments@{moments}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{moments}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::moments (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{mean, }
+\item[{double $\ast$}]{stddev, }
+\item[{{\bf int32\-\_\-t} $\ast$}]{combinations = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_fishers_n_c_hypergeometric_abaa828156d839a6e9f02d96d7ce1ff16}
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!moments@{moments}}
+\index{moments@{moments}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{moments}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::moments (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{mean, }
+\item[{double $\ast$}]{stddev, }
+\item[{{\bf int32\-\_\-t} $\ast$}]{combinations = {\ttfamily 0}}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_fishers_n_c_hypergeometric_abaa828156d839a6e9f02d96d7ce1ff16}
+
+
+Definition at line 475 of file fnchyppr.\-cpp.
+
+
+
+References colors, sn, Sum\-Of\-All(), sx, and sxx.
+
+
+
+Referenced by main().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_fishers_n_c_hypergeometric_abaa828156d839a6e9f02d96d7ce1ff16_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=316pt]{class_c_multi_fishers_n_c_hypergeometric_abaa828156d839a6e9f02d96d7ce1ff16_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!probability@{probability}}
+\index{probability@{probability}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{probability}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::probability (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t} $\ast$}]{x}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_fishers_n_c_hypergeometric_a3b36a76938feea92622701345dc0c4ea}
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!probability@{probability}}
+\index{probability@{probability}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{probability}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::probability (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t} $\ast$}]{x}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_fishers_n_c_hypergeometric_a3b36a76938feea92622701345dc0c4ea}
+
+
+Definition at line 449 of file fnchyppr.\-cpp.
+
+
+
+References colors, Fatal\-Error(), lng(), m, n, N, odds, rsum, sn, and Sum\-Of\-All().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_fishers_n_c_hypergeometric_a3b36a76938feea92622701345dc0c4ea_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!Sum\-Of\-All@{Sum\-Of\-All}}
+\index{Sum\-Of\-All@{Sum\-Of\-All}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{Sum\-Of\-All}]{\setlength{\rightskip}{0pt plus 5cm}void C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::\-Sum\-Of\-All (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_a7058e9821ac52d5d786f29365bad3f74}
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!Sum\-Of\-All@{Sum\-Of\-All}}
+\index{Sum\-Of\-All@{Sum\-Of\-All}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{Sum\-Of\-All}]{\setlength{\rightskip}{0pt plus 5cm}void C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::\-Sum\-Of\-All (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_a7058e9821ac52d5d786f29365bad3f74}
+
+
+Definition at line 498 of file fnchyppr.\-cpp.
+
+
+
+References colors, lng(), loop(), m, mean(), n, remaining, rsum, scale, sn, sx, sxx, and xm.
+
+
+
+Referenced by moments(), and probability().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_fishers_n_c_hypergeometric_a7058e9821ac52d5d786f29365bad3f74_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_fishers_n_c_hypergeometric_a7058e9821ac52d5d786f29365bad3f74_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!variance@{variance}}
+\index{variance@{variance}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{variance}]{\setlength{\rightskip}{0pt plus 5cm}void C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::variance (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{var}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_fishers_n_c_hypergeometric_a9bf6de6a8bce7dcb57392e0b33461788}
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!variance@{variance}}
+\index{variance@{variance}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{variance}]{\setlength{\rightskip}{0pt plus 5cm}void C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::variance (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{var}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_fishers_n_c_hypergeometric_a9bf6de6a8bce7dcb57392e0b33461788}
+
+
+Definition at line 427 of file fnchyppr.\-cpp.
+
+
+
+References colors, m, M\-A\-X\-C\-O\-L\-O\-R\-S, mean(), n, and N.
+
+
+
+Referenced by main(), and Stochastic\-Lib3\-::\-Multi\-Fishers\-N\-C\-Hyp().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_fishers_n_c_hypergeometric_a9bf6de6a8bce7dcb57392e0b33461788_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_fishers_n_c_hypergeometric_a9bf6de6a8bce7dcb57392e0b33461788_icgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Member Data Documentation}
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!accuracy@{accuracy}}
+\index{accuracy@{accuracy}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{accuracy}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::accuracy\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_ad8db1054fbe362755aa3e556d102786f}
+
+
+Definition at line 618 of file stocc.\-h.
+
+
+
+Referenced by C\-Multi\-Fishers\-N\-C\-Hypergeometric(), and loop().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!colors@{colors}}
+\index{colors@{colors}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{colors}]{\setlength{\rightskip}{0pt plus 5cm}int C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::colors\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_a19f7ae2ff81fd88efab40e58683778f3}
+
+
+Definition at line 613 of file stocc.\-h.
+
+
+
+Referenced by C\-Multi\-Fishers\-N\-C\-Hypergeometric(), lng(), loop(), mean(), moments(), probability(), Sum\-Of\-All(), and variance().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!logodds@{logodds}}
+\index{logodds@{logodds}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{logodds}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::logodds\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_ad3c94616ebbb8901fa33333ecc5a569c}
+
+
+Definition at line 614 of file stocc.\-h.
+
+
+
+Referenced by C\-Multi\-Fishers\-N\-C\-Hypergeometric(), and lng().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!m@{m}}
+\index{m@{m}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{m}]{\setlength{\rightskip}{0pt plus 5cm}{\bf int32\-\_\-t} $\ast$ C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::m\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_ab7f3ba1b59097caf8c04c5ec5cbfbe84}
+
+
+Definition at line 611 of file stocc.\-h.
+
+
+
+Referenced by C\-Multi\-Fishers\-N\-C\-Hypergeometric(), lng(), loop(), mean(), probability(), Sum\-Of\-All(), and variance().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!m\-Fac@{m\-Fac}}
+\index{m\-Fac@{m\-Fac}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{m\-Fac}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::m\-Fac\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_a4b03b92680e8a61f59621e7dede2619c}
+
+
+Definition at line 615 of file stocc.\-h.
+
+
+
+Referenced by C\-Multi\-Fishers\-N\-C\-Hypergeometric(), and lng().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!N@{N}}
+\index{N@{N}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{N}]{\setlength{\rightskip}{0pt plus 5cm}{\bf int32\-\_\-t} C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::\-N\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_ad0defe6444379e76faf467fb9ad16b97}
+
+
+Definition at line 610 of file stocc.\-h.
+
+
+
+Referenced by C\-Multi\-Fishers\-N\-C\-Hypergeometric(), mean(), probability(), and variance().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!n@{n}}
+\index{n@{n}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{n}]{\setlength{\rightskip}{0pt plus 5cm}{\bf int32\-\_\-t} C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::n\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_ac1e44a02c6da60fdd7be50100953bf25}
+
+
+Definition at line 610 of file stocc.\-h.
+
+
+
+Referenced by C\-Multi\-Fishers\-N\-C\-Hypergeometric(), loop(), mean(), probability(), Sum\-Of\-All(), and variance().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!odds@{odds}}
+\index{odds@{odds}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{odds}]{\setlength{\rightskip}{0pt plus 5cm}double $\ast$ C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::odds\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_a339e52354d94a9d5f5592e283039bccb}
+
+
+Definition at line 612 of file stocc.\-h.
+
+
+
+Referenced by C\-Multi\-Fishers\-N\-C\-Hypergeometric(), mean(), and probability().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!remaining@{remaining}}
+\index{remaining@{remaining}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{remaining}]{\setlength{\rightskip}{0pt plus 5cm}{\bf int32\-\_\-t} C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::remaining\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_a60858d0485b1fc02c218264b3c31e648}
+
+
+Definition at line 623 of file stocc.\-h.
+
+
+
+Referenced by loop(), and Sum\-Of\-All().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!rsum@{rsum}}
+\index{rsum@{rsum}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{rsum}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::rsum\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_a8b555f4cd4f89702fc4b7d8947972637}
+
+
+Definition at line 617 of file stocc.\-h.
+
+
+
+Referenced by probability(), and Sum\-Of\-All().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!scale@{scale}}
+\index{scale@{scale}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{scale}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::scale\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_a6e4e45d375038e86f679cad63ac9e749}
+
+
+Definition at line 616 of file stocc.\-h.
+
+
+
+Referenced by lng(), and Sum\-Of\-All().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!sn@{sn}}
+\index{sn@{sn}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{sn}]{\setlength{\rightskip}{0pt plus 5cm}{\bf int32\-\_\-t} C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::sn\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_aed9a080cd61ead7230cf4ef6a0cb05e6}
+
+
+Definition at line 626 of file stocc.\-h.
+
+
+
+Referenced by C\-Multi\-Fishers\-N\-C\-Hypergeometric(), loop(), moments(), probability(), and Sum\-Of\-All().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!sx@{sx}}
+\index{sx@{sx}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{sx}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::sx\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_aa5595f5a5e97e2c124b89d78e46efbb6}
+
+
+Definition at line 624 of file stocc.\-h.
+
+
+
+Referenced by loop(), moments(), and Sum\-Of\-All().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!sxx@{sxx}}
+\index{sxx@{sxx}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{sxx}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::sxx\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_acd24be05b89588ca08f2c257c1f0ecde}
+
+
+Definition at line 625 of file stocc.\-h.
+
+
+
+Referenced by loop(), moments(), and Sum\-Of\-All().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!xi@{xi}}
+\index{xi@{xi}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{xi}]{\setlength{\rightskip}{0pt plus 5cm}{\bf int32\-\_\-t} C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::xi\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_a23d898d3b688be52155f9de80dd5da8b}
+
+
+Definition at line 621 of file stocc.\-h.
+
+
+
+Referenced by loop().
+
+\index{C\-Multi\-Fishers\-N\-C\-Hypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}!xm@{xm}}
+\index{xm@{xm}!CMultiFishersNCHypergeometric@{C\-Multi\-Fishers\-N\-C\-Hypergeometric}}
+\subsubsection[{xm}]{\setlength{\rightskip}{0pt plus 5cm}{\bf int32\-\_\-t} C\-Multi\-Fishers\-N\-C\-Hypergeometric\-::xm\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_fishers_n_c_hypergeometric_aa58081ebff0e6e273abd70f36aebc58c}
+
+
+Definition at line 622 of file stocc.\-h.
+
+
+
+Referenced by loop(), and Sum\-Of\-All().
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/rnd/{\bf stocc.\-h}\item 
+/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/toolboxes/rnd/{\bf stocc.\-h}\item 
+/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/rnd/{\bf fnchyppr.\-cpp}\item 
+/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/toolboxes/rnd/{\bf fnchyppr.\-cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,814 @@
+\section{C\-Multi\-Wallenius\-N\-C\-Hypergeometric Class Reference}
+\label{class_c_multi_wallenius_n_c_hypergeometric}\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+
+
+{\ttfamily \#include $<$stocc.\-h$>$}
+
+
+
+Inheritance diagram for C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=252pt]{class_c_multi_wallenius_n_c_hypergeometric__inherit__graph}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\bf C\-Multi\-Wallenius\-N\-C\-Hypergeometric} ({\bf int32\-\_\-t} {\bf n}, {\bf int32\-\_\-t} $\ast${\bf m}, double $\ast$odds, int {\bf colors}, double {\bf accuracy}=1.{\bf E}-\/8)
+\item 
+void {\bf Set\-Parameters} ({\bf int32\-\_\-t} {\bf n}, {\bf int32\-\_\-t} $\ast${\bf m}, double $\ast$odds, int {\bf colors})
+\item 
+double {\bf probability} ({\bf int32\-\_\-t} $\ast${\bf x})
+\item 
+void {\bf mean} (double $\ast$mu)
+\item 
+{\bf C\-Multi\-Wallenius\-N\-C\-Hypergeometric} ({\bf int32\-\_\-t} {\bf n}, {\bf int32\-\_\-t} $\ast${\bf m}, double $\ast$odds, int {\bf colors}, double {\bf accuracy}=1.{\bf E}-\/8)
+\item 
+void {\bf Set\-Parameters} ({\bf int32\-\_\-t} {\bf n}, {\bf int32\-\_\-t} $\ast${\bf m}, double $\ast$odds, int {\bf colors})
+\item 
+double {\bf probability} ({\bf int32\-\_\-t} $\ast${\bf x})
+\item 
+void {\bf mean} (double $\ast$mu)
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+double {\bf binoexpand} (void)
+\item 
+double {\bf laplace} (void)
+\item 
+double {\bf integrate} (void)
+\item 
+double {\bf lnbico} (void)
+\item 
+void {\bf findpars} (void)
+\item 
+double {\bf integrate\-\_\-step} (double a, double b)
+\item 
+double {\bf search\-\_\-inflect} (double t\-\_\-from, double t\-\_\-to)
+\item 
+double {\bf binoexpand} (void)
+\item 
+double {\bf laplace} (void)
+\item 
+double {\bf integrate} (void)
+\item 
+double {\bf lnbico} (void)
+\item 
+void {\bf findpars} (void)
+\item 
+double {\bf integrate\-\_\-step} (double a, double b)
+\item 
+double {\bf search\-\_\-inflect} (double t\-\_\-from, double t\-\_\-to)
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+double $\ast$ {\bf omega}
+\item 
+double {\bf accuracy}
+\item 
+{\bf int32\-\_\-t} {\bf n}
+\item 
+{\bf int32\-\_\-t} {\bf N}
+\item 
+{\bf int32\-\_\-t} $\ast$ {\bf m}
+\item 
+{\bf int32\-\_\-t} $\ast$ {\bf x}
+\item 
+int {\bf colors}
+\item 
+int {\bf Dummy\-\_\-align}
+\item 
+double {\bf r}
+\item 
+double {\bf rd}
+\item 
+double {\bf w}
+\item 
+double {\bf wr}
+\item 
+double {\bf E}
+\item 
+double {\bf phi2d}
+\item 
+double {\bf bico}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 490 of file stocc.\-h.
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}]{\setlength{\rightskip}{0pt plus 5cm}C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::\-C\-Multi\-Wallenius\-N\-C\-Hypergeometric (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t}}]{n, }
+\item[{{\bf int32\-\_\-t} $\ast$}]{m, }
+\item[{double $\ast$}]{odds, }
+\item[{int}]{colors, }
+\item[{double}]{accuracy = {\ttfamily 1.{\bf E}-\/8}}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_wallenius_n_c_hypergeometric_ae1125964039ebf5c3c5f3128b5266a92}
+
+
+Definition at line 1313 of file wnchyppr.\-cpp.
+
+
+
+References accuracy, and Set\-Parameters().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_ae1125964039ebf5c3c5f3128b5266a92_cgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}]{\setlength{\rightskip}{0pt plus 5cm}C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::\-C\-Multi\-Wallenius\-N\-C\-Hypergeometric (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t}}]{n, }
+\item[{{\bf int32\-\_\-t} $\ast$}]{m, }
+\item[{double $\ast$}]{odds, }
+\item[{int}]{colors, }
+\item[{double}]{accuracy = {\ttfamily 1.{\bf E}-\/8}}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_wallenius_n_c_hypergeometric_ae1125964039ebf5c3c5f3128b5266a92}
+
+
+\subsection{Member Function Documentation}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!binoexpand@{binoexpand}}
+\index{binoexpand@{binoexpand}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{binoexpand}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::binoexpand (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a745ee6593c655f8b9ba578c3a6a5dc11}
+
+
+Definition at line 1388 of file wnchyppr.\-cpp.
+
+
+
+References colors, Falling\-Factorial(), Fatal\-Error(), m, n, and omega.
+
+
+
+Referenced by probability().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_a745ee6593c655f8b9ba578c3a6a5dc11_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_a745ee6593c655f8b9ba578c3a6a5dc11_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!binoexpand@{binoexpand}}
+\index{binoexpand@{binoexpand}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{binoexpand}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::binoexpand (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a745ee6593c655f8b9ba578c3a6a5dc11}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!findpars@{findpars}}
+\index{findpars@{findpars}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{findpars}]{\setlength{\rightskip}{0pt plus 5cm}void C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::findpars (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_ac786d866f7ec529f7538f51882caf840}
+
+
+Definition at line 1417 of file wnchyppr.\-cpp.
+
+
+
+References colors, E, Fatal\-Error(), L\-N2, m, M\-A\-X\-C\-O\-L\-O\-R\-S, omega, phi2d, pow2\-\_\-1(), r, rd, w, and wr.
+
+
+
+Referenced by probability().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=348pt]{class_c_multi_wallenius_n_c_hypergeometric_ac786d866f7ec529f7538f51882caf840_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_ac786d866f7ec529f7538f51882caf840_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!findpars@{findpars}}
+\index{findpars@{findpars}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{findpars}]{\setlength{\rightskip}{0pt plus 5cm}void C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::findpars (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_ac786d866f7ec529f7538f51882caf840}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!integrate@{integrate}}
+\index{integrate@{integrate}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{integrate}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::integrate (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a9bbdd0123ed9e45bf9c41b4d1a7f3377}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!integrate@{integrate}}
+\index{integrate@{integrate}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{integrate}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::integrate (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a9bbdd0123ed9e45bf9c41b4d1a7f3377}
+
+
+Definition at line 1640 of file wnchyppr.\-cpp.
+
+
+
+References accuracy, E, integrate\-\_\-step(), lnbico(), rd, search\-\_\-inflect(), and w.
+
+
+
+Referenced by probability().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_a9bbdd0123ed9e45bf9c41b4d1a7f3377_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_a9bbdd0123ed9e45bf9c41b4d1a7f3377_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!integrate\-\_\-step@{integrate\-\_\-step}}
+\index{integrate\-\_\-step@{integrate\-\_\-step}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{integrate\-\_\-step}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::integrate\-\_\-step (
+\begin{DoxyParamCaption}
+\item[{double}]{a, }
+\item[{double}]{b}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_afb9aedd0f4dd448f6f3a533f39f18e91}
+
+
+Definition at line 1715 of file wnchyppr.\-cpp.
+
+
+
+References bico, colors, I\-P\-O\-I\-N\-T\-S, log1pow(), omega, r, and rd.
+
+
+
+Referenced by integrate().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=342pt]{class_c_multi_wallenius_n_c_hypergeometric_afb9aedd0f4dd448f6f3a533f39f18e91_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_afb9aedd0f4dd448f6f3a533f39f18e91_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!integrate\-\_\-step@{integrate\-\_\-step}}
+\index{integrate\-\_\-step@{integrate\-\_\-step}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{integrate\-\_\-step}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::integrate\-\_\-step (
+\begin{DoxyParamCaption}
+\item[{double}]{a, }
+\item[{double}]{b}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_afb9aedd0f4dd448f6f3a533f39f18e91}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!laplace@{laplace}}
+\index{laplace@{laplace}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{laplace}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::laplace (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a3f317af2274e31c7313f2fb558bfc28e}
+
+
+Definition at line 1491 of file wnchyppr.\-cpp.
+
+
+
+References accuracy, colors, Erf\-Res, E\-R\-F\-R\-E\-S\-\_\-\-B, E\-R\-F\-R\-E\-S\-\_\-\-L, E\-R\-F\-R\-E\-S\-\_\-\-N, E\-R\-F\-R\-E\-S\-\_\-\-S, Fatal\-Error(), Floor\-Log2(), L\-N2, lnbico(), log1mx(), M\-A\-X\-C\-O\-L\-O\-R\-S, Num\-S\-Dev, omega, phi2d, pow2\-\_\-1(), r, rd, and w.
+
+
+
+Referenced by probability().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_a3f317af2274e31c7313f2fb558bfc28e_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_a3f317af2274e31c7313f2fb558bfc28e_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!laplace@{laplace}}
+\index{laplace@{laplace}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{laplace}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::laplace (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a3f317af2274e31c7313f2fb558bfc28e}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!lnbico@{lnbico}}
+\index{lnbico@{lnbico}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{lnbico}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::lnbico (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a85663150a1ffbf4f03696db13eb3401f}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!lnbico@{lnbico}}
+\index{lnbico@{lnbico}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{lnbico}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::lnbico (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a85663150a1ffbf4f03696db13eb3401f}
+
+
+Definition at line 1404 of file wnchyppr.\-cpp.
+
+
+
+References bico, colors, Ln\-Fac(), m, and omega.
+
+
+
+Referenced by integrate(), and laplace().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=332pt]{class_c_multi_wallenius_n_c_hypergeometric_a85663150a1ffbf4f03696db13eb3401f_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_a85663150a1ffbf4f03696db13eb3401f_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!mean@{mean}}
+\index{mean@{mean}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{mean}]{\setlength{\rightskip}{0pt plus 5cm}void C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::mean (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{mu}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_wallenius_n_c_hypergeometric_acdbc6f554b9095335f44bf75090d50c7}
+
+
+Definition at line 1336 of file wnchyppr.\-cpp.
+
+
+
+References colors, E, Fatal\-Error(), L\-N2, m, M\-A\-X\-C\-O\-L\-O\-R\-S, n, N, omega, and pow2\-\_\-1().
+
+
+
+Referenced by main(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-Moments\-::moments(), and Stochastic\-Lib3\-::\-Multi\-Wallenius\-N\-C\-Hyp().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=348pt]{class_c_multi_wallenius_n_c_hypergeometric_acdbc6f554b9095335f44bf75090d50c7_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_acdbc6f554b9095335f44bf75090d50c7_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!mean@{mean}}
+\index{mean@{mean}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{mean}]{\setlength{\rightskip}{0pt plus 5cm}void C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::mean (
+\begin{DoxyParamCaption}
+\item[{double $\ast$}]{mu}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_wallenius_n_c_hypergeometric_acdbc6f554b9095335f44bf75090d50c7}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!probability@{probability}}
+\index{probability@{probability}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{probability}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::probability (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t} $\ast$}]{x}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_wallenius_n_c_hypergeometric_a46c9c2126eaba314c9f76c9201817a91}
+
+
+Definition at line 1869 of file wnchyppr.\-cpp.
+
+
+
+References accuracy, binoexpand(), colors, E, Fatal\-Error(), findpars(), integrate(), laplace(), m, n, N, omega, C\-Wallenius\-N\-C\-Hypergeometric\-::probability(), and w.
+
+
+
+Referenced by C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-Moments\-::loop(), and Stochastic\-Lib3\-::\-Multi\-Wallenius\-N\-C\-Hyp().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_a46c9c2126eaba314c9f76c9201817a91_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_a46c9c2126eaba314c9f76c9201817a91_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!probability@{probability}}
+\index{probability@{probability}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{probability}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::probability (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t} $\ast$}]{x}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_wallenius_n_c_hypergeometric_a46c9c2126eaba314c9f76c9201817a91}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!search\-\_\-inflect@{search\-\_\-inflect}}
+\index{search\-\_\-inflect@{search\-\_\-inflect}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{search\-\_\-inflect}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::search\-\_\-inflect (
+\begin{DoxyParamCaption}
+\item[{double}]{t\-\_\-from, }
+\item[{double}]{t\-\_\-to}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a452cf9ea0e7cb7d794be789b488bb623}
+
+
+Definition at line 1773 of file wnchyppr.\-cpp.
+
+
+
+References colors, E, Fatal\-Error(), L\-N2, M\-A\-X\-C\-O\-L\-O\-R\-S, omega, pow2\-\_\-1(), r, and rd.
+
+
+
+Referenced by integrate().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=348pt]{class_c_multi_wallenius_n_c_hypergeometric_a452cf9ea0e7cb7d794be789b488bb623_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_a452cf9ea0e7cb7d794be789b488bb623_icgraph}
+\end{center}
+\end{figure}
+
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!search\-\_\-inflect@{search\-\_\-inflect}}
+\index{search\-\_\-inflect@{search\-\_\-inflect}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{search\-\_\-inflect}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::search\-\_\-inflect (
+\begin{DoxyParamCaption}
+\item[{double}]{t\-\_\-from, }
+\item[{double}]{t\-\_\-to}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a452cf9ea0e7cb7d794be789b488bb623}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!Set\-Parameters@{Set\-Parameters}}
+\index{Set\-Parameters@{Set\-Parameters}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{Set\-Parameters}]{\setlength{\rightskip}{0pt plus 5cm}void C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::\-Set\-Parameters (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t}}]{n, }
+\item[{{\bf int32\-\_\-t} $\ast$}]{m, }
+\item[{double $\ast$}]{odds, }
+\item[{int}]{colors}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_wallenius_n_c_hypergeometric_a81121986299435e7b49d6c8c421c2089}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!Set\-Parameters@{Set\-Parameters}}
+\index{Set\-Parameters@{Set\-Parameters}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{Set\-Parameters}]{\setlength{\rightskip}{0pt plus 5cm}void C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::\-Set\-Parameters (
+\begin{DoxyParamCaption}
+\item[{{\bf int32\-\_\-t}}]{n, }
+\item[{{\bf int32\-\_\-t} $\ast$}]{m, }
+\item[{double $\ast$}]{odds, }
+\item[{int}]{colors}
+\end{DoxyParamCaption}
+)}\label{class_c_multi_wallenius_n_c_hypergeometric_a81121986299435e7b49d6c8c421c2089}
+
+
+Definition at line 1320 of file wnchyppr.\-cpp.
+
+
+
+References colors, Fatal\-Error(), m, n, N, omega, and r.
+
+
+
+Referenced by C\-Multi\-Wallenius\-N\-C\-Hypergeometric().
+
+
+
+Here is the call graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=348pt]{class_c_multi_wallenius_n_c_hypergeometric_a81121986299435e7b49d6c8c421c2089_cgraph}
+\end{center}
+\end{figure}
+
+
+
+
+Here is the caller graph for this function\-:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{class_c_multi_wallenius_n_c_hypergeometric_a81121986299435e7b49d6c8c421c2089_icgraph}
+\end{center}
+\end{figure}
+
+
+
+
+\subsection{Member Data Documentation}
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!accuracy@{accuracy}}
+\index{accuracy@{accuracy}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{accuracy}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::accuracy\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a16d888f26a077718fcf2ec88aabfae9e}
+
+
+Definition at line 513 of file stocc.\-h.
+
+
+
+Referenced by C\-Multi\-Wallenius\-N\-C\-Hypergeometric(), integrate(), laplace(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-Moments\-::loop(), and probability().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!bico@{bico}}
+\index{bico@{bico}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{bico}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::bico\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a028eb3d5401aad53671ae6850838fcc0}
+
+
+Definition at line 523 of file stocc.\-h.
+
+
+
+Referenced by integrate\-\_\-step(), and lnbico().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!colors@{colors}}
+\index{colors@{colors}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{colors}]{\setlength{\rightskip}{0pt plus 5cm}int C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::colors\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a4a0cdf840a5ef6e8c0ceee9b13e19c44}
+
+
+Definition at line 518 of file stocc.\-h.
+
+
+
+Referenced by binoexpand(), findpars(), integrate\-\_\-step(), laplace(), lnbico(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-Moments\-::loop(), mean(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-Moments\-::moments(), probability(), search\-\_\-inflect(), and Set\-Parameters().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!Dummy\-\_\-align@{Dummy\-\_\-align}}
+\index{Dummy\-\_\-align@{Dummy\-\_\-align}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{Dummy\-\_\-align}]{\setlength{\rightskip}{0pt plus 5cm}int C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::\-Dummy\-\_\-align\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_aeebfdaed14c25e12c6f12cf02b81759f}
+
+
+Definition at line 519 of file stocc.\-h.
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!E@{E}}
+\index{E@{E}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{E}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::\-E\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_add69b9b68c87a8166e33c2b2f5085062}
+
+
+Definition at line 521 of file stocc.\-h.
+
+
+
+Referenced by findpars(), integrate(), mean(), probability(), and search\-\_\-inflect().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!m@{m}}
+\index{m@{m}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{m}]{\setlength{\rightskip}{0pt plus 5cm}{\bf int32\-\_\-t} $\ast$ C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::m\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a78c8051ed91acf9ae1cdc1048753e103}
+
+
+Definition at line 516 of file stocc.\-h.
+
+
+
+Referenced by binoexpand(), findpars(), lnbico(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-Moments\-::loop(), mean(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-Moments\-::moments(), probability(), and Set\-Parameters().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!n@{n}}
+\index{n@{n}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{n}]{\setlength{\rightskip}{0pt plus 5cm}{\bf int32\-\_\-t} C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::n\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_ab2e3ead6b41283fd5c646e4178a71f19}
+
+
+Definition at line 514 of file stocc.\-h.
+
+
+
+Referenced by binoexpand(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-Moments\-::loop(), mean(), C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-Moments\-::moments(), probability(), and Set\-Parameters().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!N@{N}}
+\index{N@{N}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{N}]{\setlength{\rightskip}{0pt plus 5cm}{\bf int32\-\_\-t} C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::\-N\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a036036e438e88d87527133ca35d163e3}
+
+
+Definition at line 515 of file stocc.\-h.
+
+
+
+Referenced by mean(), probability(), and Set\-Parameters().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!omega@{omega}}
+\index{omega@{omega}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{omega}]{\setlength{\rightskip}{0pt plus 5cm}double $\ast$ C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::omega\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a114ce3cebe3ff6668626d3deade4fb55}
+
+
+Definition at line 512 of file stocc.\-h.
+
+
+
+Referenced by binoexpand(), findpars(), integrate\-\_\-step(), laplace(), lnbico(), mean(), probability(), search\-\_\-inflect(), and Set\-Parameters().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!phi2d@{phi2d}}
+\index{phi2d@{phi2d}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{phi2d}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::phi2d\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_aeecc19a2188f0135418f8b1c36c3f198}
+
+
+Definition at line 521 of file stocc.\-h.
+
+
+
+Referenced by findpars(), and laplace().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!r@{r}}
+\index{r@{r}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{r}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::r\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a2aea3eb2194c6c3a3b460f3c5a6e5137}
+
+
+Definition at line 521 of file stocc.\-h.
+
+
+
+Referenced by findpars(), integrate\-\_\-step(), laplace(), search\-\_\-inflect(), and Set\-Parameters().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!rd@{rd}}
+\index{rd@{rd}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{rd}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::rd\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a652ff21a2a5effb4537af81d70222c3c}
+
+
+Definition at line 521 of file stocc.\-h.
+
+
+
+Referenced by findpars(), integrate(), integrate\-\_\-step(), laplace(), and search\-\_\-inflect().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!w@{w}}
+\index{w@{w}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{w}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::w\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_aa5826deeb6007553af2003a385550c5b}
+
+
+Definition at line 521 of file stocc.\-h.
+
+
+
+Referenced by findpars(), integrate(), laplace(), and probability().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!wr@{wr}}
+\index{wr@{wr}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{wr}]{\setlength{\rightskip}{0pt plus 5cm}double C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::wr\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_a188d160594f215b923ecba589f6b1f68}
+
+
+Definition at line 521 of file stocc.\-h.
+
+
+
+Referenced by findpars().
+
+\index{C\-Multi\-Wallenius\-N\-C\-Hypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}!x@{x}}
+\index{x@{x}!CMultiWalleniusNCHypergeometric@{C\-Multi\-Wallenius\-N\-C\-Hypergeometric}}
+\subsubsection[{x}]{\setlength{\rightskip}{0pt plus 5cm}{\bf int32\-\_\-t} $\ast$ C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-::x\hspace{0.3cm}{\ttfamily [protected]}}\label{class_c_multi_wallenius_n_c_hypergeometric_ae4e4bd1bd6ffec0956195da6cf893f76}
+
+
+Definition at line 517 of file stocc.\-h.
+
+
+
+Referenced by C\-Multi\-Wallenius\-N\-C\-Hypergeometric\-Moments\-::loop().
+
+
+
+The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/rnd/{\bf stocc.\-h}\item 
+/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/toolboxes/rnd/{\bf stocc.\-h}\item 
+/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/rnd/{\bf wnchyppr.\-cpp}\item 
+/mnt/\-Data1/\-Todai\-\_\-\-Work/\-Dropbox/workspace/\-S\-M\-O\-D\-T/code/cpp\-Side/toolboxes/rnd/{\bf wnchyppr.\-cpp}\end{DoxyCompactItemize}

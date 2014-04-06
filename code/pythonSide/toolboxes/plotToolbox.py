@@ -1667,19 +1667,19 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     
     #check the orbit element inputs to ensure they are lists, else make them lists
     if type(longAN_deg)!=list:
-       longAN_deg = [longAN_deg]
+        longAN_deg = [longAN_deg]
     if type(argPeri_deg)!=list:
-       argPeri_deg = [argPeri_deg]
+        argPeri_deg = [argPeri_deg]
     if type(a)!=list:
-       a = [a]
+        a = [a]
     if type(e)!=list:
-       e = [e]
+        e = [e]
     if type(inc)!=list:
-       inc = [inc]
+        inc = [inc]
     if type(period)!=list:
-       period = [period]
+        period = [period]
     if type(To)!=list:
-       To = [To]
+        To = [To]
        
     # First convert the given angles to radians
     i_rad = np.radians(inc[0])

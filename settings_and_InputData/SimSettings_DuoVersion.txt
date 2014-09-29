@@ -3,13 +3,13 @@
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
 Duo =true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax =1000
+chiSquaredMax =5000
 # The number of samples orbital parameters to try/draw [int]
-numSamples =200000
+numSamples =1000000
 # The number of times to print status updates to the screen/terminal during the run [int]
-numSamplePrints =0
+numSamplePrints =10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing =False
+useMultiProcessing =True
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =True
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -25,7 +25,9 @@ RVdataFilename =RVdata.dat
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
-outputData_filenameRoot =MCMC-HR8799-Sept2014Data-simpleSAerror-UniEccentPrior
+#########################################################################################################################
+outputData_filenameRoot =MCMC-HR8799-Sept2014Data-simpleSAerror-UniEccentPrior-allOpen-midEcc-2
+#########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =False
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
@@ -41,9 +43,9 @@ makePosteriorsPlot =true
 # make plots of RV and DI/AM orbit fits [bool]
 makeOrbitPlots =true
 # Make plots of Simulated Annealing progress plots? [bool]
-makeSimAnnealProgPlots =false
+makeSimAnnealProgPlots =true
 # Simulated Annealing starting temperature [double]
-startTemp =1000.0
+startTemp =500.0
 # Delete chain files after simulation is complete? [bool]
 delChainsAfter =true
 # Delete combined data files after simulation is complete? [bool]
@@ -83,7 +85,7 @@ longAN_degMIN =0.0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 longAN_degMAX =180.0
 # Minimum allowed value for the Eccentricity [double]
-eMIN =0.0
+eMIN =0.2
 # Maximum allowed value for the Eccentricity　[double]
 eMAX =0.5
 # Minimum allowed value for the Period [double][yrs]

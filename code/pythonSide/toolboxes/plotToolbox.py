@@ -8,7 +8,7 @@ import timeit
 from math import pi
 import generalToolbox as genTools 
 import DItoolbox as diTools
-import RVtoolbox as rvTools
+import RVtoolbox as rvTools 
 plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
 
@@ -48,7 +48,7 @@ def ellipse(ra,rb,ang,x0,y0,Nb=50):
     
     co = np.cos(an)
     si = np.sin(an)
-    the=linspace(0,2*pi,Nb)
+    the= np.linspace(0,2*pi,Nb)
     X=radm*np.cos(the)*co-si*radn*np.sin(the)+xpos
     Y=radm*np.cos(the)*si+co*radn*np.sin(the)+ypos
     return X,Y    
@@ -109,7 +109,7 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=True
             print 'inside section that will make the hist plots'
         # if requested, calculate the likelihoods which will be the weights for the data points
         if weight:
-            theWeights = likelihoodsCalc(chiSquareds, nu)
+            theWeights = genTools.likelihoodsCalc(chiSquareds, nu)
         else:
             theWeights = np.ones(len(data))
         # make initial histogram and update it below
@@ -552,7 +552,7 @@ def makeCleanSummaryPlot(outputDataFilename=''):
             print "Setting maxNonReducedChiSquared = "+str(maxNonReducedChiSquared)
         
         ## trim data
-        newDataFilename = dataReadTrimWriteNEW2(outputDataFilename, maxNonReducedChiSquared, verbose=False)
+        newDataFilename = genTools.dataReadTrimWriteNEW2(outputDataFilename, maxNonReducedChiSquared, verbose=False)
         if verbose:
             print '\nTrimmed data file at: '+newDataFilename
         
@@ -1942,11 +1942,11 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     ## set the xLim and yLim if their values are False
     ## and pad max and min values found by 10%
     if not xLim:
-        min = findArrayMin(ellipseXs2[:])
-        max = findArrayMax(ellipseXs2[:])
+        min = genTools.findArrayMin(ellipseXs2[:])
+        max = genTools.findArrayMax(ellipseXs2[:])
         Range = abs(max)+abs(min)
         xLim = (min-abs(Range*0.05),max+abs(Range*0.05))
-        xLim = (findArrayMin([xLim[0],xmin]), findArrayMax([xLim[1],xmax])) 
+        xLim = (genTools.findArrayMin([xLim[0],xmin]), genTools.findArrayMax([xLim[1],xmax])) 
         #print 'elipseXs2 min = '+str(min)+", max = "+str(max)+", final xLim = "+repr(xLim)
     else:
         if not (type(xLim)==tuple):
@@ -1954,11 +1954,11 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             print s
             log.write(s+'\n')
     if not yLim:
-        min = findArrayMin(ellipseYs2[:])
-        max = findArrayMax(ellipseYs2[:])
+        min = genTools.findArrayMin(ellipseYs2[:])
+        max = genTools.findArrayMax(ellipseYs2[:])
         Range = abs(max)+abs(min)
         yLim = (min-abs(Range*0.05),max+abs(Range*0.05))
-        yLim = (findArrayMin([yLim[0],ymin]), findArrayMax([yLim[1],ymax])) 
+        yLim = (genTools.findArrayMin([yLim[0],ymin]), genTools.findArrayMax([yLim[1],ymax])) 
         #print 'elipseYs2 min = '+str(min)+", max = "+str(max)+", final yLim = "+repr(yLim)
     else:
         if not (type(yLim)==tuple):
@@ -2106,7 +2106,7 @@ def diPlotterTester(outputDatafile=''):
     """
     
     sysDatafilename = os.path.join("/mnt/Data1/Todai_Work/Dropbox/workspace/Binary-project/SimSettings_and_InputData",'SystemData.txt')
-    sysDataDict = sysDataToDict(sysDatafilename)
+    sysDataDict = genTools.sysDataToDict(sysDatafilename)
     
     DIdatafilename = os.path.join("/mnt/Data1/Todai_Work/Dropbox/workspace/Binary-project/SimSettings_and_InputData",'DIdata.dat')
     if os.path.exists(DIdatafilename):
@@ -2115,7 +2115,7 @@ def diPlotterTester(outputDatafile=''):
         outputDatafile = "/mnt/Data1/Todai_Work/Data/data_Binary/data_Duo/MCMC-parmVaryCorrected-HR8799-UniEccentPrior-circular-veryOpenParms-1--28-Million-in_Total/outputData-ALL.dat"
     
     print '#'*50
-    bestOrbit = bestOrbitFinderNEW(outputDatafile, printToScreen=True, saveToFile=False, returnAsList=True)
+    bestOrbit = genTools.bestOrbitFinderNEW(outputDatafile, printToScreen=True, saveToFile=False, returnAsList=True)
     print '#'*50
 #    #Tau Boo planet test params
 #    longAN_deg = 148.620748
@@ -2199,9 +2199,9 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
         sysDatafilename = os.path.join(os.path.dirname(outputDatafile),'code-used/SystemData.txt')
         RVdatafilename = os.path.join(os.path.dirname(outputDatafile),'code-used/RVdata.dat')
         inputSettingsFile = os.path.join(os.path.dirname(outputDatafile),'code-used/SimSettings.txt')
-    sysDataDict = sysDataToDict(sysDatafilename)
+    sysDataDict = genTools.sysDataToDict(sysDatafilename)
     RVdataDict = rvTools.RVdataToDict(RVdatafilename)
-    paramSettingsDict = cFileToSimSettingsDict(inputSettingsFile)
+    paramSettingsDict = genTools.cFileToSimSettingsDict(inputSettingsFile)
     
     numModDataSets = 10
     rvPlotFilename = os.path.join(os.path.dirname(outputDatafile),"RVplot-Manual")#"DotaniAndButlerPre1995PlanetOrbitFit"
@@ -2229,11 +2229,11 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
             fname = os.path.join(os.path.dirname(outputDatafile),'outputData-chain_'+str(num)+'.dat')
             dataFiles.append(fname)
             print 'Adding filename to list: '+fname
-        dataFileCombiner(dataFiles, dataFinalFilename)
+        genTools.dataFileCombiner(dataFiles, dataFinalFilename)
         
     if True:      
         print '#'*50
-        bestOrbit = bestOrbitFinderNEW(outputDatafile, printToScreen=True, saveToFile=True, returnAsList=True)
+        bestOrbit = genTools.bestOrbitFinderNEW(outputDatafile, printToScreen=True, saveToFile=True, returnAsList=True)
         print '#'*50
         longAns = bestOrbit[0]
         e = bestOrbit[1]
@@ -2251,11 +2251,11 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
         ## Now manually choose what you want to plot
         if False:
             ## make RV fit plot
-            rvPlotterDuo(e,T,Tc,period,inc,argPeri_deg,a, \
+            rvPlotter(e,T,Tc,period,inc,argPeri_deg,a, \
                       sysDataDict,RVdataDict,paramSettingsDict,K=K,RVoffsets=RVoffsets,\
                       nuRV=nuRV,plotFilename=rvPlotFilename+'-FullOrbit', show=False, plotFullOrbit=True)
             if False:
-                rvPlotterDuo(e,T,Tc,period,inc,argPeri_deg,a, \
+                rvPlotter(e,T,Tc,period,inc,argPeri_deg,a, \
                           sysDataDict,RVdataDict,paramSettingsDict,K=K,RVoffsets=RVoffsets,\
                           plotFilename=rvPlotFilename, show=False, plotFullOrbit=False)
         if False:
@@ -2294,13 +2294,13 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
         summaryPlotter2MCMC(outputDatafile, summaryPlotFile+"-MCMCprogress", weight=False, confLevels=True, nu=1, SimPlanetStar=paramSettingsDict["simulate_StarPlanet"])
     if True:
         ## Make the posterior prob histograms.
-        summaryPlotter2(outputDatafile, summaryPlotFile, weight=False, confLevels=True, nu=1, plot4x1=False)
+        summaryPlotter(outputDatafile, summaryPlotFile, weight=False, confLevels=True, nu=1, plot4x1=False)
     if False:
         makeCleanSummaryPlot(outputDatafile)
     
     if False:
         ## make a scatter hist figure ###$$$ not sure if this works right now.
-        outDict = outputDatafileToDict(outputDatafile)
+        outDict = genTools.outputDatafileToDict(outputDatafile)
         #outDict["Ts"]
         #outDict["es"]
         #esCLevels = ConfLevelFunc(chiSquareds,outDict["es"])
@@ -2314,7 +2314,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
             fname = os.path.join(os.path.dirname(outputDatafile),'gelmanRubin-chain_'+str(num)+'.txt')
             fileList.append(fname)
             print 'Adding filename to list: '+fname
-        gelmanRubinStage2(fileList)
+        genTools.gelmanRubinStage2(fileList)
 
 def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, paramSettingsDict,\
                  K=0, RVoffsets=[0], nuRV=1, plotFilename='', show=True, plotFullOrbit=True):
@@ -2459,7 +2459,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         print 'planet_T from dict = '+str(planet_T)
     planet_Tc = sysDataDict['planet_Tc']
     if planet_Tc==0:
-        (To,Tcent) = eccArgPeri2ToTcCalc(planet_e, planet_P, planet_argPeri, planet_T, Tc=0)
+        (To,Tcent) = genTools.eccArgPeri2ToTcCalc(planet_e, planet_P, planet_argPeri, planet_T, Tc=0)
         planet_Tc = Tcent
     planet_MsinI = sysDataDict["planet_MsinI"]   #[Msun]
     if planet_MsinI==0:
@@ -2471,7 +2471,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     star_argPeri = sysDataDict["star_argPeri"]
     star_Tc = sysDataDict["star_Tc"]
     if star_Tc==0:
-        (To,Tcent) = eccArgPeri2ToTcCalc(star_e, star_P, star_argPeri, star_T, Tc=0)
+        (To,Tcent) = genTools.eccArgPeri2ToTcCalc(star_e, star_P, star_argPeri, star_T, Tc=0)
         star_Tc = Tcent
     star_inc = sysDataDict["star_inc"]
     star_Mass2 = sysDataDict["star_Mass2"]
@@ -2575,8 +2575,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             residuals = []
             planetVRs = []
             starVRs = []
-            (a_total_s, a1_s, a2_s, p_s) = semiMajorConverter(Mass1, star_Mass2, a_total=a[orb],a1=0.0,a2=0.0, period=period[orb],verbose=False)
-            (a_total_p, a1_p, a2_p, p_p) = semiMajorConverter(Mass1, planet_MsinIs[orb], a_total=a[orb],a1=0.0,a2=0.0, period=period[orb],verbose=False)
+            (a_total_s, a1_s, a2_s, p_s) = genTools.semiMajorConverter(Mass1, star_Mass2, a_total=a[orb],a1=0.0,a2=0.0, period=period[orb],verbose=False)
+            (a_total_p, a1_p, a2_p, p_p) = genTools.semiMajorConverter(Mass1, planet_MsinIs[orb], a_total=a[orb],a1=0.0,a2=0.0, period=period[orb],verbose=False)
             
             s= '\nFor dataset '+str(dataset)
             s=s+ "\n there are "+str(len(epochs))+" RV epochs in this set"
@@ -2637,7 +2637,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                 residuals.append(RV)
                 planetVRs.append(v_r_p) 
                 starVRs.append(v_r_c) 
-                chiSquaredCurr = chiSquaredCalc(rvs[epoch], error, v_r_c+v_r_p)
+                chiSquaredCurr = genTools.chiSquaredCalc(rvs[epoch], error, v_r_c+v_r_p)
                 chiSquaredTot = chiSquaredTot+chiSquaredCurr
                 
                 s= '\nRV = '+str(rvs[epoch])+' - ('+str(v_r_c)+' + '+str(v_r_p)+') = '+str(RV)
@@ -2747,7 +2747,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         periodIncrement = (period[orb]*365.242)/numSteps
         t = Tc[orb]-((period[orb]*365.242)/2.0)
         times = []
-        (a_total, a1, a2, p) = semiMajorConverter(Mass1, Mass2, a_total=a[orb],a1=0.0,a2=0.0, period=period[orb])
+        (a_total, a1, a2, p) = genTools.semiMajorConverter(Mass1, Mass2, a_total=a[orb],a1=0.0,a2=0.0, period=period[orb])
         for step in range(0,int(numSteps)):
             t = t + periodIncrement
             times.append(t)
@@ -2799,10 +2799,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         print s
     log.write(s+'\n')
     
-    xmin = findArrayMin(phases3)
-    xmax = findArrayMax(phases3)
-    ymin = findArrayMin(residuals3)
-    ymax = findArrayMax(residuals3)
+    xmin = genTools.findArrayMin(phases3)
+    xmax = genTools.findArrayMax(phases3)
+    ymin = genTools.findArrayMin(residuals3)
+    ymax = genTools.findArrayMax(residuals3)
 
     xLim =[xmin,xmax]
     xrange = xmax-xmin
@@ -2813,21 +2813,21 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     
     ## make plot of fit to data
     fitPlot = fig.add_subplot(211)
-    fitXmin = findArrayMin(orbitPhases2)
+    fitXmin = genTools.findArrayMin(orbitPhases2)
     if xmin<fitXmin:
         fitXmin = xmin
-    fitXmax = findArrayMax(orbitPhases2)
+    fitXmax = genTools.findArrayMax(orbitPhases2)
     if xmax>fitXmax:
         fitXmax = xmax
-    fitYmin = findArrayMin(orbitVRs2)
+    fitYmin = genTools.findArrayMin(orbitVRs2)
     if ymin<fitYmin:
         fitYmin = ymin
-    fitYmax = findArrayMax(orbitVRs2)
+    fitYmax = genTools.findArrayMax(orbitVRs2)
     if ymax>fitYmax:
         fitYmax = ymax
         
-    yMaxRVs = findArrayMax(RVsOUTupdated3)
-    yMinRVs = findArrayMin(RVsOUTupdated3)
+    yMaxRVs = genTools.findArrayMax(RVsOUTupdated3)
+    yMinRVs = genTools.findArrayMin(RVsOUTupdated3)
     yRVsRange = yMaxRVs-yMinRVs
     yLimRVs = [yMinRVs-abs(yRVsRange*0.05),yMaxRVs+abs(yRVsRange*0.05)]
         
@@ -2924,8 +2924,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     residualsPlotTrend.axes.set_xlabel("Epoch [JD]",fontsize=30)
     residualsPlotTrend=fixPlotBordersAndLabels(residualsPlotTrend)
     RVsPlotTrend=fixPlotBordersAndLabels(RVsPlotTrend)
-    rng = findArrayMax(RV_epochsIN2)-findArrayMin(RV_epochsIN2)
-    rngUse= [findArrayMin(RV_epochsIN2)-rng*0.05,findArrayMax(RV_epochsIN2)+rng*0.05]
+    rng = genTools.findArrayMax(RV_epochsIN2)-genTools.findArrayMin(RV_epochsIN2)
+    rngUse= [genTools.findArrayMin(RV_epochsIN2)-rng*0.05,genTools.findArrayMax(RV_epochsIN2)+rng*0.05]
     for orb in range(0,len(argPeri_deg)):
         for dataset in range(0,len(RVs)):
                 residualsPlotTrend.scatter(RV_epochsIN2[dataset],residuals3[orb][dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
@@ -2941,7 +2941,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     residualsPlotTrend.plot(rngUse,[0,0],c='r',linewidth=2.0)
     residualsPlotTrend.axes.set_ylim(yLim2)
     RVsPlotTrend.plot(rngUse,[0,0],c='r',linewidth=2.0)
-    RVsPlotTrend.axes.set_ylim([findArrayMin(RVsOUT)-findArrayMax(RV_errors),findArrayMax(RVsOUT)+findArrayMax(RV_errors)])
+    RVsPlotTrend.axes.set_ylim([genTools.findArrayMin(RVsOUT)-genTools.findArrayMax(RV_errors),genTools.findArrayMax(RVsOUT)+genTools.findArrayMax(RV_errors)])
     
     residualsPlotTrend.axes.set_xlim(rngUse)
     RVsPlotTrend.axes.set_xlim(rngUse)
@@ -3076,7 +3076,7 @@ def rvModDatasetMaker(e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, R
         if plotFilename[-4:]!='.png':
             plotFilename = plotFilename+'.png'     
     ## make an advanced title for plot from folder and filename
-    titleTop = os.path.dirname(outputDataFilename).split('/')[-1]
+    titleTop = os.path.dirname(plotFilename).split('/')[-1]
     titleBtm = os.path.basename(plotFilename).split('.')[0]+" Best Fit Plot"
     plotFileTitle = titleTop+'\n'+titleBtm
     
@@ -3204,8 +3204,8 @@ def rvModDatasetMaker(e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, R
             errors = RV_errors[dataset]                
             residuals = []
             RVsCalcd = []
-            (a_total_s, a1_s, a2_s, p_s) = semiMajorConverter(Mass1, star_Mass2, a_total=a[orb],a1=0.0,a2=0.0, period=period[orb],verbose=False)
-            (a_total_p, a1_p, a2_p, p_p) = semiMajorConverter(Mass1, planet_MsinIs[orb], a_total=a[orb],a1=0.0,a2=0.0, period=period[orb],verbose=False)
+            (a_total_s, a1_s, a2_s, p_s) = genTools.semiMajorConverter(Mass1, star_Mass2, a_total=a[orb],a1=0.0,a2=0.0, period=period[orb],verbose=False)
+            (a_total_p, a1_p, a2_p, p_p) = genTools.semiMajorConverter(Mass1, planet_MsinIs[orb], a_total=a[orb],a1=0.0,a2=0.0, period=period[orb],verbose=False)
             
             if False:
                 print '\nFor dataset '+str(dataset)
@@ -3231,7 +3231,7 @@ def rvModDatasetMaker(e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, R
                 if False:
                     print 'Appending RV '+str(RV)+' to the residuals array'
                 RVsCalcd.append(v_r_c+v_r_p)
-                chiSquaredCurr = chiSquaredCalc(rvs[epoch], errors[epoch], v_r_c+v_r_p)
+                chiSquaredCurr = genTools.chiSquaredCalc(rvs[epoch], errors[epoch], v_r_c+v_r_p)
                 chiSquaredTot = chiSquaredTot+chiSquaredCurr
                 if False:
                     print 'RV = '+str(rvs[epoch])+'- ('+str(v_r_c)+' + '+str(v_r_p)+') = '+str(RV)
@@ -3277,7 +3277,7 @@ def rvModDatasetMaker(e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, R
                 offset = RVoffsets[dataset]
             else:
                 offset = 0
-            (residuals_random, errors_random) = listRandomizer(residuals3[0][dataset],RV_errors[dataset])
+            (residuals_random, errors_random) = genTools.listRandomizer(residuals3[0][dataset],RV_errors[dataset])
             epochs = RV_epochsIN2[dataset]
             RVscalcd = RVsCalcd3[0][dataset]
             if ((len(residuals_random)==len(epochs))and(len(epochs)==len(RVscalcd))):
@@ -3379,7 +3379,7 @@ def rvModDatasetMaker(e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, R
         periodIncrement = (period[orb]*365.242)/numSteps
         t = T_center-((period[orb]*365.242)/2.0)
         times = []
-        (a_total, a1, a2, p) = semiMajorConverter(Mass1, Mass2, a_total=a[orb],a1=0.0,a2=0.0, period=period[orb])
+        (a_total, a1, a2, p) = genTools.semiMajorConverter(Mass1, Mass2, a_total=a[orb],a1=0.0,a2=0.0, period=period[orb])
         for step in range(0,int(numSteps)):
             t = t + periodIncrement
             times.append(t)
@@ -3508,16 +3508,16 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
     if '/Toolboxes'==cwd[-10:]:
         os.chdir(cwd[:-9])
         print '\nTemporarily changed cwd to '+os.getcwd()
-    from Dicts.HARDCODEDsettingsDict import HARDCODEDsettingsDict
+    from dicts.HARDCODEDsettingsDict import hardcodedSettingsDict
     if 'DualLanguageSimCode/Toolboxes' in cwd:
         os.chdir(cwd)
         print '\nChanged cwd back to '+os.getcwd()
-    settings_and_InputDataDir = HARDCODEDsettingsDict['settings_and_InputDataDir']
+    settings_and_InputDataDir = hardcodedSettingsDict['settings_and_InputDataDir']
     # get the input settings file name with dir, and RV and system data dicts
     inputSettingsFile = os.path.join(settings_and_InputDataDir,'SimSettings.txt')
-    paramSettingsDict = cFileToSimSettingsDict(inputSettingsFile, inputSettingsFile)
+    paramSettingsDict = genTools.cFileToSimSettingsDict(inputSettingsFile, inputSettingsFile)
     sysDatafilename = os.path.join(settings_and_InputDataDir,'SystemData.txt')
-    sysDataDict = sysDataToDict(sysDatafilename)
+    sysDataDict = genTools.sysDataToDict(sysDatafilename)
     RVdatafilename = os.path.join(settings_and_InputDataDir,'RVdata.dat')
     RVdataDict = rvTools.RVdataToDict(RVdatafilename)
     
@@ -3547,7 +3547,7 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
             plotFilename = plotFilename+'.png'     
     
     ## make an advanced title for plot from folder and filename
-    titleTop = os.path.dirname(outputDataFilename).split('/')[-1]
+    titleTop = os.path.dirname(plotFilename).split('/')[-1]
     titleBtm = os.path.basename(plotFilename).split('.')[0]+" Best Fit Plot"
     plotFileTitle = titleTop+'\n'+titleBtm
     
@@ -3593,7 +3593,7 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
                 print 'len(RV_epochsOUT3[orb][dataset]) = ',len(RV_epochsIN2[dataset])
             
             residuals = []
-            (a_total, a1, a2, p) = semiMajorConverter(Mass1, Mass2, a_total=a[orb],a1=0.0,a2=0.0, period=period[orb],verbose=True)
+            (a_total, a1, a2, p) = genTools.semiMajorConverter(Mass1, Mass2, a_total=a[orb],a1=0.0,a2=0.0, period=period[orb],verbose=True)
             
             #print '\nFor dataset '+str(dataset)
             for epoch in range(0,len(epochs)):
@@ -3603,7 +3603,7 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
                 (v_r_c,K) = rvTools.vrCalculatorStar2(epochs[epoch],e[orb],T[orb],period[orb],argPeri_deg[orb],a1,T_center=T_center, i=inc[orb], K=False, verbose=False)               
                 RV = rvs[epoch]-v_r_c
                 residuals.append(RV)
-                chiSquaredCurr = chiSquaredCalc(rvs[epoch], errors[epoch], v_r_c)
+                chiSquaredCurr = genTools.chiSquaredCalc(rvs[epoch], errors[epoch], v_r_c)
                 chiSquaredTot = chiSquaredTot+chiSquaredCurr
                 if False:
                     print 'RV = '+str(rvs[epoch])+' - ('+str(v_r_c)+') = '+str(RV)
@@ -3672,10 +3672,10 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
                 
     meanMedianChiSquaredSTR = meanMedianChiSquaredSTR+'\nchiSquared_reduced for ALL data is = '+str(chi_squared_RV_reduced)
     print meanMedianChiSquaredSTR
-    xmin = findArrayMin(phases3)
-    xmax = findArrayMax(phases3)
-    ymin = findArrayMin(residuals3)
-    ymax = findArrayMax(residuals3)
+    xmin = genTools.findArrayMin(phases3)
+    xmax = genTools.findArrayMax(phases3)
+    ymin = genTools.findArrayMin(residuals3)
+    ymax = genTools.findArrayMax(residuals3)
     print '\nxmin = '+repr(xmin)
     print 'xmax = '+repr(xmax)
     xLim =[xmin,xmax]
@@ -3687,21 +3687,21 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
     
     ## make plot of fit to data
     fitPlot = fig.add_subplot(211)
-    fitXmin = findArrayMin(orbitPhases2[0])
+    fitXmin = genTools.findArrayMin(orbitPhases2[0])
     if xmin<fitXmin:
         fitXmin = xmin
-    fitXmax = findArrayMax(orbitPhases2[0])
+    fitXmax = genTools.findArrayMax(orbitPhases2[0])
     if xmax>fitXmax:
         fitXmax = xmax
-    fitYmin = findArrayMin(orbitVRs2[0])
+    fitYmin = genTools.findArrayMin(orbitVRs2[0])
     if ymin<fitYmin:
         fitYmin = ymin
-    fitYmax = findArrayMax(orbitVRs2[0])
+    fitYmax = genTools.findArrayMax(orbitVRs2[0])
     if ymax>fitYmax:
         fitYmax = ymax
         
-    yMaxRVs = findArrayMax(RVsOUT)
-    yMinRVs = findArrayMin(RVsOUT)
+    yMaxRVs = genTools.findArrayMax(RVsOUT)
+    yMinRVs = genTools.findArrayMin(RVsOUT)
     yRVsRange = yMaxRVs-yMinRVs
     yLimRVs = [yMinRVs-abs(yRVsRange*0.05),yMaxRVs+abs(yRVsRange*0.05)]
         

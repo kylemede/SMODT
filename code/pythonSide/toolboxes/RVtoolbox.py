@@ -5,7 +5,7 @@ import numpy as np
 import os
 import pylab
 from math import pi
-from orbitToolboxDuo import *
+from DItoolbox import *
 
 def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
     """

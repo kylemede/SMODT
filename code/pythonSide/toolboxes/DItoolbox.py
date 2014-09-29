@@ -342,7 +342,7 @@ def multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_
         a2s.append(a2)
             
         ## calc both PA and SA kai's 
-        SA_chi_squared = chiSquaredCalc(SA_arcsec_measured_REAL, SA_mean_error, SA_arcsec_measured_model)
+        SA_chi_squared = genTools.chiSquaredCalc(SA_arcsec_measured_REAL, SA_mean_error, SA_arcsec_measured_model)
         # we must account for the 360deg boundry, using +- 25deg from it as the region of conflict
         if ((PA_deg_measured_model-25.0)<0.0) and (PA_deg_measured_REAL>335.0):
             #ie real is close to 360 and model is just over 360
@@ -350,7 +350,7 @@ def multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_
         if ((PA_deg_measured_REAL-25.0)<0.0) and (PA_deg_measured_model>335.0):
             #ie model is close to 360 and real is just over 360
             PA_deg_measured_model = PA_deg_measured_model -360.0
-        PA_chi_squared = chiSquaredCalc(PA_deg_measured_REAL, PA_mean_error, PA_deg_measured_model)
+        PA_chi_squared = genTools.chiSquaredCalc(PA_deg_measured_REAL, PA_mean_error, PA_deg_measured_model)
         # Add them to get the updated total
         chi_squared_curr = PA_chi_squared + SA_chi_squared
         chi_squared_total = chi_squared_total + chi_squared_curr
@@ -461,8 +461,8 @@ def multiEpochOrbCalc3(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured
         y_data_error = np.sqrt(tempC+tempD)
         
         ## calc both PA and SA kai's 
-        x_chi_squared = chiSquaredCalc(x_real, x_data_error, x)
-        y_chi_squared = chiSquaredCalc(y_real, y_data_error, y)
+        x_chi_squared = genTools.chiSquaredCalc(x_real, x_data_error, x)
+        y_chi_squared = genTools.chiSquaredCalc(y_real, y_data_error, y)
         
         # Add them to get the updated total
         chi_squared_curr = y_chi_squared + x_chi_squared
@@ -484,8 +484,8 @@ def multiEpochOrbCalc3(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured
             print str(i)
             print 'SA_arcsec_measured_REAL = '+str(SA_arcsec_measured_REAL)+', PA_deg_measured_REAL = '+str(PA_deg_measured_REAL)
             print 'SA_arcsec_RP_model = '+str(SA_arcsec_RP_model)+", PA_deg_RP_model = "+str(PA_deg_RP_model)
-            SA_chiSquared = chiSquaredCalc(SA_arcsec_measured_REAL, SA_mean_error, SA_arcsec_RP_model)
-            PA_chiSquared = chiSquaredCalc(PA_deg_measured_REAL, PA_mean_error, PA_deg_RP_model)
+            SA_chiSquared = genTools.chiSquaredCalc(SA_arcsec_measured_REAL, SA_mean_error, SA_arcsec_RP_model)
+            PA_chiSquared = genTools.chiSquaredCalc(PA_deg_measured_REAL, PA_mean_error, PA_deg_RP_model)
             SAPA_chisquared_total = SAPA_chisquared_total+SA_chiSquared+PA_chiSquared
             print 'SA_mean_error = '+str(SA_mean_error)+', PA_mean_error = '+str(PA_mean_error) 
             print 'chiSquared from SA = '+str(SA_chiSquared)+', from PA = '+str(PA_chiSquared)+', total = '+str(SA_chiSquared+PA_chiSquared)
@@ -1308,8 +1308,8 @@ def multiEpochOrbCalcTH_I3(e, T, A, B, C, F, G, Mass1_Msun, Mass2_Msun, Sys_Dist
            y_data_error = y_data*((SA_errors[i]/SAs[i])+abs(math.radians(PA_errors[i])/math.tan(math.radians(PAs[i]))))
            
            # calc chiSquared for both x and y
-           chiSquared_x = chiSquaredCalc(x_data, x_data_error, x_model)
-           chiSquared_y = chiSquaredCalc(y_data, y_data_error, y_model)
+           chiSquared_x = genTools.chiSquaredCalc(x_data, x_data_error, x_model)
+           chiSquared_y = genTools.chiSquaredCalc(y_data, y_data_error, y_model)
            
            # add both of those to running chiSquared total
            chiSquared_total = chiSquared_total+chiSquared_x+chiSquared_y
@@ -1324,11 +1324,11 @@ def multiEpochOrbCalcTH_I3(e, T, A, B, C, F, G, Mass1_Msun, Mass2_Msun, Sys_Dist
 #           print 'y_data_error2 = ',y_data_error2
 #           
 #           # calc chiSquared for both x and y
-#           chiSquared_x2 = chiSquaredCalc(x_data, x_data_error2, x_model)
-#           chiSquared_y2 = chiSquaredCalc(y_data, y_data_error2, y_model)
+#           chiSquared_x2 = genTools.chiSquaredCalc(x_data, x_data_error2, x_model)
+#           chiSquared_y2 = genTools.chiSquaredCalc(y_data, y_data_error2, y_model)
            
            # add both of those to running chiSquared total
-           chiSquared_total2 = chiSquared_total2+chiSquared_x2+chiSquared_y2
+           chiSquared_total2 = chiSquared_total2+chiSquared_x+chiSquared_y
            
     else:
         print 'multiOrbcalcTH_I3: WARNING! Number of epochs, SAs and/or PAs data does not match'
@@ -1440,7 +1440,7 @@ def ABCFG_values(a, argPeri_rad, longAN_rad, inclination_rad):
     """
     if False:
         print '\nin ABCFG_values'
-        print 'a1',a1
+        print 'a1',a
         print 'argPeri_rad',argPeri_rad
         print 'longAN_rad',longAN_rad
         print 'inclination_rad',inclination_rad

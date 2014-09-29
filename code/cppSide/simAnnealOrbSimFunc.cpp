@@ -76,14 +76,13 @@ void simAnealOrbFuncObj::simulator()
 	string accepted = "?";
 
 	//start/choose generator(s)
+	//this is the most advanced uniform random number generator, which combines SFMT and Mother-Of-All
 	CRandomSFMT1 RanGen(randSeed);
 	StochasticLib1 RanGen2(randSeed);
 
 	// instantiate and load up a second RVdo for proposed planet vals in simStar=true cases
 	RVdataObj RVdo2;
 	RVdo2 = RVdo;
-
-	//this is the most advanced uniform random number generator, which combines SFMT and Mother-Of-All
 
 	// set up starting values for input params
 	sigmaPercent_latest = sigmaPercent;
@@ -176,7 +175,6 @@ void simAnealOrbFuncObj::simulator()
 		period_latest = RanGen.UniformRandom(SSO.periodMIN, SSO.periodMAX); //  [yrs]
 		paramsToVaryIntsAry.push_back(3);
 	}
-
 	double e_latest=0;
 	double sqrtESinomega_latest;
 	double sqrtECosomega_latest;
@@ -232,6 +230,7 @@ void simAnealOrbFuncObj::simulator()
 			Tmin = earliestEpoch-period_latest*365.242;
 			TMIN = earliestEpoch-SSO.periodMAX*365.0;
 			TMAX = earliestEpoch;
+			cout<<"******  both T_Min and T_Max set to -1  ******"<<endl;
 		}
 		else
 		{
@@ -241,7 +240,7 @@ void simAnealOrbFuncObj::simulator()
 		}
 	}
 	ss<<fixed<<std::setprecision(6)<<"\n\nTMIN = "<<TMIN<<", TMAX = "<<TMAX<<"\n\n"<<endl;
-
+	cout<<"line # 247"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	// load initial values from system data file
 	double T_latest;
 	double Tc_latest;
@@ -291,6 +290,7 @@ void simAnealOrbFuncObj::simulator()
 		}
 		else
 			ss<<"Setting T to a constant"<<endl;
+		cout<<"SSO.T_Min = "<<SSO.T_Min<<",SSO.T_Min = "<<SSO.T_Min<<endl;
 		if (Tc_latest==0)
 			ss<<"Setting Tc to 0 and will calculate it with eccArgPeri2ToTcCalc"<<endl;
 		else

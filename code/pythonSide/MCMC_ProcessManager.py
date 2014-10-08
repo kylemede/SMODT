@@ -85,7 +85,7 @@ def multiProcessStarter(paramSettingsDict):
     s =  "\n"+'*'*95+"\n"+'*'*33+"  About to compile C++ code  " +'*'*33+"\n"+'*'*95+"\n"
     s = s+ 'makeDir:'+makeDir
     print s
-    PMlogFile = open(logFilename,'a')
+    #PMlogFile = open(logFilename,'a')
     PMlogFile.write(s)
     #PMlogFile.close()
     
@@ -159,7 +159,7 @@ def multiProcessStarter(paramSettingsDict):
     plot4x1 = False
     if ((paramSettingsDict["longAN_degMAX"]==0)and(paramSettingsDict["periodMAX"]==0)and(paramSettingsDict["inclination_degMAX"]==0)):
         plot4x1 = True
-    plot4x1=False ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Fixed to False for now!!
+    #plot4x1=False ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Fixed to False for now!!
     
     if plot4x1:
         s='plot4x1 found to be True, so only plotting 4 key varied params.'
@@ -333,8 +333,8 @@ def multiProcessStarter(paramSettingsDict):
         
         # make list of simAnneal datafiles for plotting
         simAnnealDataFiles = []
-        for file in dataFiles:
-            simAnnealFile = "SimAnneal_"+os.path.basename(file)
+        for f in dataFiles:
+            simAnnealFile = "SimAnneal_"+os.path.basename(f)
             simAnnealFileFull = os.path.join(paramSettingsDict['outputData_dir'],simAnnealFile)
             simAnnealDataFiles.append(simAnnealFileFull)
         if paramSettingsDict['makeSimAnnealProgPlots']:
@@ -357,7 +357,7 @@ def multiProcessStarter(paramSettingsDict):
         if paramSettingsDict['makeSimAnnealProgPlots']:
             MCMCsummaryRootPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'simAnnealProgressSummary')
             tools.plot.mcmcProgressPlotter(dataFiles,MCMCsummaryRootPlotFilename, nu=nu, plot4x1=plot4x1,TcStepping=paramSettingsDict['TcStepping'])
-    elif paramSettingsDict['makeMCMCprogPlots']:
+    if paramSettingsDict['makeMCMCprogPlots']:
         tools.plot.mcmcProgressPlotter(dataFiles,MCMCsummaryRootPlotFilename, nu=nu, plot4x1=plot4x1,TcStepping=paramSettingsDict['TcStepping'])
     
     # finish the Gelman-Rubin statistic calculations if requested
@@ -435,11 +435,11 @@ def multiProcessStarter(paramSettingsDict):
             copyFiles.append(os.path.join(DBdir,os.path.basename(orbitEllipsePlotFilename+'.png')))
         # get progress plot filenames
         if paramSettingsDict['simAnneal']:
-              if paramSettingsDict['makeSimAnnealProgPlots']:
-                  MCMCsummaryRootPlotFilename2 = os.path.join(DBdir,'simAnnealProgressSummary')
-                  for chainNum in range(1,len(dataFiles)+1):
-                      origFiles.append(MCMCsummaryRootPlotFilename+"-chain_"+str(chainNum)+".png" )
-                      copyFiles.append(MCMCsummaryRootPlotFilename2+"-chain_"+str(chainNum)+".png" )
+            if paramSettingsDict['makeSimAnnealProgPlots']:
+                MCMCsummaryRootPlotFilename2 = os.path.join(DBdir,'simAnnealProgressSummary')
+                for chainNum in range(1,len(dataFiles)+1):
+                    origFiles.append(MCMCsummaryRootPlotFilename+"-chain_"+str(chainNum)+".png" )
+                    copyFiles.append(MCMCsummaryRootPlotFilename2+"-chain_"+str(chainNum)+".png" )
         if paramSettingsDict['makeMCMCprogPlots']:
             MCMCsummaryRootPlotFilename2 = os.path.join(DBdir,'MCMCprogressSummary')
             for chainNum in range(1,len(dataFiles)+1):

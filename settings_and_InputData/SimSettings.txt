@@ -3,13 +3,13 @@
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
 Duo =true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax = 5000
+chiSquaredMax = 100
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 1000000
+numSamples = 60000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing = true
+useMultiProcessing = false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -26,7 +26,7 @@ RVdataFilename =RVdata.dat
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = MCMC-HR8799-Sept2014Data-simpleSAerror-UniEccentPrior-allOpen-midEcc-2
+outputData_filenameRoot = MCMC-HR8799-fixedSept2014DataNOesposito-simpleSAerror-UniEccentPrior-highTo-2-SimAnnealTest-3
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -45,7 +45,7 @@ makeOrbitPlots = true
 # Make plots of Simulated Annealing progress plots? [bool]
 makeSimAnnealProgPlots = true
 # Simulated Annealing starting temperature [double]
-startTemp = 500.0
+startTemp = 100.0
 # Delete chain files after simulation is complete? [bool]
 delChainsAfter = true
 # Delete combined data files after simulation is complete? [bool]
@@ -53,17 +53,17 @@ delCombinedDataAfter = true
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 TcStepping = false
 # Copy output non-data files to a Dropbox folder? [bool]
-CopyToDrobox = false
+CopyToDrobox = True
 
 # Settings for MCMC mode (triggered by setting mcONLY=simAnneal=false):
 # Calculate the length of the burn in for each chain? [bool] 
 CalcBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
-calcCorrLengths = false
+calcCorrLengths = true
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 10000000
+numSamples_SimAnneal = 60000
 # Make plots of MCMC progress plots? [bool]
-makeMCMCprogPlots = false
+makeMCMCprogPlots = true
 # Calculate the Gelman-Rubin statistic? [bool]
 CalcGelmanRubin = true
 # How many times do you want the Gelman-Rubin statistic calculated [int]
@@ -85,25 +85,25 @@ longAN_degMIN = 0.0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 longAN_degMAX = 180.0
 # Minimum allowed value for the Eccentricity [double]
-eMIN = 0.2
+eMIN = 0.01
 # Maximum allowed value for the Eccentricity　[double]
-eMAX =  0.5
+eMAX =  0.7
 # Minimum allowed value for the Period [double][yrs]
-periodMIN = 0.1
+periodMIN = 30
 # Maximum allowed value for the Period [double][yrs]
-periodMAX = 300
+periodMAX = 180
 # Minimum allowed value for the Inclination [double][deg]
 inclination_degMIN = 0.0
 # Maximum allowed value for the Inclination [double][deg]
-inclination_degMAX = 80.0
+inclination_degMAX = 90.0
 # Minimum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMIN = 0
+argPeri_degMIN = 180.0
 # Maximum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMAX = 360.0
-# Minimuim value for the Time of Last Periapsis [JD]#2455651.45   #2455651.2798
-T_Min = -1
+argPeri_degMAX = 540.0
+# Minimum value for the Time of Last Periapsis [JD]#2455651.45   #2455651.2798
+T_Min = 2420000
 # Maximum value for the Time of Last Periapsis [JD]#2455653.765
-T_Max = -1
+T_Max = 2470000
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
 K_MIN = 0
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]

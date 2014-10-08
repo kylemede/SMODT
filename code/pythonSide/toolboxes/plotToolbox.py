@@ -1,11 +1,12 @@
 #@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 import math
-import gc
+#import gc
 import numpy as np
 import os
 import pylab
 import timeit
 from math import pi
+import dicts
 import generalToolbox as genTools 
 import DItoolbox as diTools
 import RVtoolbox as rvTools 
@@ -3508,7 +3509,8 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
     if '/Toolboxes'==cwd[-10:]:
         os.chdir(cwd[:-9])
         print '\nTemporarily changed cwd to '+os.getcwd()
-    from dicts.HARDCODEDsettingsDict import hardcodedSettingsDict
+    
+    hardcodedSettingsDict = dicts.hardcodedSettingsDict
     if 'DualLanguageSimCode/Toolboxes' in cwd:
         os.chdir(cwd)
         print '\nChanged cwd back to '+os.getcwd()
@@ -3635,7 +3637,7 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
         periodIncrement = (period[orb]*365.242)/numSteps
         t = T_center-((period[orb]*365.242)/2.0)
         times = []
-        (a_total, a1, a2, p) = semiMajorConverter(Mass1, Mass2, a_total=a[orb],a1=0.0,a2=0.0, period=period[orb], verbose=True)
+        (a_total, a1, a2, p) = genTools.semiMajorConverter(Mass1, Mass2, a_total=a[orb],a1=0.0,a2=0.0, period=period[orb], verbose=True)
         for step in range(0,int(numSteps)):
             t = t + periodIncrement
             times.append(t)
@@ -3769,64 +3771,65 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
         plt.show()
         
     plt.close()
-def singleParamReadAndPlotNEW2(filename, paramColNum, subPlot, numBins, weight=True, confLevels=True, normalize=True, drawLine=False, nu=1):
-    """
-    This is the single column/param plotter for the new Master Hist plotter
-    that will call this in a loop to fill up a summary plot.  This is being
-    done as there are RAM issues of trying to load all the data for a particular
-    column and plot it all at once.  Thus, this one will load the data 
-    only one bin of the hist at a time to be the most efficient with the RAM.
     
-    file format must follow the 'NEW' style, ie:
-    longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared    timesBeenHere
-    
-    All filename checks will occur in the Master function and are thus not needed here.
-    
-    All 3D data should have its chiSquared values all ready be reduced.
-    """
-    verboseInternal = True
-    # set y axis title
-    subPlot.axes.set_ylabel('Probability')
-    axs = subPlot.axis()
-    
-    # get data and conf levels
-    (data,confLevels) =genTools.confLevelFinderNEWdataVersion(filename,paramColNum,True)
-
-    # done looping through all bins
-    largestBinVal = np.max(binVals)
-    #print 'largestBinVal = ',largestBinVal
-    #print 'colors: '+repr(colors)
-    #print 'binMins: ',repr(binMins)
-    #print 'binMaxs: ',repr(binMaxs)
-    
-    binVals2 = []
-    ## convert the bin information into rectangular patches
-    for bin in range(0,len(binVals)):
-        x = binMins[bin]
-        y = 0.0
-        width = binWidth
-        if normalize:
-            try:
-                height = float(binVals[bin])/float(largestBinVal)
-            except:
-                #print 'Using default height as largestBinVal=0.'
-                height = 1.0
-        else:
-            height = binVals[bin]
-        binVals2.append(height)
-        rec = patches.Rectangle((x,y), width, height, facecolor=colors[bin], fill=True, edgecolor='k')
-        #RecPatches.append(rec)
-        subPlot.add_patch(rec)
-    
-    # add a line to plot the top curves of the hist
-    if drawLine:
-        subPlot.plot(binMids,binVals2, 'r',linewidth=1)
-    # add a vertical line at the median value
-    med = np.median(binMids)
-    subPlot.plot([med, med],subPlot.axes.get_ylim(),'k')
-    
-    # return fully updated sub plot
-    return subPlot
+# def singleParamReadAndPlotNEW2(filename, paramColNum, subPlot, numBins, weight=True, confLevels=True, normalize=True, drawLine=False, nu=1):
+#     """
+#     This is the single column/param plotter for the new Master Hist plotter
+#     that will call this in a loop to fill up a summary plot.  This is being
+#     done as there are RAM issues of trying to load all the data for a particular
+#     column and plot it all at once.  Thus, this one will load the data 
+#     only one bin of the hist at a time to be the most efficient with the RAM.
+#     
+#     file format must follow the 'NEW' style, ie:
+#     longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared    timesBeenHere
+#     
+#     All filename checks will occur in the Master function and are thus not needed here.
+#     
+#     All 3D data should have its chiSquared values all ready be reduced.
+#     """
+#     verboseInternal = True
+#     # set y axis title
+#     subPlot.axes.set_ylabel('Probability')
+#     axs = subPlot.axis()
+#     
+#     # get data and conf levels
+#     (data,confLevels) =genTools.confLevelFinderNEWdataVersion(filename,paramColNum,True)
+# 
+#     # done looping through all bins
+#     largestBinVal = np.max(binVals)
+#     #print 'largestBinVal = ',largestBinVal
+#     #print 'colors: '+repr(colors)
+#     #print 'binMins: ',repr(binMins)
+#     #print 'binMaxs: ',repr(binMaxs)
+#     
+#     binVals2 = []
+#     ## convert the bin information into rectangular patches
+#     for bin in range(0,len(binVals)):
+#         x = binMins[bin]
+#         y = 0.0
+#         width = binWidth
+#         if normalize:
+#             try:
+#                 height = float(binVals[bin])/float(largestBinVal)
+#             except:
+#                 #print 'Using default height as largestBinVal=0.'
+#                 height = 1.0
+#         else:
+#             height = binVals[bin]
+#         binVals2.append(height)
+#         rec = patches.Rectangle((x,y), width, height, facecolor=colors[bin], fill=True, edgecolor='k')
+#         #RecPatches.append(rec)
+#         subPlot.add_patch(rec)
+#     
+#     # add a line to plot the top curves of the hist
+#     if drawLine:
+#         subPlot.plot(binMids,binVals2, 'r',linewidth=1)
+#     # add a vertical line at the median value
+#     med = np.median(binMids)
+#     subPlot.plot([med, med],subPlot.axes.get_ylim(),'k')
+#     
+#     # return fully updated sub plot
+#     return subPlot
     
 def singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight=True, confLevels=True, normalize=True, drawLine=False, nu=1):
     """
@@ -4130,14 +4133,14 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
         plotFilename = plotFilename+'.png'
     
     ## make an advanced title for plot from folder and filename
-    titleTop = os.path.dirname(outputDataFilename).split('/')[-1]
+    titleTop = os.path.dirname(plotFilename).split('/')[-1]
     titleBtm = os.path.basename(plotFilename).split('.')[0]+" Best Fit Plot"
     plotFileTitle = titleTop+'\n'+titleBtm
 
     # Call the function to find the best orbit values for reference.
     if verbose:
         print '#'*50
-        bestOrbitFinderNEW(filename, printToScreen=False, saveToFile=True)
+        genTools.bestOrbitFinderNEW(filename, printToScreen=False, saveToFile=True)
         print '#'*50
     
     s= '\nStarting to create summary plot\n'

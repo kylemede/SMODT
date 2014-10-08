@@ -362,7 +362,7 @@ void simAnealOrbFuncObj::simulator()
 	double a_total_sigmaPercent_latest = 0.8;//sigmaPercent_min;
 	double sqrtESinomega_sigmaPercent_latest = 0.02;//0.035;//sigmaPercent_min*0.1;
 	double sqrtECosomega_sigmaPercent_latest = 0.055;//0.039;//sigmaPercent_min*0.1;
-	
+
 	double a_total_curr=0;
 
 	// temp and sigma tunning params

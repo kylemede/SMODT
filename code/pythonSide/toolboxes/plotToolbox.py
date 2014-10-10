@@ -1267,8 +1267,9 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(512)
         paramColNum = 6
         xlabel = 'Argument of Perigie [deg]'
-        (CLevels,data,chiSquareds,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,fast=False)
-        log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
+        #(CLevels,data,chiSquareds,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,fast=False)
+        (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+        #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
         xs = np.array(range(0,data.size))
         # Wrap the array into a 2D array of chunks, truncating the last chunk if 
         if data.size>100e6:
@@ -1400,8 +1401,9 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(515)
         paramColNum = 8
         xlabel = 'ChiSquareds'
-        (CLevels,data) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False)
-        log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
+        (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+        #(CLevels,data) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False)
+        #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
         yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))
         yCenters = yChunks.mean(axis=1)
         subPlot2.fill_between(xCenters, min_env, max_env, color='gray',edgecolor='none', alpha=0.5)
@@ -1435,8 +1437,9 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig3.add_subplot(211)
             paramColNum = 8
             xlabel = 'ChiSquareds'
-            (CLevels,data) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False)
-            log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
+            (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+            #(CLevels,data) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False)
+            #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
             yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))
             max_env = yChunks.max(axis=1)
             min_env = yChunks.min(axis=1)
@@ -1575,8 +1578,9 @@ def summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,x
     """
     works for summaryPlotter2MCMC to do the plot for each param and reduce code doubling
     """
-    (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=True,)
-    log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
+    #(CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=True,)
+    (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+    #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
     if type(data)!=float:
         yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))
         max_env = yChunks.max(axis=1)

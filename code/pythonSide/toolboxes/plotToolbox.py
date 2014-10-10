@@ -1267,7 +1267,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(512)
         paramColNum = 6
         xlabel = 'Argument of Perigie [deg]'
-        (CLevels,data,chiSquareds,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,fast=False)
+        (CLevels,data,chiSquareds,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,fast=False)
         log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
         xs = np.array(range(0,data.size))
         # Wrap the array into a 2D array of chunks, truncating the last chunk if 
@@ -1277,7 +1277,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             chunkSize = 1000
         elif data.size>1e6:
             chunkSize = 100
-        elif data.size>1e5:
+        elif data.size>5e5:
             chunkSize = 10
         else:
             chunkSize = 1
@@ -1575,13 +1575,22 @@ def summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,x
     """
     works for summaryPlotter2MCMC to do the plot for each param and reduce code doubling
     """
-    (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=True)
+    (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=True,)
     log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
     if type(data)!=float:
         yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))
         max_env = yChunks.max(axis=1)
         min_env = yChunks.min(axis=1)
         yCenters = yChunks.mean(axis=1)
+        if paramColNum==0:
+            log.write("len data = "+str(data.size))
+            log.write("\n\nData Vals:  \n")
+            for line in range(0,data.size):
+                log.write(str(data[line])+'\n')
+            log.write("\n\nyCenters: \n")
+            for line in range(0,yCenters.size):
+                log.write(str(yCenters[line])+'\n')
+            log.write("\n\n")
         subPlot2.fill_between(xCenters, min_env, max_env, color='gray',edgecolor='none', alpha=0.5)
         subPlot2.plot(xCenters, yCenters)
         subPlot2.plot([xCenters.min(),xCenters.max()],[bestDataVal,bestDataVal],color='green')
@@ -2065,7 +2074,7 @@ def mcmcProgressPlotter(filenames,rootPlotFilename,nu=1, plot4x1=False,TcSteppin
     if type(filenames) is not list:
         print 'the filenames input parameter must be a list of strings'
     
-    numFiles = len(filenames)
+    #numFiles = len(filenames)
     
 #    ## get settings used for simulation $$$ only need to see if a 3x2 or 3x1 plot should be used for parameter plots
 #    inputSettingsFile = os.path.join("/run/media/Kyle/Data1/Todai_Work/Dropbox/workspace/Binary-project/SimSettings_and_InputData",'SimSettings.txt')
@@ -4302,4 +4311,3 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
     log.write(s+'\n')
     log.write('\n'+75*'#'+'\n Leaving dataReadAndPlotNEW3 \n'+75*'#'+'\n')
     log.close()
-

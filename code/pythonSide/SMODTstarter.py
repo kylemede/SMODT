@@ -189,39 +189,39 @@ def main():
     
     # add directories and add all complete filenames to overall list
     allFiles = []
-    for file in pythonFiles:
-        allFiles.append(os.path.join(pythonCodeDir , file))
-    for file in pythonToolboxFiles:
+    for f in pythonFiles:
+        allFiles.append(os.path.join(pythonCodeDir , f))
+    for f in pythonToolboxFiles:
         toolboxDir = os.path.join(pythonCodeDir,'toolboxes')
-        fullPathUse = os.path.join(toolboxDir , file)
+        fullPathUse = os.path.join(toolboxDir , f)
         allFiles.append(fullPathUse)
-    for file in cppToolboxFiles:
+    for f in cppToolboxFiles:
         cppToolboxDir = os.path.join(cppCodeDir,'toolboxes')
-        fullPathUse = os.path.join(cppToolboxDir,file)
+        fullPathUse = os.path.join(cppToolboxDir,f)
         allFiles.append(fullPathUse)
-    for file in cppFiles:
-        allFiles.append(os.path.join(cppCodeDir , file))
-    for file in settingsFiles:
-        allFiles.append(os.path.join(settings_and_InputDataDir , file))
+    for f in cppFiles:
+        allFiles.append(os.path.join(cppCodeDir , f))
+    for f in settingsFiles:
+        allFiles.append(os.path.join(settings_and_InputDataDir , f))
         
     # move all final files to code-used directory in output data folder
-    for file in allFiles:
+    for f in allFiles:
         #print '\nCopying code files to output data directory.'
-        filebasename = os.path.basename(file)
+        filebasename = os.path.basename(f)
         outputfilename = finalFolder+'code-used/'+filebasename 
-        shutil.copy(file,outputfilename)
+        shutil.copy(f,outputfilename)
         if paramSettingsDict['CopyToDrobox']:
             outputfilename2 = finalFolder2+'code-used/'+filebasename  
-            print 'file being copied:'+file
+            print 'file being copied:'+f
             print 'Being copied to:'+outputfilename
-            shutil.copy(file,outputfilename2)
+            shutil.copy(f,outputfilename2)
         
     ## finally, make print that sim is starting and then start it.
     print '\n** Starting '+str(numProcesses)+' processes of '+numSamplesString+' samples each ** \n'
-    if mcONLY:
-        mcSimStarter(paramSettingsDict)
-    else:
-        multiProcessStarter(paramSettingsDict)
+#     if mcONLY:
+#         mcSimStarter(paramSettingsDict)
+#     else:
+    multiProcessStarter(paramSettingsDict)
 
 if __name__ == '__main__':
-   main()  
+    main()  

@@ -5,7 +5,7 @@ Duo =true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax = 100
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 60000
+numSamples = 490
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
@@ -47,7 +47,7 @@ makeSimAnnealProgPlots = true
 # Simulated Annealing starting temperature [double]
 startTemp = 100.0
 # Delete chain files after simulation is complete? [bool]
-delChainsAfter = true
+delChainsAfter = false
 # Delete combined data files after simulation is complete? [bool]
 delCombinedDataAfter = true
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
@@ -61,7 +61,7 @@ CalcBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths = true
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 60000
+numSamples_SimAnneal = 490
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots = true
 # Calculate the Gelman-Rubin statistic? [bool]

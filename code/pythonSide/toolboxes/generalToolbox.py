@@ -957,7 +957,128 @@ def dataReaderNEW(filename, column=0):
     
     return data
 
-
+def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False):
+    """
+    """
+    gotLog=True
+    ## First get ranges of param and ChiSquared values
+    if os.path.exists(filename):
+        ## figure out chain number and open log
+        s = filename
+        datadir = os.path.dirname(filename)
+        chainNumStr = s[s.find('chain_')+6:s.find('chain_')+6+1]
+        if chainNumStr.isdigit():  
+            logFilename = os.path.join(datadir,'log-chain_'+chainNumStr+'.txt')
+        else:
+            logFilename = os.path.join(datadir,'processManagerLogFile.txt')
+        if os.path.exists(logFilename):
+            log = open(logFilename,'a')
+            log.write('\n'+75*'-'+'\n Inside confLevelFinderNEWdataVersion \n'+75*'-'+'\n')
+        else:
+            gotLog=False
+            
+    s= '\nOpening and finding ranges for data in column # '+str(columNum)
+    if gotLog:
+        log.write(s+'\n')
+    #if verboseInternal:
+    #    print s
+    
+    ## Check if file has useful data for that column#
+    # first find out how many lines in total
+    fp = open(filename,'r')
+    
+    TotalSamples=1
+    for i,line in enumerate(fp):
+        if i>2:
+            TotalSamples+= float(line.split()[-1])
+    fp.close()
+    TotalSamples = int(TotalSamples)
+    numDataLines =i-2
+    # find values at start, mid and end of file
+    fp = open(filename,'r')
+    lastColLoc = 0
+    dataValueStart = dataValueMid = dataValueEnd =0
+    for i,line in enumerate(fp):
+        if i==(0+2):
+            splitAry = line.split()
+            lastColLoc = len(splitAry)-1
+            dataValueStart = float(splitAry[columNum])
+        elif i==((numDataLines//2)+2):
+            splitAry = line.split()
+            dataValueMid = float(splitAry[columNum])
+        elif i==numDataLines:
+            splitAry = line.split()
+            dataValueEnd = float(splitAry[columNum])
+    fp.close()
+    
+    doesntVary = True
+    if ((dataValueStart!=dataValueMid)and(dataValueStart!=dataValueEnd)):
+        doesntVary = False
+        
+    if (doesntVary==False):#or(fast==False):  
+        s=''
+        if True:
+            #Old string parsing directly version UPDATED
+            startTime2 = timeit.default_timer()
+            totalAccepted = 0
+            dataAry = [None]*TotalSamples
+            chiSquareds = [None]*TotalSamples
+            i = 0
+            chiSquaredMin=1e6
+            bestOrbit = 0
+            lineNum=0
+            dataMax = 0
+            dataMin = 1e9
+            for line in open(filename,'r'):
+                lineNum+=1
+                if lineNum>2:
+                    try:
+                        dataLineCols = line.split()
+                        ## this should never happen, but it is a check for a double decimal value
+                        decimalSplit = dataLineCols[columNum].split('.')
+                        if len(decimalSplit)>2:
+                            dataValue = float(decimalSplit[0]+'.'+decimalSplit[1])
+                        else:
+                            dataValue = float(dataLineCols[columNum])
+                        chiSquared = float(dataLineCols[8])
+                        timesBeenHere = float(dataLineCols[-1])
+                        #if (chiSquared==0)or(dataValue==0):
+                           # if verboseInternal:
+                           #     print line
+                        for j in range(0,int(timesBeenHere)):
+                            totalAccepted+=1
+                            dataAry[i]=dataValue
+                            if returnChiSquareds:
+                                chiSquareds[i]=chiSquared
+                            i+=1
+                        if dataValue>dataMax:
+                            dataMax = dataValue
+                        if dataValue<dataMin:
+                            dataMin = dataValue
+                        if chiSquared<chiSquaredMin:
+                            chiSquaredMin = chiSquared
+                            bestDataVal = dataValue
+                            bestOrbit=lineNum      
+                    except:
+                        print 'Failed for line: '+line 
+            endTime2 = timeit.default_timer()
+            totalTime = (endTime2-startTime2) # in seconds
+            totalTimeString = timeString(totalTime)
+            s=s+ '\nUPDATED Direct data loading took '+totalTimeString+' to complete.\n' 
+            s=s+'The resulting arrays had '+str(totalAccepted)+' elements, with best value '+str(bestDataVal)+', and minChiSquared '+str(chiSquaredMin)
+            if gotLog:
+                log.write(s+'\n')
+    dataAry = np.array(dataAry)
+    dataMedian = np.median(dataAry)
+    s=  '\nTotal number of orbits = '+str(totalAccepted)
+    s=s+'\nBest value found was '+str(bestDataVal)+", at line Number "+str(bestOrbit)+", and had a chiSquared = "+str(chiSquaredMin)
+    s=s+'\nMedian value = '+str(dataMedian)
+    s=s+'\n[Min,Max] values found for data were '+repr([dataMin,dataMax])
+    if gotLog:
+        log.write(s+'\n')
+    
+    return (log,dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd])
+                
 def outputDatafileToDict(filename):
     """
     CAUTION, this was designed to be used with the outputs of 100ModDataset simulation outputs.
@@ -1343,327 +1464,328 @@ def confLevelFinderNEWdataVersion(filename, columNum=False, returnData=False, re
     verboseInternal = False
     bestCentered = False
 
-    gotLog=True
-    ## First get ranges of param and ChiSquared values
-    if os.path.exists(filename):
-        ## figure out chain number and open log
-        s = filename
-        datadir = os.path.dirname(filename)
-        chainNumStr = s[s.find('chain_')+6:s.find('chain_')+6+1]
-        if chainNumStr.isdigit():  
-            logFilename = os.path.join(datadir,'log-chain_'+chainNumStr+'.txt')
+#     gotLog=True
+#     ## First get ranges of param and ChiSquared values
+#     if os.path.exists(filename):
+#         ## figure out chain number and open log
+#         s = filename
+#         datadir = os.path.dirname(filename)
+#         chainNumStr = s[s.find('chain_')+6:s.find('chain_')+6+1]
+#         if chainNumStr.isdigit():  
+#             logFilename = os.path.join(datadir,'log-chain_'+chainNumStr+'.txt')
+#         else:
+#             logFilename = os.path.join(datadir,'processManagerLogFile.txt')
+#         if os.path.exists(logFilename):
+#             log = open(logFilename,'a')
+#             log.write('\n'+75*'-'+'\n Inside confLevelFinderNEWdataVersion \n'+75*'-'+'\n')
+#         else:
+#             gotLog=False
+#         
+#         s= '\nOpening and finding ranges for data in column # '+str(columNum)
+#         if gotLog:
+#             log.write(s+'\n')
+#         if verboseInternal:
+#             print s
+#         
+#         ## Check if file has useful data for that column#
+#         # first find out how many lines in total
+#         fp = open(filename,'r')
+#         
+#         TotalSamples=1
+#         for i,line in enumerate(fp):
+#             if i>2:
+#                 TotalSamples+= float(line.split()[-1])
+#         fp.close()
+#         TotalSamples = int(TotalSamples)
+#         numDataLines =i-2
+#         # find values at start, mid and end of file
+#         fp = open(filename,'r')
+#         lastColLoc = 0
+#         dataValueStart = dataValueMid = dataValueEnd =0
+#         for i,line in enumerate(fp):
+#             if i==(0+2):
+#                 splitAry = line.split()
+#                 lastColLoc = len(splitAry)-1
+#                 dataValueStart = float(splitAry[columNum])
+#             elif i==((numDataLines//2)+2):
+#                 splitAry = line.split()
+#                 dataValueMid = float(splitAry[columNum])
+#             elif i==numDataLines:
+#                 splitAry = line.split()
+#                 dataValueEnd = float(splitAry[columNum])
+#         fp.close()
+#         
+#         doesntVary = True
+#         if ((dataValueStart!=dataValueMid)and(dataValueStart!=dataValueEnd)):
+#             doesntVary = False
+#             
+#         if (doesntVary==False):#or(fast==False):  
+#             s=''
+#             if True:
+#                 #Old string parsing directly version UPDATED
+#                 startTime2 = timeit.default_timer()
+#                 totalAccepted = 0
+#                 dataAry = [None]*TotalSamples
+#                 chiSquareds = [None]*TotalSamples
+#                 i = 0
+#                 chiSquaredMin=1e6
+#                 bestOrbit = 0
+#                 lineNum=0
+#                 for line in open(filename,'r'):
+#                     lineNum+=1
+#                     if lineNum>2:
+#                         try:
+#                             dataLineCols = line.split()
+#                             ## this should never happen, but it is a check for a double decimal value
+#                             decimalSplit = dataLineCols[columNum].split('.')
+#                             if len(decimalSplit)>2:
+#                                 dataValue = float(decimalSplit[0]+'.'+decimalSplit[1])
+#                             else:
+#                                 dataValue = float(dataLineCols[columNum])
+#                             chiSquared = float(dataLineCols[8])
+#                             timesBeenHere = float(dataLineCols[-1])
+#                             if (chiSquared==0)or(dataValue==0):
+#                                 if verboseInternal:
+#                                     print line
+#                             for j in range(0,int(timesBeenHere)):
+#                                 totalAccepted+=1
+#                                 dataAry[i]=dataValue
+#                                 if returnChiSquareds:
+#                                     chiSquareds[i]=chiSquared
+#                                 i+=1
+#                             #if dataValue>dataMax:
+#                             #    dataMax = dataValue
+#                             #if dataValue<dataMin:
+#                             #    dataMin = dataValue
+#                             if chiSquared<chiSquaredMin:
+#                                 chiSquaredMin = chiSquared
+#                                 bestDataVal = dataValue
+#                                 bestOrbit=lineNum      
+#                         except:
+#                             print 'Failed for line: '+line 
+#                 endTime2 = timeit.default_timer()
+#                 totalTime = (endTime2-startTime2) # in seconds
+#                 totalTimeString = timeString(totalTime)
+#                 s=s+ '\nUPDATED Direct data loading took '+totalTimeString+' to complete.\n' 
+#                 s=s+'The resulting arrays had '+str(totalAccepted)+' elements, with best value '+str(bestDataVal)+', and minChiSquared '+str(chiSquaredMin)
+# #            if True:
+# #                #Old string parsing directly version UPDATED
+# #                startTime2 = timeit.default_timer()
+# #                totalAccepted = 0
+# #                dataAry = [None]*TotalSamples
+# #                chiSquareds = [None]*TotalSamples
+# #                i = 0
+# #                chiSquaredMin=1e6
+# #                lineNum=0
+# #                for line in open(filename,'r'):
+# #                    lineNum+=1
+# #                    if lineNum>2:
+# #                        dataLineCols = line.split()
+# #                        ## this should never happen, but it is a check for a double decimal value
+# #                        decimalSplit = dataLineCols[columNum].split('.')
+# #                        if len(decimalSplit)>2:
+# #                            dataValue = float(decimalSplit[0]+'.'+decimalSplit[1])
+# #                        else:
+# #                            dataValue = float(dataLineCols[columNum])
+# #                        chiSquared = float(dataLineCols[8])
+# #                        timesBeenHere = int(float(dataLineCols[-1]))
+# #                        if (chiSquared==0)or(dataValue==0):
+# #                            if verboseInternal:
+# #                                print line
+# #                        totalAccepted+=timesBeenHere
+# #                        dataAry[i:i+timesBeenHere]=dataValue
+# #                        if returnChiSquareds:
+# #                            chiSquareds[i:i+timesBeenHere]=chiSquared
+# #                        i+=timesBeenHere
+# #                        if chiSquared<chiSquaredMin:
+# #                            chiSquaredMin = chiSquared
+# #                            bestDataVal = dataValue
+# #                endTime2 = timeit.default_timer()
+# #                totalTime = (endTime2-startTime2) # in seconds
+# #                totalTimeString = timeString(totalTime)
+# #                s=s+ '\nUPDATED2 Direct data loading took '+totalTimeString+' to complete.\n' 
+# #                s=s+'The resulting arrays had '+str(totalAccepted)+' elements, with best value '+str(bestDataVal)+', and minChiSquared '+str(chiSquaredMin)
+# #            if False:
+# #                #Old string parsing directly version UPDATED WITH NUMPY suggestions from stackoverflow
+# #                startTime2 = timeit.default_timer()
+# #                totalAccepted = 0
+# #                dataAry = np.empty(TotalSamples)
+# #                chiSquareds = np.empty(TotalSamples)
+# #                i = 0
+# #                chiSquaredMin=1e6
+# #                lineNum=0
+# #                for line in open(filename,'r'):
+# #                        lineNum+=1
+# #                        if lineNum>2:
+# #                            dataLineCols = line.split()
+# #                            ## this should never happen, but it is a check for a double decimal value
+# #                            decimalSplit = dataLineCols[columNum].split('.')
+# #                            if len(decimalSplit)>2:
+# #                                dataValue = float(decimalSplit[0]+'.'+decimalSplit[1])
+# #                            else:
+# #                                dataValue = float(dataLineCols[columNum])
+# #                            chiSquared = float(dataLineCols[8])
+# #                            timesBeenHere = float(dataLineCols[-1])
+# #                            if (chiSquared==0)or(dataValue==0):
+# #                                if verboseInternal:
+# #                                    print line
+# #                            totalAccepted+=timesBeenHere
+# #                            dataAry[i:i+timesBeenHere]=dataValue
+# #                            if returnChiSquareds:
+# #                                chiSquareds[i:i+timesBeenHere]=chiSquared
+# #                            i+=timesBeenHere
+# #                            if chiSquared<chiSquaredMin:
+# #                                chiSquaredMin = chiSquared
+# #                                bestDataVal = dataValue
+# #                #f.close()
+# #                endTime2 = timeit.default_timer()
+# #                totalTime = (endTime2-startTime2) # in seconds
+# #                totalTimeString = timeString(totalTime)
+# #                s=s+ '\nUPDATED WITH NUMPY Direct data loading took '+totalTimeString+' to complete.\n' 
+# #                s=s+'The resulting arrays had '+str(totalAccepted)+' elements, with best value '+str(bestDataVal)+', and minChiSquared '+str(chiSquaredMin)
+#             print s
+    # Put all the useful above code into dataReaderNew2, so just call it.  Code above needs to be cleaned up at some point soon!!!!
+    (log,dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReaderNew2(filename, columNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+    
+    gotLog=False
+    if log:
+        gotLot=True
+        
+    if len(dataAry>0):
+        #Convert data array to a numpy array
+        dataAry = np.sort(dataAry)
+        # find range of data's values
+        dataMax = dataAry[-1]
+        dataMin = dataAry[0]
+        size = dataAry.size
+        if (size%2)==0:
+            dataMedian = (dataAry[size / 2 - 1] + dataAry[size / 2]) / 2
         else:
-            logFilename = os.path.join(datadir,'processManagerLogFile.txt')
-        if os.path.exists(logFilename):
-            log = open(logFilename,'a')
-            log.write('\n'+75*'-'+'\n Inside confLevelFinderNEWdataVersion \n'+75*'-'+'\n')
+            dataMedian = dataAry[size / 2]
+    
+        if bestCentered:
+            mid = np.where(dataAry==bestDataVal)[0][0]
         else:
-            gotLog=False
-        
-        s= '\nOpening and finding ranges for data in column # '+str(columNum)
-        if gotLog:
-            log.write(s+'\n')
-        if verboseInternal:
-            print s
-        
-        ## Check if file has useful data for that column#
-        # first find out how many lines in total
-        fp = open(filename,'r')
-        
-        TotalSamples=1
-        for i,line in enumerate(fp):
-            if i>2:
-                TotalSamples+= float(line.split()[-1])
-        fp.close()
-        TotalSamples = int(TotalSamples)
-        numDataLines =i-2
-        # find values at start, mid and end of file
-        fp = open(filename,'r')
-        lastColLoc = 0
-        dataValueStart = dataValueMid = dataValueEnd =0
-        for i,line in enumerate(fp):
-            if i==(0+2):
-                splitAry = line.split()
-                lastColLoc = len(splitAry)-1
-                dataValueStart = float(splitAry[columNum])
-            elif i==((numDataLines//2)+2):
-                splitAry = line.split()
-                dataValueMid = float(splitAry[columNum])
-            elif i==numDataLines:
-                splitAry = line.split()
-                dataValueEnd = float(splitAry[columNum])
-        fp.close()
-        
-        doesntVary = True
-        if ((dataValueStart!=dataValueMid)and(dataValueStart!=dataValueEnd)):
-            doesntVary = False
+            mid=size//2
             
-        if (doesntVary==False)or(fast==False):  
-            s=''
-            if True:
-                #Old string parsing directly version UPDATED
-                startTime2 = timeit.default_timer()
-                totalAccepted = 0
-                dataAry = [None]*TotalSamples
-                chiSquareds = [None]*TotalSamples
-                i = 0
-                chiSquaredMin=1e6
-                bestOrbit = 0
-                lineNum=0
-                for line in open(filename,'r'):
-                    lineNum+=1
-                    if lineNum>2:
-                        try:
-                            dataLineCols = line.split()
-                            ## this should never happen, but it is a check for a double decimal value
-                            decimalSplit = dataLineCols[columNum].split('.')
-                            if len(decimalSplit)>2:
-                                dataValue = float(decimalSplit[0]+'.'+decimalSplit[1])
-                            else:
-                                dataValue = float(dataLineCols[columNum])
-                            chiSquared = float(dataLineCols[8])
-                            timesBeenHere = float(dataLineCols[-1])
-                            if (chiSquared==0)or(dataValue==0):
-                                if verboseInternal:
-                                    print line
-                            for j in range(0,int(timesBeenHere)):
-                                totalAccepted+=1
-                                dataAry[i]=dataValue
-                                if returnChiSquareds:
-                                    chiSquareds[i]=chiSquared
-                                i+=1
-                            #if dataValue>dataMax:
-                            #    dataMax = dataValue
-                            #if dataValue<dataMin:
-                            #    dataMin = dataValue
-                            if chiSquared<chiSquaredMin:
-                                chiSquaredMin = chiSquared
-                                bestDataVal = dataValue
-                                bestOrbit=lineNum      
-                        except:
-                            print 'Failed for line: '+line 
-                endTime2 = timeit.default_timer()
-                totalTime = (endTime2-startTime2) # in seconds
-                totalTimeString = timeString(totalTime)
-                s=s+ '\nUPDATED Direct data loading took '+totalTimeString+' to complete.\n' 
-                s=s+'The resulting arrays had '+str(totalAccepted)+' elements, with best value '+str(bestDataVal)+', and minChiSquared '+str(chiSquaredMin)
-#            if True:
-#                #Old string parsing directly version UPDATED
-#                startTime2 = timeit.default_timer()
-#                totalAccepted = 0
-#                dataAry = [None]*TotalSamples
-#                chiSquareds = [None]*TotalSamples
-#                i = 0
-#                chiSquaredMin=1e6
-#                lineNum=0
-#                for line in open(filename,'r'):
-#                    lineNum+=1
-#                    if lineNum>2:
-#                        dataLineCols = line.split()
-#                        ## this should never happen, but it is a check for a double decimal value
-#                        decimalSplit = dataLineCols[columNum].split('.')
-#                        if len(decimalSplit)>2:
-#                            dataValue = float(decimalSplit[0]+'.'+decimalSplit[1])
-#                        else:
-#                            dataValue = float(dataLineCols[columNum])
-#                        chiSquared = float(dataLineCols[8])
-#                        timesBeenHere = int(float(dataLineCols[-1]))
-#                        if (chiSquared==0)or(dataValue==0):
-#                            if verboseInternal:
-#                                print line
-#                        totalAccepted+=timesBeenHere
-#                        dataAry[i:i+timesBeenHere]=dataValue
-#                        if returnChiSquareds:
-#                            chiSquareds[i:i+timesBeenHere]=chiSquared
-#                        i+=timesBeenHere
-#                        if chiSquared<chiSquaredMin:
-#                            chiSquaredMin = chiSquared
-#                            bestDataVal = dataValue
-#                endTime2 = timeit.default_timer()
-#                totalTime = (endTime2-startTime2) # in seconds
-#                totalTimeString = timeString(totalTime)
-#                s=s+ '\nUPDATED2 Direct data loading took '+totalTimeString+' to complete.\n' 
-#                s=s+'The resulting arrays had '+str(totalAccepted)+' elements, with best value '+str(bestDataVal)+', and minChiSquared '+str(chiSquaredMin)
-#            if False:
-#                #Old string parsing directly version UPDATED WITH NUMPY suggestions from stackoverflow
-#                startTime2 = timeit.default_timer()
-#                totalAccepted = 0
-#                dataAry = np.empty(TotalSamples)
-#                chiSquareds = np.empty(TotalSamples)
-#                i = 0
-#                chiSquaredMin=1e6
-#                lineNum=0
-#                for line in open(filename,'r'):
-#                        lineNum+=1
-#                        if lineNum>2:
-#                            dataLineCols = line.split()
-#                            ## this should never happen, but it is a check for a double decimal value
-#                            decimalSplit = dataLineCols[columNum].split('.')
-#                            if len(decimalSplit)>2:
-#                                dataValue = float(decimalSplit[0]+'.'+decimalSplit[1])
-#                            else:
-#                                dataValue = float(dataLineCols[columNum])
-#                            chiSquared = float(dataLineCols[8])
-#                            timesBeenHere = float(dataLineCols[-1])
-#                            if (chiSquared==0)or(dataValue==0):
-#                                if verboseInternal:
-#                                    print line
-#                            totalAccepted+=timesBeenHere
-#                            dataAry[i:i+timesBeenHere]=dataValue
-#                            if returnChiSquareds:
-#                                chiSquareds[i:i+timesBeenHere]=chiSquared
-#                            i+=timesBeenHere
-#                            if chiSquared<chiSquaredMin:
-#                                chiSquaredMin = chiSquared
-#                                bestDataVal = dataValue
-#                #f.close()
-#                endTime2 = timeit.default_timer()
-#                totalTime = (endTime2-startTime2) # in seconds
-#                totalTimeString = timeString(totalTime)
-#                s=s+ '\nUPDATED WITH NUMPY Direct data loading took '+totalTimeString+' to complete.\n' 
-#                s=s+'The resulting arrays had '+str(totalAccepted)+' elements, with best value '+str(bestDataVal)+', and minChiSquared '+str(chiSquaredMin)
-            print s
-            #Convert data array to a numpy array
-            dataAry = np.sort(dataAry)
-            # find range of data's values
-            dataMax = dataAry[0]
-            dataMin = dataAry[-1]
-            size = dataAry.size
-            if (size%2)==0:
-                dataMedian = (dataAry[size / 2 - 1] + dataAry[size / 2]) / 2
-            else:
-                dataMedian = dataAry[size / 2]
-            s=  '\nTotal number of orbits = '+str(totalAccepted)
-            s=s+'\nBest value found was '+str(bestDataVal)+", at line Number "+str(bestOrbit)+", and had a chiSquared = "+str(chiSquaredMin)
-            s=s+'\nMedian value = '+str(dataMedian)
-            s=s+'\n[Min,Max] values found for data were '+repr([dataMin,dataMax])
-            if gotLog:
-                log.write(s+'\n')
-            if verboseInternal:
-                print s
+        minLoc68=mid-int(float(size)*0.683)//2
+        if minLoc68<0:
+            minLoc68 = 0
+        maxLoc68 = mid+int(float(size)*0.683)//2
+        if maxLoc68>(size-1):
+            maxLoc68 = size
+        minLoc95=mid-int(float(size)*0.958)//2
+        if minLoc95<0:
+            minLoc95 = 0
+        maxLoc95= mid+int(float(size)*0.958)//2
+        if maxLoc95>(size-1):
+            maxLoc95 = size
         
-            if bestCentered:
-                mid = np.where(dataAry==bestDataVal)[0][0]
-            else:
-                mid=size//2
-                
-            minLoc68=mid-int(float(size)*0.683)//2
-            if minLoc68<0:
-                minLoc68 = 0
-            maxLoc68 = mid+int(float(size)*0.683)//2
-            if maxLoc68>(size-1):
-                maxLoc68 = size
-            minLoc95=mid-int(float(size)*0.958)//2
-            if minLoc95<0:
-                minLoc95 = 0
-            maxLoc95= mid+int(float(size)*0.958)//2
-            if maxLoc95>(size-1):
-                maxLoc95 = size
-            
-            conf68Vals = [dataAry[minLoc68],dataAry[maxLoc68]]
-            conf95Vals = [dataAry[minLoc95],dataAry[maxLoc95]]
-            conf68ValsRough=[]
-            conf95ValsRough=[]
-            
-            if ((len(conf68Vals)==0) or (len(conf95Vals)==0)):
-                if (len(conf68Vals)==0):
-                    s= 'confLevelFinderNEWdataVersion: ERROR!!! No FINE 68.3% confidence levels were found'
+        conf68Vals = [dataAry[minLoc68],dataAry[maxLoc68]]
+        conf95Vals = [dataAry[minLoc95],dataAry[maxLoc95]]
+        conf68ValsRough=[]
+        conf95ValsRough=[]
+        
+        if ((len(conf68Vals)==0) or (len(conf95Vals)==0)):
+            if (len(conf68Vals)==0):
+                s= 'confLevelFinderNEWdataVersion: ERROR!!! No FINE 68.3% confidence levels were found'
+                if gotLog:
+                    log.write(s+'\n')
+                if verboseInternal:
+                    print s
+                if (len(conf68ValsRough)==0):
+                    s= 'confLevelFinderNEWdataVersion: ERROR!!! No ROUGH 68% confidence levels were found, so returning [0,0]'
                     if gotLog:
                         log.write(s+'\n')
                     if verboseInternal:
                         print s
-                    if (len(conf68ValsRough)==0):
-                        s= 'confLevelFinderNEWdataVersion: ERROR!!! No ROUGH 68% confidence levels were found, so returning [0,0]'
-                        if gotLog:
-                            log.write(s+'\n')
-                        if verboseInternal:
-                            print s
-                        conf68Vals = [0,0]
-                    else:
-                        conf68Vals = conf68ValsRough
-                        s= "confLevelFinderNEWdataVersion: Had to use ROUGH 68% [68,69] as no FINE 68.3% was found. So, using range "+repr(conf68Vals)+'\n'
-                        if gotLog:
-                            log.write(s+'\n')
-                        if verboseInternal:
-                            print s
-                
-                if (len(conf95Vals)==0):
-                    s= 'confLevelFinderNEWdataVersion: ERROR!!! No FINE 95.4% confidence levels were found'
+                    conf68Vals = [0,0]
+                else:
+                    conf68Vals = conf68ValsRough
+                    s= "confLevelFinderNEWdataVersion: Had to use ROUGH 68% [68,69] as no FINE 68.3% was found. So, using range "+repr(conf68Vals)+'\n'
                     if gotLog:
                         log.write(s+'\n')
                     if verboseInternal:
                         print s
-                    if (len(conf95ValsRough)==0):
-                        s= 'confLevelFinderNEWdataVersion: ERROR!!! No ROUGH 95% confidence levels were found, so returning [0,0]'
-                        if gotLog:
-                            log.write(s+'\n')
-                        if verboseInternal:
-                            print s
-                        conf95Vals = [0,0]
-                    else:
-                        conf95Vals = conf95ValsRough
-                        s= "confLevelFinderNEWdataVersion: Had to use ROUGH 95% [95,96] as no FINE 95.4% was found. So, using range "+repr(conf95Vals)+'\n'
-                        if gotLog:
-                            log.write(s+'\n')
-                        if verboseInternal:
-                            print s
             
-        else:
-            ## There was no useful data, so return values indicating that
-            
-            dataAry=bestDataVal=dataMedian=dataValueStart
-            conf68Vals = [dataValueStart,dataValueStart]
-            conf95Vals = [dataValueStart,dataValueStart]
-            chiSquareds = 0
-            
-            
-        if gotLog:
-            s= "Final 68% range values are: "+repr(conf68Vals)+'\n'
-            s=s+"Final 95% range values are: "+repr(conf95Vals)+'\n'
-            if bestCentered:
-                s=s+ "\nerror is centered on best \n"
-                s=s+"68.3% error level = "+str(bestDataVal-conf68Vals[0])+'\n'
-                s=s+" =>   "+str(dataMedian)+'  +/-  '+str(bestDataVal-conf68Vals[0])+'\n'
-            else:
-                s=s+ "\nerror is centered on Median \n"
-                s=s+"68.3% error level = "+str(dataMedian-conf68Vals[0])
-                s=s+" =>   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
-            
-            s=s+'\n'+75*'-'+'\n Leaving confLevelFinderNEWdataVersion \n'+75*'-'+'\n'
-            log.write(s)
-            log.close()
-        if verboseInternal:
-            print 'returnData = '+repr(returnData)+', returnChiSquareds = '+repr(returnChiSquareds)+', returnBestDataVal = '+repr(returnBestDataVal)
-        if (returnData and returnChiSquareds and (returnBestDataVal==False)):
-            if verboseInternal:
-                print 'returning first 3'
-            returnList =  ([conf68Vals,conf95Vals],dataAry, chiSquareds)
-        if (returnData and returnChiSquareds and returnBestDataVal):
-            if verboseInternal:
-                print 'returning all 4'
-            returnList =   ([conf68Vals,conf95Vals],dataAry, chiSquareds, bestDataVal)
-        if (returnData and (returnChiSquareds==False)and (returnBestDataVal==False)):
-            if verboseInternal:
-                print 'returning data only'
-            returnList =   ([conf68Vals,conf95Vals],dataAry)
-        if (returnData and (returnChiSquareds==False) and returnBestDataVal):
-            if verboseInternal:
-                print 'returning data and bestval'
-            returnList =   ([conf68Vals,conf95Vals],dataAry, bestDataVal)
-        if ((returnData==False) and returnChiSquareds):
-            if verboseInternal:
-                print 'returning just chiSquareds'
-            returnList =   ([conf68Vals,conf95Vals], chiSquareds)
-        if ((returnData==False) and returnChiSquareds and returnBestDataVal):
-            if verboseInternal:
-                print 'returning chiSquareds and bestval'
-            returnList =   ([conf68Vals,conf95Vals], chiSquareds, bestDataVal)
-        if ((returnData==False)and(returnChiSquareds==False) and (returnBestDataVal==False)):
-            if verboseInternal:
-                print 'returning only CLevels'
-            returnList =   [conf68Vals,conf95Vals]
+            if (len(conf95Vals)==0):
+                s= 'confLevelFinderNEWdataVersion: ERROR!!! No FINE 95.4% confidence levels were found'
+                if gotLog:
+                    log.write(s+'\n')
+                if verboseInternal:
+                    print s
+                if (len(conf95ValsRough)==0):
+                    s= 'confLevelFinderNEWdataVersion: ERROR!!! No ROUGH 95% confidence levels were found, so returning [0,0]'
+                    if gotLog:
+                        log.write(s+'\n')
+                    if verboseInternal:
+                        print s
+                    conf95Vals = [0,0]
+                else:
+                    conf95Vals = conf95ValsRough
+                    s= "confLevelFinderNEWdataVersion: Had to use ROUGH 95% [95,96] as no FINE 95.4% was found. So, using range "+repr(conf95Vals)+'\n'
+                    if gotLog:
+                        log.write(s+'\n')
+                    if verboseInternal:
+                        print s
         
+    else:
+        ## There was no useful data, so return values indicating that
+        
+        dataAry=bestDataVal=dataMedian=dataValueStart
+        conf68Vals = [dataValueStart,dataValueStart]
+        conf95Vals = [dataValueStart,dataValueStart]
+        chiSquareds = 0
+        
+            
+    if gotLog:
+        s= "Final 68% range values are: "+repr(conf68Vals)+'\n'
+        s=s+"Final 95% range values are: "+repr(conf95Vals)+'\n'
+        if bestCentered:
+            s=s+ "\nerror is centered on best \n"
+            s=s+"68.3% error level = "+str(bestDataVal-conf68Vals[0])+'\n'
+            s=s+" =>   "+str(dataMedian)+'  +/-  '+str(bestDataVal-conf68Vals[0])+'\n'
+        else:
+            s=s+ "\nerror is centered on Median \n"
+            s=s+"68.3% error level = "+str(dataMedian-conf68Vals[0])
+            s=s+" =>   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
+        
+        s=s+'\n'+75*'-'+'\n Leaving confLevelFinderNEWdataVersion \n'+75*'-'+'\n'
+        log.write(s)
+        log.close()
+    if verboseInternal:
+        print 'returnData = '+repr(returnData)+', returnChiSquareds = '+repr(returnChiSquareds)+', returnBestDataVal = '+repr(returnBestDataVal)
+    if (returnData and returnChiSquareds and (returnBestDataVal==False)):
+        if verboseInternal:
+            print 'returning first 3'
+        returnList =  ([conf68Vals,conf95Vals],dataAry, chiSquareds)
+    if (returnData and returnChiSquareds and returnBestDataVal):
+        if verboseInternal:
+            print 'returning all 4'
+        returnList =   ([conf68Vals,conf95Vals],dataAry, chiSquareds, bestDataVal)
+    if (returnData and (returnChiSquareds==False)and (returnBestDataVal==False)):
+        if verboseInternal:
+            print 'returning data only'
+        returnList =   ([conf68Vals,conf95Vals],dataAry)
+    if (returnData and (returnChiSquareds==False) and returnBestDataVal):
+        if verboseInternal:
+            print 'returning data and bestval'
+        returnList =   ([conf68Vals,conf95Vals],dataAry, bestDataVal)
+    if ((returnData==False) and returnChiSquareds):
+        if verboseInternal:
+            print 'returning just chiSquareds'
+        returnList =   ([conf68Vals,conf95Vals], chiSquareds)
+    if ((returnData==False) and returnChiSquareds and returnBestDataVal):
+        if verboseInternal:
+            print 'returning chiSquareds and bestval'
+        returnList =   ([conf68Vals,conf95Vals], chiSquareds, bestDataVal)
+    if ((returnData==False)and(returnChiSquareds==False) and (returnBestDataVal==False)):
+        if verboseInternal:
+            print 'returning only CLevels'
+        returnList =   [conf68Vals,conf95Vals]
+    
         return returnList 
+    
     else:
         s= "confLevelFinderNEWdataVersion: ERROR!!!! file doesn't exist"
         print s

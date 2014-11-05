@@ -7,6 +7,8 @@ import random as rand
 import timeit
 import pylab
 import shutil
+import RVtoolbox as RVtools
+import DItoolbox as DItools
 from math import pi
 
 """
@@ -2797,10 +2799,10 @@ def makeArtificialData(longAN_deg, e, T, Tc, period, inc, argPeri_deg, a_total, 
     
     (a_total, a1IN, a2, p_s) = semiMajorConverter(Mass1, Mass2, a_total,a1=0.0,a2=0.0, period=period,verbose=False)
     for epoch in range(0,numDataPoints):
-        (v_r,K) = vrCalculatorStar2(epochs[epoch],e,T,period,argPeri_deg,a1IN,T_center=Tc,i=inc, K=False, verbose=False)
+        (v_r,K) = RVtools.vrCalculatorStar2(epochs[epoch],e,T,period,argPeri_deg,a1IN,T_center=Tc,i=inc, K=False, verbose=False)
         
         (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, a1, a2) =\
-                    orbitCalculatorSAPA(epochs[epoch], sys_dist, inc, longAN_deg, e, T, period, argPeriDI, a_total,\
+                    DItools.orbitCalculatorSAPA(epochs[epoch], sys_dist, inc, longAN_deg, e, T, period, argPeriDI, a_total,\
                                                                 Mass1=1, Mass2=1, verbose=False)
         #sigma = 1.80
         #SAs.append(SA+SA_errors[epoch]*rand.uniform(-sigma,sigma))
@@ -2871,7 +2873,7 @@ def orbElementTester(longAN_deg, e, period, inclination_deg, argPeri_deg, a_tota
     print "Total Semi-major axis [AU] = ",a_total
     
     (chi_squared_total_cur, ns, Ms, Es, thetas, Sep_Dists, SA_deg_measured_models, PA_deg_measured_models, a1s, a2s) =\
-        multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
+        DItools.multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
                        epochs, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total,\
                        Mass1=Mass1, Mass2=Mass2, verbose=False )
         
@@ -2948,7 +2950,7 @@ def orbElementTester2(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_
            
     ## send random parameters along with known ones to multi-epoch orbit calculator
     (chi_squared_total_cur, ns, Ms, Es, thetas, Sep_Dists, SA_deg_measured_models, PA_deg_measured_models, a1s, a2s) =\
-        multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
+        DItools.multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
                        epochs, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total,\
                        Mass1=Mass1, Mass2=Mass2, verbose=False)
 
@@ -2984,7 +2986,7 @@ def orbElementTester2(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_
 #        chi_squared_RV_curr = rv2bodyCalculator3(RV_epochs[RVdataSet], RVs_proposed[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, Mass2,  \
 #                                                    inclination_deg, period, e, T,  \
 #                                                    argPeri_deg, planet_K, planet_p, planet_e, planet_argPeri, planet_To)
-        chi_squared_RV_curr = rv2bodyCalculator4(RV_epochs[RVdataSet], RVs_proposed[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, np.mean(a1s), inclination_deg, \
+        chi_squared_RV_curr = RVtools.rv2bodyCalculator4(RV_epochs[RVdataSet], RVs_proposed[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, np.mean(a1s), inclination_deg, \
                                                         period, e, T, argPeri_deg, \
                                                             planet_K, planet_p, planet_e, planet_argPeri, planet_To, verbose=False)
         chi_squared_RV = chi_squared_RV+chi_squared_RV_curr
@@ -3060,7 +3062,7 @@ def orbElementTester3(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_
            
     ## send random parameters along with known ones to multi-epoch orbit calculator
     (chi_squared_total, ns, Ms, Es, thetas, xs, ys, a1s, a2s) =\
-        multiEpochOrbCalc3(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
+        DItools.multiEpochOrbCalc3(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
                        epochs, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total,\
                        Mass1=Mass1, Mass2=Mass2, verbose=False)
 
@@ -3111,7 +3113,7 @@ def orbElementTester3(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_
     RVs = [dataset0,dataset1]
       
     for RVdataSet in range(1,len(RVs)):
-        chi_squared_RV_curr = rv2bodyCalculator3(RV_epochs[RVdataSet], RVs[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, Mass2,  \
+        chi_squared_RV_curr = RVtools.rv2bodyCalculator3(RV_epochs[RVdataSet], RVs[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, Mass2,  \
                                                     inclination_deg, period, e, T,  \
                                                     argPeri_deg, planet_K, planet_p, planet_e, planet_argPeri, planet_To, verbose=True)
 #        chi_squared_RV_curr = rv2bodyCalculator4(RV_epochs[RVdataSet], RVs[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, np.mean(a1s), inclination_deg, \
@@ -3218,14 +3220,14 @@ def orbElementTester4(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_
     
     if False:
         print '\nOriginal RV epochs array = '+repr(RV_epochsIN2)
-        print '\nOUTPUT RV epochs array = '+repr(RV_epochsOUT3)
+        print '\nOUTPUT RV epochs array = '+repr(RV_epochsOUT2)
     
     
     numEpochs_DI = len(epochs)
            
     ## send random parameters along with known ones to multi-epoch orbit calculator
     (chi_squared_total, ns, Ms, Es, thetas, xs, ys, a1s, a2s) =\
-        multiEpochOrbCalc3(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
+        DItools.multiEpochOrbCalc3(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
                        epochs, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total,\
                        Mass1=Mass1, Mass2=Mass2, verbose=False)
 
@@ -3262,7 +3264,7 @@ def orbElementTester4(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_
     sigma_jitter = 0.0# 3.0 #15.0    #[m/s]
     
     for RVdataSet in range(1,len(RVs)):        
-        chi_squared_RV_curr = rv1bodyCalculator(RV_epochsOUT2[RVdataSet], RVsOUT[RVdataSet], RVerrors[RVdataSet], sigma_jitter,\
+        chi_squared_RV_curr = RVtools.rv1bodyCalculator(RV_epochsOUT2[RVdataSet], RVsOUT[RVdataSet], RVerrors[RVdataSet], sigma_jitter,\
                                                          inclination_deg, period, e, T, argPeri_deg, np.mean(a1s), verbose=True)
         
         chi_squared_RV = chi_squared_RV+chi_squared_RV_curr
@@ -3320,11 +3322,11 @@ def orbElementTester3TH_I(longAN_deg, e, T, period, inclination_deg, argPeri_deg
     numEpochs_DI = len(epochs)
     
     # calculate ABCFG from input params
-    (A,B,C,F,G) = ABCFG_values(a_total/Sys_Dist_PC, math.radians(argPeri_deg), math.radians(longAN_deg), math.radians(inclination_deg))
+    (A,B,C,F,G) = DItools.ABCFG_values(a_total/Sys_Dist_PC, math.radians(argPeri_deg), math.radians(longAN_deg), math.radians(inclination_deg))
     
     ## send random parameters along with known ones to multi-epoch orbit calculator
     (a_arcsec, argPeri_rad, longAN_rad, inclination_rad, period_out, chiSquared_total) =\
-        multiEpochOrbCalcTH_I3(e, T, A, B, C, F, G, Mass1, Mass2, Sys_Dist_PC, \
+        DItools.multiEpochOrbCalcTH_I3(e, T, A, B, C, F, G, Mass1, Mass2, Sys_Dist_PC, \
                                                     SA_arcsec_measured_REALs, PA_deg_measured_REALs, epochs, SA_mean_errors, PA_mean_errors)
 
     # calculate a total from a1 plus a2
@@ -3370,7 +3372,7 @@ def orbElementTester3TH_I(longAN_deg, e, T, period, inclination_deg, argPeri_deg
     chi_squared_RV = 0.0
     numEpochs_RV = 0.0
     for RVdataSet in range(0,len(RVs)):
-        chi_squared_RV_curr = rv2bodyCalculator3(RV_epochs[RVdataSet], RVs[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, Mass2,  \
+        chi_squared_RV_curr = RVtools.rv2bodyCalculator3(RV_epochs[RVdataSet], RVs[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, Mass2,  \
                                                     inclination_deg, period, e, T,  \
                                                     argPeri_deg, planet_K, planet_p, planet_e, planet_argPeri, planet_To)
 #        chi_squared_RV = rv2bodyCalculator4(RV_epochs, RVs, RVerrors, sigma_jitter, Mass1_proposed, np.mean(a1s), inclination_deg_proposed, \

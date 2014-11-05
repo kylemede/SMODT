@@ -2907,507 +2907,507 @@ def orbElementTester(longAN_deg, e, period, inclination_deg, argPeri_deg, a_tota
     print "SA model: ",SA_deg_measured_models[0]
     print "PA model: ",PA_deg_measured_models[0]
 
-def orbElementTester2(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_total, RV_origin_vel_0=0, RV_origin_vel_1=0):
-    """
-    This version is meant to be used on 3D (DI and RV) data located in the paramSettingsDict
-    and the orbitCalculatorSAPA.
-    
-    Use orbElementTester to test for DI only data.
-    """
-    
-    ## Measured data (import from paramSettigsDict)
-    from paramSettingsDict import paramSettingsDict
-    # DI data
-    SA_arcsec_measured_REALs = paramSettingsDict['Data']['SAs']
-    SA_mean_errors = paramSettingsDict['Data']['SAerrors']                                         
-    PA_deg_measured_REALs = paramSettingsDict['Data']['PAs']
-    PA_mean_errors = paramSettingsDict['Data']['PAerrors']
-    epochs = paramSettingsDict['Data']['DI_epochs']
-    # RV data
-    RV_epochs = paramSettingsDict['Data']['RV_epochs']
-    RVerrors = paramSettingsDict['Data']['RVerrors']
-    RVs = paramSettingsDict['Data']['RVs']
-    # General System Data
-    Sys_Dist_PC = paramSettingsDict['Data']['sysDist']#15.62
-    Sys_Dist_Error = paramSettingsDict['Data']['sysDistError']#
-    Mass1 = paramSettingsDict['Data']['M1']#1 
-    Mass1_Error = paramSettingsDict['Data']['M1Error']#
-    Mass2 = paramSettingsDict['Data']['M2']#1
-    Mass2_Error = paramSettingsDict['Data']['M2Error']#
-    
-    print "\n Orbital Parameters Input:",
-    print "Inclination [deg] = ",inclination_deg
-    print "Longitude of the Ascending Node [deg] = ",longAN_deg
-    print "Eccentricity = ",e
-    print "Time of last periapsis [jd] = ",T
-    print "Period [years] = ",period
-    #print "Tmin = "+str(epochs[0]-period*365.0)
-    #print "Tmax = "+str(epochs[0])
-    print "Argument of perigee [deg] = ",argPeri_deg
-    print "Total Semi-major axis [AU] = ",a_total
-    
-    numEpochs_DI = len(epochs)
-           
-    ## send random parameters along with known ones to multi-epoch orbit calculator
-    (chi_squared_total_cur, ns, Ms, Es, thetas, Sep_Dists, SA_deg_measured_models, PA_deg_measured_models, a1s, a2s) =\
-        DItools.multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
-                       epochs, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total,\
-                       Mass1=Mass1, Mass2=Mass2, verbose=False)
-
-    # calculate a total from a1 plus a2
-    a_total_proposed = np.mean(a1s)+np.mean(a2s)
-    
-    chi_squared_DI = chi_squared_total_cur
-    # convert to a reduced chiSquared
-    chi_squared_DI_reduced = (1.0/((2.0*(numEpochs_DI))-6.0))*chi_squared_DI
-    #chi_squared_DI_reduced=0.0 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    
-    RVs_proposed = RVs
-    for epoch in range(0,len(RVs_proposed[0])):
-        RVs_proposed[0][epoch] = RVs[0][epoch]+RV_origin_vel_0
-    for epoch in range(0,len(RVs_proposed[1])):
-        RVs_proposed[1][epoch] = RVs[1][epoch]+RV_origin_vel_1
-    
-    # data for planet's orbit that are needed to calculate proper chiSquare for RV fit
-    # all below values for the planet orbit and RV data are from Butler2006.
-    planet_K = 461.1 #[m/s]
-    planet_p = 3.31246   #[days]
-    #planet_p_years = planet_p/365.25
-    planet_e = 0.023    
-    planet_argPeri = 188.0   #[deg]
-    planet_To = 2446957.8   #[JD]
-    sigma_jitter = 15.0    #[m/s]
-    
-    # calculate a1 from a_total and masses
-    (a_total, a1, a2) = semiMajorConverter(Mass1, Mass2, a_total=a_total_proposed,a1=0.0,a2=0.0)
-    chi_squared_RV = 0.0
-    numEpochs_RV = 0.0
-    for RVdataSet in range(0,len(RVs)):            
-#        chi_squared_RV_curr = rv2bodyCalculator3(RV_epochs[RVdataSet], RVs_proposed[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, Mass2,  \
-#                                                    inclination_deg, period, e, T,  \
-#                                                    argPeri_deg, planet_K, planet_p, planet_e, planet_argPeri, planet_To)
-        chi_squared_RV_curr = RVtools.rv2bodyCalculator4(RV_epochs[RVdataSet], RVs_proposed[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, np.mean(a1s), inclination_deg, \
-                                                        period, e, T, argPeri_deg, \
-                                                            planet_K, planet_p, planet_e, planet_argPeri, planet_To, verbose=False)
-        chi_squared_RV = chi_squared_RV+chi_squared_RV_curr
-        numEpochs_RV_curr = len(RV_epochs[RVdataSet])
-        numEpochs_RV = numEpochs_RV+numEpochs_RV_curr
-        
-    # convert to a reduced chiSquared
-    chi_squared_RV_reduced = (1.0/((1.0*numEpochs_RV)-8.0))*chi_squared_RV
-    
-    # sum non-reduced chiSquareds
-    chi_squared_total = chi_squared_DI + chi_squared_RV #+ gauss_chi_squared_total
-    
-    # Total Reduced Chi Squared
-    totalNumDataPoints = 2.0*numEpochs_DI + 1.0*numEpochs_RV +3.0 # three are for the gauss params
-    totalNumModelParams = 6.0  # 6 proposed standard model params
-    TotalNu = (totalNumDataPoints-totalNumModelParams)
-    chi_squared_total_reduced = (1.0/TotalNu)*chi_squared_total
-    
-    print "\nOutputs:\n"
-    print 'reduced chisquared DI = ',chi_squared_DI_reduced
-    print 'reduced chiSquared RV = ',chi_squared_RV_reduced
-    print 'Total reduced chiSquared = ',chi_squared_total_reduced 
-#    print "a1s: "+repr(a1s)
-#    print "a2s: "+repr(a2s)
-#    print "ns: "+repr(ns)
-#    print "Ms: "+repr(Ms)
-#    print "Es: "+repr(Es)
-#    print "thetas: "+repr(thetas)
-#    print "sep dists: ",repr(Sep_Dists)
-#    print "SA model: "+repr(SA_deg_measured_models)
-#    print "PA model: "+repr(PA_deg_measured_models)
-    
-def orbElementTester3(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_total,RV_origin_vel_0_proposed=0,RV_origin_vel_1_proposed=0):
-    """
-    This version is meant to be used on 3D (DI and RV) data located in the paramSettingsDict
-    and the orbitCalculatorSAPA.
-    
-    Use orbElementTester to test for DI only data.
-    """
-    
-    ## Measured data (import from paramSettigsDict)
-    from paramSettingsDict import paramSettingsDict
-    # DI data
-    SA_arcsec_measured_REALs = paramSettingsDict['Data']['SAs']
-    SA_mean_errors = paramSettingsDict['Data']['SAerrors']                                         
-    PA_deg_measured_REALs = paramSettingsDict['Data']['PAs']
-    PA_mean_errors = paramSettingsDict['Data']['PAerrors']
-    epochs = paramSettingsDict['Data']['DI_epochs']
-    # RV data
-    RV_epochs = paramSettingsDict['Data']['RV_epochs']
-    RVerrors = paramSettingsDict['Data']['RVerrors']
-    RVs = paramSettingsDict['Data']['RVs']
-    # General System Data
-    Sys_Dist_PC = paramSettingsDict['Data']['sysDist']#15.62
-    Sys_Dist_Error = paramSettingsDict['Data']['sysDistError']#
-    Mass1 = paramSettingsDict['Data']['M1']#1 
-    Mass1_Error = paramSettingsDict['Data']['M1Error']#
-    Mass2 = paramSettingsDict['Data']['M2']#1
-    Mass2_Error = paramSettingsDict['Data']['M2Error']#
-    
-    print "\n Orbital Parameters Input:",
-    print "Inclination [deg] = ",inclination_deg
-    print "Longitude of the Ascending Node [deg] = ",longAN_deg
-    print "Eccentricity = ",e
-    print "Time of last periapsis [jd] = ",T
-    print "Period [years] = ",period
-    #print "Tmin = "+str(epochs[0]-period*365.0)
-    #print "Tmax = "+str(epochs[0])
-    print "Argument of perigee [deg] = ",argPeri_deg
-    print "Total Semi-major axis [AU] = ",a_total
-    
-    numEpochs_DI = len(epochs)
-           
-    ## send random parameters along with known ones to multi-epoch orbit calculator
-    (chi_squared_total, ns, Ms, Es, thetas, xs, ys, a1s, a2s) =\
-        DItools.multiEpochOrbCalc3(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
-                       epochs, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total,\
-                       Mass1=Mass1, Mass2=Mass2, verbose=False)
-
-    # calculate a total from a1 plus a2
-    a_total_proposed = np.mean(a1s)+np.mean(a2s)
-    
-    chi_squared_DI = chi_squared_total
-    # convert to a reduced chiSquared
-    chi_squared_DI_reduced = (1.0/((2.0*(numEpochs_DI))-6.0))*chi_squared_DI
-    #chi_squared_DI_reduced=0.0 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    
-    # data for planet's orbit that are needed to calculate proper chiSquare for RV fit
-    # all below values for the planet orbit and RV data are from Butler2006.
-    planet_K = 461.1 #[m/s]
-    planet_p = 3.31246   #[days]
-    #planet_p_years = planet_p/365.25
-    planet_e = 0.023    
-    planet_argPeri = 188.0   #[deg]
-    planet_To = 2446957.8   #[JD]
-    sigma_jitter = 15.0    #[m/s]
-    
-    # calculate a1 from a_total and masses
-    (a_total, a1, a2) = semiMajorConverter(Mass1, Mass2, a_total=a_total_proposed,a1=0.0,a2=0.0)
-    chi_squared_RV = 0.0
-    numEpochs_RV = 0.0
-    
-    
-#    for epoch in range(0,len(RVs[0])):
-#        RVs[0][epoch] = RVs[0][epoch]+RV_origin_vel_0_proposed
-#    for epoch in range(0,len(RVs[1])):
-#        RVs[1][epoch] = RVs[1][epoch]+RV_origin_vel_1_proposed
-              
-    RVsIN = RVs
-    RVsOUT = RVs
-    #print 'RV for dataset 0'
-    dataset0 = []
-    dataset1 = []
-    for epoch in range(0,len(RVs[0])):
-        vel = RVsIN[0][epoch]+RV_origin_vel_0_proposed
-        dataset0.append(vel)
-        #print str(RVsIN[0][epoch]) +' + '+str(RV_origin_vel_0_proposed) +" = "+str(vel)
-    #print 'RV for dataset 1'
-    for epoch in range(0,len(RVs[1])):
-        vel = RVsIN[1][epoch]+RV_origin_vel_1_proposed
-        dataset1.append(vel)
-        #print str(RVsIN[1][epoch]) +' + '+str(RV_origin_vel_1_proposed) +" = "+str(vel)
-        
-    RVs = [dataset0,dataset1]
-      
-    for RVdataSet in range(1,len(RVs)):
-        chi_squared_RV_curr = RVtools.rv2bodyCalculator3(RV_epochs[RVdataSet], RVs[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, Mass2,  \
-                                                    inclination_deg, period, e, T,  \
-                                                    argPeri_deg, planet_K, planet_p, planet_e, planet_argPeri, planet_To, verbose=True)
-#        chi_squared_RV_curr = rv2bodyCalculator4(RV_epochs[RVdataSet], RVs[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, np.mean(a1s), inclination_deg, \
-#                                                        period, e, T, argPeri_deg, \
-#                                                            planet_K, planet_p, planet_e, planet_argPeri, planet_To, verbose=True)
-        chi_squared_RV = chi_squared_RV+chi_squared_RV_curr
-        numEpochs_RV_curr = len(RV_epochs[RVdataSet])
-        numEpochs_RV = numEpochs_RV+numEpochs_RV_curr
-        
-    # convert to a reduced chiSquared
-    chi_squared_RV_reduced = (1.0/((1.0*numEpochs_RV)-8.0))*chi_squared_RV
-    
-    # sum non-reduced chiSquareds
-    chi_squared_total = chi_squared_DI + chi_squared_RV #+ gauss_chi_squared_total
-    
-    # Total Reduced Chi Squared
-    totalNumDataPoints = 2.0*numEpochs_DI + 1.0*numEpochs_RV #+3.0 # three are for the gauss params
-    totalNumModelParams = 8.0  # 6 proposed standard model params
-    TotalNu = (totalNumDataPoints-8.0)
-    chi_squared_total_reduced = (1.0/TotalNu)*chi_squared_total
-    
-    print "\nOutputs:\n"
-    print 'reduced chisquared DI = ',chi_squared_DI_reduced
-    print 'reduced chiSquared RV = ',chi_squared_RV_reduced
-    print 'Total reduced chiSquared = ',chi_squared_total_reduced 
-#    print "a1s: "+repr(a1s)
-#    print "a2s: "+repr(a2s)
-#    print "ns: "+repr(ns)
-#    print "Ms: "+repr(Ms)
-#    print "Es: "+repr(Es)
-#    print "thetas: "+repr(thetas)
-#    print "sep dists: ",repr(Sep_Dists)
-#    print "SA model: "+repr(SA_deg_measured_models)
-#    print "PA model: "+repr(PA_deg_measured_models)    
-
-def orbElementTester4(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_total,RV_origin_vel_0_proposed=0,RV_origin_vel_1_proposed=0):
-    """
-    This version is meant to be used on RV data of single planet located in the paramSettingsDict.
-    
-    Use orbElementTester to test for DI only data.
-    """
-    
-    ## Measured data (import from paramSettigsDict)
-    from paramSettingsDict import paramSettingsDict
-    # DI data
-    SA_arcsec_measured_REALs = paramSettingsDict['Data']['SAs']
-    SA_mean_errors = paramSettingsDict['Data']['SAerrors']                                         
-    PA_deg_measured_REALs = paramSettingsDict['Data']['PAs']
-    PA_mean_errors = paramSettingsDict['Data']['PAerrors']
-    epochs = paramSettingsDict['Data']['DI_epochs']
-    # RV data
-    RV_epochs = paramSettingsDict['Data']['RV_epochs']
-    RVerrors = paramSettingsDict['Data']['RVerrors']
-    RVs = paramSettingsDict['Data']['RVs']
-    # General System Data
-    Sys_Dist_PC = paramSettingsDict['Data']['sysDist']#15.62
-    Sys_Dist_Error = paramSettingsDict['Data']['sysDistError']#
-    Mass1 = paramSettingsDict['Data']['M1']#1 
-    Mass1_Error = paramSettingsDict['Data']['M1Error']#
-    Mass2 = paramSettingsDict['Data']['M2']#1
-    Mass2_Error = paramSettingsDict['Data']['M2Error']#
-    
-    print "\n Orbital Parameters Input:\n",
-    print "Inclination [deg] = ",inclination_deg
-    print "Longitude of the Ascending Node [deg] = ",longAN_deg
-    print "Eccentricity = ",e
-    print "Time of last periapsis [jd] = ",T
-    print "Period [years] = ",period
-    #print "Tmin = "+str(epochs[0]-period*365.0)
-    #print "Tmax = "+str(epochs[0])
-    print "Argument of perigee [deg] = ",argPeri_deg
-    print "Total Semi-major axis [AU] = ",a_total
-    
-    
-    RV_epochsIN2 = RV_epochs
-    RV_epochsOUT2 = []
-    RV_epochsOUT = []
-    print 'About to convert epochs to all be in a single orbit'
-    Tcurr = T
-    p_curr_days = period*365.242
-    for RV_epochsIN in RV_epochsIN2:
-        RV_epochsOUT = []
-        for epoch in RV_epochsIN:
-            if epoch<Tcurr:
-                if (Tcurr-epoch)>p_curr_days:
-                    numPeriodsAwayI = int((Tcurr-epoch)/p_curr_days)
-                else:
-                    numPeriodsAwayI = 0
-                epochNEW = epoch+((numPeriodsAwayI+1)*p_curr_days)-Tcurr
-                RV_epochsOUT.append(epochNEW)
-                
-            if epoch>Tcurr:
-                if (epoch-Tcurr)>p_curr_days:
-                    numPeriodsAwayI = int((epoch-Tcurr)/p_curr_days)
-                else:
-                    numPeriodsAwayI = 0
-                epochNEW = epoch-((numPeriodsAwayI-1)*p_curr_days)-Tcurr
-                RV_epochsOUT.append(epochNEW)
-            if False:
-                print 'RV epoch updated from '+str(epoch)+" to "+str(epochNEW)+", as numPeriodsAwayI = "+str(numPeriodsAwayI)
-                print "T = "+str(Tcurr)
-                print "Period [days] = "+str(p_curr_days)
-        RV_epochsOUT2.append(RV_epochsOUT)
-    
-    if False:
-        print '\nOriginal RV epochs array = '+repr(RV_epochsIN2)
-        print '\nOUTPUT RV epochs array = '+repr(RV_epochsOUT2)
-    
-    
-    numEpochs_DI = len(epochs)
-           
-    ## send random parameters along with known ones to multi-epoch orbit calculator
-    (chi_squared_total, ns, Ms, Es, thetas, xs, ys, a1s, a2s) =\
-        DItools.multiEpochOrbCalc3(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
-                       epochs, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total,\
-                       Mass1=Mass1, Mass2=Mass2, verbose=False)
-
-    # calculate a total from a1 plus a2
-    a_total_proposed = np.mean(a1s)+np.mean(a2s)
-    
-    chi_squared_DI = chi_squared_total
-    # convert to a reduced chiSquared
-    chi_squared_DI_reduced = (1.0/((2.0*(numEpochs_DI))-6.0))*chi_squared_DI
-    #chi_squared_DI_reduced=0.0 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    
-    print 'Semi-major 1 [AU] = ',np.mean(a1s)
-    
-    # calculate a1 from a_total and masses
-    #(a_total, a1, a2, p) = semiMajorConverter(Mass1, Mass2, a_total=a_total_proposed,a1=0.0,a2=0.0)
-    chi_squared_RV = 0.0
-    numEpochs_RV = 0.0
-    
-    
-#    for epoch in range(0,len(RVs[0])):
-#        RVs[0][epoch] = RVs[0][epoch]+RV_origin_vel_0_proposed
-#    for epoch in range(0,len(RVs[1])):
-#        RVs[1][epoch] = RVs[1][epoch]+RV_origin_vel_1_proposed
-              
-    RVsIN = RVs
-    RVsOUT = []
-    for dataset in range(0,len(RVsIN)):
-        RVsUSE=[]
-        for epoch in range(0,len(RVsIN[dataset])):
-            vel = RVsIN[dataset][epoch]#-RV_origin_vel_0_proposed
-            RVsUSE.append(vel)
-        RVsOUT.append(RVsUSE)
-      
-    sigma_jitter = 0.0# 3.0 #15.0    #[m/s]
-    
-    for RVdataSet in range(1,len(RVs)):        
-        chi_squared_RV_curr = RVtools.rv1bodyCalculator(RV_epochsOUT2[RVdataSet], RVsOUT[RVdataSet], RVerrors[RVdataSet], sigma_jitter,\
-                                                         inclination_deg, period, e, T, argPeri_deg, np.mean(a1s), verbose=True)
-        
-        chi_squared_RV = chi_squared_RV+chi_squared_RV_curr
-        numEpochs_RV_curr = len(RV_epochs[RVdataSet])
-        numEpochs_RV = numEpochs_RV+numEpochs_RV_curr
-        
-    # convert to a reduced chiSquared
-    chi_squared_RV_reduced = (1.0/((1.0*numEpochs_RV)-8.0))*chi_squared_RV
-    
-    # sum non-reduced chiSquareds
-    chi_squared_total = chi_squared_DI + chi_squared_RV #+ gauss_chi_squared_total
-    
-    # Total Reduced Chi Squared
-    totalNumDataPoints = 2.0*numEpochs_DI + 1.0*numEpochs_RV #+3.0 # three are for the gauss params
-    totalNumModelParams = 8.0  # 6 proposed standard model params
-    TotalNu = (totalNumDataPoints-8.0)
-    chi_squared_total_reduced = (1.0/TotalNu)*chi_squared_total
-    
-    print "\nOutputs:\n"
-    print 'reduced chisquared DI = ',chi_squared_DI_reduced
-    print 'reduced chiSquared RV = ',chi_squared_RV_reduced
-    print 'Total reduced chiSquared = ',chi_squared_total_reduced 
-     
-    
-def orbElementTester3TH_I(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_total):
-    """
-    This version is meant to be used on 3D (DI and RV) data located in the paramSettingsDict
-    and the orbitCalculatorSAPA.
-    
-    Use orbElementTester to test for DI only data.
-    """
-    
-    ## Measured data (import from paramSettigsDict)
-    from paramSettingsDict import paramSettingsDict
-    # DI data
-    SA_arcsec_measured_REALs = paramSettingsDict['Data']['SAs']
-    SA_mean_errors = paramSettingsDict['Data']['SAerrors']                                         
-    PA_deg_measured_REALs = paramSettingsDict['Data']['PAs']
-    PA_mean_errors = paramSettingsDict['Data']['PAerrors']
-    epochs = paramSettingsDict['Data']['DI_epochs']
-    # RV data
-    RV_epochs = paramSettingsDict['Data']['RV_epochs']
-    RVerrors = paramSettingsDict['Data']['RVerrors']
-    RVs = paramSettingsDict['Data']['RVs']
-    # General System Data
-    Sys_Dist_PC = paramSettingsDict['Data']['sysDist']#15.62
-    Sys_Dist_Error = paramSettingsDict['Data']['sysDistError']#
-    Mass1 = paramSettingsDict['Data']['M1']#1 
-    Mass1_Error = paramSettingsDict['Data']['M1Error']#
-    Mass2 = paramSettingsDict['Data']['M2']#1
-    Mass2_Error = paramSettingsDict['Data']['M2Error']#
-    
-    
-    
-    numEpochs_DI = len(epochs)
-    
-    # calculate ABCFG from input params
-    (A,B,C,F,G) = DItools.ABCFG_values(a_total/Sys_Dist_PC, math.radians(argPeri_deg), math.radians(longAN_deg), math.radians(inclination_deg))
-    
-    ## send random parameters along with known ones to multi-epoch orbit calculator
-    (a_arcsec, argPeri_rad, longAN_rad, inclination_rad, period_out, chiSquared_total) =\
-        DItools.multiEpochOrbCalcTH_I3(e, T, A, B, C, F, G, Mass1, Mass2, Sys_Dist_PC, \
-                                                    SA_arcsec_measured_REALs, PA_deg_measured_REALs, epochs, SA_mean_errors, PA_mean_errors)
-
-    # calculate a total from a1 plus a2
-    a_total_proposed = a_arcsec*Sys_Dist_PC
-    argPeri_deg_out = math.degrees(argPeri_rad)
-    longAN_deg_out = math.degrees(longAN_rad)
-    inclination_deg_out = math.degrees(inclination_rad)
-    
-    print "\n Orbital Parameters Input:",
-    print "Inclination [deg] = ",inclination_deg
-    print "Longitude of the Ascending Node [deg] = ",longAN_deg
-    print "Eccentricity = ",e
-    print "Time of last periapsis [jd] = ",T
-    print "Period [years] = ",period
-    print "Argument of perigee [deg] = ",argPeri_deg
-    print "Total Semi-major axis [AU] = ",a_total
-    
-    print "\n Orbital Parameters Output:",
-    print "Inclination [deg] = ",inclination_deg_out
-    print "Longitude of the Ascending Node [deg] = ",longAN_deg_out
-    print "Period [years] = ",period_out
-    print "Argument of perigee [deg] = ",argPeri_deg_out
-    print "Total Semi-major axis [AU] = ",a_total_proposed
-    
-    
-    chi_squared_DI = chiSquared_total
-    # convert to a reduced chiSquared
-    chi_squared_DI_reduced = (1.0/((2.0*(numEpochs_DI))-6.0))*chi_squared_DI
-    #chi_squared_DI_reduced=0.0 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    
-    # data for planet's orbit that are needed to calculate proper chiSquare for RV fit
-    # all below values for the planet orbit and RV data are from Butler2006.
-    planet_K = 461.1 #[m/s]
-    planet_p = 3.31246   #[days]
-    #planet_p_years = planet_p/365.25
-    planet_e = 0.023    
-    planet_argPeri = 188.0   #[deg]
-    planet_To = 2446957.8   #[JD]
-    sigma_jitter = 15.0    #[m/s]
-    ####### del this line!!!! just a commit test $$$$%$
-    
-    # calculate a1 from a_total and masses
-    (a_total, a1, a2) = semiMajorConverter(Mass1, Mass2, a_total=a_total_proposed,a1=0.0,a2=0.0)
-    chi_squared_RV = 0.0
-    numEpochs_RV = 0.0
-    for RVdataSet in range(0,len(RVs)):
-        chi_squared_RV_curr = RVtools.rv2bodyCalculator3(RV_epochs[RVdataSet], RVs[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, Mass2,  \
-                                                    inclination_deg, period, e, T,  \
-                                                    argPeri_deg, planet_K, planet_p, planet_e, planet_argPeri, planet_To)
-#        chi_squared_RV = rv2bodyCalculator4(RV_epochs, RVs, RVerrors, sigma_jitter, Mass1_proposed, np.mean(a1s), inclination_deg_proposed, \
-#                                                        period_proposed, e_proposed, T_proposed, argPeri_deg_proposed, \
-#                                                            planet_K, planet_p, planet_e, planet_argPeri, planet_To, verbose=False)
-        chi_squared_RV = chi_squared_RV+chi_squared_RV_curr
-        numEpochs_RV_curr = len(RV_epochs[RVdataSet])
-        numEpochs_RV = numEpochs_RV+numEpochs_RV_curr
-        
-    # convert to a reduced chiSquared
-    chi_squared_RV_reduced = (1.0/((1.0*numEpochs_RV)-8.0))*chi_squared_RV
-    
-    # sum non-reduced chiSquareds
-    chi_squared_total = chi_squared_DI + chi_squared_RV #+ gauss_chi_squared_total
-    
-    # Total Reduced Chi Squared
-    totalNumDataPoints = 2.0*numEpochs_DI + 1.0*numEpochs_RV +3.0 # three are for the gauss params
-    totalNumModelParams = 6.0  # 6 proposed standard model params
-    TotalNu = (totalNumDataPoints-totalNumModelParams)
-    chi_squared_total_reduced = (1.0/TotalNu)*chi_squared_total
-    
-    print "\nOutputs:\n"
-    print 'reduced chisquared DI = ',chi_squared_DI_reduced
-    print 'reduced chiSquared RV = ',chi_squared_RV_reduced
-    print 'Total reduced chiSquared = ',chi_squared_total_reduced 
-#    print "a1s: "+repr(a1s)
-#    print "a2s: "+repr(a2s)
-#    print "ns: "+repr(ns)
-#    print "Ms: "+repr(Ms)
-#    print "Es: "+repr(Es)
-#    print "thetas: "+repr(thetas)
-#    print "sep dists: ",repr(Sep_Dists)
-#    print "SA model: "+repr(SA_deg_measured_models)
-#    print "PA model: "+repr(PA_deg_measured_models)  
+# def orbElementTester2(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_total, RV_origin_vel_0=0, RV_origin_vel_1=0):
+#     """
+#     This version is meant to be used on 3D (DI and RV) data located in the paramSettingsDict
+#     and the orbitCalculatorSAPA.
+#     
+#     Use orbElementTester to test for DI only data.
+#     """
+#     
+#     ## Measured data (import from paramSettigsDict)
+#     from paramSettingsDict import paramSettingsDict
+#     # DI data
+#     SA_arcsec_measured_REALs = paramSettingsDict['Data']['SAs']
+#     SA_mean_errors = paramSettingsDict['Data']['SAerrors']                                         
+#     PA_deg_measured_REALs = paramSettingsDict['Data']['PAs']
+#     PA_mean_errors = paramSettingsDict['Data']['PAerrors']
+#     epochs = paramSettingsDict['Data']['DI_epochs']
+#     # RV data
+#     RV_epochs = paramSettingsDict['Data']['RV_epochs']
+#     RVerrors = paramSettingsDict['Data']['RVerrors']
+#     RVs = paramSettingsDict['Data']['RVs']
+#     # General System Data
+#     Sys_Dist_PC = paramSettingsDict['Data']['sysDist']#15.62
+#     Sys_Dist_Error = paramSettingsDict['Data']['sysDistError']#
+#     Mass1 = paramSettingsDict['Data']['M1']#1 
+#     Mass1_Error = paramSettingsDict['Data']['M1Error']#
+#     Mass2 = paramSettingsDict['Data']['M2']#1
+#     Mass2_Error = paramSettingsDict['Data']['M2Error']#
+#     
+#     print "\n Orbital Parameters Input:",
+#     print "Inclination [deg] = ",inclination_deg
+#     print "Longitude of the Ascending Node [deg] = ",longAN_deg
+#     print "Eccentricity = ",e
+#     print "Time of last periapsis [jd] = ",T
+#     print "Period [years] = ",period
+#     #print "Tmin = "+str(epochs[0]-period*365.0)
+#     #print "Tmax = "+str(epochs[0])
+#     print "Argument of perigee [deg] = ",argPeri_deg
+#     print "Total Semi-major axis [AU] = ",a_total
+#     
+#     numEpochs_DI = len(epochs)
+#            
+#     ## send random parameters along with known ones to multi-epoch orbit calculator
+#     (chi_squared_total_cur, ns, Ms, Es, thetas, Sep_Dists, SA_deg_measured_models, PA_deg_measured_models, a1s, a2s) =\
+#         DItools.multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
+#                        epochs, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total,\
+#                        Mass1=Mass1, Mass2=Mass2, verbose=False)
+# 
+#     # calculate a total from a1 plus a2
+#     a_total_proposed = np.mean(a1s)+np.mean(a2s)
+#     
+#     chi_squared_DI = chi_squared_total_cur
+#     # convert to a reduced chiSquared
+#     chi_squared_DI_reduced = (1.0/((2.0*(numEpochs_DI))-6.0))*chi_squared_DI
+#     #chi_squared_DI_reduced=0.0 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#     
+#     RVs_proposed = RVs
+#     for epoch in range(0,len(RVs_proposed[0])):
+#         RVs_proposed[0][epoch] = RVs[0][epoch]+RV_origin_vel_0
+#     for epoch in range(0,len(RVs_proposed[1])):
+#         RVs_proposed[1][epoch] = RVs[1][epoch]+RV_origin_vel_1
+#     
+#     # data for planet's orbit that are needed to calculate proper chiSquare for RV fit
+#     # all below values for the planet orbit and RV data are from Butler2006.
+#     planet_K = 461.1 #[m/s]
+#     planet_p = 3.31246   #[days]
+#     #planet_p_years = planet_p/365.25
+#     planet_e = 0.023    
+#     planet_argPeri = 188.0   #[deg]
+#     planet_To = 2446957.8   #[JD]
+#     sigma_jitter = 15.0    #[m/s]
+#     
+#     # calculate a1 from a_total and masses
+#     (a_total, a1, a2) = semiMajorConverter(Mass1, Mass2, a_total=a_total_proposed,a1=0.0,a2=0.0)
+#     chi_squared_RV = 0.0
+#     numEpochs_RV = 0.0
+#     for RVdataSet in range(0,len(RVs)):            
+# #        chi_squared_RV_curr = rv2bodyCalculator3(RV_epochs[RVdataSet], RVs_proposed[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, Mass2,  \
+# #                                                    inclination_deg, period, e, T,  \
+# #                                                    argPeri_deg, planet_K, planet_p, planet_e, planet_argPeri, planet_To)
+#         chi_squared_RV_curr = RVtools.rv2bodyCalculator4(RV_epochs[RVdataSet], RVs_proposed[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, np.mean(a1s), inclination_deg, \
+#                                                         period, e, T, argPeri_deg, \
+#                                                             planet_K, planet_p, planet_e, planet_argPeri, planet_To, verbose=False)
+#         chi_squared_RV = chi_squared_RV+chi_squared_RV_curr
+#         numEpochs_RV_curr = len(RV_epochs[RVdataSet])
+#         numEpochs_RV = numEpochs_RV+numEpochs_RV_curr
+#         
+#     # convert to a reduced chiSquared
+#     chi_squared_RV_reduced = (1.0/((1.0*numEpochs_RV)-8.0))*chi_squared_RV
+#     
+#     # sum non-reduced chiSquareds
+#     chi_squared_total = chi_squared_DI + chi_squared_RV #+ gauss_chi_squared_total
+#     
+#     # Total Reduced Chi Squared
+#     totalNumDataPoints = 2.0*numEpochs_DI + 1.0*numEpochs_RV +3.0 # three are for the gauss params
+#     totalNumModelParams = 6.0  # 6 proposed standard model params
+#     TotalNu = (totalNumDataPoints-totalNumModelParams)
+#     chi_squared_total_reduced = (1.0/TotalNu)*chi_squared_total
+#     
+#     print "\nOutputs:\n"
+#     print 'reduced chisquared DI = ',chi_squared_DI_reduced
+#     print 'reduced chiSquared RV = ',chi_squared_RV_reduced
+#     print 'Total reduced chiSquared = ',chi_squared_total_reduced 
+# #    print "a1s: "+repr(a1s)
+# #    print "a2s: "+repr(a2s)
+# #    print "ns: "+repr(ns)
+# #    print "Ms: "+repr(Ms)
+# #    print "Es: "+repr(Es)
+# #    print "thetas: "+repr(thetas)
+# #    print "sep dists: ",repr(Sep_Dists)
+# #    print "SA model: "+repr(SA_deg_measured_models)
+# #    print "PA model: "+repr(PA_deg_measured_models)
+#     
+# def orbElementTester3(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_total,RV_origin_vel_0_proposed=0,RV_origin_vel_1_proposed=0):
+#     """
+#     This version is meant to be used on 3D (DI and RV) data located in the paramSettingsDict
+#     and the orbitCalculatorSAPA.
+#     
+#     Use orbElementTester to test for DI only data.
+#     """
+#     
+#     ## Measured data (import from paramSettigsDict)
+#     from paramSettingsDict import paramSettingsDict
+#     # DI data
+#     SA_arcsec_measured_REALs = paramSettingsDict['Data']['SAs']
+#     SA_mean_errors = paramSettingsDict['Data']['SAerrors']                                         
+#     PA_deg_measured_REALs = paramSettingsDict['Data']['PAs']
+#     PA_mean_errors = paramSettingsDict['Data']['PAerrors']
+#     epochs = paramSettingsDict['Data']['DI_epochs']
+#     # RV data
+#     RV_epochs = paramSettingsDict['Data']['RV_epochs']
+#     RVerrors = paramSettingsDict['Data']['RVerrors']
+#     RVs = paramSettingsDict['Data']['RVs']
+#     # General System Data
+#     Sys_Dist_PC = paramSettingsDict['Data']['sysDist']#15.62
+#     Sys_Dist_Error = paramSettingsDict['Data']['sysDistError']#
+#     Mass1 = paramSettingsDict['Data']['M1']#1 
+#     Mass1_Error = paramSettingsDict['Data']['M1Error']#
+#     Mass2 = paramSettingsDict['Data']['M2']#1
+#     Mass2_Error = paramSettingsDict['Data']['M2Error']#
+#     
+#     print "\n Orbital Parameters Input:",
+#     print "Inclination [deg] = ",inclination_deg
+#     print "Longitude of the Ascending Node [deg] = ",longAN_deg
+#     print "Eccentricity = ",e
+#     print "Time of last periapsis [jd] = ",T
+#     print "Period [years] = ",period
+#     #print "Tmin = "+str(epochs[0]-period*365.0)
+#     #print "Tmax = "+str(epochs[0])
+#     print "Argument of perigee [deg] = ",argPeri_deg
+#     print "Total Semi-major axis [AU] = ",a_total
+#     
+#     numEpochs_DI = len(epochs)
+#            
+#     ## send random parameters along with known ones to multi-epoch orbit calculator
+#     (chi_squared_total, ns, Ms, Es, thetas, xs, ys, a1s, a2s) =\
+#         DItools.multiEpochOrbCalc3(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
+#                        epochs, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total,\
+#                        Mass1=Mass1, Mass2=Mass2, verbose=False)
+# 
+#     # calculate a total from a1 plus a2
+#     a_total_proposed = np.mean(a1s)+np.mean(a2s)
+#     
+#     chi_squared_DI = chi_squared_total
+#     # convert to a reduced chiSquared
+#     chi_squared_DI_reduced = (1.0/((2.0*(numEpochs_DI))-6.0))*chi_squared_DI
+#     #chi_squared_DI_reduced=0.0 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#     
+#     # data for planet's orbit that are needed to calculate proper chiSquare for RV fit
+#     # all below values for the planet orbit and RV data are from Butler2006.
+#     planet_K = 461.1 #[m/s]
+#     planet_p = 3.31246   #[days]
+#     #planet_p_years = planet_p/365.25
+#     planet_e = 0.023    
+#     planet_argPeri = 188.0   #[deg]
+#     planet_To = 2446957.8   #[JD]
+#     sigma_jitter = 15.0    #[m/s]
+#     
+#     # calculate a1 from a_total and masses
+#     (a_total, a1, a2) = semiMajorConverter(Mass1, Mass2, a_total=a_total_proposed,a1=0.0,a2=0.0)
+#     chi_squared_RV = 0.0
+#     numEpochs_RV = 0.0
+#     
+#     
+# #    for epoch in range(0,len(RVs[0])):
+# #        RVs[0][epoch] = RVs[0][epoch]+RV_origin_vel_0_proposed
+# #    for epoch in range(0,len(RVs[1])):
+# #        RVs[1][epoch] = RVs[1][epoch]+RV_origin_vel_1_proposed
+#               
+#     RVsIN = RVs
+#     RVsOUT = RVs
+#     #print 'RV for dataset 0'
+#     dataset0 = []
+#     dataset1 = []
+#     for epoch in range(0,len(RVs[0])):
+#         vel = RVsIN[0][epoch]+RV_origin_vel_0_proposed
+#         dataset0.append(vel)
+#         #print str(RVsIN[0][epoch]) +' + '+str(RV_origin_vel_0_proposed) +" = "+str(vel)
+#     #print 'RV for dataset 1'
+#     for epoch in range(0,len(RVs[1])):
+#         vel = RVsIN[1][epoch]+RV_origin_vel_1_proposed
+#         dataset1.append(vel)
+#         #print str(RVsIN[1][epoch]) +' + '+str(RV_origin_vel_1_proposed) +" = "+str(vel)
+#         
+#     RVs = [dataset0,dataset1]
+#       
+#     for RVdataSet in range(1,len(RVs)):
+#         chi_squared_RV_curr = RVtools.rv2bodyCalculator3(RV_epochs[RVdataSet], RVs[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, Mass2,  \
+#                                                     inclination_deg, period, e, T,  \
+#                                                     argPeri_deg, planet_K, planet_p, planet_e, planet_argPeri, planet_To, verbose=True)
+# #        chi_squared_RV_curr = rv2bodyCalculator4(RV_epochs[RVdataSet], RVs[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, np.mean(a1s), inclination_deg, \
+# #                                                        period, e, T, argPeri_deg, \
+# #                                                            planet_K, planet_p, planet_e, planet_argPeri, planet_To, verbose=True)
+#         chi_squared_RV = chi_squared_RV+chi_squared_RV_curr
+#         numEpochs_RV_curr = len(RV_epochs[RVdataSet])
+#         numEpochs_RV = numEpochs_RV+numEpochs_RV_curr
+#         
+#     # convert to a reduced chiSquared
+#     chi_squared_RV_reduced = (1.0/((1.0*numEpochs_RV)-8.0))*chi_squared_RV
+#     
+#     # sum non-reduced chiSquareds
+#     chi_squared_total = chi_squared_DI + chi_squared_RV #+ gauss_chi_squared_total
+#     
+#     # Total Reduced Chi Squared
+#     totalNumDataPoints = 2.0*numEpochs_DI + 1.0*numEpochs_RV #+3.0 # three are for the gauss params
+#     totalNumModelParams = 8.0  # 6 proposed standard model params
+#     TotalNu = (totalNumDataPoints-8.0)
+#     chi_squared_total_reduced = (1.0/TotalNu)*chi_squared_total
+#     
+#     print "\nOutputs:\n"
+#     print 'reduced chisquared DI = ',chi_squared_DI_reduced
+#     print 'reduced chiSquared RV = ',chi_squared_RV_reduced
+#     print 'Total reduced chiSquared = ',chi_squared_total_reduced 
+# #    print "a1s: "+repr(a1s)
+# #    print "a2s: "+repr(a2s)
+# #    print "ns: "+repr(ns)
+# #    print "Ms: "+repr(Ms)
+# #    print "Es: "+repr(Es)
+# #    print "thetas: "+repr(thetas)
+# #    print "sep dists: ",repr(Sep_Dists)
+# #    print "SA model: "+repr(SA_deg_measured_models)
+# #    print "PA model: "+repr(PA_deg_measured_models)    
+# 
+# def orbElementTester4(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_total,RV_origin_vel_0_proposed=0,RV_origin_vel_1_proposed=0):
+#     """
+#     This version is meant to be used on RV data of single planet located in the paramSettingsDict.
+#     
+#     Use orbElementTester to test for DI only data.
+#     """
+#     
+#     ## Measured data (import from paramSettigsDict)
+#     from paramSettingsDict import paramSettingsDict
+#     # DI data
+#     SA_arcsec_measured_REALs = paramSettingsDict['Data']['SAs']
+#     SA_mean_errors = paramSettingsDict['Data']['SAerrors']                                         
+#     PA_deg_measured_REALs = paramSettingsDict['Data']['PAs']
+#     PA_mean_errors = paramSettingsDict['Data']['PAerrors']
+#     epochs = paramSettingsDict['Data']['DI_epochs']
+#     # RV data
+#     RV_epochs = paramSettingsDict['Data']['RV_epochs']
+#     RVerrors = paramSettingsDict['Data']['RVerrors']
+#     RVs = paramSettingsDict['Data']['RVs']
+#     # General System Data
+#     Sys_Dist_PC = paramSettingsDict['Data']['sysDist']#15.62
+#     Sys_Dist_Error = paramSettingsDict['Data']['sysDistError']#
+#     Mass1 = paramSettingsDict['Data']['M1']#1 
+#     Mass1_Error = paramSettingsDict['Data']['M1Error']#
+#     Mass2 = paramSettingsDict['Data']['M2']#1
+#     Mass2_Error = paramSettingsDict['Data']['M2Error']#
+#     
+#     print "\n Orbital Parameters Input:\n",
+#     print "Inclination [deg] = ",inclination_deg
+#     print "Longitude of the Ascending Node [deg] = ",longAN_deg
+#     print "Eccentricity = ",e
+#     print "Time of last periapsis [jd] = ",T
+#     print "Period [years] = ",period
+#     #print "Tmin = "+str(epochs[0]-period*365.0)
+#     #print "Tmax = "+str(epochs[0])
+#     print "Argument of perigee [deg] = ",argPeri_deg
+#     print "Total Semi-major axis [AU] = ",a_total
+#     
+#     
+#     RV_epochsIN2 = RV_epochs
+#     RV_epochsOUT2 = []
+#     RV_epochsOUT = []
+#     print 'About to convert epochs to all be in a single orbit'
+#     Tcurr = T
+#     p_curr_days = period*365.242
+#     for RV_epochsIN in RV_epochsIN2:
+#         RV_epochsOUT = []
+#         for epoch in RV_epochsIN:
+#             if epoch<Tcurr:
+#                 if (Tcurr-epoch)>p_curr_days:
+#                     numPeriodsAwayI = int((Tcurr-epoch)/p_curr_days)
+#                 else:
+#                     numPeriodsAwayI = 0
+#                 epochNEW = epoch+((numPeriodsAwayI+1)*p_curr_days)-Tcurr
+#                 RV_epochsOUT.append(epochNEW)
+#                 
+#             if epoch>Tcurr:
+#                 if (epoch-Tcurr)>p_curr_days:
+#                     numPeriodsAwayI = int((epoch-Tcurr)/p_curr_days)
+#                 else:
+#                     numPeriodsAwayI = 0
+#                 epochNEW = epoch-((numPeriodsAwayI-1)*p_curr_days)-Tcurr
+#                 RV_epochsOUT.append(epochNEW)
+#             if False:
+#                 print 'RV epoch updated from '+str(epoch)+" to "+str(epochNEW)+", as numPeriodsAwayI = "+str(numPeriodsAwayI)
+#                 print "T = "+str(Tcurr)
+#                 print "Period [days] = "+str(p_curr_days)
+#         RV_epochsOUT2.append(RV_epochsOUT)
+#     
+#     if False:
+#         print '\nOriginal RV epochs array = '+repr(RV_epochsIN2)
+#         print '\nOUTPUT RV epochs array = '+repr(RV_epochsOUT2)
+#     
+#     
+#     numEpochs_DI = len(epochs)
+#            
+#     ## send random parameters along with known ones to multi-epoch orbit calculator
+#     (chi_squared_total, ns, Ms, Es, thetas, xs, ys, a1s, a2s) =\
+#         DItools.multiEpochOrbCalc3(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
+#                        epochs, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total,\
+#                        Mass1=Mass1, Mass2=Mass2, verbose=False)
+# 
+#     # calculate a total from a1 plus a2
+#     a_total_proposed = np.mean(a1s)+np.mean(a2s)
+#     
+#     chi_squared_DI = chi_squared_total
+#     # convert to a reduced chiSquared
+#     chi_squared_DI_reduced = (1.0/((2.0*(numEpochs_DI))-6.0))*chi_squared_DI
+#     #chi_squared_DI_reduced=0.0 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#     
+#     print 'Semi-major 1 [AU] = ',np.mean(a1s)
+#     
+#     # calculate a1 from a_total and masses
+#     #(a_total, a1, a2, p) = semiMajorConverter(Mass1, Mass2, a_total=a_total_proposed,a1=0.0,a2=0.0)
+#     chi_squared_RV = 0.0
+#     numEpochs_RV = 0.0
+#     
+#     
+# #    for epoch in range(0,len(RVs[0])):
+# #        RVs[0][epoch] = RVs[0][epoch]+RV_origin_vel_0_proposed
+# #    for epoch in range(0,len(RVs[1])):
+# #        RVs[1][epoch] = RVs[1][epoch]+RV_origin_vel_1_proposed
+#               
+#     RVsIN = RVs
+#     RVsOUT = []
+#     for dataset in range(0,len(RVsIN)):
+#         RVsUSE=[]
+#         for epoch in range(0,len(RVsIN[dataset])):
+#             vel = RVsIN[dataset][epoch]#-RV_origin_vel_0_proposed
+#             RVsUSE.append(vel)
+#         RVsOUT.append(RVsUSE)
+#       
+#     sigma_jitter = 0.0# 3.0 #15.0    #[m/s]
+#     
+#     for RVdataSet in range(1,len(RVs)):        
+#         chi_squared_RV_curr = RVtools.rv1bodyCalculator(RV_epochsOUT2[RVdataSet], RVsOUT[RVdataSet], RVerrors[RVdataSet], sigma_jitter,\
+#                                                          inclination_deg, period, e, T, argPeri_deg, np.mean(a1s), verbose=True)
+#         
+#         chi_squared_RV = chi_squared_RV+chi_squared_RV_curr
+#         numEpochs_RV_curr = len(RV_epochs[RVdataSet])
+#         numEpochs_RV = numEpochs_RV+numEpochs_RV_curr
+#         
+#     # convert to a reduced chiSquared
+#     chi_squared_RV_reduced = (1.0/((1.0*numEpochs_RV)-8.0))*chi_squared_RV
+#     
+#     # sum non-reduced chiSquareds
+#     chi_squared_total = chi_squared_DI + chi_squared_RV #+ gauss_chi_squared_total
+#     
+#     # Total Reduced Chi Squared
+#     totalNumDataPoints = 2.0*numEpochs_DI + 1.0*numEpochs_RV #+3.0 # three are for the gauss params
+#     totalNumModelParams = 8.0  # 6 proposed standard model params
+#     TotalNu = (totalNumDataPoints-8.0)
+#     chi_squared_total_reduced = (1.0/TotalNu)*chi_squared_total
+#     
+#     print "\nOutputs:\n"
+#     print 'reduced chisquared DI = ',chi_squared_DI_reduced
+#     print 'reduced chiSquared RV = ',chi_squared_RV_reduced
+#     print 'Total reduced chiSquared = ',chi_squared_total_reduced 
+#      
+#     
+# def orbElementTester3TH_I(longAN_deg, e, T, period, inclination_deg, argPeri_deg, a_total):
+#     """
+#     This version is meant to be used on 3D (DI and RV) data located in the paramSettingsDict
+#     and the orbitCalculatorSAPA.
+#     
+#     Use orbElementTester to test for DI only data.
+#     """
+#     
+#     ## Measured data (import from paramSettigsDict)
+#     from paramSettingsDict import paramSettingsDict
+#     # DI data
+#     SA_arcsec_measured_REALs = paramSettingsDict['Data']['SAs']
+#     SA_mean_errors = paramSettingsDict['Data']['SAerrors']                                         
+#     PA_deg_measured_REALs = paramSettingsDict['Data']['PAs']
+#     PA_mean_errors = paramSettingsDict['Data']['PAerrors']
+#     epochs = paramSettingsDict['Data']['DI_epochs']
+#     # RV data
+#     RV_epochs = paramSettingsDict['Data']['RV_epochs']
+#     RVerrors = paramSettingsDict['Data']['RVerrors']
+#     RVs = paramSettingsDict['Data']['RVs']
+#     # General System Data
+#     Sys_Dist_PC = paramSettingsDict['Data']['sysDist']#15.62
+#     Sys_Dist_Error = paramSettingsDict['Data']['sysDistError']#
+#     Mass1 = paramSettingsDict['Data']['M1']#1 
+#     Mass1_Error = paramSettingsDict['Data']['M1Error']#
+#     Mass2 = paramSettingsDict['Data']['M2']#1
+#     Mass2_Error = paramSettingsDict['Data']['M2Error']#
+#     
+#     
+#     
+#     numEpochs_DI = len(epochs)
+#     
+#     # calculate ABCFG from input params
+#     (A,B,C,F,G) = DItools.ABCFG_values(a_total/Sys_Dist_PC, math.radians(argPeri_deg), math.radians(longAN_deg), math.radians(inclination_deg))
+#     
+#     ## send random parameters along with known ones to multi-epoch orbit calculator
+#     (a_arcsec, argPeri_rad, longAN_rad, inclination_rad, period_out, chiSquared_total) =\
+#         DItools.multiEpochOrbCalcTH_I3(e, T, A, B, C, F, G, Mass1, Mass2, Sys_Dist_PC, \
+#                                                     SA_arcsec_measured_REALs, PA_deg_measured_REALs, epochs, SA_mean_errors, PA_mean_errors)
+# 
+#     # calculate a total from a1 plus a2
+#     a_total_proposed = a_arcsec*Sys_Dist_PC
+#     argPeri_deg_out = math.degrees(argPeri_rad)
+#     longAN_deg_out = math.degrees(longAN_rad)
+#     inclination_deg_out = math.degrees(inclination_rad)
+#     
+#     print "\n Orbital Parameters Input:",
+#     print "Inclination [deg] = ",inclination_deg
+#     print "Longitude of the Ascending Node [deg] = ",longAN_deg
+#     print "Eccentricity = ",e
+#     print "Time of last periapsis [jd] = ",T
+#     print "Period [years] = ",period
+#     print "Argument of perigee [deg] = ",argPeri_deg
+#     print "Total Semi-major axis [AU] = ",a_total
+#     
+#     print "\n Orbital Parameters Output:",
+#     print "Inclination [deg] = ",inclination_deg_out
+#     print "Longitude of the Ascending Node [deg] = ",longAN_deg_out
+#     print "Period [years] = ",period_out
+#     print "Argument of perigee [deg] = ",argPeri_deg_out
+#     print "Total Semi-major axis [AU] = ",a_total_proposed
+#     
+#     
+#     chi_squared_DI = chiSquared_total
+#     # convert to a reduced chiSquared
+#     chi_squared_DI_reduced = (1.0/((2.0*(numEpochs_DI))-6.0))*chi_squared_DI
+#     #chi_squared_DI_reduced=0.0 #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#     
+#     # data for planet's orbit that are needed to calculate proper chiSquare for RV fit
+#     # all below values for the planet orbit and RV data are from Butler2006.
+#     planet_K = 461.1 #[m/s]
+#     planet_p = 3.31246   #[days]
+#     #planet_p_years = planet_p/365.25
+#     planet_e = 0.023    
+#     planet_argPeri = 188.0   #[deg]
+#     planet_To = 2446957.8   #[JD]
+#     sigma_jitter = 15.0    #[m/s]
+#     ####### del this line!!!! just a commit test $$$$%$
+#     
+#     # calculate a1 from a_total and masses
+#     (a_total, a1, a2) = semiMajorConverter(Mass1, Mass2, a_total=a_total_proposed,a1=0.0,a2=0.0)
+#     chi_squared_RV = 0.0
+#     numEpochs_RV = 0.0
+#     for RVdataSet in range(0,len(RVs)):
+#         chi_squared_RV_curr = RVtools.rv2bodyCalculator3(RV_epochs[RVdataSet], RVs[RVdataSet], RVerrors[RVdataSet], sigma_jitter, Mass1, Mass2,  \
+#                                                     inclination_deg, period, e, T,  \
+#                                                     argPeri_deg, planet_K, planet_p, planet_e, planet_argPeri, planet_To)
+# #        chi_squared_RV = rv2bodyCalculator4(RV_epochs, RVs, RVerrors, sigma_jitter, Mass1_proposed, np.mean(a1s), inclination_deg_proposed, \
+# #                                                        period_proposed, e_proposed, T_proposed, argPeri_deg_proposed, \
+# #                                                            planet_K, planet_p, planet_e, planet_argPeri, planet_To, verbose=False)
+#         chi_squared_RV = chi_squared_RV+chi_squared_RV_curr
+#         numEpochs_RV_curr = len(RV_epochs[RVdataSet])
+#         numEpochs_RV = numEpochs_RV+numEpochs_RV_curr
+#         
+#     # convert to a reduced chiSquared
+#     chi_squared_RV_reduced = (1.0/((1.0*numEpochs_RV)-8.0))*chi_squared_RV
+#     
+#     # sum non-reduced chiSquareds
+#     chi_squared_total = chi_squared_DI + chi_squared_RV #+ gauss_chi_squared_total
+#     
+#     # Total Reduced Chi Squared
+#     totalNumDataPoints = 2.0*numEpochs_DI + 1.0*numEpochs_RV +3.0 # three are for the gauss params
+#     totalNumModelParams = 6.0  # 6 proposed standard model params
+#     TotalNu = (totalNumDataPoints-totalNumModelParams)
+#     chi_squared_total_reduced = (1.0/TotalNu)*chi_squared_total
+#     
+#     print "\nOutputs:\n"
+#     print 'reduced chisquared DI = ',chi_squared_DI_reduced
+#     print 'reduced chiSquared RV = ',chi_squared_RV_reduced
+#     print 'Total reduced chiSquared = ',chi_squared_total_reduced 
+# #    print "a1s: "+repr(a1s)
+# #    print "a2s: "+repr(a2s)
+# #    print "ns: "+repr(ns)
+# #    print "Ms: "+repr(Ms)
+# #    print "Es: "+repr(Es)
+# #    print "thetas: "+repr(thetas)
+# #    print "sep dists: ",repr(Sep_Dists)
+# #    print "SA model: "+repr(SA_deg_measured_models)
+# #    print "PA model: "+repr(PA_deg_measured_models)  
         
         
         

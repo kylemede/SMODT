@@ -3366,6 +3366,7 @@ def orbElementTester3TH_I(longAN_deg, e, T, period, inclination_deg, argPeri_deg
     planet_argPeri = 188.0   #[deg]
     planet_To = 2446957.8   #[JD]
     sigma_jitter = 15.0    #[m/s]
+    ####### del this line!!!! just a commit test $$$$%$
     
     # calculate a1 from a_total and masses
     (a_total, a1, a2) = semiMajorConverter(Mass1, Mass2, a_total=a_total_proposed,a1=0.0,a2=0.0)

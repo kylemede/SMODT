@@ -221,6 +221,8 @@ int main(int argc ,char *argv[])
 	ss<<"chiSquareMin_reduced = "<<SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<endl;
 	ss<< "chiSquaredMin = "<< SAOFO.chiSquaredMin <<endl;
 	ss<< "chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds[SAOFO.bestOrbit]<<endl;
+	ss<< "One before chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds[SAOFO.bestOrbit-1]<<endl;
+	ss<< "One after chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds[SAOFO.bestOrbit+1]<<endl;
 	ss<< "mean Acceptance rate = "<<(double(totalAccepted)/double(SAOFO.numSamples_SA))<<endl;
 	ss<< "LongAN = "<< SAOFO.ODT.longAN_degs[SAOFO.bestOrbit] <<endl;
 	ss<< "e = "<< SAOFO.ODT.es[SAOFO.bestOrbit] <<endl;
@@ -355,16 +357,16 @@ int main(int argc ,char *argv[])
 
     MCMCorbFuncObj MCMCOFO;
 
-//    // Best fit values
-//    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[SAOFO.bestOrbit];
-//    MCMCOFO.start_e = SAOFO.ODT.es[SAOFO.bestOrbit];
-//    MCMCOFO.start_T = SAOFO.ODT.Ts[SAOFO.bestOrbit];
-//    MCMCOFO.start_period = SAOFO.ODT.periods[SAOFO.bestOrbit];
-//    MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs[SAOFO.bestOrbit];
-//    MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs[SAOFO.bestOrbit];
-//    MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets[SAOFO.bestOrbit];
-//    MCMCOFO.start_K = SAOFO.ODT.Ks[SAOFO.bestOrbit];
-//    MCMCOFO.start_a_total = SAOFO.ODT.a_totals[SAOFO.bestOrbit];
+    // Best fit values
+    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[SAOFO.bestOrbit];
+    MCMCOFO.start_e = SAOFO.ODT.es[SAOFO.bestOrbit];
+    MCMCOFO.start_T = SAOFO.ODT.Ts[SAOFO.bestOrbit];
+    MCMCOFO.start_period = SAOFO.ODT.periods[SAOFO.bestOrbit];
+    MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs[SAOFO.bestOrbit];
+    MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs[SAOFO.bestOrbit];
+    MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets[SAOFO.bestOrbit];
+    MCMCOFO.start_K = SAOFO.ODT.Ks[SAOFO.bestOrbit];
+    MCMCOFO.start_a_total = SAOFO.ODT.a_totals[SAOFO.bestOrbit];
 
 	  // Back values
 //    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs.back();
@@ -378,16 +380,16 @@ int main(int argc ,char *argv[])
 //    MCMCOFO.start_a_total = SAOFO.ODT.a_totals.back();
 
 	// Second from back params
-    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[totalAccepted-2];
-    MCMCOFO.start_e = SAOFO.ODT.es[totalAccepted-2];
-    MCMCOFO.start_T = SAOFO.ODT.Ts[totalAccepted-2];
-    MCMCOFO.start_Tc = SAOFO.ODT.Tcs[totalAccepted-2];
-    MCMCOFO.start_period = SAOFO.ODT.periods[totalAccepted-2];
-    MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs[totalAccepted-2];
-    MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs[totalAccepted-2];
-    MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets[totalAccepted-2];
-    MCMCOFO.start_K = SAOFO.ODT.Ks[totalAccepted-2];
-    MCMCOFO.start_a_total = SAOFO.ODT.a_totals[totalAccepted-2];
+//    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[totalAccepted-2];
+//   MCMCOFO.start_e = SAOFO.ODT.es[totalAccepted-2];
+//    MCMCOFO.start_T = SAOFO.ODT.Ts[totalAccepted-2];
+//    MCMCOFO.start_Tc = SAOFO.ODT.Tcs[totalAccepted-2];
+//    MCMCOFO.start_period = SAOFO.ODT.periods[totalAccepted-2];
+//    MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs[totalAccepted-2];
+//    MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs[totalAccepted-2];
+//    MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets[totalAccepted-2];
+//    MCMCOFO.start_K = SAOFO.ODT.Ks[totalAccepted-2];
+//    MCMCOFO.start_a_total = SAOFO.ODT.a_totals[totalAccepted-2];
 
     MCMCOFO.sigmaPercent = SAOFO.sigmaPercent_latest;
     MCMCOFO.inclination_deg_sigma = SAOFO.inclination_deg_sigma;

@@ -173,6 +173,7 @@ void simAnealOrbFuncObj::simulator()
 		numRVparams+=1;
 		numDIparams+=1;
 		period_latest = RanGen.UniformRandom(SSO.periodMIN, SSO.periodMAX); //  [yrs]
+		ss<<"\n\n***************************************\nperiodMIN = "<<SSO.periodMIN<<", periodMAX = "<<SSO.periodMAX<<"\n**********************************\n\n"<<endl;
 		paramsToVaryIntsAry.push_back(3);
 	}
 	double e_latest=0;
@@ -851,7 +852,6 @@ void simAnealOrbFuncObj::simulator()
 		}
 		else if (paramBeingVaried==3)
 		{
-
 			// sigma is a percentage of total range, so convert its current percentage to a range value
 			period_sigma = (period_sigmaPercent_latest/100.0)*(SSO.periodMAX-SSO.periodMIN);
 			period_proposed = RanGen.UniformRandom(period_latest-period_sigma,period_latest+period_sigma);//  [yrs]
@@ -1641,7 +1641,7 @@ void simAnealOrbFuncObj::simulator()
 					chiSquaredMin = TOTAL_chiSquared;
 					chiSquaredMin_DI = DI_chiSquared;
 					chiSquaredMin_RV = RV_chiSquared;
-					bestOrbit = numSaved-1;
+					bestOrbit = numSaved;
 				}
 
 				latestParamsSaved=true;

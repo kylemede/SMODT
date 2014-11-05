@@ -993,6 +993,7 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
             TotalSamples+= float(line.split()[-1])
     fp.close()
     TotalSamples = int(TotalSamples)
+    print '\nTotalSamples = '+str(TotalSamples)+'\n'#$$$$$$$$$$$$$$$$$$
     numDataLines =i-2
     # find values at start, mid and end of file
     fp = open(filename,'r')
@@ -1003,18 +1004,29 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
             splitAry = line.split()
             lastColLoc = len(splitAry)-1
             dataValueStart = float(splitAry[columNum])
+            print '\nstart = '+str(dataValueStart)+'\n'#$$$$$$$$$$$$$$$$$$
         elif i==((numDataLines//2)+2):
             splitAry = line.split()
             dataValueMid = float(splitAry[columNum])
+            print '\nmid = '+str(dataValueMid)+'\n'#$$$$$$$$$$$$$$$$$$
         elif i==numDataLines:
             splitAry = line.split()
             dataValueEnd = float(splitAry[columNum])
+            print '\nend = '+str(dataValueEnd)+'\n'#$$$$$$$$$$$$$$$$$$
     fp.close()
     
     doesntVary = True
     dataAry = []
+    chiSquareds = []
     totalAccepted = 0
+    bestOrbit = 0
+    bestDataVal = 0
+    totalAccepted = 0
+    chiSquaredMin=1e6
+    dataMax = 0
+    dataMin = 1e9
     if ((dataValueStart!=dataValueMid)and(dataValueStart!=dataValueEnd)):
+        log.write("Values for parameter found to be constant!!")
         doesntVary = False
         
     if (doesntVary==False):#or(fast==False):  
@@ -1025,11 +1037,7 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
         dataAry = [None]*TotalSamples
         chiSquareds = [None]*TotalSamples
         i = 0
-        chiSquaredMin=1e6
-        bestOrbit = 0
         lineNum=0
-        dataMax = 0
-        dataMin = 1e9
         for line in open(filename,'r'):
             lineNum+=1
             if lineNum>2:

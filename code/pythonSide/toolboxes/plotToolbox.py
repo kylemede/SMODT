@@ -791,7 +791,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             subPlot = fig.add_subplot(245)
         else:
             subPlot = fig.add_subplot(222)
-        if TcStepping==True:
+        if TcStepping:
             paramColNum = 3
             xlabel = 'Time of Center Transit [JD]'
         else:
@@ -890,34 +890,6 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             print s
             log.write(s+'\n')
         
-        if False:
-            # Create sub plot and fill it up for the semi-majors
-            if not plot4x1: 
-                startTime = timeit.default_timer()
-                s='\nStarting to plot hist for Semi-Majors:'
-                print s
-                log.write(s+'\n')
-                subPlot = fig.add_subplot(247)
-                paramColNum = 7
-                xlabel = 'Semi-Major[AU]'
-                (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-                subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-                if (type(data)!=float)and(NumSamples==0):
-                    NumSamples=data.size
-                semiMajorCLevels = CLevels
-                semiMajorBest = bestDataVal
-                if NumSamples<2e7:
-                    semiMajors = data
-                #periodMedian = np.median(periodsAlls)
-                s="done plotting Semi-Majors\n"
-                # record the time the chain finished and print
-                endTime = timeit.default_timer()
-                totalTime = (endTime-startTime) # in seconds
-                totalTimeString = genTools.timeString(totalTime)
-                s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-                print s
-                log.write(s+'\n')
-        
         # Create sub plot and fill it up for the Period
         if not plot4x1: 
             startTime = timeit.default_timer()
@@ -1007,11 +979,40 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                     print s
                     log.write(s+'\n')
         
+       
         if True:
+            # Create sub plot and fill it up for the semi-majors
+            if not plot4x1: 
+                startTime = timeit.default_timer()
+                s='\nStarting to plot hist for Semi-Majors:'
+                print s
+                log.write(s+'\n')
+                subPlot = fig.add_subplot(247)
+                paramColNum = 7
+                xlabel = 'Semi-Major[AU]'
+                (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+                subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
+                if (type(data)!=float)and(NumSamples==0):
+                    NumSamples=data.size
+                semiMajorCLevels = CLevels
+                semiMajorBest = bestDataVal
+                if NumSamples<2e7:
+                    semiMajors = data
+                #periodMedian = np.median(periodsAlls)
+                s="done plotting Semi-Majors\n"
+                # record the time the chain finished and print
+                endTime = timeit.default_timer()
+                totalTime = (endTime-startTime) # in seconds
+                totalTimeString = genTools.timeString(totalTime)
+                s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+                print s
+                log.write(s+'\n')        
+        # This is for if you want to get a hist for the Tc and To params when doing TcStepping.  It is placed ontop of the semi-major's hist!!!!
+        else:
            # Create sub plot and fill it up for the Period
            if not plot4x1: 
                startTime = timeit.default_timer()
-               if TcStepping==True:
+               if TcStepping:
                    paramColNum = 2
                    xlabel = 'Time of Periapsis [JD]'
                    s='\nStarting to plot hist for Ts:'
@@ -1272,13 +1273,13 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
         xs = np.array(range(0,data.size))
         # Wrap the array into a 2D array of chunks, truncating the last chunk if 
-        if data.size>100e6:
+        if data.size>90e6:
             chunkSize = 10000
-        elif data.size>10e6:
+        elif data.size>9e6:
             chunkSize = 1000
-        elif data.size>1e6:
+        elif data.size>9e5:
             chunkSize = 100
-        elif data.size>5e5:
+        elif data.size>1e5:
             chunkSize = 10
         else:
             chunkSize = 1
@@ -1586,15 +1587,20 @@ def summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,x
         max_env = yChunks.max(axis=1)
         min_env = yChunks.min(axis=1)
         yCenters = yChunks.mean(axis=1)
-        if paramColNum==0:
-            log.write("len data = "+str(data.size))
-            log.write("\n\nData Vals:  \n")
-            for line in range(0,data.size):
-                log.write(str(data[line])+'\n')
-            log.write("\n\nyCenters: \n")
-            for line in range(0,yCenters.size):
-                log.write(str(yCenters[line])+'\n')
-            log.write("\n\n")
+#         if paramColNum==0:
+#             log.write("len data = "+str(data.size))
+#             log.write("\n\nData Vals:  \n")
+#             for line in range(0,data.size):
+#                 log.write(str(data[line])+'\n')
+#             log.write("\n\nyCenters: \n")#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#             for line in range(0,yCenters.size):
+#                 log.write(str(yCenters[line])+'\n')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+#             log.write("\n\n")
+        print "\n xLabel = "+xlabel#$$$$$$$$$$$$$$$$$$$$
+        print "len(xCenters) = "+str(len(xCenters))#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        print "len(yChunks) = "+str(len(yChunks))#$$$$$$$$$$$$$$$$$$$$$$
+        print "min_env = "+str(min_env)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        print "min_env = "+str(max_env)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         subPlot2.fill_between(xCenters, min_env, max_env, color='gray',edgecolor='none', alpha=0.5)
         subPlot2.plot(xCenters, yCenters)
         subPlot2.plot([xCenters.min(),xCenters.max()],[bestDataVal,bestDataVal],color='green')

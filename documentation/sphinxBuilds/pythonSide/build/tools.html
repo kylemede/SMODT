@@ -1,0 +1,1566 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tools &mdash; Simple MCMC Orbit Determination Tool (SMODT) 1.0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Simple MCMC Orbit Determination Tool (SMODT) 1.0.1 documentation" href="index.html" />
+    <link rel="next" title="Simulation Starter Functions" href="non-tools.html" />
+    <link rel="prev" title="Welcome to the SMODT documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="non-tools.html" title="Simulation Starter Functions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to the SMODT documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Simple MCMC Orbit Determination Tool (SMODT) 1.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tools">
+<h1>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h1>
+<p>&#8220;Tools&#8221; are the SMODT nomenclature for utilities or library functions and they
+are contained in &#8220;toolboxes&#8221;.  These were created as the simulator was built
+to not only provide code clarity through abstraction, but also to minimize
+code redundancy.  These toolboxes have grown to contain many useful functions
+for not just performing the standard simulation runs and post-completion plotting,
+but others that can be used directly by the user&#8217;s own scripts to create more
+specific plots or perform other statistical calculations on the results.</p>
+<p>The C++ side of the simulator performs the computational heavy tasks
+involved in making a MCMC or Simulated Annealing chains and some of the
+post-completion statistical calculations.  As such, many of the tools on the
+Python side have been translated into twins on the C++ side.  Testing was done
+to ensure the both versions of those tools provide the exact same results to
+within the required precision.</p>
+<div class="section" id="module-toolboxes.generalToolbox">
+<span id="general-tools"></span><h2>General Tools<a class="headerlink" href="#module-toolboxes.generalToolbox" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="toolboxes.generalToolbox.CorrLengthCalc">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">CorrLengthCalc</tt><big>(</big><em>paramIN</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.CorrLengthCalc" title="Permalink to this definition">¶</a></dt>
+<dd><p>This version uses np.std</p>
+<p>This function will calculate the correlation length and return its value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paramIN</strong> (<em>array (list) of doubles</em>) &#8211; parameter array after burn in data stripped</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.CorrLengthCalc2">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">CorrLengthCalc2</tt><big>(</big><em>paramIN</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.CorrLengthCalc2" title="Permalink to this definition">¶</a></dt>
+<dd><p>This version uses np.var</p>
+<p>This function will calculate the correlation length and return its value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paramIN</strong> (<em>array (list) of doubles</em>) &#8211; parameter array after burn in data stripped</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.MCMCeffectivePointsCalc">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">MCMCeffectivePointsCalc</tt><big>(</big><em>dataFilenames</em>, <em>simAnneal=False</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.MCMCeffectivePointsCalc" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will calculate the correlation length of each parameter in the input file(s).
+If simAnneal=True, it will assume that only the last 25% of the chains are suitible for 
+calculating the correlation lengths.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.TAcalculator">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">TAcalculator</tt><big>(</big><em>t</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>T_center=0</em>, <em>verbose=False</em>, <em>debug=False</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.TAcalculator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the True Anomaly.  This calculator uses and updated version of 
+Newton&#8217;s method that solves for Kepler&#8217;s equation that was found in 
+Double Stars by Heintz.  It has also been given the ability to account for 
+the phase shift in the anomalies when analyzing radial velocity data, that 
+is not needed for astrometry data fitting.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>t</strong> (<em>float</em>) &#8211; Epoch [JD]</li>
+<li><strong>e</strong> (<em>float</em>) &#8211; Eccentricity</li>
+<li><strong>T</strong> (<em>float</em>) &#8211; Time of Last Periapsis [JD]</li>
+<li><strong>period</strong> (<em>float</em>) &#8211; Period of the orbit [years]</li>
+<li><strong>T_center</strong> (<em>float</em>) &#8211; Time of Center Transit [JD], default 0 indicates to 
+it isn&#8217;t required as it only applies to radial velocity data.</li>
+<li><strong>verbose</strong> (<em>bool</em>) &#8211; Print</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.bestOrbitFinderNEW">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">bestOrbitFinderNEW</tt><big>(</big><em>filename</em>, <em>printToScreen=True</em>, <em>saveToFile=True</em>, <em>returnAsList=False</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.bestOrbitFinderNEW" title="Permalink to this definition">¶</a></dt>
+<dd><p>Just a simple function to find the parameters for the lowest chiSquared orbit in a 
+data file of the NEW format.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.burnInCalc3">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">burnInCalc3</tt><big>(</big><em>chiSquareds</em>, <em>medianALLchains</em>, <em>jumpy=True</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.burnInCalc3" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will calculate the burn in length and return its value.
+This can only truly be done for a proper MCMC that was started
+at a random location in the parameter space, as anything else will
+skew the chiSquareds trend.  ie. they will not roughly decrease as the 
+simulation runs and the burn in length will thus be more or less random and 
+useless information.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paramIN</strong> (<em>array (list) of doubles</em>) &#8211; parameter array including burn in data</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.burnInCalcMultiFile">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">burnInCalcMultiFile</tt><big>(</big><em>dataFilenames</em>, <em>simAnneal=True</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.burnInCalcMultiFile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.burnInStripper">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">burnInStripper</tt><big>(</big><em>fullFilename</em>, <em>burnInLength</em>, <em>burnInStrippedFilename</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.burnInStripper" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to read and strip the burn-in from a file and write
+an output file with the burn-in stripped off the data.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.cFileToSimSettingsDict">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">cFileToSimSettingsDict</tt><big>(</big><em>inputSettingsFile</em>, <em>outputSettingsFile=''</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.cFileToSimSettingsDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will load in a settings file written in the format for C++ originally 
+into a simulation settings dict for use in the wrapping Python start up
+(and process managers).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.chiSquaredCalc">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">chiSquaredCalc</tt><big>(</big><em>real</em>, <em>error</em>, <em>model</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.chiSquaredCalc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Just a simple function to calculate chi**2 for a given observed (real) with error
+and experimental (model) value.</p>
+<p>Note: 
+Ensure the units of both are the same.</p>
+<p>Note2:  
+For cases where the error of the observation has different errors in the 
+positive and negative from the observed value, just input the mean of these.</p>
+<p>Note3: 
+There should never be negative values input into this function for any
+of the three inputs, but it has been made capable of handling those cases as well.</p>
+<p>output: Resulting chi**2 value following</p>
+<p>chi**2 = (obs - model)**2 / error**2</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.confLevelFinderNEWchiSquaredVersion">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">confLevelFinderNEWchiSquaredVersion</tt><big>(</big><em>filename</em>, <em>columNum=False</em>, <em>returnData=False</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.confLevelFinderNEWchiSquaredVersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to find the 68.3 and 95.4% confidence levels in a given output data file&#8217;s column.</p>
+<p>return [[68.3% minimum, 68.3% maximum],[95.5% minimum, 95.5% maximum]]</p>
+<p>columnNum must be an int.</p>
+<p>file format must be:</p>
+<blockquote>
+<div>line1: title
+line2: data headings
+line3: space delimited data
+line4: space delimited data</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.confLevelFinderNEWdataVersion">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">confLevelFinderNEWdataVersion</tt><big>(</big><em>filename</em>, <em>columNum=False</em>, <em>returnData=False</em>, <em>returnChiSquareds=False</em>, <em>returnBestDataVal=False</em>, <em>fast=True</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.confLevelFinderNEWdataVersion" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to find the 68.3 and 95.4% confidence levels in a given output data file&#8217;s column.</p>
+<p>return [[68.3% minimum, 68.3% maximum],[95.5% minimum, 95.5% maximum]]</p>
+<p>columnNum must be an int.</p>
+<p>file format must be:</p>
+<blockquote>
+<div>line1: title
+line2: data headings
+line3: space delimited data
+line4: space delimited data</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.confidenceLevelsFinderNEW">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">confidenceLevelsFinderNEW</tt><big>(</big><em>filename</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.confidenceLevelsFinderNEW" title="Permalink to this definition">¶</a></dt>
+<dd><p>CAUTION, this was designed to be used with the outputs of 100ModDataset simulation outputs.
+NOT a good function to load data from a long simulation with lots of output sets.</p>
+<p>PURPOSE: This is to determine the errors that the mod dataset runs were designed to determine.</p>
+<dl class="docutils">
+<dt>NOTE: This version is meant for the new headings from mcmcOrbSimUniform6</dt>
+<dd><p class="first">longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared  RVoffset0...  timesBeenHere</p>
+<p>file format must be:</p>
+<p class="last">line1: title
+line2: data headings
+line3: space delimited data
+line4: space delimited data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.dataFileCombiner">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">dataFileCombiner</tt><big>(</big><em>filenames</em>, <em>outFilename</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.dataFileCombiner" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is to combine files written to disk by the dataWriter function and 
+combine them into one large data file.  These files must all be of the same epoch, 
+or all be &#8216;input&#8217; files.</p>
+<p>Note:
+output file will have the 1st line be the same as the outFilename parameter and
+the second line will be the same headers as the first file in the 
+filenames parameter has.
+All files must have the same number of columns.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filenames</strong> (<em>list of strings of form &#8216;blahblah.txt&#8217;</em>) &#8211; list of filenames to be put together</li>
+<li><strong>outFilenames</strong> (<em>string of form &#8216;blahblahout.txt&#8217;</em>) &#8211; new filename for combined output file</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.dataReadTrimWriteNEW">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">dataReadTrimWriteNEW</tt><big>(</big><em>filename</em>, <em>chiSquareCutOff</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.dataReadTrimWriteNEW" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is ideal for the cases where your data sets are too big because of choosing a chiSquareMax that is
+too big when running the simulator, resulting in large data files that are hard to load and plot.  In these cases
+you can just find out what the standard range of chiSquareds are, and choose a lower cut-off to trim the volume
+of data written to disk.  Just open the file and skim over the chiSquared column values to choose a new
+cut-off.
+These circumstances really only happen when you have a long &#8216;daisy chain&#8217; run with rough settings, so this is 
+not expected to be a commonly used function.</p>
+<dl class="docutils">
+<dt>NOTE: output files will have same name with &#8216;chiSquare-cut-off-####&#8217; added to </dt>
+<dd>show it is the new trimmed version.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>string</em>) &#8211; filename</li>
+<li><strong>chiSquareCutOff</strong> (<em>any number</em>) &#8211; max value of chiSquared for orbits to be written</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.dataReadTrimWriteNEW2">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">dataReadTrimWriteNEW2</tt><big>(</big><em>filename</em>, <em>chiSquareCutOff</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.dataReadTrimWriteNEW2" title="Permalink to this definition">¶</a></dt>
+<dd><p>### Same as dataReadTrimWriteNEW BUT with a inclination trimming feature that isn&#8217;t really needed anymore ######</p>
+<p>This function is ideal for the cases where your data sets are too big because of choosing a chiSquareMax that is
+too big when running the simulator, resulting in large data files that are hard to load and plot.  In these cases
+you can just find out what the standard range of chiSquareds are, and choose a lower cut-off to trim the volume
+of data written to disk.  Just open the file and skim over the chiSquared column values to choose a new
+cut-off.
+These circumstances really only happen when you have a long &#8216;daisy chain&#8217; run with rough settings, so this is 
+not expected to be a commonly used function.</p>
+<dl class="docutils">
+<dt>NOTE: output files will have same name with &#8216;chiSquare-cut-off-####&#8217; added to </dt>
+<dd>show it is the new trimmed version.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filename</strong> (<em>string</em>) &#8211; filename</li>
+<li><strong>chiSquareCutOff</strong> (<em>any number</em>) &#8211; max value of chiSquared for orbits to be written</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.dataReaderNEW">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">dataReaderNEW</tt><big>(</big><em>filename</em>, <em>column=0</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.dataReaderNEW" title="Permalink to this definition">¶</a></dt>
+<dd><p>filename must be a string of format: &#8216;blahblah.txt&#8217;
+column = which column you want to have the data for, zero indexed.</p>
+<p>NOTE: This version is meant for the new headings from mcmcOrbSimUniform6
+longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared  RVoffset0...  timesBeenHere</p>
+<p>file format must be:</p>
+<p>line1: title
+line2: data headings
+line3: space delimited data
+line4: space delimited data
+.
+.
+.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.dictToFile">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">dictToFile</tt><big>(</big><em>d</em>, <em>filename</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.dictToFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will take an simple or complex/nested dictionary
+and write it&#8217;s values to a text file for future reference.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>d</strong> (<em>standard Python dictionary, either simple or nested</em>) &#8211; dictionary to be written to file</td>
+</tr>
+</tbody>
+</table>
+<p>(max 3 layers ie. dict inside a dict inside a dict)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.diffCalc">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">diffCalc</tt><big>(</big><em>A</em>, <em>B</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.diffCalc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simply returns the difference between two numbers (floats) as a positive number (float).</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.effectivePointsCalcFunc">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">effectivePointsCalcFunc</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.effectivePointsCalcFunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>for use by MCMCeffectivePointsCalc</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.findArrayMax">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">findArrayMax</tt><big>(</big><em>ary</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.findArrayMax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the minimum value inside an array up to 4D.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.findArrayMin">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">findArrayMin</tt><big>(</big><em>ary</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.findArrayMin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the minimum value inside an array up to 4D.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.findNuFromLog">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">findNuFromLog</tt><big>(</big><em>logFilename=''</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.findNuFromLog" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will pull the value for &#8216;nu&#8217; (the number of degrees of freedom) out of the log 
+file written by C++ as that is where nu was calculated and written.  Saves time calculating 
+it again in Python.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.findTop20orbitsNEW">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">findTop20orbitsNEW</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.findTop20orbitsNEW" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will hunt through a data file in the NEW format and display the top 20
+orbits in the format that is used in the &#8216;paramSettingsDict&#8217;.</p>
+<p>NOTE: format of data file must be:
+longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared    timesBeenHere</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.gaussianDist">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">gaussianDist</tt><big>(</big><em>x</em>, <em>mean</em>, <em>variance</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.gaussianDist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Just a simple function to return the probability value of a value in a gaussian distribution.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.gelmanRubinStage2">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">gelmanRubinStage2</tt><big>(</big><em>dataFilenames</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.gelmanRubinStage2" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will finalize the calculation of the Gelman-Rubin statistic
+and write the results to a file in the same folder as the input files.  
+#Stage 1 of this is done in C++ and this one will just grab
+the results for each individual chain and combine to calculate the final inter-chain
+value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.likelihoodsCalc">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">likelihoodsCalc</tt><big>(</big><em>chiSquareds</em>, <em>nu=1</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.likelihoodsCalc" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will convert the chiSqureds into likelihoods following 
+L =e^(-nu*chiSquared/2)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.listRandomizer">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">listRandomizer</tt><big>(</big><em>listIN</em>, <em>listIN2=False</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.listRandomizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns randomized version of a list.  If two lists pas</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.orbElementTester">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">orbElementTester</tt><big>(</big><em>longAN_deg</em>, <em>e</em>, <em>period</em>, <em>inclination_deg</em>, <em>argPeri_deg</em>, <em>a_total</em>, <em>T</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.orbElementTester" title="Permalink to this definition">¶</a></dt>
+<dd><p>This version is meant to be used on only the DI data and the original orbitCalculator, 
+not orbitCalculatorSAPA.</p>
+<p>Use orbElementTester2 to test for 3D data.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.orbElementTester2">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">orbElementTester2</tt><big>(</big><em>longAN_deg</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>inclination_deg</em>, <em>argPeri_deg</em>, <em>a_total</em>, <em>RV_origin_vel_0=0</em>, <em>RV_origin_vel_1=0</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.orbElementTester2" title="Permalink to this definition">¶</a></dt>
+<dd><p>This version is meant to be used on 3D (DI and RV) data located in the paramSettingsDict
+and the orbitCalculatorSAPA.</p>
+<p>Use orbElementTester to test for DI only data.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.orbElementTester3">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">orbElementTester3</tt><big>(</big><em>longAN_deg</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>inclination_deg</em>, <em>argPeri_deg</em>, <em>a_total</em>, <em>RV_origin_vel_0_proposed=0</em>, <em>RV_origin_vel_1_proposed=0</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.orbElementTester3" title="Permalink to this definition">¶</a></dt>
+<dd><p>This version is meant to be used on 3D (DI and RV) data located in the paramSettingsDict
+and the orbitCalculatorSAPA.</p>
+<p>Use orbElementTester to test for DI only data.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.orbElementTester3TH_I">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">orbElementTester3TH_I</tt><big>(</big><em>longAN_deg</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>inclination_deg</em>, <em>argPeri_deg</em>, <em>a_total</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.orbElementTester3TH_I" title="Permalink to this definition">¶</a></dt>
+<dd><p>This version is meant to be used on 3D (DI and RV) data located in the paramSettingsDict
+and the orbitCalculatorSAPA.</p>
+<p>Use orbElementTester to test for DI only data.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.orbElementTester4">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">orbElementTester4</tt><big>(</big><em>longAN_deg</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>inclination_deg</em>, <em>argPeri_deg</em>, <em>a_total</em>, <em>RV_origin_vel_0_proposed=0</em>, <em>RV_origin_vel_1_proposed=0</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.orbElementTester4" title="Permalink to this definition">¶</a></dt>
+<dd><p>This version is meant to be used on RV data of single planet located in the paramSettingsDict.</p>
+<p>Use orbElementTester to test for DI only data.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.outputDatafileToDict">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">outputDatafileToDict</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.outputDatafileToDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>CAUTION, this was designed to be used with the outputs of 100ModDataset simulation outputs.
+NOT a good function to load data from a long simulation with lots of output sets.</p>
+<dl class="docutils">
+<dt>NOTE: This version is meant for the new headings from mcmcOrbSimUniform6</dt>
+<dd><p class="first">longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere</p>
+<p>file format must be:</p>
+<p class="last">line1: title
+line2: data headings
+line3: space delimited data
+line4: space delimited data
+.
+.
+.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.semiMajorConverter">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">semiMajorConverter</tt><big>(</big><em>Mass1</em>, <em>Mass2</em>, <em>a_total=0.0</em>, <em>a1=0.0</em>, <em>a2=0.0</em>, <em>period=0.0</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.semiMajorConverter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Notes:
+Masses must be in same units!  Both MUST be provided for this func to work!!</p>
+<p>Units of output semi-majors will be same as input semi-major units.
+only one of the semi-majors needs to be input and the other two will be 
+calculate from that one.</p>
+<p>period in years.</p>
+<p>only set period to a non-zero value if you do not have any of the semi-majors 
+calculated/provided.  It will use Kepler&#8217;s third law to find the a_total and 
+then the individual values using the mass ratio.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.strToBool">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">strToBool</tt><big>(</big><em>strIn</em>, <em>default</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.strToBool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a string of with &#8216;true&#8217;,&#8217;True&#8217;,&#8217;False&#8217; or &#8216;false&#8217; in it into a
+bool accordingly.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.strToStr">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">strToStr</tt><big>(</big><em>strIn</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.strToStr" title="Permalink to this definition">¶</a></dt>
+<dd><p>To clean up a input string.  ie. remove any &#8221;, &#8216;, or 
+values in the string</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.sysDataToDict">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">sysDataToDict</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.sysDataToDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract needed data of the binary system from the general C++/Python data file 
+in the &#8216;SimSettings_and_InputData&#8217; folder for Duo simulations.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.generalToolbox.timeString">
+<tt class="descclassname">toolboxes.generalToolbox.</tt><tt class="descname">timeString</tt><big>(</big><em>duration</em><big>)</big><a class="headerlink" href="#toolboxes.generalToolbox.timeString" title="Permalink to this definition">¶</a></dt>
+<dd><p>takes a time duration in seconds and returns it in a nice string with info on number of 
+hours, minutes and/or seconds depending on duration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>duration</strong> (<em>str</em>) &#8211; The duration in seconds.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The duration reformatted into a nice string.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-toolboxes.DItoolbox">
+<span id="di-tools"></span><h2>DI Tools<a class="headerlink" href="#module-toolboxes.DItoolbox" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="toolboxes.DItoolbox.ABCFG_MaxMins2">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">ABCFG_MaxMins2</tt><big>(</big><em>aMax</em>, <em>aMin</em>, <em>argPeri_radMax</em>, <em>argPeri_radMin</em>, <em>longAN_radMax</em>, <em>longAN_radMin</em>, <em>inclination_radMax</em>, <em>inclination_radMin</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.ABCFG_MaxMins2" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to calculate the maximum and minimum allowed values for the 
+Thiele-Innes constants from the max/min values of the Orbital Elements.</p>
+<p>Note: old version in the sandbox had some issues that were fixed in this newer version.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.ABCFG_values">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">ABCFG_values</tt><big>(</big><em>a</em>, <em>argPeri_rad</em>, <em>longAN_rad</em>, <em>inclination_rad</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.ABCFG_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the Thiele-Innes constants for the given Orbital Elements.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(A,B,C,F,G)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.DIdataToDict">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">DIdataToDict</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.DIdataToDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to extract the Direct Imaging/Astrometry data from a .dat or .txt file
+and output it as a Python dictionary.</p>
+<p>Data must be in the columns:
+obsDate[JD]  PA[deg]  PA_error[deg]  SA[arcsec]  SA_error[arcsec]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>filename</strong> (<em>str</em>) &#8211; File name, including the full path, to the Astrometry 
+data file to convert into a dictionary.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">dictionary with the following members: obsDates, PAs, PA_errors,
+SAs, SA_errors and numEpochs.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.PASAcalculator">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">PASAcalculator</tt><big>(</big><em>period</em>, <em>t</em>, <em>T</em>, <em>e</em>, <em>inclination_deg</em>, <em>longAN_deg</em>, <em>argPeri_deg</em>, <em>Sys_Dist_PC</em>, <em>a2</em>, <em>a1=0</em>, <em>verbose=True</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.PASAcalculator" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is to predict/calculate the expected Position Angle and Separation Angle for a given set of 
+of orbital parameters and epoch of observation.</p>
+<p>NOTE: 
+This function is capable of working for 1 or 2 body systems.  In order to use it for 2 body systems, just
+set the values of a1 % a2.  For 1 body systems, ie, only one of the bodies is moving and the primary is 
+simply stationary at one of the foci, then leave a1=0 and use a2 for the moving body&#8217;s semi-major axis value.</p>
+<p>Inputs:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>period</strong> (<em>float</em>) &#8211; period of orbits [yrs]</li>
+<li><strong>t</strong> (<em>float</em>) &#8211; epoch of observation/image [julian date]</li>
+<li><strong>T</strong> (<em>float</em>) &#8211; Last Periapsis Epoch/time [julian date]</li>
+<li><strong>e</strong> (<em>float</em>) &#8211; eccentricity of orbit</li>
+<li><strong>inclination_deg</strong> (<em>float</em>) &#8211; orbit&#8217;s inclination [degrees]</li>
+<li><strong>longAN_deg</strong> (<em>float</em>) &#8211; Longitude of the Ascending Node [degrees]</li>
+<li><strong>argPeri_deg</strong> (<em>float</em>) &#8211; Argument of periapsis [degrees]</li>
+<li><strong>Sys_Dist_PC</strong> (<em>float</em>) &#8211; Distance to the system from Earth [parsec]</li>
+<li><strong>a2</strong> (<em>float</em>) &#8211; Semi-major axis of body 2&#8217;s orbit [AU]</li>
+<li><strong>a1</strong> (<em>float, default=0 indicates body 2 is only moving body in system</em>) &#8211; Semi-major axis of body 1&#8217;s orbit [AU]</li>
+<li><strong>verbose</strong> (<em>python boolean (True/False), default=True</em>) &#8211; Show progress prints to screen?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Outputs:
+:param PA_deg_RP_model:     Position Angle [degrees]
+:type PA_deg_RP_model:      float
+:param SA_arcsec_RP_model:  Separation Angle [arcsec]
+:type SA_arcsec_RP_model:   float</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.RADECtoSAPA">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">RADECtoSAPA</tt><big>(</big><em>RA</em>, <em>RA_error</em>, <em>DEC</em>, <em>DEC_error</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.RADECtoSAPA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Will calculate the Separation and Position Angles for a given RA and DEC, including their errors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(PA,PA_error,SA,SA_error)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.TAcalculator">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">TAcalculator</tt><big>(</big><em>t</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>T_center=0</em>, <em>verbose=False</em>, <em>debug=False</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.TAcalculator" title="Permalink to this definition">¶</a></dt>
+<dd><p>$$$ Copy of exact function from generalToolbox as something odd was happening $$$$</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>t</strong> (<em>float</em>) &#8211; Epoch [JD]</li>
+<li><strong>e</strong> (<em>float</em>) &#8211; Eccentricity</li>
+<li><strong>T</strong> (<em>float</em>) &#8211; Time of Last Periapsis [JD]</li>
+<li><strong>period</strong> (<em>float</em>) &#8211; Period of the orbit [years]</li>
+<li><strong>T_center</strong> (<em>float</em>) &#8211; Time of Center Transit [JD], default 0 indicates to 
+it isn&#8217;t required as it only applies to radial velocity data.</li>
+<li><strong>verbose</strong> (<em>bool</em>) &#8211; Print</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.multiEpochOrbCalc">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">multiEpochOrbCalc</tt><big>(</big><em>SA_arcsec_measured_REALs</em>, <em>SA_mean_errors</em>, <em>PA_deg_measured_REALs</em>, <em>PA_mean_errors</em>, <em>epochs</em>, <em>Sys_Dist_PC</em>, <em>inclination_deg</em>, <em>longAN_deg</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>argPeri_deg</em>, <em>a_total=False</em>, <em>Mass1=1</em>, <em>Mass2=1</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.multiEpochOrbCalc" title="Permalink to this definition">¶</a></dt>
+<dd><p>USES orbitCalculatorSAPA to compare the SA and PA values.</p>
+<dl class="docutils">
+<dt>Note: SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors inputs MUST all have</dt>
+<dd>the same length.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>SA_arcsec_measured_REALs</strong> (<em>list of floats</em>) &#8211; measured Separation Angles [&#8220;]</li>
+<li><strong>SA_mean_errors</strong> (<em>list of floats</em>) &#8211; errors in the measured Separation Angles [&#8220;]</li>
+<li><strong>PA_deg_measured_REALs</strong> (<em>list of floats</em>) &#8211; measured Position Angles [deg]</li>
+<li><strong>PA_mean_errors</strong> (<em>list of floats</em>) &#8211; error in the measured Position Angles [deg]</li>
+<li><strong>epochs</strong> (<em>list of floats</em>) &#8211; epochs of observation/image [julian date]</li>
+<li><strong>Sys_Dist_PC</strong> (<em>float</em>) &#8211; measured system distance from Earth [PC]</li>
+<li><strong>inclination_deg</strong> (<em>float</em>) &#8211; inclination [deg]</li>
+<li><strong>longAN_deg</strong> (<em>float</em>) &#8211; Longitude of Ascending Node [deg]</li>
+<li><strong>e</strong> (<em>float</em>) &#8211; eccentricity of orbits [unitless]</li>
+<li><strong>T</strong> (<em>float</em>) &#8211; Last Periapsis Epoch/time [julian date]</li>
+<li><strong>period</strong> (<em>float</em>) &#8211; period of orbits [yrs]</li>
+<li><strong>argPeri_deg</strong> (<em>float</em>) &#8211; Argument of Periapsis in orbital plane [deg]</li>
+<li><strong>a_total</strong> (<em>float</em>) &#8211; Total semi-major axis of system [AU]</li>
+<li><strong>Mass1</strong> (<em>float</em>) &#8211; Mass of primary in system [solar masses] (Default=1, means M2 is a planet)</li>
+<li><strong>Mass2</strong> (<em>float</em>) &#8211; Mass of the secondary in system [solar masses] (Default=1, means M2 is a planet)</li>
+<li><strong>verbose</strong> (<em>Python boolean (True/False). Default = False</em>) &#8211; Send prints to screen? [True/False] (Default = False)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.multiEpochOrbCalc3">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">multiEpochOrbCalc3</tt><big>(</big><em>SA_arcsec_measured_REALs</em>, <em>SA_mean_errors</em>, <em>PA_deg_measured_REALs</em>, <em>PA_mean_errors</em>, <em>epochs</em>, <em>Sys_Dist_PC</em>, <em>inclination_deg</em>, <em>longAN_deg</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>argPeri_deg</em>, <em>a_total=False</em>, <em>Mass1=1</em>, <em>Mass2=1</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.multiEpochOrbCalc3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses orbitCalculatorXY to compare the x and y values.</p>
+<dl class="docutils">
+<dt>Note: SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors inputs MUST all have</dt>
+<dd>the same length.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>SA_arcsec_measured_REALs</strong> (<em>list of floats</em>) &#8211; measured Separation Angles [&#8220;]</li>
+<li><strong>SA_mean_errors</strong> (<em>list of floats</em>) &#8211; errors in the measured Separation Angles [&#8220;]</li>
+<li><strong>PA_deg_measured_REALs</strong> (<em>list of floats</em>) &#8211; measured Position Angles [deg]</li>
+<li><strong>PA_mean_errors</strong> (<em>list of floats</em>) &#8211; error in the measured Position Angles [deg]</li>
+<li><strong>epochs</strong> (<em>list of floats</em>) &#8211; epochs of observation/image [julian date]</li>
+<li><strong>Sys_Dist_PC</strong> (<em>float</em>) &#8211; measured system distance from Earth [PC]</li>
+<li><strong>inclination_deg</strong> (<em>float</em>) &#8211; inclination [deg]</li>
+<li><strong>longAN_deg</strong> (<em>float</em>) &#8211; Longitude of Ascending Node [deg]</li>
+<li><strong>e</strong> (<em>float</em>) &#8211; eccentricity of orbits [unitless]</li>
+<li><strong>T</strong> (<em>float</em>) &#8211; Last Periapsis Epoch/time [julian date]</li>
+<li><strong>period</strong> (<em>float</em>) &#8211; period of orbits [yrs]</li>
+<li><strong>argPeri_deg</strong> (<em>float</em>) &#8211; Argument of Periapsis in orbital plane [deg]</li>
+<li><strong>a_total</strong> (<em>float</em>) &#8211; Total semi-major axis of system [AU]</li>
+<li><strong>Mass1</strong> (<em>float</em>) &#8211; Mass of primary in system [solar masses] (Default=1, means M2 is a planet)</li>
+<li><strong>Mass2</strong> (<em>float</em>) &#8211; Mass of the secondary in system [solar masses] (Default=1, means M2 is a planet)</li>
+<li><strong>verbose</strong> (<em>Python boolean (True/False). Default = False</em>) &#8211; Send prints to screen? [True/False] (Default = False)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.multiEpochOrbCalcTH_I3">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">multiEpochOrbCalcTH_I3</tt><big>(</big><em>e</em>, <em>T</em>, <em>A</em>, <em>B</em>, <em>C</em>, <em>F</em>, <em>G</em>, <em>Mass1_Msun</em>, <em>Mass2_Msun</em>, <em>Sys_Dist_PC</em>, <em>SAs</em>, <em>PAs</em>, <em>epochs</em>, <em>SA_errors</em>, <em>PA_errors</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.multiEpochOrbCalcTH_I3" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to calculate the fit to the input astrometry to a set of Thiele-Innes constants.</p>
+<p>This utilizes orbitCalculatorTH_I2 to calculate the orbital elements from the 
+given Thiele-Innes constants.  It also uses the most recent equations to calculate the 
+errors in X_data and y_data that causes matching results to that of multiEpochOrbCalc3,
+which also uses X and Y.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(a_arcsec, argPeri_rad, longAN_rad, inclination_rad, period, chiSquared_total)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.orbitCalculator">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">orbitCalculator</tt><big>(</big><em>t</em>, <em>Sys_Dist_PC</em>, <em>inclination_deg</em>, <em>longAN_deg</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>argPeri_deg</em>, <em>a_total</em>, <em>Mass1=1</em>, <em>Mass2=1</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.orbitCalculator" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOTE: This is the old version of the orbitCalculator not used anymore.  
+See the orbitCalculatorSAPA and orbitCalculatorXY being used now.</p>
+<p>This function will calculate the output orbital parameters from the inputs for a SINGLE epoch.  Use the 
+multiEpochOrbCalc to do this for multiple epochs at the same time.  
+The t and Sys_Dist_PC parameters are generally known/measured values,
+while the rest are typically random numbers.
+This function is designed to work as the calculator inside a Monte Carlo Simulator.
+All the equations are the result of Kepler&#8217;s Laws and naturally occurring symmetries of binary star systems.</p>
+<dl class="docutils">
+<dt>Note: RP stands for Reference Plane, ie the plane that values are measured in from Earth.</dt>
+<dd>OP stands for Orbital Plane, ie in the plane that the stars are orbiting in.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t</strong> (<em>float</em>) &#8211; epoch of observation/image [julian date]</li>
+<li><strong>Sys_Dist_PC</strong> (<em>float</em>) &#8211; measured system distance from Earth [PC]</li>
+<li><strong>inclination_deg</strong> (<em>float</em>) &#8211; inclination [deg]</li>
+<li><strong>longAN_deg</strong> (<em>float</em>) &#8211; Longitude of Ascending Node [deg]</li>
+<li><strong>e</strong> (<em>float</em>) &#8211; eccentricity of orbits [unitless]</li>
+<li><strong>T</strong> (<em>float</em>) &#8211; Last Periapsis Epoch/time [julian date]</li>
+<li><strong>period</strong> (<em>float</em>) &#8211; period of orbits [yrs]</li>
+<li><strong>argPeri_deg</strong> (<em>float</em>) &#8211; Argument of Periapsis in orbital plane [deg]</li>
+<li><strong>a_total</strong> (<em>float</em>) &#8211; Total semi-major axis of system [AU]</li>
+<li><strong>Mass1</strong> (<em>float</em>) &#8211; Mass of primary in system [solar masses] (Default=1, means M2 is a planet)</li>
+<li><strong>Mass2</strong> (<em>float</em>) &#8211; Mass of the secondary in system [solar masses] (Default=1, means M2 is a planet)</li>
+<li><strong>verbose</strong> (<em>Python boolean (True/False). Default = False</em>) &#8211; Send prints to screen? [True/False] (Default = False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(Mean Motion [rad/yr], Mean Anomaly [deg], Eccentric Anomaly [deg],
+True Anomaly [deg], Separation Distance in orbital plane [AU], 
+measured Position Angle in image [deg], measured Position Angle in image [deg],
+semi-major axis of M1 [AU], semi-major axis of M2 [AU])</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of floats</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.orbitCalculatorSAPA">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">orbitCalculatorSAPA</tt><big>(</big><em>t</em>, <em>Sys_Dist_PC</em>, <em>inclination_deg</em>, <em>longAN_deg</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>argPeri_deg</em>, <em>a_total=False</em>, <em>Mass1=1</em>, <em>Mass2=1</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.orbitCalculatorSAPA" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will calculate the output orbital parameters from the inputs for a SINGLE epoch.  Use the 
+multiEpochOrbCalc to do this for multiple epochs at the same time.  
+The t and Sys_Dist_PC parameters are generally known/measured values,
+while the rest are typically random numbers.
+This function is designed to work as the calculator inside a Monte Carlo Simulator.
+All the equations are the result of Kepler&#8217;s Laws and naturally occurring symmetries of binary star systems.</p>
+<dl class="docutils">
+<dt>Note: RP stands for Reference Plane, ie the plane that values are measured in from Earth.</dt>
+<dd>OP stands for Orbital Plane, ie in the plane that the stars are orbiting in.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t</strong> (<em>float</em>) &#8211; epoch of observation/image [julian date]</li>
+<li><strong>Sys_Dist_PC</strong> (<em>float</em>) &#8211; measured system distance from Earth [PC]</li>
+<li><strong>inclination_deg</strong> (<em>float</em>) &#8211; inclination [deg]</li>
+<li><strong>longAN_deg</strong> (<em>float</em>) &#8211; Longitude of Ascending Node [deg]</li>
+<li><strong>e</strong> (<em>float</em>) &#8211; eccentricity of orbits [unitless]</li>
+<li><strong>T</strong> (<em>float</em>) &#8211; Last Periapsis Epoch/time [julian date]</li>
+<li><strong>period</strong> (<em>float</em>) &#8211; period of orbits [yrs]</li>
+<li><strong>argPeri_deg</strong> (<em>float</em>) &#8211; Argument of Periapsis in orbital plane [deg]</li>
+<li><strong>a_total</strong> (<em>float if it is to be used, boolean False if to be calculated from Kepler&#8217;s 3rd</em>) &#8211; Total semi-major axis of system [AU]</li>
+<li><strong>Mass1</strong> (<em>float</em>) &#8211; Mass of primary in system [kg] (Default=1, means M2 is a planet)</li>
+<li><strong>Mass2</strong> (<em>float</em>) &#8211; Mass of the secondary in system [kg] (Default=1, means M2 is a planet)</li>
+<li><strong>verbose</strong> (<em>Python boolean (True/False). Default = False</em>) &#8211; Send prints to screen? [True/False] (Default = False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(Mean Motion [rad/yr], Mean Anomaly [deg], Eccentric Anomaly [deg],
+True Anomaly [deg], Separation Distance in orbital plane [AU], 
+measured Position Angle in image [deg], measured Position Angle in image [deg],
+semi-major axis of M1 [AU], semi-major axis of M2 [AU])</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of floats</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.orbitCalculatorTH_I">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">orbitCalculatorTH_I</tt><big>(</big><em>A</em>, <em>B</em>, <em>C</em>, <em>F</em>, <em>G</em>, <em>Mass1_Msun</em>, <em>Mass2_Msun</em>, <em>Sys_Dist_PC</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.orbitCalculatorTH_I" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to calculate the Orbital Elements from the input Theile-Innes 
+constants.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(a1_arcsec, argPeri_rad, longAN_rad, inclination_rad, period)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.orbitCalculatorTH_I2">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">orbitCalculatorTH_I2</tt><big>(</big><em>A</em>, <em>B</em>, <em>C</em>, <em>F</em>, <em>G</em>, <em>Mass1_Msun</em>, <em>Mass2_Msun</em>, <em>Sys_Dist_PC</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.orbitCalculatorTH_I2" title="Permalink to this definition">¶</a></dt>
+<dd><p>A version of orbitCalculatorTH_I using ideas for calculating argPeri, longAN and a from 
+&#8216;The Binary Stars&#8217; by robert G. Aitken.</p>
+<p>A function to calculate the Orbital Elements from the input Theile-Innes 
+constants.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(a1_arcsec, argPeri_rad, longAN_rad, inclination_rad, period)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.orbitCalculatorTH_I_PP">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">orbitCalculatorTH_I_PP</tt><big>(</big><em>A</em>, <em>B</em>, <em>C</em>, <em>F</em>, <em>G</em>, <em>Mass1_Msun</em>, <em>Mass2_Msun</em>, <em>Sys_Dist_PC</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.orbitCalculatorTH_I_PP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Way orbital elements are found from the Thiele-Innes constants in PP1995</p>
+<p>A function to calculate the Orbital Elements from the input Theile-Innes 
+constants.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">(a_arcsec, argPeri_rad, longAN_rad, inclination_rad, period)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.orbitCalculatorXY">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">orbitCalculatorXY</tt><big>(</big><em>t</em>, <em>Sys_Dist_PC</em>, <em>inclination_deg</em>, <em>longAN_deg</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>argPeri_deg</em>, <em>a_total=False</em>, <em>Mass1=1</em>, <em>Mass2=1</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.orbitCalculatorXY" title="Permalink to this definition">¶</a></dt>
+<dd><p>This version will output the x and y values predicted for a certain epoch for comparison to measured x and y
+values in the images.  If you want to compare to SA and PA, use orbitCalculatorSAPA.</p>
+<p>This function will calculate the output orbital parameters from the inputs for a SINGLE epoch.  Use the 
+multiEpochOrbCalc to do this for multiple epochs at the same time.  
+The t and Sys_Dist_PC parameters are generally known/measured values,
+while the rest are typically random numbers.
+This function is designed to work as the calculator inside a Monte Carlo Simulator.
+All the equations are the result of Kepler&#8217;s Laws and naturally occurring symmetries of binary star systems.</p>
+<dl class="docutils">
+<dt>Note: RP stands for Reference Plane, ie the plane that values are measured in from Earth.</dt>
+<dd>OP stands for Orbital Plane, ie in the plane that the stars are orbiting in.</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>t</strong> (<em>float</em>) &#8211; epoch of observation/image [julian date]</li>
+<li><strong>Sys_Dist_PC</strong> (<em>float</em>) &#8211; measured system distance from Earth [PC]</li>
+<li><strong>inclination_deg</strong> (<em>float</em>) &#8211; inclination [deg]</li>
+<li><strong>longAN_deg</strong> (<em>float</em>) &#8211; Longitude of Ascending Node [deg]</li>
+<li><strong>e</strong> (<em>float</em>) &#8211; eccentricity of orbits [unitless]</li>
+<li><strong>T</strong> (<em>float</em>) &#8211; Last Periapsis Epoch/time [julian date]</li>
+<li><strong>period</strong> (<em>float</em>) &#8211; period of orbits [yrs]</li>
+<li><strong>argPeri_deg</strong> (<em>float</em>) &#8211; Argument of Periapsis in orbital plane [deg]</li>
+<li><strong>a_total</strong> (<em>float if it is to be used, boolean False if to be calculated from Kepler&#8217;s 3rd</em>) &#8211; Total semi-major axis of system [AU]</li>
+<li><strong>Mass1</strong> (<em>float</em>) &#8211; Mass of primary in system [kg] (Default=1, means M2 is a planet)</li>
+<li><strong>Mass2</strong> (<em>float</em>) &#8211; Mass of the secondary in system [kg] (Default=1, means M2 is a planet)</li>
+<li><strong>verbose</strong> (<em>Python boolean (True/False). Default = False</em>) &#8211; Send prints to screen? [True/False] (Default = False)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">(Mean Motion [rad/yr], Mean Anomaly [deg], Eccentric Anomaly [deg],
+True Anomaly [deg], Separation Distance in orbital plane [AU], 
+measured Position Angle in image [deg], measured Position Angle in image [deg],
+semi-major axis of M1 [AU], semi-major axis of M2 [AU])</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of floats</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.DItoolbox.proposalMaxMinsCalc">
+<tt class="descclassname">toolboxes.DItoolbox.</tt><tt class="descname">proposalMaxMinsCalc</tt><big>(</big><em>latestVal</em>, <em>sigma</em>, <em>Min</em>, <em>Max</em><big>)</big><a class="headerlink" href="#toolboxes.DItoolbox.proposalMaxMinsCalc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find max and min values for proposing a new random parameter value when doing MCMC.</p>
+<p>Note: This function is not used anymore as the MCMC process is now done in C++.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>latestVal</strong> (<em>float</em>) &#8211; Latest successful value in a MCMC or Simulated Annealing
+chain.</li>
+<li><strong>sigma</strong> (<em>float</em>) &#8211; The step size to generate the next proposed step from.</li>
+<li><strong>Min</strong> (<em>float</em>) &#8211; Minimum allowed value for the parameter being proposed.</li>
+<li><strong>Max</strong> (<em>float</em>) &#8211; Maximum allowed value for the parameter being proposed.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-toolboxes.RVtoolbox">
+<span id="rv-tools"></span><h2>RV Tools<a class="headerlink" href="#module-toolboxes.RVtoolbox" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="toolboxes.RVtoolbox.RVdataToDict">
+<tt class="descclassname">toolboxes.RVtoolbox.</tt><tt class="descname">RVdataToDict</tt><big>(</big><em>filename</em><big>)</big><a class="headerlink" href="#toolboxes.RVtoolbox.RVdataToDict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data must be in the columns:
+obsDate[JD]  RV[m/s]  RV_error[m/s]
+Jitter can be included as a 4th column value for the first line of each dataset.
+These jitter values will be encorporated into the rv errors using new_err = sqrt(err**2+jitter**2)
+Note: this same process takes place in the C++ code (But don&#8217;t worry, it isn&#8217;t done twice in a row :-P ).</p>
+<p>Spaces after rows of data indicates the end of a dataset and the following
+data will be loaded as a separate dataset.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.RVtoolbox.TAcalculator">
+<tt class="descclassname">toolboxes.RVtoolbox.</tt><tt class="descname">TAcalculator</tt><big>(</big><em>t</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>T_center=0</em>, <em>verbose=False</em>, <em>debug=False</em><big>)</big><a class="headerlink" href="#toolboxes.RVtoolbox.TAcalculator" title="Permalink to this definition">¶</a></dt>
+<dd><p>$$$ Copy of exact function from orbitToolboxDuo as something odd was hapening $$$$</p>
+<p>This is the same as TAcalculator but with some updates to the Newton&#8217;s method loop
+solving the Kepler&#8217;s equation found in Double Stars by Heintz.
+$$$$$$$$$$$$ Later testing of the two versions will prove which is better. $$$$$$$$$$$$$</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.RVtoolbox.rv1bodyCalculator">
+<tt class="descclassname">toolboxes.RVtoolbox.</tt><tt class="descname">rv1bodyCalculator</tt><big>(</big><em>RV_epochs</em>, <em>RVs</em>, <em>RVerrors</em>, <em>sigma_jitter</em>, <em>i</em>, <em>p</em>, <em>e</em>, <em>T</em>, <em>argPeri</em>, <em>a</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.RVtoolbox.rv1bodyCalculator" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is for calculating the RV and resulting chiSquared due to a planet ONLY, thus no companion star.
+Naturally this system would have a planet with mass&lt;&lt; primary star mass.</p>
+<p>sigma_jitter must be the unsquared version and in units of [m/s]
+i in degrees
+argPeri in degrees
+a in AU
+T in JD
+t in JD
+e unitless
+period in years</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.RVtoolbox.rv1bodyCalculator2">
+<tt class="descclassname">toolboxes.RVtoolbox.</tt><tt class="descname">rv1bodyCalculator2</tt><big>(</big><em>RV_epochs</em>, <em>RVs</em>, <em>RVerrors</em>, <em>sigma_jitter</em>, <em>p</em>, <em>e</em>, <em>T</em>, <em>argPeri</em>, <em>M1</em>, <em>M2SineI</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.RVtoolbox.rv1bodyCalculator2" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is for calculating the RV and resulting chiSquared due to a planet ONLY, thus no companion star.
+Naturally this system would have a planet with mass&lt;&lt; primary star mass.</p>
+<p>sigma_jitter must be the unsquared version and in units of [m/s]
+i in degrees
+argPeri in degrees
+a in AU
+T in JD
+t in JD
+e unitless
+period in years</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.RVtoolbox.rv2bodyCalculator3">
+<tt class="descclassname">toolboxes.RVtoolbox.</tt><tt class="descname">rv2bodyCalculator3</tt><big>(</big><em>RV_epochs</em>, <em>RVs</em>, <em>RVerrors</em>, <em>sigma_jitter</em>, <em>M1</em>, <em>M2_c</em>, <em>i_c</em>, <em>p_c</em>, <em>e_c</em>, <em>T_c</em>, <em>argPeri_c</em>, <em>K_p</em>, <em>p_p</em>, <em>e_p</em>, <em>argPeri_p</em>, <em>T_p</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.RVtoolbox.rv2bodyCalculator3" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NOTE: This version uses the K equation with each objects mass.  </dt>
+<dd>Use rv2bodyCalculator4 to use the semi-major axis instead.</dd>
+</dl>
+<p>This will calclulate the radial velocity residue based chiSquared considering RV data for the primary star, orbital elements 
+for the companion star (indicated with &#8216;_c&#8217; parameters), and some of the parameters for the planet around the primary
+star&#8217;s orbital elements (indicated with the &#8216;_p&#8217; parameters).</p>
+<p>sigma_jitter must be the unsquared version and in units of [m/s]
+M2SineI_c and M1 in kg
+i in degrees
+argPeri in degrees
+a in AU
+T in JD
+t in JD
+e unitless
+period in years</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.RVtoolbox.rv2bodyCalculator4">
+<tt class="descclassname">toolboxes.RVtoolbox.</tt><tt class="descname">rv2bodyCalculator4</tt><big>(</big><em>RV_epochs</em>, <em>RVs</em>, <em>RVerrors</em>, <em>sigma_jitter</em>, <em>M1</em>, <em>a1</em>, <em>i_c</em>, <em>p_c</em>, <em>e_c</em>, <em>T_c</em>, <em>argPeri_c</em>, <em>K_p</em>, <em>p_p</em>, <em>e_p</em>, <em>argPeri_p</em>, <em>T_p</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.RVtoolbox.rv2bodyCalculator4" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NOTE: This version uses the K equation with the semi-major axis instead of each objects masses.</dt>
+<dd>Use rv2bodyCalculator3 to use the objects masses instead.</dd>
+</dl>
+<p>This will calclulate the radial velocity residue based chiSquared considering RV data for the primary star, orbital elements 
+for the companion star (indicated with &#8216;_c&#8217; parameters), and some of the parameters for the planet around the primary
+star&#8217;s orbital elements (indicated with the &#8216;_p&#8217; parameters).</p>
+<p>sigma_jitter must be the unsquared version and in units of [m/s]
+M2SineI_c and M1 in kg
+i in degrees
+argPeri in degrees
+a in AU
+T in JD
+t in JD
+e unitless
+period in years</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.RVtoolbox.rvResidualWithoutPlanetResidual">
+<tt class="descclassname">toolboxes.RVtoolbox.</tt><tt class="descname">rvResidualWithoutPlanetResidual</tt><big>(</big><big>)</big><a class="headerlink" href="#toolboxes.RVtoolbox.rvResidualWithoutPlanetResidual" title="Permalink to this definition">¶</a></dt>
+<dd><p>A totally temporary function to calculate the residual velocity of the primary star
+WITHOUT the residual from the planet.  Thus only having the velocity that could be 
+caused by the secondary star/companion.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.RVtoolbox.vrCalculatorPlanet">
+<tt class="descclassname">toolboxes.RVtoolbox.</tt><tt class="descname">vrCalculatorPlanet</tt><big>(</big><em>t</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>argPeri</em>, <em>M1</em>, <em>T_center=0</em>, <em>M2SineI=False</em>, <em>K=False</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.RVtoolbox.vrCalculatorPlanet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Version for when the companion is a planet.  Thus it calculates the residual velocity 
+assuming this and the consequence that (M1+M2~=M1).  Returns residual velocity 
+of the primary star!! due to the planet, not the the vel of the planet.</p>
+<p>M1 in Msun
+M2SineI in Mjupiter
+argPeri in degrees
+a in AU
+T in JD
+t in JD
+e unitless
+period in days</p>
+<p>K=False implies that the provided values will be used to 
+calculate it from scratch, else the provided value will
+be used to calculate the radial velocity residual.  Thus,
+this param must be either False or a float in units of 
+m/s.</p>
+<p>returned vel will be in m/s</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.RVtoolbox.vrCalculatorStar">
+<tt class="descclassname">toolboxes.RVtoolbox.</tt><tt class="descname">vrCalculatorStar</tt><big>(</big><em>t</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>argPeri</em>, <em>M1</em>, <em>M2</em>, <em>T_center=0</em>, <em>i=False</em>, <em>K=False</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.RVtoolbox.vrCalculatorStar" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NOTE: This version is the one that uses the objects masses to calculate K.</dt>
+<dd>To use the one that calculates it using the semi-major axis, use vrCalculatorStar2.</dd>
+</dl>
+<p>M1 and M2 in Msun
+argPeri in degrees
+i in degrees
+T in JD
+t in JD
+e unitless
+period in years</p>
+<p>K=False implies that the provided values will be used to 
+calculate it from scratch, else the provided value will
+be used to calculate the radial velocity residule.  Thus,
+this param must be either False or a float in units of 
+m/s.</p>
+<p>returned vel will be in m/s</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.RVtoolbox.vrCalculatorStar2">
+<tt class="descclassname">toolboxes.RVtoolbox.</tt><tt class="descname">vrCalculatorStar2</tt><big>(</big><em>t</em>, <em>e</em>, <em>T</em>, <em>period</em>, <em>argPeri</em>, <em>a1</em>, <em>T_center=0</em>, <em>i=False</em>, <em>K=False</em>, <em>verbose=False</em><big>)</big><a class="headerlink" href="#toolboxes.RVtoolbox.vrCalculatorStar2" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>NOTE: this is the version which uses the K equation with the semi-major axis of primary&#8217;s orbit.</dt>
+<dd>To use the masses instead, use vrCalculatorStar.</dd>
+</dl>
+<p>argPeri in degrees
+i in degrees
+T in JD
+t in JD
+e unitless
+period in years
+a1 in AU</p>
+<p>K=False implies that the provided values will be used to 
+calculate it from scratch, else the provided value will
+be used to calculate the radial velocity residule.  Thus,
+this param must be either False or a float in units of 
+m/s.</p>
+<p>returned vel will be in m/s</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-toolboxes.plotToolbox">
+<span id="plotting-tools"></span><h2>Plotting Tools<a class="headerlink" href="#module-toolboxes.plotToolbox" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="toolboxes.plotToolbox.PostSimCompleteAnalysisFunc">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">PostSimCompleteAnalysisFunc</tt><big>(</big><em>outputDatafile=''</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.PostSimCompleteAnalysisFunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that performs many of the post simulation completion plotting 
+or Gelman Rubin statistic calculations as done in MCMC_ProcessManager.  This 
+can be used for custom plotting or testing, or to perform any plotting that 
+was turned off in the initial run of a simulation that you might now want.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.dataReadAndPlotNEW3">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">dataReadAndPlotNEW3</tt><big>(</big><em>filename</em>, <em>plotFilename</em>, <em>weight=True</em>, <em>confLevels=True</em>, <em>normalize=True</em>, <em>drawLine=False</em>, <em>nu=1</em>, <em>plot4x1=False</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.dataReadAndPlotNEW3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Master plotting function for the singleParamReadAndPlotNEW</p>
+<p>file format must follow the &#8216;NEW&#8217; style, ie:
+longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared    timesBeenHere</p>
+<p>All 3D data should have its chiSquared values all ready be reduced.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.diPlotterTester">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">diPlotterTester</tt><big>(</big><em>outputDatafile=''</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.diPlotterTester" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to allow custom inputs to orbitEllipsePlotter for testing or 
+producing one off plots for a particular set of orbital Elements.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.ellipse">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">ellipse</tt><big>(</big><em>ra</em>, <em>rb</em>, <em>ang</em>, <em>x0</em>, <em>y0</em>, <em>Nb=50</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.ellipse" title="Permalink to this definition">¶</a></dt>
+<dd><p>For calculating Nb x and y values that lie on an ellipse 
+defined using ra, rb, ang, xo and yo.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ra</strong> (<em>any number</em>) &#8211; Semi-Major axis length</li>
+<li><strong>rb</strong> (<em>any number</em>) &#8211; Semi-Minor axis length</li>
+<li><strong>ang</strong> (<em>any number</em>) &#8211; Angle [degrees] to plot the semi-major axis 
+wrt horizontal, measured from positive x-axis</li>
+<li><strong>x0</strong> &#8211; X coordinate of center of ellipse</li>
+<li><strong>y0</strong> (<em>any number</em>) &#8211; Y coordinate of center of ellipse</li>
+<li><strong>Nb</strong> (<em>int</em>) &#8211; Number of x,y points to return</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>NOTE:
+based on matlab code ellipse.m written by D.G. Long,
+Brigham Young University, based on the
+CIRCLES.m original
+written by Peter Blattner, Institute of Microtechnology,
+University of
+Neuchatel, Switzerland, <a class="reference external" href="mailto:blattner&#37;&#52;&#48;imt&#46;unine&#46;ch">blattner<span>&#64;</span>imt<span>&#46;</span>unine<span>&#46;</span>ch</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.epochsToPhases">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">epochsToPhases</tt><big>(</big><em>epochs2</em>, <em>T_center</em>, <em>P_yrs</em>, <em>verbose=False</em>, <em>halfOrbit=False</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.epochsToPhases" title="Permalink to this definition">¶</a></dt>
+<dd><p>converter to change the epochs of a 1-D or 2-D array to phases.
+Output dimensions of phases2 will be same as input epochs2</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.fixPlotBordersAndLabels">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">fixPlotBordersAndLabels</tt><big>(</big><em>plot</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.fixPlotBordersAndLabels" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will just increase the boarder thicknesses and label sizes to look better for printing or 
+putting in papers.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.histAndContourPlotter">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">histAndContourPlotter</tt><big>(</big><em>xData</em>, <em>yData</em>, <em>chiSquareds</em>, <em>xLabel=''</em>, <em>yLabel=''</em>, <em>plotFilename=''</em>, <em>xLim=False</em>, <em>yLim=False</em>, <em>show=True</em>, <em>save=False</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.histAndContourPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will create a plot with a scatter plot of the xData and yData in the middle, a horizontal histogram 
+of the yData on the right, and vertical histogram of the xData at the top.  This is a good way to compare the 
+parameter space where the two data sets have their values focus.</p>
+<p>NOTE: xData and yData must have the same length.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>xData</strong> (<em>list of numbers of any type, must be same length as yData</em>) &#8211; Data to plot on the x axis</li>
+<li><strong>yData</strong> (<em>list of numbers of any type, must be same length as xData</em>) &#8211; Data to plot on the y axis</li>
+<li><strong>xLabel</strong> (<em>string, default is &#8216;&#8217;</em>) &#8211; label for the x axis data</li>
+<li><strong>yLabel</strong> (<em>string, default is &#8216;&#8217;</em>) &#8211; label for the y axis data</li>
+<li><strong>plotFilename</strong> (<em>string, ensuring to include directory path if not cwd</em>) &#8211; name of the file to save the figure to</li>
+<li><strong>xLim</strong> (<em>tuple of two numbers of any type, (min,max)
+default False indicates to use min and max of xData</em>) &#8211; range to limit the x axis values to</li>
+<li><strong>yLim</strong> (<em>tuple of two numbers of any type, (min,max)
+default False indicates to use min and max of yData</em>) &#8211; range to limit the y axis values to</li>
+<li><strong>show</strong> (<em>boolean, default is False</em>) &#8211; show the resulting figure on the screen?</li>
+<li><strong>save</strong> (<em>boolean, default is True</em>) &#8211; save the resulting figure?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.histAndScatterPlotter">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">histAndScatterPlotter</tt><big>(</big><em>xData</em>, <em>yData</em>, <em>xLabel=''</em>, <em>yLabel=''</em>, <em>plotFilename=''</em>, <em>xLim=False</em>, <em>yLim=False</em>, <em>show=True</em>, <em>save=False</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.histAndScatterPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will create a plot with a scatter plot of the xData and yData in the middle, a horizontal histogram 
+of the yData on the right, and vertical histogram of the xData at the top.  This is a good way to compare the 
+parameter space where the two data sets have their values focus.</p>
+<p>NOTE: xData and yData must have the same length.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>xData</strong> (<em>list of numbers of any type, must be same length as yData</em>) &#8211; Data to plot on the x axis</li>
+<li><strong>yData</strong> (<em>list of numbers of any type, must be same length as xData</em>) &#8211; Data to plot on the y axis</li>
+<li><strong>xLabel</strong> (<em>string, default is &#8216;&#8217;</em>) &#8211; label for the x axis data</li>
+<li><strong>yLabel</strong> (<em>string, default is &#8216;&#8217;</em>) &#8211; label for the y axis data</li>
+<li><strong>plotFilename</strong> (<em>string, ensuring to include directory path if not cwd</em>) &#8211; name of the file to save the figure to</li>
+<li><strong>xLim</strong> (<em>tuple of two numbers of any type, (min,max)
+default False indicates to use min and max of xData</em>) &#8211; range to limit the x axis values to</li>
+<li><strong>yLim</strong> (<em>tuple of two numbers of any type, (min,max)
+default False indicates to use min and max of yData</em>) &#8211; range to limit the y axis values to</li>
+<li><strong>show</strong> (<em>boolean, default is False</em>) &#8211; show the resulting figure on the screen?</li>
+<li><strong>save</strong> (<em>boolean, default is True</em>) &#8211; save the resulting figure?</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.histConverter">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">histConverter</tt><big>(</big><em>chiSquareds</em>, <em>data</em>, <em>plot</em>, <em>xlabel</em>, <em>confLevels=False</em>, <em>weight=True</em>, <em>normed=True</em>, <em>nu=1</em>, <em>bestVal=0</em>, <em>logY=False</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.histConverter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is for creating a modified histogram plot to be properly normalized to a max value
+of 1.0.  There is also the option to color the histogram bars according to the 95 and 68% confidence
+levels of the data.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.makeCleanSummaryPlot">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">makeCleanSummaryPlot</tt><big>(</big><em>outputDataFilename=''</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.makeCleanSummaryPlot" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will first find the lowest chisquared for a given run,
+then use readTrimWrite to trim all data that is more than 40 higher than that value.
+This trimmed data file will then be plotted by summaryPlotter.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.mcmcProgressPlotter">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">mcmcProgressPlotter</tt><big>(</big><em>filenames</em>, <em>rootPlotFilename</em>, <em>nu=1</em>, <em>plot4x1=False</em>, <em>TcStepping=False</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.mcmcProgressPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will produce a time series type view of the paramters in each chain&#8217;s output
+data file.  It will utilize summaryPlotter2MCMC to produce these plots and figures.</p>
+<p>These plots will be made for the parameter values vs step, 
+to show how it is converging with time.</p>
+<p>NOTE: Runs on NEW data files only.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nu</strong> (<em>float</em>) &#8211; The value of nu to convert chi squared to reduced chi squared.</li>
+<li><strong>plot4x1</strong> (<em>Python boolean</em>) &#8211; Only make plots for K, argPeri, e, To (or Tc if Tc stepping was used), and chiSquared.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.orbitEllipsePlotter">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">orbitEllipsePlotter</tt><big>(</big><em>longAN_deg</em>, <em>e</em>, <em>period</em>, <em>inc</em>, <em>argPeri_deg</em>, <em>a</em>, <em>sysDataDict</em>, <em>DIdataDict</em>, <em>xLabel='E [&quot;]'</em>, <em>yLabel='N [&quot;]'</em>, <em>plotFilename=''</em>, <em>xLim=False</em>, <em>yLim=False</em>, <em>show=True</em>, <em>telescopeView=False</em>, <em>To=0</em>, <em>nuDI=1</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.orbitEllipsePlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will plot the resulting orbit for the input parameters.
+NOTE: If a plotFilename is provided, then the resulting figure will be saved.</p>
+<p>IN THIS VERSION the input orbital elements are to be lists, so that multiple orbits are drawn on one 
+plot.  The first orbit provided, that in the 0th element of the lists, will be used for the 
+main orbit which will get its 1/4 orbit sections marked by colored stars and other stuff.</p>
+<p>:param longAN_degs      Longitude of the Acending Node in degrees
+:type longAN_deg:       float, in a list
+:param argPeri_deg:     Argument of Periapsis in degrees
+:type argPeri_deg:      float, in a list
+:param a:               Semi-Major axis in AU
+:type a:                float, in a list
+:param e:               Eccentricity
+:type e:                float, in a list
+:param inc:             Inclination in degrees
+:type inc:              float, in a list
+:param period:          period of orbits [yrs]
+:type period:           float, in a list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>Sys_Dist_PC</strong> (<em>float</em>) &#8211; Distance to the system from Earth [parsec]</li>
+<li><strong>xLim</strong> (<em>tuple of two numbers of any type, (min,max),
+default False indicates to use min and max of X values for points on
+the ellipse +5% for white space padding.</em>) &#8211; range to limit the x axis values to</li>
+<li><strong>yLim</strong> (<em>tuple of two numbers of any type, (min,max),
+default False indicates to use min and max of Y values for points on 
+the ellipse +5% for white space padding.</em>) &#8211; range to limit the y axis values to</li>
+<li><strong>PAs</strong> (<em>list of numbers, same length as SAs</em>) &#8211; Position Angles in [degrees]</li>
+<li><strong>SAs</strong> (<em>list of numbers, same lenght as PAs</em>) &#8211; Separation Angles in [&#8220;]</li>
+<li><strong>sys_dist</strong> (<em>float</em>) &#8211; Distance to System in [pc]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.rvFitPlotter1Body">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">rvFitPlotter1Body</tt><big>(</big><em>e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitCenter=0, RVoffsets=[0], plotFilename='', show=True, plotFullOrbit=True</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.rvFitPlotter1Body" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a plot for the RV data and a fit line from the best orbit data params.</p>
+<dl class="docutils">
+<dt>NOTE: e, T, period, inc, argPeri_deg, a can all be lists, </dt>
+<dd>BUT T_center will be the same for all the orbits plotted.</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.rvModDatasetMaker">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">rvModDatasetMaker</tt><big>(</big><em>e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, paramSettingsDict, RVoffsets=[0], modDatasetsFilename='', numModDatasets=100</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.rvModDatasetMaker" title="Permalink to this definition">¶</a></dt>
+<dd><p>First this will create a plot for the RV data and a fit line from the best orbit data params.  
+Then it will create many modified versions of the RV data set by keeping the epoch and 
+radial velocities the same, but randomizing the location of their associated errors.  
+numModDatasets modified data sets will be made and output to a file.  This 
+type of modified data can be used for &#8216;bootstrap&#8217; type simulations although a proper MCMC with the 
+original data is the best approach normally.  Finally, a plot of the modified data sets will be 
+made in comparison to the best fit.</p>
+<p>NOTES:
+If a star-planet system is being simulated, then the provided inclination will be used with the
+planet&#8217;s mass in the system data file/ provided dict, to calculate the residual vel.  If the value
+in the dictionary/file is actually, please set inc=0 to tell this func to ignore it and use the file&#8217;s value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.rvPlotter">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">rvPlotter</tt><big>(</big><em>e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, paramSettingsDict, K=0, RVoffsets=[0], nuRV=1, plotFilename='', show=True, plotFullOrbit=True</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.rvPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>create a plot for the RV data and a fit line from the best orbit data params.</p>
+<p>NOTES:
+If a star-planet system is being simulated, then the provided inclination will be used with the
+planet&#8217;s mass in the system data file/ provided dict, to calculate the residual vel.  If the value
+in the dictionary/file is actually, please set inc=0 to tell this func to ignore it and use the file&#8217;s value.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.singleParamReadAndPlotNEW">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">singleParamReadAndPlotNEW</tt><big>(</big><em>filename</em>, <em>paramColNum</em>, <em>subPlot</em>, <em>numBins</em>, <em>weight=True</em>, <em>confLevels=True</em>, <em>normalize=True</em>, <em>drawLine=False</em>, <em>nu=1</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.singleParamReadAndPlotNEW" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the single column/param plotter for the new Master Hist plotter
+that will call this in a loop to fill up a summary plot.  This is being
+done as there are RAM issues of trying to load all the data for a particular
+column and plot it all at once.  Thus, this one will load the data 
+only one bin of the hist at a time to be the most efficient with the RAM.</p>
+<p>It is assumed that the chiSquareds in the data file are reduced, so the nu value will de-reduce 
+them to calculated proper likelihoods for weighting.</p>
+<p>file format must follow the &#8216;NEW&#8217; style, ie:
+longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared    timesBeenHere</p>
+<p>All filename checks will occur in the Master function and are thus not needed here.</p>
+<p>All 3D data should have its chiSquared values all ready be reduced.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.singleParamReadAndPlotNEW2">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">singleParamReadAndPlotNEW2</tt><big>(</big><em>filename</em>, <em>paramColNum</em>, <em>subPlot</em>, <em>numBins</em>, <em>weight=True</em>, <em>confLevels=True</em>, <em>normalize=True</em>, <em>drawLine=False</em>, <em>nu=1</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.singleParamReadAndPlotNEW2" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the single column/param plotter for the new Master Hist plotter
+that will call this in a loop to fill up a summary plot.  This is being
+done as there are RAM issues of trying to load all the data for a particular
+column and plot it all at once.  Thus, this one will load the data 
+only one bin of the hist at a time to be the most efficient with the RAM.</p>
+<p>file format must follow the &#8216;NEW&#8217; style, ie:
+longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared    timesBeenHere</p>
+<p>All filename checks will occur in the Master function and are thus not needed here.</p>
+<p>All 3D data should have its chiSquared values all ready be reduced.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.star">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">star</tt><big>(</big><em>R</em>, <em>x0</em>, <em>y0</em>, <em>color='w'</em>, <em>N=5</em>, <em>thin=0.5</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.star" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an N-pointed star of size R at (x0, y0) (matplotlib patch).</p>
+<p>NOTE: code base taken from star_patch.py in &#8216;Beginning-Python-Visualization&#8217;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.starAndErrorPolys">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">starAndErrorPolys</tt><big>(</big><em>SAs</em>, <em>SAerrors</em>, <em>PAs</em>, <em>PAerrors</em>, <em>asConversion</em>, <em>transData</em>, <em>telescopeView=False</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.starAndErrorPolys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a rectangle patch for a given secondary star data point location.
+It will return the patch.</p>
+<p>SA in arcsec
+PA in degrees</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.starAndErrorPolysOLD">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">starAndErrorPolysOLD</tt><big>(</big><em>SAs</em>, <em>SAerrors</em>, <em>PAs</em>, <em>PAerrors</em>, <em>asConversion</em>, <em>transData</em>, <em>telescopeView=False</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.starAndErrorPolysOLD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a rectangle patch for a given secondary star data point location.
+It will return the patch.</p>
+<p>SA in arcsec
+PA in degrees</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.summaryPlotter">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">summaryPlotter</tt><big>(</big><em>outputDataFilename</em>, <em>plotFilename</em>, <em>weight=False</em>, <em>confLevels=True</em>, <em>normalize=True</em>, <em>nu=1</em>, <em>plot4x1=False</em>, <em>TcStepping=False</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.summaryPlotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This advanced plotting function will plot all the data in a 3x3 grid (or 3x1) on a single figure.  The data will be plotted
+in histograms that can be will be normalized to a max of 1.0 and the data can be weighted if desired.  The 
+confidence levels of the data can be calculated and the resulting histograms will have the bars inside the
+68% bin shaded as dark grey and 95% as light grey and the rest will be white.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nu</strong> (<em>float</em>) &#8211; The value of nu to convert chi squared to reduced chi squared.</li>
+<li><strong>plot4x1</strong> (<em>Python boolean</em>) &#8211; Only make plots for K, argPeri, e, and To (or Tc if Tc stepping was used).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.summaryPlotter2MCMC">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">summaryPlotter2MCMC</tt><big>(</big><em>outputDataFilename</em>, <em>plotFilename</em>, <em>nu=1</em>, <em>plot4x1=False</em>, <em>logFilename=''</em>, <em>TcStepping=False</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.summaryPlotter2MCMC" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will plot a progress plot for each varying parameters in the file.  
+It is called by mcmcProgressPlotter to plot up the progress for each chain
+separately and utilizes summaryPlotter2MCMCfunc to do the repetative task 
+of producing the plot for each parameter.</p>
+<p>These plots will be made for the parameter values vs step, 
+to show how it is converging with time.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>nu</strong> (<em>float</em>) &#8211; The value of nu to convert chi squared to reduced chi squared.</li>
+<li><strong>plot4x1</strong> (<em>Python boolean</em>) &#8211; Only make plots for K, argPeri, e, To (or Tc if Tc stepping was used), and chiSquared.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="toolboxes.plotToolbox.summaryPlotter2MCMCfunc">
+<tt class="descclassname">toolboxes.plotToolbox.</tt><tt class="descname">summaryPlotter2MCMCfunc</tt><big>(</big><em>log</em>, <em>subPlot2</em>, <em>outputDataFilename</em>, <em>xlabel</em>, <em>paramColNum</em>, <em>xCenters</em>, <em>numChunks</em>, <em>chunkSize</em><big>)</big><a class="headerlink" href="#toolboxes.plotToolbox.summaryPlotter2MCMCfunc" title="Permalink to this definition">¶</a></dt>
+<dd><p>works for summaryPlotter2MCMC to do the plot for each param and reduce code doubling</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tools</a><ul>
+<li><a class="reference internal" href="#module-toolboxes.generalToolbox">General Tools</a></li>
+<li><a class="reference internal" href="#module-toolboxes.DItoolbox">DI Tools</a></li>
+<li><a class="reference internal" href="#module-toolboxes.RVtoolbox">RV Tools</a></li>
+<li><a class="reference internal" href="#module-toolboxes.plotToolbox">Plotting Tools</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to the SMODT documentation!</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="non-tools.html"
+                        title="next chapter">Simulation Starter Functions</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/tools.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="non-tools.html" title="Simulation Starter Functions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to the SMODT documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">Simple MCMC Orbit Determination Tool (SMODT) 1.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Kyle Mede.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

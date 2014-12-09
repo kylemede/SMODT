@@ -35,7 +35,7 @@ DIonly =True
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
 mcONLY =False
 # Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
-simAnneal =False
+simAnneal =True
 # Set to true to perform the 100 mod dataset MCMC loop
 loopedMCMC =False
 # make plot of posterior distributions? [bool]
@@ -61,7 +61,7 @@ CalcBurnIn =False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths =false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal =10000000
+numSamples_SimAnneal =10000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots =false
 # Calculate the Gelman-Rubin statistic? [bool]
@@ -91,7 +91,7 @@ eMAX =0.0
 # Minimum allowed value for the Period [double][yrs]
 periodMIN =10
 # Maximum allowed value for the Period [double][yrs]
-periodMAX =100.0
+periodMAX =150.0
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMIN =10
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}

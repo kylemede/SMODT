@@ -47,7 +47,7 @@ planet_MsinI = 0.00477
 # Planet's M.sin(i) error [Msun][double]# GUESTATED
 planet_MsinI_error = 0.002
 # Planet's argument of pariapsis [degrees][double]
-planet_argPeri = 0
+planet_argPeri = 90
 # Planet's argument of pariapsis error [degrees][double]
 planet_argPeri_error = 0
 # Planet's inclination if able to measure separately [degrees][double]
@@ -75,7 +75,7 @@ star_Mass2 = 0
 # Star's Mass error [Msun][double]
 star_Mass2_error = 0
 # Star's argument of pariapsis [degrees][double]
-star_argPeri = 0
+star_argPeri = 90
 # Star's argument of pariapsis error [degrees][double]
 star_argPeri_error = 0
 # Star's inclination [degrees][double]

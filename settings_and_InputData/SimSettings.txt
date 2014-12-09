@@ -1,7 +1,7 @@
 #These are all the general settings for the simulation
 
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
-Duo =true
+Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax = 500
 # The number of samples orbital parameters to try/draw [int]
@@ -35,7 +35,7 @@ DIonly = true
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
 mcONLY = false
 # Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
-simAnneal = false
+simAnneal = true
 # Set to true to perform the 100 mod dataset MCMC loop
 loopedMCMC = false
 # make plot of posterior distributions? [bool]
@@ -61,7 +61,7 @@ CalcBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths = false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 10000000
+numSamples_SimAnneal = 10000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots = false
 # Calculate the Gelman-Rubin statistic? [bool]
@@ -91,7 +91,7 @@ eMAX =  0.0
 # Minimum allowed value for the Period [double][yrs]
 periodMIN = 10
 # Maximum allowed value for the Period [double][yrs]
-periodMAX = 100
+periodMAX = 150
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMIN = 10
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}

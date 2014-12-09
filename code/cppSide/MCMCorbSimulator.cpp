@@ -101,7 +101,7 @@ int main(int argc ,char *argv[])
 		DIdo.dataLoadUp(DIdataFilename.c_str());
 		DIdo.systemDataLoadUp(SystemDataFilename.c_str());
 		// instantiate DI tools obj and load it up with same values
-		DIt = GT.DItoolsParamLoadUp( DIdo);
+		DIt = GT.DItoolsParamLoadUp(DIdo);
 		DIt.verbose=SSO.verbose;
 		//cout<<"DI data object loaded up"<<endl; //$$$$$$$$$$$$$$$$
 	}
@@ -111,6 +111,7 @@ int main(int argc ,char *argv[])
 		string RVdataFilename = SSO.settings_and_InputDataDir + SSO.RVdataFilename;
 		RVdo.dataLoadUp(RVdataFilename.c_str());
 		RVdo.systemDataLoadUp(SystemDataFilename.c_str());
+		//cout<<"RVdo.planet_argPeri = "<<RVdo.planet_argPeri<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		//cout<<"Done loading up RV data obj"<<endl; //$$$$$$$$$$$$$$$$$$
 	}
 	// find the earliest epoch for the time of last pariapsis min/max settings

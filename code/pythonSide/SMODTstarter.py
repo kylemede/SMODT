@@ -113,7 +113,7 @@ def main():
     ## Make a directory (folder) to place all the files from this simulation run
     # Ensure directories provided have a final '/' character
     if data_dir[-1:] is not '/':
-         data_dir = data_dir+'/'
+        data_dir = data_dir+'/'
     finalFolder = data_dir+filename[:-4]+'/'
     if os.path.exists(finalFolder):
         print '\n'+'$'*100+'\n'
@@ -212,8 +212,8 @@ def main():
         shutil.copy(f,outputfilename)
         if paramSettingsDict['CopyToDrobox']:
             outputfilename2 = finalFolder2+'code-used/'+filebasename  
-            print 'file being copied:'+f
-            print 'Being copied to:'+outputfilename
+            #print 'file being copied:'+f
+            #print 'Being copied to:'+outputfilename
             shutil.copy(f,outputfilename2)
         
     ## finally, make print that sim is starting and then start it.

@@ -140,9 +140,19 @@ void simAnealOrbFuncObj::simulator()
 	if (SSO.argPeri_degMAX==0)
 	{
 		if (SSO.simulate_StarPlanet==true)
-			argPeri_deg_latest = RVdo.planet_argPeri;
+		{
+			if (SSO.DIonly==true)
+				argPeri_deg_latest = DIdo.planet_argPeri;
+			else
+				argPeri_deg_latest = RVdo.planet_argPeri;
+		}
 		else
-			argPeri_deg_latest = RVdo.star_argPeri;
+		{
+			if (SSO.DIonly==true)
+				argPeri_deg_latest = DIdo.star_argPeri;
+			else
+				argPeri_deg_latest = RVdo.star_argPeri;
+		}
 	}
 	else
 	{
@@ -173,7 +183,7 @@ void simAnealOrbFuncObj::simulator()
 		numRVparams+=1;
 		numDIparams+=1;
 		period_latest = RanGen.UniformRandom(SSO.periodMIN, SSO.periodMAX); //  [yrs]
-		ss<<"\n\n***************************************\nperiodMIN = "<<SSO.periodMIN<<", periodMAX = "<<SSO.periodMAX<<"\n**********************************\n\n"<<endl;
+		ss<<"\n\n**********************************\nperiodMIN = "<<SSO.periodMIN<<", periodMAX = "<<SSO.periodMAX<<"\n**********************************\n\n"<<endl;
 		paramsToVaryIntsAry.push_back(3);
 	}
 	double e_latest=0;
@@ -241,7 +251,7 @@ void simAnealOrbFuncObj::simulator()
 		}
 	}
 	ss<<fixed<<std::setprecision(6)<<"\n\nTMIN = "<<TMIN<<", TMAX = "<<TMAX<<"\n\n"<<endl;
-	cout<<"line # 247"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	//cout<<"line # 247"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	// load initial values from system data file
 	double T_latest;
 	double Tc_latest;
@@ -634,7 +644,7 @@ void simAnealOrbFuncObj::simulator()
 		printCount = printCount + 1;
 		if ( printCount==printTime )
 		{
-			//cout<<"line # 580"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"line # 637"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			printsDone = printsDone+1;
 			printCount = 0;
 			int sampleUSE = sample;
@@ -696,7 +706,7 @@ void simAnealOrbFuncObj::simulator()
 					}
 				}
 			}
-			//cout<<"line # 642"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"line # 699"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if (false)
 			{
 				ss<<"\nLatest gaussian proposed general parameters were:"<<endl;
@@ -738,7 +748,7 @@ void simAnealOrbFuncObj::simulator()
 				ss<<"T_latest =  "<<T_latest <<endl;
 				ss<<"Tc_latest = "<<Tc_latest <<endl;
 				ss<<"K_latest = "<<K_latest <<endl;
-				if (SSO.eMAX<0.3)
+				if ((SSO.eMAX<0.3)&&(SSO.eMAX!=0))
 				{
 					if (true)
 					{
@@ -754,6 +764,7 @@ void simAnealOrbFuncObj::simulator()
 			}
 			if (true)
 			{
+				cout<<bestOrbit<<endl;
 				ss<<"\nBEST parameters set so far: "<<endl;
 				ss<<"inclination_deg = "<< ODT.inclination_degs[bestOrbit]<<endl;
 				ss<<"longAN_deg = "<< ODT.longAN_degs[bestOrbit]<<endl;
@@ -770,14 +781,11 @@ void simAnealOrbFuncObj::simulator()
 					ss<<"RVoffsets for dataset "<<dataset <<" = "<<ODT.RVoffsets[bestOrbit][dataset] <<endl;
 				}
 			}
-
 			if (true)
 			{
 				ss<<"\nKp_calculated = "<<Kp_calculated<<endl;
 				ss<<"Ks_calculated = "<<Ks_calculated<<"\n"<<endl;
 			}
-
-
 
 			ss<<"#######################################################################################"<<endl;
 			ss<<acceptString;
@@ -788,7 +796,7 @@ void simAnealOrbFuncObj::simulator()
 			SSlog<< printLine;
 
 		}
-
+		//cout<<"line # 791"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// Set proposed values to latest
 		longAN_deg_proposed = longAN_deg_latest;
 		e_proposed = e_latest;
@@ -804,7 +812,6 @@ void simAnealOrbFuncObj::simulator()
 		star_Mass2_proposed = SYSdo.star_Mass2;
 		sqrtESinomega_proposed = sqrtESinomega_latest;
 		sqrtECosomega_proposed = sqrtECosomega_latest;
-
 
 		// Generate random numbers in the required ranges for the inputs to the orbCalc
 		ALLpassed = true;//just the starting value, set to false in proposal block if out of range
@@ -823,10 +830,12 @@ void simAnealOrbFuncObj::simulator()
 		}
 		else if (paramBeingVaried==1)
 		{
+			if (SSO.eMAX==0)
+				cout<<"WARNING!! eMAX==0, but still trying to vary it in proposal brick!!"<<endl;
 			if (SSO.eMAX<0.3)
 			{
-			sqrtESinomega_sigma = sqrtESinomega_sigmaPercent_latest*1.0;
-			sqrtESinomega_proposed = RanGen.UniformRandom(sqrtESinomega_latest-sqrtESinomega_sigma,sqrtESinomega_latest+sqrtESinomega_sigma);
+				sqrtESinomega_sigma = sqrtESinomega_sigmaPercent_latest*1.0;
+				sqrtESinomega_proposed = RanGen.UniformRandom(sqrtESinomega_latest-sqrtESinomega_sigma,sqrtESinomega_latest+sqrtESinomega_sigma);
 			}
 			else
 			{
@@ -864,6 +873,8 @@ void simAnealOrbFuncObj::simulator()
 		}
 		else if (paramBeingVaried==5)
 		{
+			if (SSO.eMAX==0)
+				cout<<"WARNING!! eMAX==0, but still trying to vary argPeri in the proposal brick!!"<<endl;
 			if (SSO.eMAX<0.3)
 			{
 				sqrtECosomega_sigma = sqrtECosomega_sigmaPercent_latest*1.0;
@@ -900,7 +911,7 @@ void simAnealOrbFuncObj::simulator()
 					ss<<"dataset = " <<dataset<<", RVoffsets_proposed[dataset] = "<<RVoffsets_proposed[dataset] <<", RVoffsetMIN = "<<SSO.RVoffsetMINs[dataset]<<", MAX = "<< SSO.RVoffsetMAXs[dataset]<<endl;
 			}
 		}
-
+		//cout<<"line # 907"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //		if (false)
 //		{
 //			double e_TEST = 0.01;
@@ -1052,14 +1063,14 @@ void simAnealOrbFuncObj::simulator()
 				EATT.To = T_proposed;
 				EATT.Tc=Tc_proposed;
 				EATT = GT.eccArgPeri2ToTcCalc(EATT);
-				//cout<<"T in = "<<T_proposed <<", Tc in = "<< Tc_proposed<<", T out = "<<EATT.To <<", Tc out = "<< EATT.Tc<<endl;
+				cout<<"T in = "<<T_proposed <<", Tc in = "<< Tc_proposed<<", T out = "<<EATT.To <<", Tc out = "<< EATT.Tc<<endl;
 				T_proposed = EATT.To;
 				Tc_proposed = EATT.Tc;
 			}
 		}
 		else
 			Tc_proposed = T_proposed;
-
+		//cout<<"line # 1066"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //		inclination_deg_proposed =  87.89;
 //		longAN_deg_proposed =  142.156752;
@@ -1223,7 +1234,6 @@ void simAnealOrbFuncObj::simulator()
 			if (false)
 				cout<<"The parameter that failed was: "<<ParamThatFailed<<endl;
 		}
-
 		// if all are good, move on to calculating orbit.
 		if(ALLpassed)
 		{
@@ -1281,6 +1291,7 @@ void simAnealOrbFuncObj::simulator()
 			multiEpochOrbCalcReturnType MEOCRT;
 			if (SSO.RVonly==false)
 			{
+				//SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				// #### DO STUFF FOR DI ORBIT CALCNS #####
 				if ( SSO.silent==false )
@@ -1288,19 +1299,22 @@ void simAnealOrbFuncObj::simulator()
 
 				// Call the orbCalc to have it apply the model to the inputs and produce outputs
 				MEOCRT = DIt.multiEpochOrbCalc();
+				//cout<<"line # 1297"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				a_total_curr = MEOCRT.a_total;
+				//cout<<"line # 1300"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 				// Calculate the chiSquared from the returned chiSquared
 				DI_chiSquared = MEOCRT.chi_squared_total;
+				//cout<<"line # 1304"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				if (one_over_nu_DI==1)
 				{
 					numDIepochs = DIdo.numEpochs_DI;
 					one_over_nu_DI = (1.0/((2.0*numDIepochs)-numDIparams));
 				}
-
 				//SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				if ( SSO.silent==false )
 				{
+					cout<<"line # 1314"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 					cout<<"DI_chiSquared = "<<DI_chiSquared<<endl;
 					cout<<"one_over_nu_DI = "<<one_over_nu_DI<<endl;
 					cout<<"DI_chiSquared_reduced = "<<DI_chiSquared*one_over_nu_DI<<endl;
@@ -1316,7 +1330,7 @@ void simAnealOrbFuncObj::simulator()
 				//chiSquaredMin_DI = 0;
 				//numDIepochs=0;
 			}
-
+			//cout<<"line # 1331"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if (SSO.DIonly==false)
 			{
 				RV_chiSquared = 0;
@@ -1531,6 +1545,7 @@ void simAnealOrbFuncObj::simulator()
 				RVoffsets_latest.push_back(0);
 				//chiSquaredMin_RV=0;
 			}
+			//cout<<"line # 1539"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 			// ****  Done all DI and RV calculations so put it all together ********
 			// ****  and see if this proposed orbit will be accepted        ********
@@ -1560,7 +1575,7 @@ void simAnealOrbFuncObj::simulator()
 
 			//Calculate priors ratio
 			//e_prior = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			if ((period_latest*365.242)<1000.0)
+			if (((period_latest*365.242)<1000.0)||(SSO.eMAX==0))
 				e_prior = 1.0;
 			else
 				e_prior = e_latest/DIt.e;

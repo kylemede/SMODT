@@ -41,7 +41,7 @@ void DataObj::systemDataLoadUp(const char* filename)
 	planet_P_error = 0;
 	planet_MsinI = 0;
 	planet_MsinI_error = 0;
-	planet_argPeri = 0;
+	planet_argPeri = 90;
 	planet_argPeri_error = 0;
 	planet_inc = 0;
 	planet_inc_error = 0;
@@ -59,7 +59,7 @@ void DataObj::systemDataLoadUp(const char* filename)
 	star_P_error = 0;
 	star_Mass2 = 0;
 	star_Mass2_error = 0;
-	star_argPeri = 0;
+	star_argPeri = 90;
 	star_argPeri_error = 0;
 	star_inc = 0;
 	star_inc_error = 0;

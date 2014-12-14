@@ -5,11 +5,11 @@ Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax = 500
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 15000000
+numSamples = 2000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing = false
+useMultiProcessing = true
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -35,7 +35,7 @@ DIonly = true
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
 mcONLY = false
 # Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
-simAnneal = true
+simAnneal = false
 # Set to true to perform the 100 mod dataset MCMC loop
 loopedMCMC = false
 # make plot of posterior distributions? [bool]
@@ -61,7 +61,7 @@ CalcBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths = false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 10000
+numSamples_SimAnneal = 5000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots = false
 # Calculate the Gelman-Rubin statistic? [bool]
@@ -105,9 +105,9 @@ argPeri_degMIN = 0.0
 # Maximum allowed value for the Argument of Perigee [double][deg]
 argPeri_degMAX = 0.0
 # Minimum value for the Time of Last Periapsis [JD]#2455651.45   #2455651.2798
-T_Min = 0
+T_Min = 2390000
 # Maximum value for the Time of Last Periapsis [JD]#2455653.765
-T_Max = 0
+T_Max = 2420000
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
 K_MIN = 0
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]

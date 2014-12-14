@@ -959,7 +959,7 @@ def dataReaderNEW(filename, column=0):
     
     return data
 
-def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False):
+def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False):
     """
     """
     gotLog=True
@@ -1031,7 +1031,7 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
         log.write("Values for parameter found to be constant!!")
         doesntVary = False
         
-    if (doesntVary==False):#or(fast==False):  
+    if ((doesntVary==False)or(ignoreConstParam==True)):#or(fast==False):  
         s=''
         #Old string parsing directly version UPDATED
         startTime2 = timeit.default_timer()
@@ -1657,7 +1657,11 @@ def confLevelFinderNEWdataVersion(filename, columNum=False, returnData=False, re
 #             print s
     # Put all the useful above code into dataReaderNew2, so just call it.  Code above needs to be cleaned up at some point soon!!!!
     if os.path.exists(filename):
-        (log,dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReaderNew2(filename, columNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+        if fast:
+            ignoreConstParam = False
+        else:
+            ignoreConstParam = True
+        (log,dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReaderNew2(filename, columNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True, ignoreConstParam=ignoreConstParam)
         
         gotLog=False
         if log:
@@ -2343,20 +2347,21 @@ def findNuFromLog(logFilename = ''):
     lines = log.readlines()
     log.close()
     i = 0
+    nu = nuRV = nuDI  = 1
     for line in lines:
         i=i+1
-        if line.find("one_over_nu_DI")>=0:
+        if (line.find("one_over_nu_DI")>=0)and(line.find("one_over_nu_DI")<3):
             ss = line.split('=')
-            onOverNu = float(ss[-1])
-            nuDI = 1.0/onOverNu
-        elif line.find("one_over_nu_RV")>=0:
+            oneOverNu = float(ss[-1])
+            nuDI = 1.0/oneOverNu
+        elif (line.find("one_over_nu_RV")>=0)and(line.find("one_over_nu_RV")<3):
             ss = line.split('=')
-            onOverNu = float(ss[-1])
-            nuRV = 1.0/onOverNu
-        elif line.find("one_over_nu_TOTAL")>=0:
+            oneOverNu = float(ss[-1])
+            nuRV = 1.0/oneOverNu
+        elif (line.find("one_over_nu_TOTAL")>=0)and(line.find("one_over_nu_TOTAL")<3):
             ss = line.split('=')
-            onOverNu = float(ss[-1])
-            nu = 1.0/onOverNu
+            oneOverNu = float(ss[-1])
+            nu = 1.0/oneOverNu
             # we can break loop after this is found as it is the 3rd one printed and  
             # would thus be the last found of the 3 so done looping after it is found
             break

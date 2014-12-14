@@ -1063,7 +1063,7 @@ void simAnealOrbFuncObj::simulator()
 				EATT.To = T_proposed;
 				EATT.Tc=Tc_proposed;
 				EATT = GT.eccArgPeri2ToTcCalc(EATT);
-				cout<<"T in = "<<T_proposed <<", Tc in = "<< Tc_proposed<<", T out = "<<EATT.To <<", Tc out = "<< EATT.Tc<<endl;
+				//cout<<"T in = "<<T_proposed <<", Tc in = "<< Tc_proposed<<", T out = "<<EATT.To <<", Tc out = "<< EATT.Tc<<endl;
 				T_proposed = EATT.To;
 				Tc_proposed = EATT.Tc;
 			}

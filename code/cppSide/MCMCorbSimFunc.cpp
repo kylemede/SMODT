@@ -287,6 +287,8 @@ void MCMCorbFuncObj::simulator()
 	//			sqrtESinomega_proposed = RanGen.UniformRandom(sqrtESinomega_latest-sqrtESinomega_sigma,sqrtESinomega_latest+sqrtESinomega_sigma);
 			else if (paramBeingVaried==1)
 			{
+				if (SSO.eMAX==0)
+					cout<<"!!! eMAX==0, but trying to propose a new value for it !!!"<<endl;
 				if (SSO.eMAX<0.3)
 					sqrtESinomega_proposed = RanGen.UniformRandom(sqrtESinomega_latest-sqrtESinomega_sigma,sqrtESinomega_latest+sqrtESinomega_sigma);
 				else
@@ -313,6 +315,8 @@ void MCMCorbFuncObj::simulator()
 	//			sqrtECosomega_proposed = RanGen.UniformRandom(sqrtECosomega_latest-sqrtECosomega_sigma,sqrtECosomega_latest+sqrtECosomega_sigma);
 			else if (paramBeingVaried==5)
 			{
+				if (SSO.eMAX==0)
+					cout<<"!!! eMAX==0, but trying to propose a new value for argPeri !!!"<<endl;
 				if (SSO.eMAX<0.3)
 					sqrtECosomega_proposed = RanGen.UniformRandom(sqrtECosomega_latest-sqrtECosomega_sigma,sqrtECosomega_latest+sqrtECosomega_sigma);
 				else
@@ -782,7 +786,7 @@ void MCMCorbFuncObj::simulator()
 			//
 			//Calculate priors ratio
 			//e_prior = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			if ((period_latest*365.242)<1000.0)
+			if (((period_latest*365.242)<1000.0)||(SSO.eMAX==0))
 				e_prior = 1.0;
 			else
 				e_prior = e_latest/DIt.e;

@@ -1269,7 +1269,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         paramColNum = 6
         xlabel = 'Argument of Perigie [deg]'
         #(CLevels,data,chiSquareds,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,fast=False)
-        (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+        (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True, ignoreConstParam=True)
         #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
         xs = np.array(range(0,data.size))
         # Wrap the array into a 2D array of chunks, truncating the last chunk if 
@@ -1297,15 +1297,18 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         log.write(s+'\n')
         if verbose:
             print s
-        subPlot2.fill_between(xCenters, min_env, max_env, color='gray', edgecolor='none', alpha=0.5)
-        subPlot2.plot(xCenters, yCenters)
-        subPlot2.plot([xCenters.min(),xCenters.max()],[bestDataVal,bestDataVal],color='green')
-        #subPlot2.plot(range(0,data.size),data)
-        subPlot2.axes.set_ylabel(xlabel)
-        #argPeriMedian = np.median(argPeri_degsAlls)
-        s= "done plotting argPeri_degsAlls"
-        print s
-        log.write(s+'\n')
+        try:
+            subPlot2.fill_between(xCenters, min_env, max_env, color='gray', edgecolor='none', alpha=0.5)
+            subPlot2.plot(xCenters, yCenters)
+            subPlot2.plot([xCenters.min(),xCenters.max()],[bestDataVal,bestDataVal],color='green')
+            #subPlot2.plot(range(0,data.size),data)
+            subPlot2.axes.set_ylabel(xlabel)
+            #argPeriMedian = np.median(argPeri_degsAlls)
+            s= "done plotting argPeri_degsAlls"
+            print s
+            log.write(s+'\n')
+        except:
+            log.write("An error occured while trying to plot summary of argPeri_degs.\n This is most likely due to it being constant.")
         
         if not plot4x1:
             subPlot2 = fig2.add_subplot(815)
@@ -1336,7 +1339,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(511)
         paramColNum = 1
         xlabel = 'e'
-        (log,subPlot2,data,beste)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+        (log,subPlot2,data,beste)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
         #eMedian = np.median(esAlls)
         s= "done plotting esAlls"
         print s
@@ -1575,12 +1578,12 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         log.write('\n'+75*'*'+'\n Leaving summaryPlotter2MCMC \n'+75*'*'+'\n')
         log.close()
 
-def summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize):
+def summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize, ignoreConstParam=False):
     """
     works for summaryPlotter2MCMC to do the plot for each param and reduce code doubling
     """
     #(CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=True,)
-    (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+    (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True, ignoreConstParam=ignoreConstParam)
     #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
     if type(data)!=float:
         yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))

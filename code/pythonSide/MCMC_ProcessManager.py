@@ -203,8 +203,8 @@ def multiProcessStarter(paramSettingsDict):
     #PMlogFile = open(logFilename,'a')
     PMlogFile.write(s)
     #PMlogFile.close()
+    cleanDataFilename=''
     if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
-        cleanDataFilename=''
         if True:
             tools.plot.summaryPlotter(dataFinalFilename, summaryPlotFile, weight=False, confLevels=True, nu=nu, plot4x1=plot4x1, TcStepping=paramSettingsDict['TcStepping'] )         
         if False:

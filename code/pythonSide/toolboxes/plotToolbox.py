@@ -915,8 +915,36 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             print s
             log.write(s+'\n')
             
-        ## create plot for predicted total mass if possible
+        if True:
+            # Create sub plot and fill it up for the semi-majors
+            if not plot4x1: 
+                startTime = timeit.default_timer()
+                s='\nStarting to plot hist for Semi-Majors:'
+                print s
+                log.write(s+'\n')
+                subPlot = fig.add_subplot(247)
+                paramColNum = 7
+                xlabel = 'Semi-Major[AU]'
+                (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+                subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
+                if (type(data)!=float)and(NumSamples==0):
+                    NumSamples=data.size
+                semiMajorCLevels = CLevels
+                semiMajorBest = bestDataVal
+                if NumSamples<2e7:
+                    semiMajors = data
+                #periodMedian = np.median(periodsAlls)
+                s="done plotting Semi-Majors\n"
+                # record the time the chain finished and print
+                endTime = timeit.default_timer()
+                totalTime = (endTime-startTime) # in seconds
+                totalTimeString = genTools.timeString(totalTime)
+                s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+                print s
+                log.write(s+'\n')        
+        
             if False:
+                ## create plot for predicted total mass if possible
                 if not plot4x1:
                     startTime = timeit.default_timer()
                     s='\nStarting to plot hist for Mtotals:'
@@ -978,62 +1006,33 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                     s =s+"\n"+"*"*25+"\n"
                     print s
                     log.write(s+'\n')
-        
-       
-        if True:
-            # Create sub plot and fill it up for the semi-majors
+
+        # This is for if you want to get a hist for the Tc and To params when doing TcStepping.  It is placed ontop of the semi-major's hist!!!!
+        else:
+            # Create sub plot and fill it up for the Period
             if not plot4x1: 
                 startTime = timeit.default_timer()
-                s='\nStarting to plot hist for Semi-Majors:'
+                if TcStepping:
+                    paramColNum = 2
+                    xlabel = 'Time of Periapsis [JD]'
+                    s='\nStarting to plot hist for Ts:'
+                else:
+                    paramColNum = 3
+                    xlabel = 'Time of Center Transit [JD]'
+                    s='\nStarting to plot hist for Tcs:'
                 print s
                 log.write(s+'\n')
                 subPlot = fig.add_subplot(247)
-                paramColNum = 7
-                xlabel = 'Semi-Major[AU]'
                 (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
                 subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-                if (type(data)!=float)and(NumSamples==0):
-                    NumSamples=data.size
-                semiMajorCLevels = CLevels
-                semiMajorBest = bestDataVal
-                if NumSamples<2e7:
-                    semiMajors = data
-                #periodMedian = np.median(periodsAlls)
-                s="done plotting Semi-Majors\n"
+                s= "done plotting Tcs or Ts"
                 # record the time the chain finished and print
                 endTime = timeit.default_timer()
                 totalTime = (endTime-startTime) # in seconds
                 totalTimeString = genTools.timeString(totalTime)
                 s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
                 print s
-                log.write(s+'\n')        
-        # This is for if you want to get a hist for the Tc and To params when doing TcStepping.  It is placed ontop of the semi-major's hist!!!!
-        else:
-           # Create sub plot and fill it up for the Period
-           if not plot4x1: 
-               startTime = timeit.default_timer()
-               if TcStepping:
-                   paramColNum = 2
-                   xlabel = 'Time of Periapsis [JD]'
-                   s='\nStarting to plot hist for Ts:'
-               else:
-                   paramColNum = 3
-                   xlabel = 'Time of Center Transit [JD]'
-                   s='\nStarting to plot hist for Tcs:'
-               print s
-               log.write(s+'\n')
-               subPlot = fig.add_subplot(247)
-               (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-               subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-               s= "done plotting Tcs or Ts"
-               # record the time the chain finished and print
-               endTime = timeit.default_timer()
-               totalTime = (endTime-startTime) # in seconds
-               totalTimeString = genTools.timeString(totalTime)
-               s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-               print s
-               log.write(s+'\n')
-        
+                log.write(s+'\n')
         
         if True:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             if not plot4x1:
@@ -1076,54 +1075,54 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         if (numRVdatasets>0)and(False):
             ## Create a second figure of RV offsets. ####
             try:
-                 # Create empty figure to be filled up with plots
-                 # Create sub plot and fill it up for the Semi-major
-                 if numRVdatasets<9:
-                     fig = plt.figure(2, figsize=(42,50) ,dpi=250)
-                 else:
-                     s= 'summaryPlotter2: WARNING!!! Plotter not set up to handle more than 9 RV datasets and '\
-                     +str(numRVdatasets)+' were found in the output datafile.'
-                     print s
-                     log.write(s+'\n')
-                 
-                 #add figure title
-                 plt.suptitle(plotFileTitle,fontsize=30)
-                 
-                 for dataset in range(1,numRVdatasets+1):
-                     startTime = timeit.default_timer()
-                     subPlot = fig.add_subplot(330+dataset)
-                     paramColNum = 9+dataset
-                     print 'Starting to plot '+'RV offset '+str(dataset)+":"
-                     xlabel = 'RV offset '+str(dataset)+' [m/s]'
-                     (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-                     subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-                     if ((dataset==1)or(dataset==4))or(dataset==7):
+                # Create empty figure to be filled up with plots
+                # Create sub plot and fill it up for the Semi-major
+                if numRVdatasets<9:
+                    fig = plt.figure(2, figsize=(42,50) ,dpi=250)
+                else:
+                    s= 'summaryPlotter2: WARNING!!! Plotter not set up to handle more than 9 RV datasets and '\
+                    +str(numRVdatasets)+' were found in the output datafile.'
+                    print s
+                    log.write(s+'\n')
+                
+                #add figure title
+                plt.suptitle(plotFileTitle,fontsize=30)
+                
+                for dataset in range(1,numRVdatasets+1):
+                    startTime = timeit.default_timer()
+                    subPlot = fig.add_subplot(330+dataset)
+                    paramColNum = 9+dataset
+                    print 'Starting to plot '+'RV offset '+str(dataset)+":"
+                    xlabel = 'RV offset '+str(dataset)+' [m/s]'
+                    (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+                    subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
+                    if ((dataset==1)or(dataset==4))or(dataset==7):
                         subPlot.axes.set_ylabel('Probability',fontsize=50)
-                     subPlot.tick_params(axis='both',which='major',labelsize=30)
-                     subPlot.axes.set_xlabel(xlabel,fontsize=50)
-                     s= "\nDone plotting RV offsets for dataset "+str(dataset)
-                     # record the time the chain finished and print
-                     endTime = timeit.default_timer()
-                     totalTime = (endTime-startTime) # in seconds
-                     totalTimeString = genTools.timeString(totalTime)
-                     s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-                     print s
-                     log.write(s+'\n') 
+                    subPlot.tick_params(axis='both',which='major',labelsize=30)
+                    subPlot.axes.set_xlabel(xlabel,fontsize=50)
+                    s= "\nDone plotting RV offsets for dataset "+str(dataset)
+                    # record the time the chain finished and print
+                    endTime = timeit.default_timer()
+                    totalTime = (endTime-startTime) # in seconds
+                    totalTimeString = genTools.timeString(totalTime)
+                    s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+                    print s
+                    log.write(s+'\n') 
                      
-                 # Save file 
-                 print '\nStarting to save RVoffsets figure'
-                 plotFilename2 = plotFilename[0:-4]+'-RVoffsets.png'
-                 plt.savefig(plotFilename2, dpi=300, orientation='landscape')
-                 s= 'RV offsets summary figure saved to '+plotFilename2
-                 print s
-                 log.write(s+'\n')  
-                 plt.close()
+                # Save file 
+                print '\nStarting to save RVoffsets figure'
+                plotFilename2 = plotFilename[0:-4]+'-RVoffsets.png'
+                plt.savefig(plotFilename2, dpi=300, orientation='landscape')
+                s= 'RV offsets summary figure saved to '+plotFilename2
+                print s
+                log.write(s+'\n')  
+                plt.close()
             except:
-                 plt.close()
-                 s= 'No RV offsets to plot' 
-                 print s
-                 log.write(s+'\n')  
-                 
+                plt.close()
+                s= 'No RV offsets to plot' 
+                print s
+                log.write(s+'\n')  
+
         ## Make a chiSquared distribution         
         if True:
             fig = plt.figure(2, figsize=(35,15) ,dpi=250)
@@ -1489,79 +1488,79 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         ## Create a second figure of RV offsets. ####
         if numRVdatasets>0:
             try:
-                 # Create empty figure to be filled up with plots
-                 # Create sub plot and fill it up for the Semi-major
-                 if numRVdatasets==1:
-                     fig2 = plt.figure(2,figsize=(30,10),dpi=200)
-                 elif numRVdatasets==2:
-                     fig2 = plt.figure(2,figsize=(30,15),dpi=200)
-                 elif numRVdatasets==3:
-                     fig2 = plt.figure(2,figsize=(30,20),dpi=200)
-                 else:
-                     s= '\nsummaryPlotter2MCMC: WARNING!!! Plotter not set up to handle more than 3 RV datasets and '\
-                     +str(numRVdatasets)+' were found in the output datafile.'
-                     print s
-                     log.write(s+'\n')
-                 
-                 
-                 if numRVdatasets>=1:
-                     # Create sub plot and fill it up for the Semi-major
-                     if numRVdatasets==1:
-                         subPlot2 = fig2.add_subplot(111)
-                     elif numRVdatasets==2:
-                         subPlot2 = fig2.add_subplot(211)
-                     elif numRVdatasets==3:
-                         subPlot2 = fig2.add_subplot(311)
-                     paramColNum = 10
-                     xlabel = 'RV offset 1 [m/s]'
-                     (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
-                     s= "Done plotting RV offsets for dataset 1"
-                     print s
-                     log.write(s+'\n')
-                 
-                 if numRVdatasets>=2:
-                     # Create sub plot and fill it up for the Semi-major
-                     if numRVdatasets==2:
-                         subPlot2 = fig2.add_subplot(212)
-                     elif numRVdatasets==3:
-                         subPlot2 = fig2.add_subplot(312)
-                     paramColNum = 11
-                     xlabel = 'RV offset 2 [m/s]'
-                     (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
-                     s= "Done plotting RV offsets for dataset 2"
-                     print s
-                     log.write(s+'\n')
-                     
-                 if numRVdatasets==3:
-                     # Create sub plot and fill it up for the Semi-major
-                     subPlot2 = fig2.add_subplot(313)
-                     paramColNum = 12
-                     xlabel = 'RV offset 3 [m/s]'
-                     (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
-                     s= "Done plotting RV offsets for dataset 3"
-                     print s
-                     log.write(s+'\n')
-                         
-                 # Save file 
-                 s = '\ninput plotFilename:\n'+plotFilename
-                 log.write(s+'\n')
-                 if verbose:
+                # Create empty figure to be filled up with plots
+                # Create sub plot and fill it up for the Semi-major
+                if numRVdatasets==1:
+                    fig2 = plt.figure(2,figsize=(30,10),dpi=200)
+                elif numRVdatasets==2:
+                    fig2 = plt.figure(2,figsize=(30,15),dpi=200)
+                elif numRVdatasets==3:
+                    fig2 = plt.figure(2,figsize=(30,20),dpi=200)
+                else:
+                    s= '\nsummaryPlotter2MCMC: WARNING!!! Plotter not set up to handle more than 3 RV datasets and '\
+                    +str(numRVdatasets)+' were found in the output datafile.'
                     print s
-                 plotFilename2 = plotFilename[:-4]+'-RVoffsets.png'
-                 s='\nplotFilename changed to:\n'+plotFilename2
-                 log.write(s+'\n')
-                 if verbose:
+                    log.write(s+'\n')
+                
+                
+                if numRVdatasets>=1:
+                    # Create sub plot and fill it up for the Semi-major
+                    if numRVdatasets==1:
+                        subPlot2 = fig2.add_subplot(111)
+                    elif numRVdatasets==2:
+                        subPlot2 = fig2.add_subplot(211)
+                    elif numRVdatasets==3:
+                        subPlot2 = fig2.add_subplot(311)
+                    paramColNum = 10
+                    xlabel = 'RV offset 1 [m/s]'
+                    (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+                    s= "Done plotting RV offsets for dataset 1"
                     print s
-                 plt.savefig(plotFilename2, orientation='landscape')
-                 s= '\nRV offsets summary figure saved to:\n'+plotFilename2
-                 print s
-                 log.write(s+'\n')                 
-                 plt.close()
+                    log.write(s+'\n')
+                
+                if numRVdatasets>=2:
+                    # Create sub plot and fill it up for the Semi-major
+                    if numRVdatasets==2:
+                        subPlot2 = fig2.add_subplot(212)
+                    elif numRVdatasets==3:
+                        subPlot2 = fig2.add_subplot(312)
+                    paramColNum = 11
+                    xlabel = 'RV offset 2 [m/s]'
+                    (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+                    s= "Done plotting RV offsets for dataset 2"
+                    print s
+                    log.write(s+'\n')
+                    
+                if numRVdatasets==3:
+                    # Create sub plot and fill it up for the Semi-major
+                    subPlot2 = fig2.add_subplot(313)
+                    paramColNum = 12
+                    xlabel = 'RV offset 3 [m/s]'
+                    (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+                    s= "Done plotting RV offsets for dataset 3"
+                    print s
+                    log.write(s+'\n')
+                        
+                # Save file 
+                s = '\ninput plotFilename:\n'+plotFilename
+                log.write(s+'\n')
+                if verbose:
+                    print s
+                plotFilename2 = plotFilename[:-4]+'-RVoffsets.png'
+                s='\nplotFilename changed to:\n'+plotFilename2
+                log.write(s+'\n')
+                if verbose:
+                    print s
+                plt.savefig(plotFilename2, orientation='landscape')
+                s= '\nRV offsets summary figure saved to:\n'+plotFilename2
+                print s
+                log.write(s+'\n')                 
+                plt.close()
             except:
-                 plt.close()
-                 s= '\nNo RV offsets to plot' 
-                 print s
-                 log.write(s+'\n')     
+                plt.close()
+                s= '\nNo RV offsets to plot' 
+                print s
+                log.write(s+'\n')     
         # record the time the chain finished and print
         endTime = timeit.default_timer()
         totalTime = (endTime-startTime) # in seconds
@@ -2367,24 +2366,24 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         
     #check the orbit element inputs to ensure they are lists, else make them lists
     if type(argPeri_deg)!=list:
-       argPeri_deg = [argPeri_deg]
+        argPeri_deg = [argPeri_deg]
     if type(a)!=list:
-       a = [a]
+        a = [a]
     if type(e)!=list:
-       e = [e]
+        e = [e]
     if type(inc)!=list:
-       inc = [inc]
+        inc = [inc]
     if type(period)!=list:
-       period = [period]
+        period = [period]
     if type(T)!=list:
-       T = [T]
+        T = [T]
     if type(Tc)!=list:
-       Tc = [Tc]
+        Tc = [Tc]
     if type(K)!=list:
-       K = [K]
+        K = [K]
     
     if type(RVoffsets)!=list:
-       RVoffsets = [RVoffsets]
+        RVoffsets = [RVoffsets]
     
     RV_epochs = RVdataDict['RV_epochs']
     RV_errors = RVdataDict['RV_errors']
@@ -3055,19 +3054,19 @@ def rvModDatasetMaker(e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, R
     
     #check the orbit element inputs to ensure they are lists, else make them lists
     if type(argPeri_deg)!=list:
-       argPeri_deg = [argPeri_deg]
+        argPeri_deg = [argPeri_deg]
     if type(a)!=list:
-       a = [a]
+        a = [a]
     if type(e)!=list:
-       e = [e]
+        e = [e]
     if type(inc)!=list:
-       inc = [inc]
+        inc = [inc]
     if type(period)!=list:
-       period = [period]
+        period = [period]
     if type(T)!=list:
-       T = [T]
+        T = [T]
     if type(RVoffsets)!=list:
-       RVoffsets = [RVoffsets]
+        RVoffsets = [RVoffsets]
     
     RV_epochs = RVdataDict['RV_epochs']
     RV_errors = RVdataDict['RV_errors']
@@ -3513,19 +3512,19 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
     
     #check the orbit element inputs to ensure they are lists, else make them lists    
     if type(argPeri_deg)!=list:
-       argPeri_deg = [argPeri_deg]
+        argPeri_deg = [argPeri_deg]
     if type(a)!=list:
-       a = [a]
+        a = [a]
     if type(e)!=list:
-       e = [e]
+        e = [e]
     if type(inc)!=list:
-       inc = [inc]
+        inc = [inc]
     if type(period)!=list:
-       period = [period]
+        period = [period]
     if type(T)!=list:
-       T = [T]
+        T = [T]
     if type(RVoffsets)!=list:
-       RVoffsets = [RVoffsets]
+        RVoffsets = [RVoffsets]
        
     cwd = os.getcwd()
     if '/Toolboxes'==cwd[-10:]:

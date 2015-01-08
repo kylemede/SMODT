@@ -37,7 +37,7 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 	SystemDataFilename = "SystemData.txt";
 	DIdataFilename = "DIdata.dat";
 	RVdataFilename = "RVdata.dat";
-	data_dir = "/mnt/Data1/Todai_Work/Data/data_Binary/data_C++/";
+	data_dir = "/mnt/Data1/Todai_Work/Data/data_SMODT/";
 	data_filenameRoot = "TrempRootFilename.dat";
 	RVonly = true;
 	DIonly = true;

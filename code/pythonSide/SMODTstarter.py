@@ -46,18 +46,20 @@ def main():
     #Pull in settings filename prepend from command line args, if provided
     settingsNamePrependStr = ''
     if len(sys.argv)>1:
-        settingsNamePrependStr = sys.argv[1]
-        print '\nWarning: the settings file prepended feature is not currently implemented !!\n'
+        try:
+            settingsNamePrependStr = sys.argv[1]
+        except:
+            print '\nWarning: the settings file prepended feature is not working correctly !!\n'
     if len(sys.argv)>2:
         print '\nWarning: SMODTstarter only handles a single extra string argument from the command line, and '\
                 +str(len(sys.argv)-1)+' were provided !!\n'
                 
     # get the input settings file name with dir
-    inputSettingsFile = os.path.join(settings_and_InputDataDir,'SimSettings.txt')
+    inputSettingsFile = os.path.join(settings_and_InputDataDir,settingsNamePrependStr+'SimSettings.txt')
     # make an output settings file name for the duo version output
     [fName,ext] = os.path.splitext(inputSettingsFile)
     outputSettingsFile = fName+'_DuoVersion'+ext
-    paramSettingsDict = tools.gen.cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile)
+    paramSettingsDict = tools.gen.cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile, settingsNamePrependStr)
     paramSettingsDict["UpdatedSettingsFile"] = outputSettingsFile
     if verboseInternal:
         print 'DONE loading up paramSettingsDict'
@@ -67,14 +69,14 @@ def main():
     # set simulation type
     mcONLY = paramSettingsDict['mcONLY'] # using only standard 'shotgun' monte carlo?
     
-    # set simulation general settings  
+    ## set simulation general settings  
     numSamples = paramSettingsDict['numSamples']  
-    silent = paramSettingsDict['silent']
-    verbose = paramSettingsDict['verbose']
+    #silent = paramSettingsDict['silent']
+    #verbose = paramSettingsDict['verbose']
     data_dir = paramSettingsDict['outputData_dir']
     filenameRoot = paramSettingsDict['outputData_filenameRoot']  
-    CalcBurnIn = paramSettingsDict['CalcBurnIn']
-    calcCorrLengths = paramSettingsDict['calcCorrLengths']
+    #CalcBurnIn = paramSettingsDict['CalcBurnIn']
+    #calcCorrLengths = paramSettingsDict['calcCorrLengths']
     DIonly = paramSettingsDict['DIonly']
     RVonly = paramSettingsDict['RVonly']
     paramSettingsDict['pythonCodeDir'] = pythonCodeDir
@@ -165,15 +167,15 @@ def main():
                        'generalTools.cpp','DItools.cpp','DataObj.cpp','DItools.h',
                        'DataObj.h','orbToolboxes.h','RVtools.h','SimSettingsObj.h']
     
-    settingsFiles = ['SystemData.txt','SimSettings.txt']
+    settingsFiles = [paramSettingsDict['SystemDataFilename'],paramSettingsDict["UpdatedSettingsFile"]]
     
     if DIonly:
-        settingsFiles.append('DIdata.dat')
+        settingsFiles.append(paramSettingsDict['DIdataFilename'])
     if RVonly:
-        settingsFiles.append('RVdata.dat')
+        settingsFiles.append(paramSettingsDict['RVdataFilename'])
     if ((DIonly==False)and(RVonly==False)):
-        settingsFiles.append('DIdata.dat')
-        settingsFiles.append('RVdata.dat')
+        settingsFiles.append(paramSettingsDict['DIdataFilename'])
+        settingsFiles.append(paramSettingsDict['RVdataFilename'])
     
     if mcONLY:
         pythonFiles.append('mcONLY_ProcessManager.py')

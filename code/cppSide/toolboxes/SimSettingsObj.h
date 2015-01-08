@@ -20,8 +20,8 @@ public:
 	string SystemDataFilename;
 	string DIdataFilename;
 	string RVdataFilename;
-	string data_dir ;
-	string data_filenameRoot ;
+	string data_dir;
+	string data_filenameRoot;
 	bool RVonly;
 	bool DIonly;
 	bool mcONLY;

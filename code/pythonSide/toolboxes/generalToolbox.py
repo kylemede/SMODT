@@ -1864,7 +1864,7 @@ def confidenceLevelsFinderNEW(filename, verbose=False):
     else:
         print "confidenceLevelsFinderNEW: ERROR!!!! file doesn't exist"    
     
-def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile=""):
+def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr = ""):
     """
     This will load in a settings file written in the format for C++ originally 
     into a simulation settings dict for use in the wrapping Python start up
@@ -1880,6 +1880,8 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile=""):
     
     # start return dict to be loaded up below
     returnDict = {}
+    
+    returnDict['prependStr'] = prependStr
     
     if silentInternal==False:
         print "Loading up Python settings dict from file: "+inputSettingsFile
@@ -1974,9 +1976,44 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile=""):
                             print 'TcStepping found to be = '+str(returnDict['TcStepping'])
                             if VALorig!=VAL:
                                 print 'TcStepping was initially = '+str(VALorig)+", but it was changed to False because DIonly was True."
+                    ## store modified settings filenames
+                    elif 'SystemDataFilename'in key:
+                        default  = 'SystemData.txt'
+                        if len(val)<2:
+                            print 'Value for SystemDataFilename, '+val+', was invalid.'
+                            print 'Using default value of:'+default
+                            valUse = default
+                        else:
+                            valUse = prependStr+val
+                        returnDict['SystemDataFilename'] = valUse
+                        if verbose:
+                            print 'SystemDataFilename found to be = '+returnDict['SystemDataFilename']
+                    elif 'DIdataFilename'in key:
+                        default  = 'DIdata.dat'
+                        if len(val)<2:
+                            print 'Value for DIdataFilename, '+val+', was invalid.'
+                            print 'Using default value of:'+default
+                            valUse = default
+                        else:
+                            valUse = prependStr+val
+                        returnDict['DIdataFilename'] = valUse
+                        if verbose:
+                            print 'DIdataFilename found to be = '+returnDict['DIdataFilename']
+                    elif 'RVdataFilename'in key:
+                        default  = 'RVdata.dat'
+                        if len(val)<2:
+                            print 'Value for RVdataFilename, '+val+', was invalid.'
+                            print 'Using default value of:'+default
+                            valUse = default
+                        else:
+                            valUse = prependStr+val
+                        returnDict['RVdataFilename'] = valUse
+                        if verbose:
+                            print 'RVdataFilename found to be = '+returnDict['RVdataFilename']
+                            
                     elif 'outputData_dir'in key:
                         if len(val)<2:
-                            default  = '/run/media/Kyle/Data1/Todai_Work/Data/data_Binary/data_Duo/'
+                            default  = '/run/media/Kyle/Data1/Todai_Work/Data/data_SMODT/'
                             print 'Value for data_dir, '+val+', was invalid.'
                             print 'Using default value of:'+default
                             valUse = default

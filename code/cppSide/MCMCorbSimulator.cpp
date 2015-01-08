@@ -59,7 +59,7 @@ int main(int argc ,char *argv[])
 	}
 	else if (argc==1)
 	{
-		settingsFilename = "/mnt/Data1/Todai_Work/Dropbox/workspace/SMODT/settings_and_InputData/SimSettings.txt";
+		settingsFilename = "/mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/settings_and_InputData/SimSettings.txt";
 		ss<<"No settings filename provided, so using default: ";
 		ss<<settingsFilename<<endl;
 		ss<<"No output data filename provided through command line";

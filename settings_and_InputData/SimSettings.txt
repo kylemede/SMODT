@@ -5,7 +5,7 @@ Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax = 500
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 2000000
+numSamples = 30000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
@@ -19,14 +19,14 @@ settings_and_InputDataDir = /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/setting
 # Name of file where system data is [string, at least 2 chars long]
 SystemDataFilename = SystemData.txt
 # Name of file where Direct Imaging data is [string, at least 2 chars long]
-DIdataFilename =DIdata.dat
+DIdataFilename = DIdata.dat
 # Name of file where Radial Velocity data is [string, at least 2 chars long]
-RVdataFilename =RVdata.dat
+RVdataFilename = RVdata.dat
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = MCMC-HR8799-fixedSept2014DataNOesposito-Circular-startMCMCatBestVals-1
+outputData_filenameRoot = MCMC-HR8799-fixedSept2014DataNOesposito-Circular-startMCMCatBestVals-3
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -61,7 +61,7 @@ CalcBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths = false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 5000000
+numSamples_SimAnneal = 100000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots = false
 # Calculate the Gelman-Rubin statistic? [bool]
@@ -93,7 +93,7 @@ periodMIN = 10
 # Maximum allowed value for the Period [double][yrs]
 periodMAX = 150
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMIN = 10
+a_totalMIN = 15
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMAX = 70
 # Minimum allowed value for the Inclination [double][deg]

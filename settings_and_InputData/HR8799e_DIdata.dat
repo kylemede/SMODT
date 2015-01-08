@@ -1,15 +1,11 @@
 #HR 8799 planet e DI data
-# ObsDate[JD]	PositionAngle[deg]    PositionAngleError[deg]  SeparationAngle["]   SeparationAngleError["]
+# ObsDate[JD]	PositionAngle[deg]    PositionAngleError[deg]  SeparationAngle["]   SeparationAngleError["]#
 2455043.5	234.030	2.947	0.369	0.027
 2455044.5	235.403	2.024	0.368	0.018
 2455112.5	234.658	1.069	0.375	0.010
 2455136.5	237.189	1.584	0.362	0.014
 2455390.5	241.763	1.246	0.368	0.011
 2455398.5	241.585	0.919	0.374	0.008
-2455499.5	257.831	0.906	0.380	0.007
-2455850.5	249.946	1.816	0.347	0.014
-2455874.5	251.610	1.566	0.403	0.014
-
-
-
+2455499.5	244.174	1.653	0.347	0.013
+2456230.5	257.831	0.906	0.380	0.007
 

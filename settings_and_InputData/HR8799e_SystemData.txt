@@ -7,7 +7,7 @@ Sys_Dist_PC = 39.4
 Sys_Dist_PC_error = 1.0
 # Mass of primary star [Msun] # ESTIMATED
 Mass1 = 1.56
-# Error in primary stat's mass [Msun] # GUESTATED
+# Error in primary stat's mass [Msun] # GUESTIMATED
 Mass1_error = 0.5
 
 # Further settings to properly set up RV part of simulations.
@@ -22,7 +22,6 @@ Mass1_error = 0.5
 
 # Orbital parameters for a known and well studied planet around the primary in a 3 body system. 
 # Use when investigating the orbit of a companion star, else leave all = zero.
-# values for planet from Brogi2012 and /mnt/Data1/Todai_Work/Data/data_Binary/data_Duo/MCMC-startTemp25-varyParamEachSamply-timesBeenHerefixed-smallerSteps025-TauBoo-RVonly-Planet-minusQuarterPlusHalfTight-9--28-Million-in_Total
 # planet's semi-major axis [m/s][double] 
 planet_K = 0
 # planet's semi-major axis error [m/s][double]
@@ -48,7 +47,7 @@ planet_MsinI = 0.00477
 # Planet's M.sin(i) error [Msun][double]# GUESTATED
 planet_MsinI_error = 0.002
 # Planet's argument of pariapsis [degrees][double]
-planet_argPeri = 0
+planet_argPeri = 90
 # Planet's argument of pariapsis error [degrees][double]
 planet_argPeri_error = 0
 # Planet's inclination if able to measure separately [degrees][double]
@@ -76,7 +75,7 @@ star_Mass2 = 0
 # Star's Mass error [Msun][double]
 star_Mass2_error = 0
 # Star's argument of pariapsis [degrees][double]
-star_argPeri = 0
+star_argPeri = 90
 # Star's argument of pariapsis error [degrees][double]
 star_argPeri_error = 0
 # Star's inclination [degrees][double]

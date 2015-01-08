@@ -1,11 +1,11 @@
 #These are all the general settings for the simulation
 
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
-Duo =true
+Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax = 100
+chiSquaredMax = 500
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 2000000
+numSamples = 30000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
@@ -15,17 +15,19 @@ silent =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
 verbose =false
 # Directory where input data and settings files are [string, at least 2 chars long]
-settings_and_InputDataDir =/mnt/Data1/Todai_Work/Dropbox/workspace/Binary-project/SimSettings_and_InputData/
+settings_and_InputDataDir = /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/settings_and_InputData
 # Name of file where system data is [string, at least 2 chars long]
 SystemDataFilename = SystemData.txt
 # Name of file where Direct Imaging data is [string, at least 2 chars long]
-DIdataFilename =DIdata.dat
+DIdataFilename = DIdata.dat
 # Name of file where Radial Velocity data is [string, at least 2 chars long]
-RVdataFilename =RVdata.dat
+RVdataFilename = RVdata.dat
 # Directory where you want the output data folder to go [string, at least 2 chars long]
-outputData_dir =/mnt/Data1/Todai_Work/Data/data_Binary/data_Duo/
+outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
-outputData_filenameRoot = MCMC-parmVaryCorrected-updatedData-simpleSAerror-HR8799-UniEccentPrior-ALLveryOpenParms-4
+#########################################################################################################################
+outputData_filenameRoot = MCMC-HR8799-fixedSept2014DataNOesposito-Circular-startMCMCatBestVals-3-TEST
+#########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
@@ -36,12 +38,36 @@ mcONLY = false
 simAnneal = false
 # Set to true to perform the 100 mod dataset MCMC loop
 loopedMCMC = false
+# make plot of posterior distributions? [bool]
+makePosteriorsPlot = true
+# make plots of RV and DI/AM orbit fits [bool]
+makeOrbitPlots = false
+# Make plots of Simulated Annealing progress plots? [bool]
+makeSimAnnealProgPlots = false
+# Simulated Annealing starting temperature [double]
+startTemp = 500.0
+# Delete chain files after simulation is complete? [bool]
+delChainsAfter = true
+# Delete combined data files after simulation is complete? [bool]
+delCombinedDataAfter = true
+# Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
+TcStepping = false
+# Copy output non-data files to a Dropbox folder? [bool]
+CopyToDrobox = True
 
 # Settings for MCMC mode (triggered by setting mcONLY=simAnneal=false):
-# Calculate the length of the burn in for each chain and strip it from the final output data? [bool]
-stripBurnIn =False
+# Calculate the length of the burn in for each chain? [bool] 
+CalcBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
-calcCorrLengths =false
+calcCorrLengths = false
+# number of samples to draw for simAnneal stage [int] 
+numSamples_SimAnneal = 100000
+# Make plots of MCMC progress plots? [bool]
+makeMCMCprogPlots = false
+# Calculate the Gelman-Rubin statistic? [bool]
+CalcGelmanRubin = false
+# How many times do you want the Gelman-Rubin statistic calculated [int]
+numTimesCalcGR = 100
 
 # Settings for possible RV cases:
 # If RV data is of a companion star, set simulate_StarStar=true
@@ -55,29 +81,33 @@ simulate_StarPlanet = true
 
 # Ranges for acceptable random number inputs ######
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMIN = 0.0
+longAN_degMIN = 1
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 longAN_degMAX = 180.0
 # Minimum allowed value for the Eccentricity [double]
 eMIN = 0.0
 # Maximum allowed value for the Eccentricity　[double]
-eMAX =  0.8
+eMAX =  0.0
 # Minimum allowed value for the Period [double][yrs]
-periodMIN = 0.1
+periodMIN = 10
 # Maximum allowed value for the Period [double][yrs]
-periodMAX = 300
+periodMAX = 150
+# Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
+a_totalMIN = 15
+# Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
+a_totalMAX = 70
 # Minimum allowed value for the Inclination [double][deg]
-inclination_degMIN = 0.0
+inclination_degMIN = 1.0
 # Maximum allowed value for the Inclination [double][deg]
 inclination_degMAX = 90.0
 # Minimum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMIN = 0
+argPeri_degMIN = 0.0
 # Maximum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMAX = 360.0
-# Minimuim value for the Time of Last Periapsis [JD]#2455651.45   #2455651.2798
-TimePeri_Min = 0
+argPeri_degMAX = 0.0
+# Minimum value for the Time of Last Periapsis [JD]#2455651.45   #2455651.2798
+T_Min = 2390000
 # Maximum value for the Time of Last Periapsis [JD]#2455653.765
-TimePeri_Max = 0
+T_Max = 2420000
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
 K_MIN = 0
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]

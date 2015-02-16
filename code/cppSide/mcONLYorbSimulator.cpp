@@ -14,6 +14,14 @@ using namespace std;
 
 int main(int argc ,char *argv[])
 {
+	/**
+	 This is the core C++ simulator to perform simple Monte Carlo runs.
+	 Thanks to its simplicity, unlike MCMC and Simulated Annealing, there is no C++ manager & core function
+	 structure needed.
+	 @author Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
+	 */
+
+	generalTools GT;
 	// print to indicate sim has started
 	cout<<"\n*** C++ mcONLY simulation has started ***\n";
 
@@ -64,6 +72,19 @@ int main(int argc ,char *argv[])
 	DItools DIt;
 	DIdataObj DIdo;
 	RVdataObj RVdo;
+	DataObj SYSdo;
+
+	// log and maybe print all inputs to C++ call
+	string inputsStr;
+	inputsStr = ss.str();
+	ss.clear();
+	ss.str(std::string());
+	SSlog<<inputsStr;
+	if (SSO.verbose==true)
+		cout<< inputsStr;
+
+	//cout<<"\n$$$$ about to try and load up sys data"<<endl;
+	SYSdo.systemDataLoadUp(SystemDataFilename.c_str());
 	//cout<<"DI and RV data objects instantiated"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$
 	if ((SSO.DIonly==true) or (SSO.RVonly==false && SSO.DIonly==false))
 	{
@@ -72,7 +93,7 @@ int main(int argc ,char *argv[])
 		DIdo.dataLoadUp(DIdataFilename.c_str());
 		DIdo.systemDataLoadUp(SystemDataFilename.c_str());
 		// instantiate DI tools obj and load it up with same values
-		DIt = DItoolsParamLoadUp( DIdo);
+		DIt = GT.DItoolsParamLoadUp(DIdo);
 		DIt.verbose=SSO.verbose;
 		//cout<<"DI data object loaded up"<<endl; //$$$$$$$$$$$$$$$$
 	}
@@ -82,10 +103,12 @@ int main(int argc ,char *argv[])
 		string RVdataFilename = SSO.settings_and_InputDataDir + SSO.RVdataFilename;
 		RVdo.dataLoadUp(RVdataFilename.c_str());
 		RVdo.systemDataLoadUp(SystemDataFilename.c_str());
+		//cout<<"RVdo.planet_argPeri = "<<RVdo.planet_argPeri<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		//cout<<"Done loading up RV data obj"<<endl; //$$$$$$$$$$$$$$$$$$
 	}
 	// find the earliest epoch for the time of last pariapsis min/max settings
-	double earliestEpoch = earliestEpochFinder(DIdo, RVdo);
+	double earliestEpoch = GT.earliestEpochFinder(DIdo, RVdo);
+	//cout<<"\n\nearliestEpoch = "<< earliestEpoch<<"\n\n"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 	//Start seed for random number generator
 	//create very high precision seed for generator (nanosecond precision)
@@ -104,7 +127,7 @@ int main(int argc ,char *argv[])
 
 	string starterString;
 	string numSamplesString =  numSamplesStringMaker(SSO.numSamples);
-	ss<<"\nMCONLY: $$$$$$$$$$$$$$$$$$$  STARTING THE SIMULATOR  $$$$$$$$$$$$$$$$$" <<endl;
+	ss<<"\nMCONLY: $$$$$$$$$$$$$$$$$$$  Starting Simple Monte Carlo Simulator $$$$$$$$$$$$$$$$$" <<endl;
 	ss<<"Number of sample orbits being created = " << numSamplesString <<endl;
 	starterString = ss.str();
 	ss.clear();
@@ -308,7 +331,7 @@ int main(int argc ,char *argv[])
         	vector<vector<double> > VRp_vector2;
         	vector<vector<double> > VRs_vector2;
 
-        	// Load up ss or sp parts of RVdo with current trials
+        	// Load up ss or sp parts of RVdo with current trial's
         	// param values as needed.
         	if (SSO.simulate_StarPlanet==true)
 			{

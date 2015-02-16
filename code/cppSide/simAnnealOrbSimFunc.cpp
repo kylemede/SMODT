@@ -84,7 +84,9 @@ void simAnealOrbFuncObj::simulator()
 	RVdataObj RVdo2;
 	RVdo2 = RVdo;
 
+	//*****************************************************************************
 	// set up starting values for input params
+	//*****************************************************************************
 	sigmaPercent_latest = sigmaPercent;
 	string startParamsGenStr;
 	// Determine if K will be a varied parameter
@@ -241,7 +243,7 @@ void simAnealOrbFuncObj::simulator()
 			Tmin = earliestEpoch-period_latest*365.242;
 			TMIN = earliestEpoch-SSO.periodMAX*365.0;
 			TMAX = earliestEpoch;
-			cout<<"******  both T_Min and T_Max set to -1  ******"<<endl;
+			ss<<"******  both T_Min and T_Max set to -1  ******"<<endl;
 		}
 		else
 		{
@@ -252,7 +254,7 @@ void simAnealOrbFuncObj::simulator()
 	}
 	ss<<fixed<<std::setprecision(6)<<"\n\nTMIN = "<<TMIN<<", TMAX = "<<TMAX<<"\n\n"<<endl;
 	//cout<<"line # 247"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-	// load initial values from system data file
+	// load initial T and Tc values from system data file
 	double T_latest;
 	double Tc_latest;
 	if (SSO.simulate_StarPlanet==true)
@@ -476,14 +478,20 @@ void simAnealOrbFuncObj::simulator()
 	double a_total_proposed = a_total_latest;
 	double Sys_Dist_PC_proposed = SYSdo.Sys_Dist_PC;
 	double Mass1_proposed = SYSdo.Mass1;
+	double Mass2_proposed = 0;
 	double planet_MsinI_proposed = SYSdo.planet_MsinI;
 	double star_Mass2_proposed = SYSdo.star_Mass2;
+	if (SSO.simulate_StarPlanet==false)
+		Mass2_proposed = star_Mass2_proposed;
+	else
+		Mass2_proposed = planet_MsinI_proposed;
 	double sqrtESinomega_proposed = sqrtESinomega_latest;
 	double sqrtECosomega_proposed = sqrtECosomega_latest;
 
 	bool ALLpassed;
-
+	//*****************************************************************************
 	// ***** Start the samples loop *****
+	//*****************************************************************************
 	int sample;
 	for ( sample=0; sample<numSamples_SA; ++sample)
 	{
@@ -583,7 +591,9 @@ void simAnealOrbFuncObj::simulator()
 			}
 			//cout<<" dropping temp from "<<tempIn<<" to "<<temp<< " at sampleNumber "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
+			//*****************************************************************************
 			//Emergency jump in param values if nothing is being accepted
+			//*****************************************************************************
 			if (chiSquaredMin>=SSO.chiSquaredMax)
 			{
 				ss<<"\n****** WARNING: Chain has been stuck for a temperature step worth of trials so trying a new starting point. ******\n"<<endl;
@@ -640,7 +650,9 @@ void simAnealOrbFuncObj::simulator()
 				}
 			}
 		}
+		//*****************************************************************************
 		// block to control printing success rate to screen
+		//*****************************************************************************
 		printCount = printCount + 1;
 		if ( printCount==printTime )
 		{
@@ -714,6 +726,7 @@ void simAnealOrbFuncObj::simulator()
 				ss<<"Mass1_proposed = "<<Mass1_proposed <<", peak value is = "<< SYSdo.Mass1<<endl;
 				ss<<"planet_MsinI_proposed = "<< planet_MsinI_proposed<<", peak value is = "<<SYSdo.planet_MsinI <<endl;
 				ss<<"star_Mass2_proposed = "<<star_Mass2_proposed <<", peak value is = "<< SYSdo.star_Mass2<<endl;
+				ss<<"Mass2_proposed = "<<Mass2_proposed<<endl;
 			}
 			if (false)
 			{
@@ -808,8 +821,12 @@ void simAnealOrbFuncObj::simulator()
 		a_total_proposed = a_total_latest;
 		Sys_Dist_PC_proposed = SYSdo.Sys_Dist_PC;
 		Mass1_proposed = SYSdo.Mass1;
-		planet_MsinI_proposed = SYSdo.planet_MsinI;
-		star_Mass2_proposed = SYSdo.star_Mass2;
+		//planet_MsinI_proposed = SYSdo.planet_MsinI;
+		//star_Mass2_proposed = SYSdo.star_Mass2;
+		//if (SSO.simulate_StarPlanet==false)
+		//	Mass2_proposed = star_Mass2_proposed;
+		//else
+		//	Mass2_proposed = planet_MsinI_proposed;
 		sqrtESinomega_proposed = sqrtESinomega_latest;
 		sqrtECosomega_proposed = sqrtECosomega_latest;
 
@@ -819,7 +836,9 @@ void simAnealOrbFuncObj::simulator()
 		string ParamThatFailed = "?";
 		accepted = "?";
 		int dataset;
+		//*****************************************************************************
 		// ******* Determine which param to vary *************************
+		//*****************************************************************************
 		//cout<<"About to generate proposed params for sample number "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		//cout<<"paramBeingVaried = "<<paramBeingVaried<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		if (paramBeingVaried==0)
@@ -912,9 +931,10 @@ void simAnealOrbFuncObj::simulator()
 			}
 		}
 		//cout<<"line # 907"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//		if (false)
+//		if (true)
 //		{
-//			double e_TEST = 0.01;
+//			cout<<"\n\n Ecc ArgPeri Testing \n"<<endl;
+//			double e_TEST = 0.5;
 //			double Tc_TEST = 2455652.1;
 //			vector<double> argPeris_TEST;
 //			argPeris_TEST.push_back(1);
@@ -926,23 +946,23 @@ void simAnealOrbFuncObj::simulator()
 //			argPeris_TEST.push_back(271);
 //			argPeris_TEST.push_back(359);
 //			argPeris_TEST.push_back(361);
-////			argPeris_TEST.push_back(449);
-////			argPeris_TEST.push_back(451);
-////			argPeris_TEST.push_back(539);
-////			argPeris_TEST.push_back(541);
+//			argPeris_TEST.push_back(449);
+//			argPeris_TEST.push_back(451);
+//			argPeris_TEST.push_back(539);
+//			argPeris_TEST.push_back(541);
 //			argPeris_TEST.push_back(-1);
 //			argPeris_TEST.push_back(-89);
 //			argPeris_TEST.push_back(-91);
 //			argPeris_TEST.push_back(-179);
 //			argPeris_TEST.push_back(-181);
-////			argPeris_TEST.push_back(-269);
-////			argPeris_TEST.push_back(-271);
-////			argPeris_TEST.push_back(-359);
-////			argPeris_TEST.push_back(-361);
-////			argPeris_TEST.push_back(-449);
-////			argPeris_TEST.push_back(-451);
-////			argPeris_TEST.push_back(-539);
-////			argPeris_TEST.push_back(-541);
+//			argPeris_TEST.push_back(-269);
+//			argPeris_TEST.push_back(-271);
+//			argPeris_TEST.push_back(-359);
+//			argPeris_TEST.push_back(-361);
+//			argPeris_TEST.push_back(-449);
+//			argPeris_TEST.push_back(-451);
+//			argPeris_TEST.push_back(-539);
+//			argPeris_TEST.push_back(-541);
 //			double sqrtESinomega_TEST;
 //			double sqrtECosomega_TEST;
 //			double e_proposed_TEST1;
@@ -978,7 +998,7 @@ void simAnealOrbFuncObj::simulator()
 //				EATT.e = e_proposed_TEST2;
 //				EATT = GT.eccArgPeri2ToTcCalc(EATT);
 //				T_proposed_TEST2 = EATT.To;
-//				if (false)
+//				if (true)
 //				{
 //				cout<<"e_TEST = "<<e_TEST <<endl;
 //				cout<<"argPeris_TEST[testInt] = "<<argPeris_TEST[testInt] <<endl;
@@ -994,7 +1014,10 @@ void simAnealOrbFuncObj::simulator()
 //				cout<<"T_proposed_TEST2 = "<<T_proposed_TEST2 <<endl;
 //				}
 //			}
+//			break;
+//
 //		}
+//		break;
 
 		// Convert proposed values to eccentricity and argPeri
 		//eccArgPeriCalcType EACT;
@@ -1108,7 +1131,9 @@ void simAnealOrbFuncObj::simulator()
 		//cout<<"Done producing proposed params for sample "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// **** Done producing 'proposed' versions of all params being varied this round ****
 
-		// ***** Check all are good  *******
+		//*****************************************************************************
+		// ***** Check all proposed values are good  *******
+		//*****************************************************************************
 		if ((SSO.longAN_degMAX!=0)&&(SSO.RVonly==false))
 		{
 			if ((longAN_deg_proposed>SSO.longAN_degMAX)||(longAN_deg_proposed<SSO.longAN_degMIN))
@@ -1234,7 +1259,9 @@ void simAnealOrbFuncObj::simulator()
 			if (false)
 				cout<<"The parameter that failed was: "<<ParamThatFailed<<endl;
 		}
+		//*****************************************************************************
 		// if all are good, move on to calculating orbit.
+		//*****************************************************************************
 		if(ALLpassed)
 		{
 			//cout<<"ALLpassed = True"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

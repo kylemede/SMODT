@@ -129,6 +129,7 @@ int main(int argc ,char *argv[])
 	string numSamplesString =  numSamplesStringMaker(SSO.numSamples);
 	ss<<"\nMCONLY: $$$$$$$$$$$$$$$$$$$  Starting Simple Monte Carlo Simulator $$$$$$$$$$$$$$$$$" <<endl;
 	ss<<"Number of sample orbits being created = " << numSamplesString <<endl;
+	ss<<"\nRandom Generator Seed = "<<time_nsec<<"\n"<<endl;
 	starterString = ss.str();
 	ss.clear();
 	ss.str(std::string());
@@ -145,7 +146,7 @@ int main(int argc ,char *argv[])
     int printCount = 0;
     int printsDone = 0;
     int acceptedCounter = 0;
-    int numParams = 3;//there are 3 params that MUST always vary, so this is the minimum
+    //int numParams = 3;//there are 3 params that MUST always vary, so this is the minimum
     double a_total_curr = 0;
     //double K_p_errorPercent = 0;
     double DI_chiSquared_reduced_lowest = 1e6;
@@ -160,44 +161,190 @@ int main(int argc ,char *argv[])
     double chiSquareMin = SSO.chiSquaredMax;
     int bestOrbit = 0;
 
+    //****************************************************************************************
+    //Set some of the initial values and determine the  number of params to vary for DI and RV
+    //****************************************************************************************
+    // Determine if K will be a varied parameter
+	int numDIparams=0;
+	int numRVparams=0;
     bool vary_k = true;
-    double K_proposed = 0;
+    double K_proposed = 0.0;
     if (SSO.DIonly==true)
 		vary_K = false;
 	else if ((SSO.RVonly==true)&&((SSO.inclination_degMIN!=0)&&(SSO.inclination_degMAX!=0)))
 		vary_K = false;
 	else
-		numParams+=1;
+		numRVparams+=1;
 
     if ((SSO.inclination_degMIN!=0)&&(SSO.inclination_degMAX!=0))
-    	numParams+=1;
-    if ((SSO.longAN_degMIN!=0)&&(SSO.longAN_degMAX!=0))
-    	numParams+=1;
-    else if ((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
-    	numParams+=1;
+    {
+    	numRVparams+=1;
+    	numDIparams+=1;
+    }
+    if (SSO.RVonly==false)
+    {
+    	if ((SSO.longAN_degMIN!=0)&&(SSO.longAN_degMAX!=0))
+    		numDIparams+=1;
+    }
+    if ((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
+    {
+    	numRVparams+=1;
+    	numDIparams+=1;
+    }
 
+    double argPeri_deg_proposed=90;
+    if ((SSO.argPeri_degMAX!=0)&&(SSO.argPeri_degMIN!=0)
+    {
+    	numRVparams+=1;
+    	numDIparams+=1;
+    }
+    double a_total_proposed = 0;
+    if ((SSO.a_totalMAX!=0)&&(SSO.DIonly==true))//{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
+    {
+		numRVparams+=1;
+		numDIparams+=1;
+    }
+    double period_proposed = 0;
+    if (SSO.periodMAX!=0)
+    {
+    	numRVparams+=1;
+    	numDIparams+=1;
+    }
+    else
+	{
+		if (SSO.simulate_StarPlanet==true)
+			period_proposed = RVdo.planet_P;
+		if (SSO.simulate_StarStar==true)
+			period_proposed = RVdo.star_P;
+	}
+    double e_proposed=0;
+	double sqrtESinomega_proposed;
+	double sqrtECosomega_proposed;
+	double sqrtEccMax = sqrt(SSO.eMAX)
+	if (SSO.eMAX==0)
+	{
+		if (SSO.simulate_StarPlanet==true)
+			e_proposed = RVdo.planet_e;
+		else
+			e_proposed = RVdo.star_e;
+		ss<<"eMAX==0, so using value in dict: "<< e_proposed<<endl;
+	}
+	else
+	{
+		numRVparams+=1;
+		numDIparams+=1;
+		if (SSO.eMAX<0.3)
+			ss<<"\n\n #### eMAX<0.3, So using sqrt(e)sin(omega),sqrt(e)cos(omega) ####\n\n"<<endl;
+		else
+			ss<<"\n\n ### Using DIRECT e and omega ### \n\n"<<endl;
+	}
+
+	double Tmin;
     double TMIN;
     double TMAX;
-    if (SSO.TimePeri_Min==0)
-    	TMIN = earliestEpoch-SSO.periodMAX*365.0;//2455651.7;//
-    else
-    	TMIN = SSO.TimePeri_Min;
-    if (SSO.TimePeri_Max==0)
-    	TMAX = earliestEpoch;//2455653.3;//
-    else
-    	TMAX = SSO.TimePeri_Max;
-
+    // set up max and min values for T
+	if ((SSO.T_Min==0)&&(SSO.T_Max==0))
+	{
+		TMIN=0;
+		Tmin=0;
+		TMAX=0;
+	}
+	else
+	{
+		if ((SSO.T_Min==-1)&&(SSO.T_Max==-1))
+		{
+			Tmin = earliestEpoch-SSO.periodMAX*365.242;
+			TMIN = earliestEpoch-SSO.periodMAX*365.0;
+			TMAX = earliestEpoch;
+			ss<<"******  both T_Min and T_Max set to -1  ******"<<endl;
+		}
+		else
+		{
+			Tmin = SSO.T_Min;
+			TMIN = SSO.T_Min;
+			TMAX = SSO.T_Max;
+		}
+	}
+	ss<<fixed<<std::setprecision(6)<<"\n\nTMIN = "<<TMIN<<", TMAX = "<<TMAX<<"\n\n"<<endl;
+    //----------------------
+	// load initial T and Tc values from system data file
+	double T_proposed = 0;
+	double Tc_proposed = 0;
+	if (SSO.simulate_StarPlanet==true)
+	{
+		Tc_proposed = SYSdo.planet_Tc;
+		T_proposed = SYSdo.planet_T;
+	}
+	else
+	{
+		Tc_proposed = SYSdo.star_Tc;
+		T_proposed = SYSdo.star_T;
+	}
+	//replace Tc value?
+	if (SSO.TcStepping)
+	{
+		ss<<"Using TcStepping"<<endl;
+		if ((SSO.T_Min!=0)&&(SSO.T_Max!=0))
+		{
+			numRVparams+=1;
+			numDIparams+=1;
+			ss<<"Varying Tc"<<endl;
+		}
+		else
+			ss<<"setting Tc to a constant value in system Data file = "<<Tc_proposed<<endl;
+		if (T_proposed==0)
+			cout<<"Setting T to 0 and will calculate it with eccArgPeri2ToTcCalc"<<endl;
+		else
+			ss<<"Setting T to the constant value in system Data file = "<< T_proposed<<endl;
+	}
+	//replace To value?
+	else
+	{
+		ss<<"NOT using TcStepping"<<endl;
+		if ((SSO.T_Min!=0)&&(SSO.T_Max!=0))
+		{
+			numRVparams+=1;
+			numDIparams+=1;
+			ss<<"Varying T"<<endl;
+		}
+		else
+			ss<<"Setting T to a constant"<<endl;
+		//cout<<"SSO.T_Min = "<<SSO.T_Min<<",SSO.T_Min = "<<SSO.T_Min<<endl;
+		if (Tc_proposed==0)
+			ss<<"Setting Tc to 0 and will calculate it with eccArgPeri2ToTcCalc"<<endl;
+		else
+			ss<<"Setting Tc to the constant value in system Data file = "<< Tc_proposed<<endl;
+	}
+    //----------------------------
     if (SSO.DIonly==false)
     {
     	for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
-    		numParams+=1;
-
+    		numRVparams+=1;
     }
+
+    //Set numParams total based on which is larger out of DI and RV specific ones.
+    numParams = numRvparams;
+    if (numRVparams<numDIparams)
+    	numParams = numDIparams;
+    ss<<"\nNumber of varying parameters for DI = "<< numDIparams<<", RV = " <<numRVparams <<", 3D = " <<numParams<<endl;
+    ss<<"**************************************************************"<<endl;
+
+    //load starting param notes into log and screen
+    string startParamsNotes = ss.str();
+	ss.clear();
+	ss.str(std::string());
+	cout<<startParamsNotes;
+	SSlog<< startParamsNotes;
+
+	//*****************************************************************************
     // ***** Start the samples loop *****
+	//*****************************************************************************
     for ( int sample=1; sample<(SSO.numSamples+1); sample++)
     {
 
+    	//*****************************************************************************
 		// block to control printing success rate to screen
+    	//*****************************************************************************
         printCount = printCount + 1;
         if ( printCount==printTime )
         {
@@ -224,19 +371,47 @@ int main(int argc ,char *argv[])
 			cout<<printLine;
 			SSlog<< printLine;
         }
-
+        //*****************************************************************************
         // Generate random numbers in the required ranges for the inputs to the orbCalc
+        //*****************************************************************************
         if ((SSO.inclination_degMIN!=0)&&(SSO.inclination_degMAX!=0))
         	DIt.inclination_deg = RanGen.UniformRandom(SSO.inclination_degMIN, SSO.inclination_degMAX);
         if ((SSO.longAN_degMIN!=0)&&(SSO.longAN_degMAX!=0))
         	DIt.longAN_deg = RanGen.UniformRandom(SSO.longAN_degMIN, SSO.longAN_degMAX);
-        DIt.argPeri_deg = RanGen.UniformRandom(SSO.argPeri_degMIN, SSO.argPeri_degMAX);
-        DIt.e = RanGen.UniformRandom(SSO.eMIN, SSO.eMAX);
-        if ((SSO.simulate_StarPlanet==true)&&(SSO.fixed_planet_period==true))
-        	DIt.period = RVdo.planet_P;
-        else if ((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
-        	DIt.period = RanGen.UniformRandom(SSO.periodMIN, SSO.periodMAX); //  [yrs]
-        DIt.T = RanGen.UniformRandom(TMIN, TMAX); // thus between a full period before first observation and the time of first observation
+        DIt.argPeri_deg = argPeri_deg_proposed;
+        if ((SSO.a_totalMAX!=0)&&(SSO.DIonly==true))
+        	a_total_proposed = RanGen.UniformRandom(SSO.a_totalMIN, SSO.a_totalMAX);
+        DIt.a_total = a_total_proposed;
+        //Take care of proposals for all cases of eMAX
+        if ((SSO.eMAX<0.3)&&(SSO.eMAX!=0))
+        {
+        	sqrtESinomega_proposed = RanGen.UniformRandom(-sqrtEccMax,sqrtEccMax);
+        	sqrtECosomega_proposed = RanGen.UniformRandom(-sqrtEccMax,sqrtEccMax);
+			//convert those to e and argPeri
+        	e_proposed = sqrtESinomega_proposed*sqrtESinomega_proposed+sqrtECosomega_proposed*sqrtECosomega_proposed;
+			argPeri_deg_proposed = (180.0/PI)*atan2(sqrtESinomega_proposed,sqrtECosomega_proposed);
+			if (SSO.argPeri_degMAX>180)
+			{
+				if (argPeri_deg_proposed<0)
+					argPeri_deg_proposed = argPeri_deg_proposed+360.0;
+			}
+        }
+        else
+        {
+        	if (SSO.eMAX!=0)
+        		e_proposed = RanGen.UniformRandom(SSO.eMIN, SSO.eMAX);
+        	if ((SSO.argPeri_degMAX!=0)&&(SSO.argPeri_degMIN!=0)
+        			argPeri_deg_proposed = RanGen.UniformRandom(SSO.argPeri_degMIN, SSO.argPeri_degMAX);
+        }
+        DIt.e = e_proposed;
+        DIt.argPeri_deg = argPeri_deg_proposed;
+        if ((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
+        	period_proposed = RanGen.UniformRandom(SSO.periodMIN, SSO.periodMAX); //  [yrs]
+        DIt.period = period_proposed;
+        Tmin = earliestEpoch-period_proposed*365.242;
+        if (Tmin<TMIN)
+        	Tmin = TMIN;
+        DIt.T = RanGen.UniformRandom(Tmin, TMAX); // thus between a full period before first observation and the time of first observation
         //reset RVoffsets_cur vector and get current param vals for K and offsets.
         vector<double> RVoffsets_cur;
         if (SSO.DIonly==false)
@@ -273,6 +448,7 @@ int main(int argc ,char *argv[])
         	ss<<  "argPeri_deg = "<< DIt.argPeri_deg <<"\n";
         	ss<<  "e = "<< DIt.e <<"\n";
         	ss<<  "period = "<< DIt.period  <<"\n";
+        	ss<<  "a_total = "<<DIt.a_total<<"\n";
         	ss<<  "T = "<< DIt.T  <<"\n\n";
         	printLine2 = ss.str();
 			ss.clear();
@@ -286,10 +462,15 @@ int main(int argc ,char *argv[])
         double numRVepochsInternal = 0;
 
         multiEpochOrbCalcReturnType MEOCRT;
+        //*****************************************************************************
+        // Pass proposed values into models and calc resultant chiSquareds
+        //*****************************************************************************
         if (SSO.RVonly==false)
         {
         	//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        	//*****************************************************************************
         	// #### DO STUFF FOR DI ORBIT CALCNS #####
+        	//*****************************************************************************
         	if ( SSO.silent==false )
         		cout<<"Calculating DI orbit for this round "<<endl;
 
@@ -327,7 +508,9 @@ int main(int argc ,char *argv[])
         	if ( SSO.silent==false )
         		cout<<"Calculating RV residuals for this round"<<endl;
         	RV_chiSquared_original = 0.0;
+        	//*****************************************************************************
         	// ##### DO STUFF FOR RV CALCNS ######
+        	//*****************************************************************************
         	vector<vector<double> > VRp_vector2;
         	vector<vector<double> > VRs_vector2;
 
@@ -508,7 +691,9 @@ int main(int argc ,char *argv[])
 		}
 		//SSO.silent=true;//$$$$$$$$$$$$$$
 
+		//*****************************************************************************
 		// Determine if the orbit should be accepted
+		//*****************************************************************************
 		if ( TOTAL_chiSquared_reduced<=SSO.chiSquaredMax )
 		{
 			acceptedCounter +=1;
@@ -536,6 +721,9 @@ int main(int argc ,char *argv[])
 		}// Done storing accepted orbit parameters
     }//Done sample loops
 
+    //*****************************************************************************
+    // Loop done, so perform wrap-up prints and write output data and log to disk
+    //*****************************************************************************
     int totalAccepted = ODT.es.size();
     if (acceptedCounter!=totalAccepted)
     	cout<<"Warning: (acceptedCounter) "<<acceptedCounter<< " != "<<totalAccepted<<" (totalAccepted)"<<endl;

@@ -157,7 +157,11 @@ int main(int argc ,char *argv[])
     double TOTAL_chiSquared_reduced = 0;
     double RV_chiSquared_original = 0.0;
     double DI_chiSquared_original = 0.0;
-    double one_over_nu;
+    double numDIepochs = 0;
+    double numRVepochs = 0;
+    double one_over_nu_RV=1;
+	double one_over_nu_DI=1;
+	double one_over_nu_TOTAL=1;
     double chiSquareMin = SSO.chiSquaredMax;
     int bestOrbit = 0;
 
@@ -176,11 +180,19 @@ int main(int argc ,char *argv[])
 	else
 		numRVparams+=1;
 
+    double inclination_deg_proposed = 0.0;
     if ((SSO.inclination_degMIN!=0)&&(SSO.inclination_degMAX!=0))
     {
     	numRVparams+=1;
     	numDIparams+=1;
     }
+    else
+	{
+		if (SSO.simulate_StarPlanet==true)
+			inclination_deg_proposed = RVdo.planet_inc;
+		else
+			inclination_deg_proposed = RVdo.star_inc;
+	}
     if (SSO.RVonly==false)
     {
     	if ((SSO.longAN_degMIN!=0)&&(SSO.longAN_degMAX!=0))
@@ -191,7 +203,22 @@ int main(int argc ,char *argv[])
     	numRVparams+=1;
     	numDIparams+=1;
     }
-
+    double longAN_deg_proposed = 0;
+	if (SSO.RVonly==false)
+	{
+		if (SSO.longAN_degMAX==0)
+		{
+			if (SSO.simulate_StarPlanet==true)
+				longAN_deg_proposed = RVdo.planet_long_AN;
+			else
+				longAN_deg_proposed = RVdo.star_long_AN;
+		}
+		else
+		{
+			numDIparams+=1;
+			longAN_deg_proposed = RanGen.UniformRandom(SSO.longAN_degMIN, SSO.longAN_degMAX);
+		}
+	}
     double argPeri_deg_proposed=90;
     if ((SSO.argPeri_degMAX!=0)&&(SSO.argPeri_degMIN!=0)
     {
@@ -266,7 +293,6 @@ int main(int argc ,char *argv[])
 		}
 	}
 	ss<<fixed<<std::setprecision(6)<<"\n\nTMIN = "<<TMIN<<", TMAX = "<<TMAX<<"\n\n"<<endl;
-    //----------------------
 	// load initial T and Tc values from system data file
 	double T_proposed = 0;
 	double Tc_proposed = 0;
@@ -315,12 +341,16 @@ int main(int argc ,char *argv[])
 		else
 			ss<<"Setting Tc to the constant value in system Data file = "<< Tc_proposed<<endl;
 	}
-    //----------------------------
     if (SSO.DIonly==false)
     {
     	for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
     		numRVparams+=1;
     }
+    //NOTE: early testing show Gaussian drawn values for the next 4 caused problems, so not sure if working properly yet
+    double Sys_Dist_PC_proposed = SYSdo.Sys_Dist_PC;
+    double Mass1_proposed = SYSdo.Mass1;
+    double star_Mass2_proposed = SYSdo.star_Mass2;
+    double planet_MsinI_proposed = SYSdo.planet_MsinI;
 
     //Set numParams total based on which is larger out of DI and RV specific ones.
     numParams = numRvparams;
@@ -375,10 +405,11 @@ int main(int argc ,char *argv[])
         // Generate random numbers in the required ranges for the inputs to the orbCalc
         //*****************************************************************************
         if ((SSO.inclination_degMIN!=0)&&(SSO.inclination_degMAX!=0))
-        	DIt.inclination_deg = RanGen.UniformRandom(SSO.inclination_degMIN, SSO.inclination_degMAX);
+        	inclination_deg_proposed = RanGen.UniformRandom(SSO.inclination_degMIN, SSO.inclination_degMAX);
+        	DIt.inclination_deg = inclination_deg_proposed;
         if ((SSO.longAN_degMIN!=0)&&(SSO.longAN_degMAX!=0))
-        	DIt.longAN_deg = RanGen.UniformRandom(SSO.longAN_degMIN, SSO.longAN_degMAX);
-        DIt.argPeri_deg = argPeri_deg_proposed;
+        	longAN_deg_proposed = RanGen.UniformRandom(SSO.longAN_degMIN, SSO.longAN_degMAX);
+        DIt.longAN_deg = longAN_deg_proposed;
         if ((SSO.a_totalMAX!=0)&&(SSO.DIonly==true))
         	a_total_proposed = RanGen.UniformRandom(SSO.a_totalMIN, SSO.a_totalMAX);
         DIt.a_total = a_total_proposed;
@@ -437,8 +468,25 @@ int main(int argc ,char *argv[])
         if ( SSO.silent==false )
         	cout<<"ALL random numbers loaded"<<endl;
 
-        // Brick for generating Mass1, Mass2 & Sys_Dist values from $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        // Gaussian distributions.									$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        // Generate Gaussian values for the sys dist and masses
+		if (false)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		{
+			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,0.5*SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
+			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,0.5*SYSdo.Mass1_error,3.0*SYSdo.Mass1_error);
+			// load up mass2 with correct value depending on star or planet companion
+			if (SSO.simulate_StarPlanet==false)
+				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,0.5*SYSdo.star_Mass2_error,SYSdo.star_Mass2_error);
+			else
+				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,0.5*SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
+			//Load these up into the DIt object
+			DIt.Sys_Dist_PC = Sys_Dist_PC_proposed ;
+			DIt.Mass1 = Mass1_proposed ;
+			if (SSO.simulate_StarStar==true)
+				DIt.Mass2 =  star_Mass2_proposed;
+			else
+				DIt.Mass2 = planet_MsinI_proposed/sin(DIt.inclination_deg*(PI/180.0));
+		}
+
 
         if ( SSO.silent==false )
         {
@@ -449,6 +497,9 @@ int main(int argc ,char *argv[])
         	ss<<  "e = "<< DIt.e <<"\n";
         	ss<<  "period = "<< DIt.period  <<"\n";
         	ss<<  "a_total = "<<DIt.a_total<<"\n";
+        	ss<<"Sys_Dist_PC = "<< DIt.Sys_Dist_PC<<"\n";
+        	ss<<"Mass1 = "<<DIt.Mass1 <<"\n";
+        	ss<<"Mass2 = "<< DIt.Mass2<<"\n";
         	ss<<  "T = "<< DIt.T  <<"\n\n";
         	printLine2 = ss.str();
 			ss.clear();
@@ -476,12 +527,15 @@ int main(int argc ,char *argv[])
 
         	// Call the orbCalc to have it apply the model to the inputs and produce outputs
 			MEOCRT = DIt.multiEpochOrbCalc();
-			a_total_curr = MEOCRT.a_total;
+			//a_total_curr = MEOCRT.a_total;
 
 			// Calculate the reduced chiSquared from the returned chiSquared
 			DI_chiSquared_original = MEOCRT.chi_squared_total;
-			numDIepochsInternal = DIdo.numEpochs_DI;
-			one_over_nu = (1.0/((2.0*numDIepochsInternal)-5.0));
+			if (one_over_nu_DI==1)
+			{
+				numDIepochs = DIdo.numEpochs_DI;
+				one_over_nu_DI = (1.0/((2.0*numDIepochs)-numDIparams));
+			}
 			DI_chiSquared_reduced = one_over_nu*DI_chiSquared_original;
 			//SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if ( SSO.silent==false )
@@ -514,6 +568,10 @@ int main(int argc ,char *argv[])
         	vector<vector<double> > VRp_vector2;
         	vector<vector<double> > VRs_vector2;
 
+        	// load up params drawn from fixed gaussians
+			RVdo.Sys_Dist_PC = Sys_Dist_PC_proposed ;
+			RVdo.Mass1 = Mass1_proposed ;
+
         	// Load up ss or sp parts of RVdo with current trial's
         	// param values as needed.
         	if (SSO.simulate_StarPlanet==true)
@@ -526,7 +584,7 @@ int main(int argc ,char *argv[])
         		RVdo.planet_P  = DIt.period ;
         		if (vary_K)
         			RVdo.planet_K = K_proposed;
-        		//RVdo.planet_MsinI  = DIt.Mass2 ;
+        		RVdo.planet_MsinI  = DIt.Mass2 ;
         		RVdo.planet_argPeri  = DIt.argPeri_deg ;
         		RVdo.planet_inc = DIt.inclination_deg ;
 			}
@@ -537,7 +595,7 @@ int main(int argc ,char *argv[])
         		RVdo.star_e  = DIt.e ;
         		RVdo.star_T  = DIt.T ;
         		RVdo.star_P  = DIt.period ;
-        		//RVdo.star_Mass2  = DIt.Mass2 ;
+        		RVdo.star_Mass2  = DIt.Mass2 ;
         		RVdo.star_argPeri  = DIt.argPeri_deg ;
         		RVdo.star_inc  = DIt.inclination_deg ;
         	}
@@ -565,8 +623,8 @@ int main(int argc ,char *argv[])
 					VRp_vector = VRCsp.multiEpochCalc();
 					VRp_vector2.push_back(VRp_vector);
 				}
-				if ((SSO.simulate_StarPlanet==true)&&(SSO.DIonly==false))
-					a_total_curr = VRCsp.a_total;
+				//if ((SSO.simulate_StarPlanet==true)&&(SSO.DIonly==false))
+				//	a_total_curr = VRCsp.a_total;
 				if ( SSO.silent==false )
 				        cout<<"K_p = "<<VRCsp.K_p<<endl;
         	}
@@ -590,8 +648,8 @@ int main(int argc ,char *argv[])
         			VRs_vector = VRCss.multiEpochCalc();
         			VRs_vector2.push_back(VRs_vector);
         		}
-        		if ((SSO.simulate_StarStar==true)&&(SSO.DIonly==false))
-        			a_total_curr = VRCss.a_total;
+        		//if ((SSO.simulate_StarStar==true)&&(SSO.DIonly==false))
+        		//	a_total_curr = VRCss.a_total;
         		if ( SSO.silent==false )
         			cout<<"K_s = "<<VRCss.K_s<<endl;
         		//cout<<"a_total = "<<VRCss.a_total<<endl;
@@ -643,13 +701,16 @@ int main(int argc ,char *argv[])
 				}
         	}
         	// calculate reduced version of ChiSquared for printing
-        	numRVepochsInternal = RVdo.numEpochs_RV;
-        	one_over_nu = (1.0/((1.0*numRVepochsInternal)-6.0));
+        	if (one_over_nu_RV==1)
+			{
+				numRVepochs = RVdo.numEpochs_RV;
+				one_over_nu_RV = (1.0/((1.0*numRVepochs)-numRVparams));
+			}
         	RV_chiSquared_reduced = one_over_nu*RV_chiSquared_original;
         	if ( SSO.silent==false )
         	{
-				cout<<"\nnumRVepochsInternal = "<< numRVepochsInternal <<endl;
-				cout<<"one_over_nu = "<< one_over_nu <<endl;
+				cout<<"\numRVepochs = "<< numRVepochs <<endl;
+				cout<<"one_over_nu_RV = "<< one_over_nu_RV <<endl;
 				cout<<"RV_chiSquared_original = "<< RV_chiSquared_original<<endl;
 				cout<<"RV_chiSquared_reduced = "<< RV_chiSquared_reduced <<endl;
         	}
@@ -672,8 +733,9 @@ int main(int argc ,char *argv[])
 
         // Do TOTAL chiSquared value calcs
         double chiSquared_TOTAL_original = DI_chiSquared_original+RV_chiSquared_original;
-        one_over_nu = 1.0/(2.0*numDIepochsInternal+1.0*numRVepochsInternal-numParams);
-        TOTAL_chiSquared_reduced = one_over_nu*chiSquared_TOTAL_original;
+        if (one_over_nu_TOTAL==1)
+        	one_over_nu_TOTAL = 1.0/(2.0*numDIepochs+1.0*numRVepochs-numParams);
+        TOTAL_chiSquared_reduced = one_over_nu_TOTAL*chiSquared_TOTAL_original;
 
         //SSO.silent=false;//$$$$$$$$$$$$$$$$$$
 		if ( SSO.silent==false )
@@ -681,13 +743,13 @@ int main(int argc ,char *argv[])
 			cout<<"\nDI_chiSquared_original = "<<DI_chiSquared_original <<endl;
 			cout<<"RV_chiSquared_original = "<< RV_chiSquared_original<<endl;
 			cout<<"RV_chiSquared_original = "<< RV_chiSquared_original<<endl;
-			cout<<"numDIepochsInternal = "<<numDIepochsInternal <<endl;
-			cout<<"numRVepochsInternal = "<< numRVepochsInternal<<endl;
+			cout<<"numDIepochs = "<<numDIepochs <<endl;
+			cout<<"numRVepochs = "<< numRVepochs<<endl;
 			cout<<"numParams = "<< numParams<<endl;
 			cout<<"chiSquared_TOTAL_original = "<< chiSquared_TOTAL_original <<endl;
-			cout<<"one_over_nu = "<< one_over_nu <<endl;
+			cout<<"one_over_nu_TOTAL = "<< one_over_nu_TOTAL <<endl;
 			cout<<"TOTAL_chiSquared_reduced = "<< TOTAL_chiSquared_reduced <<endl;
-			cout<< "output reduced chi squared = "<< TOTAL_chiSquared_reduced <<endl;
+			//cout<< "output reduced chi squared = "<< TOTAL_chiSquared_reduced <<endl;
 		}
 		//SSO.silent=true;//$$$$$$$$$$$$$$
 
@@ -708,12 +770,13 @@ int main(int argc ,char *argv[])
 			ODT.longAN_degs.push_back(DIt.longAN_deg);
 			ODT.es.push_back(DIt.e);
 			ODT.Ts.push_back(DIt.T);
+			ODT.Tcs.push_back(Tc_proposed);
 			ODT.periods.push_back(DIt.period);
 			ODT.inclination_degs.push_back(DIt.inclination_deg);
 			ODT.argPeri_degs.push_back(DIt.argPeri_deg);
 			// store outputs
-			ODT.chiSquareds.push_back(TOTAL_chiSquared_reduced);
-			ODT.a_totals.push_back(a_total_curr);
+			ODT.chiSquareds.push_back(chiSquared_TOTAL_original);
+			ODT.a_totals.push_back(DIt.a_total);
 			ODT.Ks.push_back(K_proposed);
 			ODT.RVoffsets.push_back(RVoffsets_cur);
 			ODT.timesBeenHeres.push_back(1);

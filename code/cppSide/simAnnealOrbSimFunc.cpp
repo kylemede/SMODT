@@ -481,10 +481,10 @@ void simAnealOrbFuncObj::simulator()
 	double Mass2_proposed = 0;
 	double planet_MsinI_proposed = SYSdo.planet_MsinI;
 	double star_Mass2_proposed = SYSdo.star_Mass2;
-	if (SSO.simulate_StarPlanet==false)
-		Mass2_proposed = star_Mass2_proposed;
-	else
-		Mass2_proposed = planet_MsinI_proposed;
+	//if (SSO.simulate_StarPlanet==false)
+	//	Mass2_proposed = star_Mass2_proposed;
+	//else
+	//	Mass2_proposed = planet_MsinI_proposed;
 	double sqrtESinomega_proposed = sqrtESinomega_latest;
 	double sqrtECosomega_proposed = sqrtECosomega_latest;
 
@@ -726,7 +726,7 @@ void simAnealOrbFuncObj::simulator()
 				ss<<"Mass1_proposed = "<<Mass1_proposed <<", peak value is = "<< SYSdo.Mass1<<endl;
 				ss<<"planet_MsinI_proposed = "<< planet_MsinI_proposed<<", peak value is = "<<SYSdo.planet_MsinI <<endl;
 				ss<<"star_Mass2_proposed = "<<star_Mass2_proposed <<", peak value is = "<< SYSdo.star_Mass2<<endl;
-				ss<<"Mass2_proposed = "<<Mass2_proposed<<endl;
+				//ss<<"Mass2_proposed = "<<Mass2_proposed<<endl;
 			}
 			if (false)
 			{
@@ -1291,9 +1291,6 @@ void simAnealOrbFuncObj::simulator()
 				cout<<"ALL DI random numbers loaded"<<endl;
 			//cout<<"ALL DI random numbers loaded"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-			// Brick for generating Mass1, Mass2 & Sys_Dist values from $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			// Gaussian distributions.									$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
 			if ( (SSO.silent==false)||(timesNONEpassed>100) )
 			{
 				string printLine2;
@@ -1302,6 +1299,10 @@ void simAnealOrbFuncObj::simulator()
 				ss<<  "argPeri_deg = "<< argPeri_deg_proposed <<endl;
 				ss<<  "e = "<< DIt.e <<"\n";
 				ss<<  "period = "<< DIt.period <<endl;
+				ss<<"a_total = "<DIt.a_total<<endl;
+				ss<<"Sys_Dist_PC = "<< DIt.Sys_Dist_PC<<"\n";
+				ss<<"Mass1 = "<<DIt.Mass1 <<"\n";
+				ss<<"Mass2 = "<< DIt.Mass2<<"\n";
 				ss<<  "T = "<< DIt.T  <<endl;
 				if (SSO.DIonly==false)
 				{
@@ -1387,7 +1388,7 @@ void simAnealOrbFuncObj::simulator()
 						RVdo.planet_K = K_proposed;
 					RVdo.planet_argPeri  = argPeri_deg_proposed ;
 					RVdo.planet_inc = DIt.inclination_deg ;
-					RVdo.planet_MsinI = planet_MsinI_proposed ;
+					RVdo.planet_MsinI = DIt.Mass2 ;
 				}
 				if (SSO.simulate_StarStar==true)
 				{
@@ -1399,7 +1400,7 @@ void simAnealOrbFuncObj::simulator()
 					RVdo.star_P  = DIt.period ;
 					RVdo.star_argPeri  = argPeri_deg_proposed ;
 					RVdo.star_inc  = DIt.inclination_deg ;
-					RVdo.star_Mass2 =  star_Mass2_proposed;
+					RVdo.star_Mass2 =  DIt.Mass2;
 				}
 				// get RVs velocities for companion planet if needed
 				if (RVdo.planet_P!=0 )

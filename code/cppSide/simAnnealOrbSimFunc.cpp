@@ -1317,8 +1317,8 @@ void simAnealOrbFuncObj::simulator()
 				ss<< "longAN_deg = " << DIt.longAN_deg  <<endl;
 				ss<<  "argPeri_deg = "<< argPeri_deg_proposed <<endl;
 				ss<<  "e = "<< DIt.e <<"\n";
-				ss<<  "period = "<< DIt.period <<endl;
-				ss<<"a_total = "<DIt.a_total<<endl;
+				ss<<  "period = "<< DIt.period <<"\n";
+				ss<<"a_total = "<<DIt.a_total<<"\n";
 				ss<<"Sys_Dist_PC = "<< DIt.Sys_Dist_PC<<"\n";
 				ss<<"Mass1 = "<<DIt.Mass1 <<"\n";
 				ss<<"Mass2 = "<< DIt.Mass2<<"\n";

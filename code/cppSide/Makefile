@@ -15,7 +15,7 @@ THItester: $(OBJSthi)
 
 #---------------------------------------------------------------
 PROGSmc = mcONLYorbSimulator
-OBJSmc = mcONLYorbSimulator.o rnd/sfmt.o toolboxes/RVtools.o toolboxes/DItools.o toolboxes/generalTools.o toolboxes/SimSettingsObj.o toolboxes/DataObj.o
+OBJSmc = mcONLYorbSimulator.o rnd/sfmt.o rnd/kylesGaussRand.o toolboxes/RVtools.o toolboxes/DItools.o toolboxes/generalTools.o toolboxes/SimSettingsObj.o toolboxes/DataObj.o
 
 mcONLYorbSimulator: $(OBJSmc)
 	$(CC) -o mcONLYorbSimulator $(OBJSmc) $(LDFLAGS) $(LIBS)

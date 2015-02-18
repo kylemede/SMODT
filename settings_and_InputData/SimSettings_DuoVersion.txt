@@ -3,13 +3,13 @@
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
 Duo =true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax =500
+chiSquaredMax =3
 # The number of samples orbital parameters to try/draw [int]
-numSamples =300000
+numSamples =300000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing =False
+useMultiProcessing =True
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =True
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -33,9 +33,9 @@ RVonly =False
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 DIonly =True
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
-mcONLY =False
+mcONLY =True
 # Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
-simAnneal =True
+simAnneal =False
 # Set to true to perform the 100 mod dataset MCMC loop
 loopedMCMC =False
 # make plot of posterior distributions? [bool]

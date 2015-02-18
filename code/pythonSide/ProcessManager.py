@@ -21,22 +21,23 @@ class singleProcessStarter(Process):
     :param bool simAnneal: Perform Simulated Annealing instead of MCMC?
     :param bool loopedMCMC: Perform 'looped' MCMC instead of standard MCMC?
     """
-    def __init__(self, simSettingsFilename, filename, cppCodeDir, simAnneal, loopedMCMC):
+    def __init__(self, simSettingsFilename, filename, cppCodeDir, simAnneal, mcONLY, loopedMCMC):
         
         Process.__init__(self)
         self.simSettingsFilename = simSettingsFilename
         self.filename = filename
         self.cppCodeDir = cppCodeDir    
         self.simAnneal = simAnneal  
+        self.mcONLY = mcONLY
         self.loopedMCMC = loopedMCMC  
         
     def run(self):
         self.process(simSettingsFilename=self.simSettingsFilename, 
                      filename=self.filename, cppCodeDir=self.cppCodeDir, 
-                     simAnneal=self.simAnneal, loopedMCMC=self.loopedMCMC)
+                     simAnneal=self.simAnneal, mcONLY=self.mcONLY ,loopedMCMC=self.loopedMCMC)
         
     
-    def process(self, simSettingsFilename, filename, cppCodeDir, simAnneal, loopedMCMC):
+    def process(self, simSettingsFilename, filename, cppCodeDir, simAnneal, mcONLY, loopedMCMC):
     
         if False:
             print 'Starting to run process for file title: '+filename
@@ -45,6 +46,8 @@ class singleProcessStarter(Process):
             CplusplusCodeCALL = os.path.join(cppCodeDir,'simAnnealOrbSimulator')
         elif loopedMCMC:
             CplusplusCodeCALL = os.path.join(cppCodeDir,'looped_MCMCorbSimulator')
+        elif mcONLY:
+            CplusplusCodeCALL = os.path.join(cppCodeDir,'mcONLYorbSimulator')
         else:
             CplusplusCodeCALL = os.path.join(cppCodeDir,'MCMCorbSimulator')
         CplusplusCodeCALL = CplusplusCodeCALL+' '+simSettingsFilename+' '+filename
@@ -92,6 +95,8 @@ def multiProcessStarter(paramSettingsDict):
     os.chdir(makeDir)
     if paramSettingsDict['simAnneal']:
         os.system('make simAnnealOrbSimulator')
+    elif paramSettingsDict['mcONLY']:
+        os.system('make mcONLYorbSimulator')
     elif paramSettingsDict['loopedMCMC']:
         os.system('make looped_MCMCorbSimulator')
     else:
@@ -123,6 +128,7 @@ def multiProcessStarter(paramSettingsDict):
                                          filename=filenameUSE_full, 
                                          cppCodeDir=paramSettingsDict['cppCodeDir'],
                                          simAnneal=paramSettingsDict['simAnneal'],
+                                         mcONLY=paramSettingsDict['mcONLY'],
                                          loopedMCMC=paramSettingsDict['loopedMCMC']))
         master[processNumber].start()
         

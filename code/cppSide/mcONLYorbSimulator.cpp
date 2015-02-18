@@ -1,14 +1,13 @@
 #include <iostream>
+#include <iomanip>
+#include <limits>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sstream>
-#include <string>
-#include <vector>
 #include <math.h>
 #include <time.h>
-//#include <fstream>
-#include "Toolboxes/orbToolboxes.h" //Both the DI and RV tools headers are called in here, so it is an all in one toolbox header call
-//#include <rnd/stocc.h> //a library with advanced non-uniform random number generators
+#include "toolboxes/orbToolboxes.h" //Both the DI and RV tools headers are called in here, so it is an all in one toolbox header call
+#include "rnd/kylesGaussRand.h"
 
 using namespace std;
 
@@ -118,15 +117,16 @@ int main(int argc ,char *argv[])
 	//cout<<"Starting time in nanoseconds for use as a random number generator seed = "<<time_nsec<<endl; //$$$$$$$$$$$$$$
 
 	//choose generator
-	CRandomSFMT1 RanGen(time_nsec);
-	//this is the most advanced uniform random number generator, which combines SFMT and Mother-Of-All.
+	CRandomSFMT1 RanGen(time_nsec);//this is the most advanced uniform random number generator, which combines SFMT and Mother-Of-All.
+	StochasticLib1 RanGen2(time_nsec);
+
 
 	// ******* STARTING SIMULATION!!!!  *************
 	time_t startTime;
 	startTime = time(NULL);
 
 	string starterString;
-	string numSamplesString =  numSamplesStringMaker(SSO.numSamples);
+	string numSamplesString =  GT.numSamplesStringMaker(SSO.numSamples);
 	ss<<"\nMCONLY: $$$$$$$$$$$$$$$$$$$  Starting Simple Monte Carlo Simulator $$$$$$$$$$$$$$$$$" <<endl;
 	ss<<"Number of sample orbits being created = " << numSamplesString <<endl;
 	ss<<"\nRandom Generator Seed = "<<time_nsec<<"\n"<<endl;
@@ -171,7 +171,8 @@ int main(int argc ,char *argv[])
     // Determine if K will be a varied parameter
 	int numDIparams=0;
 	int numRVparams=0;
-    bool vary_k = true;
+	int numParams=0;
+    bool vary_K = true;
     double K_proposed = 0.0;
     if (SSO.DIonly==true)
 		vary_K = false;
@@ -220,7 +221,7 @@ int main(int argc ,char *argv[])
 		}
 	}
     double argPeri_deg_proposed=90;
-    if ((SSO.argPeri_degMAX!=0)&&(SSO.argPeri_degMIN!=0)
+    if ((SSO.argPeri_degMAX!=0)&&(SSO.argPeri_degMIN!=0))
     {
     	numRVparams+=1;
     	numDIparams+=1;
@@ -247,7 +248,7 @@ int main(int argc ,char *argv[])
     double e_proposed=0;
 	double sqrtESinomega_proposed;
 	double sqrtECosomega_proposed;
-	double sqrtEccMax = sqrt(SSO.eMAX)
+	double sqrtEccMax = sqrt(SSO.eMAX);
 	if (SSO.eMAX==0)
 	{
 		if (SSO.simulate_StarPlanet==true)
@@ -353,7 +354,7 @@ int main(int argc ,char *argv[])
     double planet_MsinI_proposed = SYSdo.planet_MsinI;
 
     //Set numParams total based on which is larger out of DI and RV specific ones.
-    numParams = numRvparams;
+    numParams = numRVparams;
     if (numRVparams<numDIparams)
     	numParams = numDIparams;
     ss<<"\nNumber of varying parameters for DI = "<< numDIparams<<", RV = " <<numRVparams <<", 3D = " <<numParams<<endl;
@@ -434,7 +435,7 @@ int main(int argc ,char *argv[])
         {
         	if (SSO.eMAX!=0)
         		e_proposed = RanGen.UniformRandom(SSO.eMIN, SSO.eMAX);
-        	if ((SSO.argPeri_degMAX!=0)&&(SSO.argPeri_degMIN!=0)
+        	if ((SSO.argPeri_degMAX!=0)&&(SSO.argPeri_degMIN!=0))
         			argPeri_deg_proposed = RanGen.UniformRandom(SSO.argPeri_degMIN, SSO.argPeri_degMAX);
         }
         DIt.e = e_proposed;
@@ -446,15 +447,15 @@ int main(int argc ,char *argv[])
         if (Tmin<TMIN)
         	Tmin = TMIN;
         DIt.T = RanGen.UniformRandom(Tmin, TMAX); // thus between a full period before first observation and the time of first observation
-        //reset RVoffsets_cur vector and get current param vals for K and offsets.
-        vector<double> RVoffsets_cur;
+        //reset RVoffsets_proposed vector and get current param vals for K and offsets.
+        vector<double> RVoffsets_proposed;
         if (SSO.DIonly==false)
         {
-        	if (vary_k)
+        	if (vary_K)
         		K_proposed = RanGen.UniformRandom(SSO.K_MIN,SSO.K_MAX);
 
-        	for (int dataset=0; dataset<RVoffsets_latest.size();++dataset)
-        		RVoffsets_cur[dataset] = RanGen.UniformRandom(SSO.RVoffsetMINs[dataset],SSO.RVoffsetMAXs[dataset]);
+        	for (int dataset=0; dataset<SSO.RVoffsetMINs.size();++dataset)
+        		RVoffsets_proposed[dataset] = RanGen.UniformRandom(SSO.RVoffsetMINs[dataset],SSO.RVoffsetMAXs[dataset]);
 		}
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         //DIt.inclination_deg = 1;
@@ -553,12 +554,12 @@ int main(int argc ,char *argv[])
 				numDIepochs = DIdo.numEpochs_DI;
 				one_over_nu_DI = (1.0/((2.0*numDIepochs)-numDIparams));
 			}
-			DI_chiSquared_reduced = one_over_nu*DI_chiSquared_original;
+			DI_chiSquared_reduced = one_over_nu_DI*DI_chiSquared_original;
 			//SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if ( SSO.silent==false )
 			{
 				cout<<"DI_chiSquared_original = "<<DI_chiSquared_original<<endl;
-				cout<<"one_over_nu = "<<one_over_nu<<endl;
+				cout<<"one_over_nu_DI = "<<one_over_nu_DI<<endl;
 				cout<<"DI_chiSquared_reduced = "<<DI_chiSquared_reduced<<endl;
 			}
 			//SSO.silent=true;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -623,7 +624,7 @@ int main(int argc ,char *argv[])
         			cout<<"Starting to calculate residual vel for star-planet"<<endl;
         		// instantiate S-P calc object and load up its params
         		VRcalcStarPlanet VRCsp;
-        		VRCsp = VRcalcStarPlanetLoadUp(RVdo);
+        		VRCsp = GT.VRcalcStarPlanetLoadUp(RVdo);
         		//K_p_errorPercent = VRCsp.K_p_error/VRCsp.K_p;
         		//cout<<"K_p_errorPercent = "<<K_p_errorPercent <<endl;
         		//cout<<"Back from VRcalcStarPlanetLoadUp"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$
@@ -653,7 +654,7 @@ int main(int argc ,char *argv[])
         			cout<<"Starting to calculate residual vel for star-star"<<endl;
         		// instantiate S-S calc object and load up its params
         		VRcalcStarStar VRCss;
-        		VRCss = VRcalcStarStarLoadUp(RVdo);
+        		VRCss = GT.VRcalcStarStarLoadUp(RVdo);
         		VRCss.verbose = false;
         		// run through all RV data sets and calc residuals for it
         		for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
@@ -678,9 +679,9 @@ int main(int argc ,char *argv[])
         		if ( SSO.silent==false )
         			cout<<"\nStarting to calculate chiSquared from residuals for dataset# "<< dataset<<endl;
 //				if (dataset==0)
-//					RVoffsets_cur[0] = 10.486022;
+//					RVoffsets_proposed[0] = 10.486022;
 //				if (dataset==1)
-//					RVoffsets_cur[1] = 1.0;
+//					RVoffsets_proposed[1] = 1.0;
 				for (int epoch=0; epoch<RVdo.epochs_RV[dataset].size(); ++epoch)
 				{
 					double planetVR = 0;
@@ -704,14 +705,14 @@ int main(int argc ,char *argv[])
 						cout<< "RV_inv_var = "<<RVdo.RV_inv_var[dataset][epoch] <<",planetVR  ="<< planetVR <<endl;//<<", K_p_errorPercent = " << K_p_errorPercent <<endl;
 						cout<<"updatedRV_inv_var = "<<updatedRV_inv_var <<", RV_inv_var = "<< RVdo.RV_inv_var[dataset][epoch]<<endl;
 					}
-					double  RV_chiSquared_cur = chiSquaredCalc((RVdo.RVs[dataset][epoch]-RVoffsets_cur[dataset]),updatedRV_inv_var,(planetVR+companionStarVR));
+					double  RV_chiSquared_cur = GT.chiSquaredCalc((RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]),updatedRV_inv_var,(planetVR+companionStarVR));
 					RV_chiSquared_original = RV_chiSquared_original + RV_chiSquared_cur;
 					if ( SSO.silent==false )
 					{
 						cout<<"\nWorking on epoch "<<epoch<<endl;
-						//cout<<"\noffset = "<< RVoffsets_cur[dataset]<<endl;
-						cout<<"RVdo.RVs[dataset][epoch] = "<<RVdo.RVs[dataset][epoch]<<", ("<<RVdo.RVs[dataset][epoch]<<" - "<<RVoffsets_cur[dataset]<<")="<<(RVdo.RVs[dataset][epoch]-RVoffsets_cur[dataset]) <<", planetVR= "<< planetVR<<", companionStarVR= "<< companionStarVR<<endl;
-						cout<<"Difference = "<<RVdo.RVs[dataset][epoch]-RVoffsets_cur[dataset]-planetVR<<endl;
+						//cout<<"\noffset = "<< RVoffsets_proposed[dataset]<<endl;
+						cout<<"RVdo.RVs[dataset][epoch] = "<<RVdo.RVs[dataset][epoch]<<", ("<<RVdo.RVs[dataset][epoch]<<" - "<<RVoffsets_proposed[dataset]<<")="<<(RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]) <<", planetVR= "<< planetVR<<", companionStarVR= "<< companionStarVR<<endl;
+						cout<<"Difference = "<<RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]-planetVR<<endl;
 						cout<<"ChiSquared for this RV is = "<<RV_chiSquared_cur<<endl;
 						cout<<"Total NON-reducedChiSquared so far is = "<<RV_chiSquared_original<<endl;
 					}
@@ -723,7 +724,7 @@ int main(int argc ,char *argv[])
 				numRVepochs = RVdo.numEpochs_RV;
 				one_over_nu_RV = (1.0/((1.0*numRVepochs)-numRVparams));
 			}
-        	RV_chiSquared_reduced = one_over_nu*RV_chiSquared_original;
+        	RV_chiSquared_reduced = one_over_nu_RV*RV_chiSquared_original;
         	if ( SSO.silent==false )
         	{
 				cout<<"\numRVepochs = "<< numRVepochs <<endl;
@@ -739,7 +740,7 @@ int main(int argc ,char *argv[])
         else
         {
         	//cout<<"In RV else block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        	RVoffsets_cur.push_back(0);
+        	RVoffsets_proposed.push_back(0);
         	RV_chiSquared_reduced_lowest=0;
         }
         if (SSO.DIonly==false && SSO.RVonly==false)
@@ -795,7 +796,7 @@ int main(int argc ,char *argv[])
 			ODT.chiSquareds.push_back(chiSquared_TOTAL_original);
 			ODT.a_totals.push_back(DIt.a_total);
 			ODT.Ks.push_back(K_proposed);
-			ODT.RVoffsets.push_back(RVoffsets_cur);
+			ODT.RVoffsets.push_back(RVoffsets_proposed);
 			ODT.timesBeenHeres.push_back(1);
 
 		}// Done storing accepted orbit parameters
@@ -824,7 +825,7 @@ int main(int argc ,char *argv[])
     ss<< "argPeri = "<< ODT.argPeri_degs[bestOrbit] <<endl;
     if (SSO.DIonly==false)
     {
-    	ss<< "K = "<< ODT.Ks[SAOFO.bestOrbit]<<endl;
+    	ss<< "K = "<< ODT.Ks[bestOrbit]<<endl;
 		for (int set=0;set<ODT.RVoffsets[bestOrbit].size();++set)
 			if (ODT.RVoffsets[bestOrbit][set]!=0)
 				ss<<"RVoffset for dataset "<<set<<", was = "<< ODT.RVoffsets[bestOrbit][set]<<endl;
@@ -860,10 +861,10 @@ int main(int argc ,char *argv[])
 	SSlog<< printLine3;
 	string LOGlines;
 	LOGlines = SSlog.str();
-	logFileWriter(ODT.data_filename, LOGlines);
+	GT.logFileWriter(ODT.data_filename, LOGlines);
 
 	// get output filename and write output data to it
-    fileWriter(ODT);
+    GT.fileWriter(ODT);
 
 	return EXIT_SUCCESS;
 }

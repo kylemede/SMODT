@@ -3,8 +3,7 @@ import os
 import sys
 import shutil
 import toolboxes as tools
-from MCMC_ProcessManager import multiProcessStarter
-#from mcONLY_ProcessManagerDuo import mcSimStarter
+from ProcessManager import multiProcessStarter
 import dicts
 
 def main():
@@ -160,7 +159,7 @@ def main():
     
     
     # figure out what files are used in this simulation run
-    pythonFiles = ['SMODTstarter.py','dicts/HARDCODEDsettingsDict.py']
+    pythonFiles = ['SMODTstarter.py','dicts/HARDCODEDsettingsDict.py','ProcessManager.py']
     pythonToolboxFiles = ['generalToolbox.py','DItoolbox.py','plotToolbox.py','RVtoolbox.py']
     cppFiles = []
     cppToolboxFiles = ['SimSettingsObj.cpp','RVtools.cpp', 'generalTools.h',
@@ -178,10 +177,8 @@ def main():
         settingsFiles.append(paramSettingsDict['RVdataFilename'])
     
     if mcONLY:
-        pythonFiles.append('mcONLY_ProcessManager.py')
         cppFiles.append('mcONLYorbSimulator.cpp')
     else:
-        pythonFiles.append('MCMC_ProcessManager.py')
         cppFiles.append('MCMCorbSimulator.cpp') 
         cppFiles.append('MCMCorbSimFunc.cpp')  
         cppFiles.append('MCMCorbSimFunc.h') 

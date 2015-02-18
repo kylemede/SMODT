@@ -627,7 +627,7 @@ void simAnealOrbFuncObj::simulator()
 					else
 						T_latest = RanGen.UniformRandom(TMIN, TMAX);
 				}
-				if (SSO.a_totalMAX!=0)
+				if ((SSO.a_totalMAX!=0)&&(SSO.DIonly==true))
 					a_total_latest = RanGen.UniformRandom(SSO.a_totalMIN,SSO.a_totalMAX); //[AU]
 				if (((SSO.eMAX!=0)&&(SSO.argPeri_degMAX!=0))&&(SSO.eMAX<0.3))
 				{
@@ -1116,8 +1116,10 @@ void simAnealOrbFuncObj::simulator()
 //		K_proposed = 279.8;
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
+		//*****************************************************************************
 		// Generate Gaussian values for the sys dist and masses
-		if (false)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//*****************************************************************************
+		if (false)
 		{
 			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,0.5*SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
 			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,0.5*SYSdo.Mass1_error,3.0*SYSdo.Mass1_error);
@@ -1128,6 +1130,23 @@ void simAnealOrbFuncObj::simulator()
 				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,0.5*SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
 		}
 
+		//calculate the proposed a_total using K3 in the case of RVonly and 3D simulations
+		if (SSO.DIonly==false)
+		{
+			semiMajorType SMT_in;
+			semiMajorType SMT_out;
+			SMT_in.a1 = 0;
+			SMT_in.a2 = 0;
+			SMT_in.a_total = 0;
+			SMT_in.period = period_proposed;
+			SMT_in.Mass1 = Mass1_proposed;
+			if (SSO.simulate_StarStar==true)
+				SMT_in.Mass2 = star_Mass2_proposed;
+			else
+				SMT_in.Mass2 = planet_MsinI_proposed/sin(inclination_deg_proposed*(PI/180.0));
+			SMT_out = GT.semiMajorConverter(SMT_in);
+			a_total_proposed = SMT_out.a_total;
+		}
 		//cout<<"Done producing proposed params for sample "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// **** Done producing 'proposed' versions of all params being varied this round ****
 

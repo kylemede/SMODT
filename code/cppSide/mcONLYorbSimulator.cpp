@@ -410,9 +410,12 @@ int main(int argc ,char *argv[])
         if ((SSO.longAN_degMIN!=0)&&(SSO.longAN_degMAX!=0))
         	longAN_deg_proposed = RanGen.UniformRandom(SSO.longAN_degMIN, SSO.longAN_degMAX);
         DIt.longAN_deg = longAN_deg_proposed;
-        if ((SSO.a_totalMAX!=0)&&(SSO.DIonly==true))
-        	a_total_proposed = RanGen.UniformRandom(SSO.a_totalMIN, SSO.a_totalMAX);
-        DIt.a_total = a_total_proposed;
+        if (SSO.DIonly==true)
+        {
+			if ((SSO.a_totalMAX!=0)&&(SSO.DIonly==true))
+				a_total_proposed = RanGen.UniformRandom(SSO.a_totalMIN, SSO.a_totalMAX);
+        }
+		DIt.a_total = a_total_proposed;
         //Take care of proposals for all cases of eMAX
         if ((SSO.eMAX<0.3)&&(SSO.eMAX!=0))
         {
@@ -478,15 +481,29 @@ int main(int argc ,char *argv[])
 				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,0.5*SYSdo.star_Mass2_error,SYSdo.star_Mass2_error);
 			else
 				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,0.5*SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
-			//Load these up into the DIt object
-			DIt.Sys_Dist_PC = Sys_Dist_PC_proposed ;
-			DIt.Mass1 = Mass1_proposed ;
-			if (SSO.simulate_StarStar==true)
-				DIt.Mass2 =  star_Mass2_proposed;
-			else
-				DIt.Mass2 = planet_MsinI_proposed/sin(DIt.inclination_deg*(PI/180.0));
 		}
+		//Load these up into the DIt object
+		DIt.Sys_Dist_PC = Sys_Dist_PC_proposed ;
+		DIt.Mass1 = Mass1_proposed ;
+		if (SSO.simulate_StarStar==true)
+			DIt.Mass2 =  star_Mass2_proposed;
+		else
+			DIt.Mass2 = planet_MsinI_proposed/sin(DIt.inclination_deg*(PI/180.0));
 
+		//calculate the a_total using K3 in the case of RVonly and 3D simulations
+		if (SSO.DIonly==false)
+		{
+			semiMajorType SMT_in;
+			semiMajorType SMT_out;
+			SMT_in.a1 = 0;
+			SMT_in.a2 = 0;
+			SMT_in.a_total = 0;
+			SMT_in.period = DIt.period;
+			SMT_in.Mass1 = DIt.Mass1;
+			SMT_in.Mass2 = DIt.Mass2;
+			SMT_out = GT.semiMajorConverter(SMT_in);
+			DIt.a_total = SMT_out.a_total;
+		}
 
         if ( SSO.silent==false )
         {

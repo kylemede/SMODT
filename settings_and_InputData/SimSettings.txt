@@ -3,9 +3,9 @@
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
 Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax = 3
+chiSquaredMax = 300
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 300000000
+numSamples = 300000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]

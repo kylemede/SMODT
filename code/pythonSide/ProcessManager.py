@@ -136,11 +136,11 @@ def multiProcessStarter(paramSettingsDict):
     for processNumber in range(numProcesses):
         master[processNumber].join()    
         
-    s= '\nMultiprocess MCMC: $$$$$$$$$$$$$ FINISHED Multiprocess MCMC Sim $$$$$$$$$$$$$$$\n' 
+    s= '\nMultiprocess: $$$$$$$$$$$$$ FINISHED Multiprocess Sim $$$$$$$$$$$$$$$\n' 
     # write total elapsed time to screen and log.
     toc=timeit.default_timer()
     totalTimeString2 = tools.gen.timeString(toc - tic)
-    s= s+'\n\nMCMC/SimAnneal: Total simulation took '+totalTimeString2+' to complete.\n'
+    s= s+'\n\nTotal simulation took '+totalTimeString2+' to complete.\n'
     print s
     #PMlogFile = open(logFilename,'a')
     PMlogFile.write(s)
@@ -372,17 +372,17 @@ def multiProcessStarter(paramSettingsDict):
     
     # check if the user wanted the individual chain data files deleted
     if paramSettingsDict['delChainsAfter']:
-        if paramSettingsDict['simAnneal']==False:
-            print '\n\nDeleting Simulated Annealing chain data files'
-            for filename in simAnnealDataFiles:
-                print 'Deleting file: '+os.path.basename(filename)
-                os.remove(filename)
-            print 'Deleting MCMC chain data files'
-            for filename in dataFiles:
-                print 'Deleting file: '+os.path.basename(filename)
-                os.remove(filename)
+        if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict["mcONLY"]==False):
+                print '\n\nDeleting Simulated Annealing chain data files'
+                for filename in simAnnealDataFiles:
+                    print 'Deleting file: '+os.path.basename(filename)
+                    os.remove(filename)
+                print 'Deleting MCMC chain data files'
+                for filename in dataFiles:
+                    print 'Deleting file: '+os.path.basename(filename)
+                    os.remove(filename)
         else:
-            print '\n\nDeleting Simulated Annealing chain data files'
+            print '\n\nDeleting final output chain data files'
             for filename in dataFiles:
                 print 'Deleting file: '+os.path.basename(filename)
                 os.remove(filename)
@@ -404,7 +404,7 @@ def multiProcessStarter(paramSettingsDict):
     # write total elapsed time to screen and log.
     toc=timeit.default_timer()
     totalTimeString2 = tools.gen.timeString(toc - tic)
-    s= '\n\nMCMC/SimAnneal: Total simulation took '+totalTimeString2+' to complete.\n'
+    s= '\n\nTotal simulation + post processing took '+totalTimeString2+' to complete.\n'
     print s
     PMlogFile.write(s+'\n\nCLOSING PM LOG NOW!!\n\n')
     PMlogFile.close()

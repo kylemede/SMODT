@@ -179,13 +179,17 @@ int main(int argc ,char *argv[])
 	else if ((SSO.RVonly==true)&&((SSO.inclination_degMIN!=0)&&(SSO.inclination_degMAX!=0)))
 		vary_K = false;
 	else
+	{
 		numRVparams+=1;
+    	numParams+=1;
+	}
 
     double inclination_deg_proposed = 0.0;
     if ((SSO.inclination_degMIN!=0)&&(SSO.inclination_degMAX!=0))
     {
     	numRVparams+=1;
     	numDIparams+=1;
+    	numParams+=1;
     }
     else
 	{
@@ -197,12 +201,16 @@ int main(int argc ,char *argv[])
     if (SSO.RVonly==false)
     {
     	if ((SSO.longAN_degMIN!=0)&&(SSO.longAN_degMAX!=0))
+    	{
     		numDIparams+=1;
+    		numParams+=1;
+    	}
     }
     if ((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
     {
     	numRVparams+=1;
     	numDIparams+=1;
+    	numParams+=1;
     }
     double longAN_deg_proposed = 0;
 	if (SSO.RVonly==false)
@@ -217,6 +225,7 @@ int main(int argc ,char *argv[])
 		else
 		{
 			numDIparams+=1;
+			numParams+=1;
 			longAN_deg_proposed = RanGen.UniformRandom(SSO.longAN_degMIN, SSO.longAN_degMAX);
 		}
 	}
@@ -225,18 +234,21 @@ int main(int argc ,char *argv[])
     {
     	numRVparams+=1;
     	numDIparams+=1;
+    	numParams+=1;
     }
     double a_total_proposed = 0;
     if ((SSO.a_totalMAX!=0)&&(SSO.DIonly==true))//{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
     {
 		numRVparams+=1;
 		numDIparams+=1;
+		numParams+=1;
     }
     double period_proposed = 0;
     if (SSO.periodMAX!=0)
     {
     	numRVparams+=1;
     	numDIparams+=1;
+    	numParams+=1;
     }
     else
 	{
@@ -261,6 +273,7 @@ int main(int argc ,char *argv[])
 	{
 		numRVparams+=1;
 		numDIparams+=1;
+		numParams+=1;
 		if (SSO.eMAX<0.3)
 			ss<<"\n\n #### eMAX<0.3, So using sqrt(e)sin(omega),sqrt(e)cos(omega) ####\n\n"<<endl;
 		else
@@ -315,6 +328,7 @@ int main(int argc ,char *argv[])
 		{
 			numRVparams+=1;
 			numDIparams+=1;
+			numParams+=1;
 			ss<<"Varying Tc"<<endl;
 		}
 		else
@@ -332,6 +346,7 @@ int main(int argc ,char *argv[])
 		{
 			numRVparams+=1;
 			numDIparams+=1;
+			numParams+=1;
 			ss<<"Varying T"<<endl;
 		}
 		else
@@ -345,7 +360,13 @@ int main(int argc ,char *argv[])
     if (SSO.DIonly==false)
     {
     	for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
-    		numRVparams+=1;
+    	{
+    		if (SSO.RVoffsetMAXs[dataset]!=0)
+    		{
+    			numRVparams+=1;
+    			numParams+=1;
+    		}
+    	}
     }
     //NOTE: early testing show Gaussian drawn values for the next 4 caused problems, so not sure if working properly yet
     double Sys_Dist_PC_proposed = SYSdo.Sys_Dist_PC;
@@ -353,10 +374,6 @@ int main(int argc ,char *argv[])
     double star_Mass2_proposed = SYSdo.star_Mass2;
     double planet_MsinI_proposed = SYSdo.planet_MsinI;
 
-    //Set numParams total based on which is larger out of DI and RV specific ones.
-    numParams = numRVparams;
-    if (numRVparams<numDIparams)
-    	numParams = numDIparams;
     ss<<"\nNumber of varying parameters for DI = "<< numDIparams<<", RV = " <<numRVparams <<", 3D = " <<numParams<<endl;
     ss<<"**************************************************************"<<endl;
 
@@ -372,7 +389,7 @@ int main(int argc ,char *argv[])
 	//*****************************************************************************
     for ( int sample=1; sample<(SSO.numSamples+1); sample++)
     {
-
+    	//cout<<"mcONLYorbSimulator.cpp, line# "<<375<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     	//*****************************************************************************
 		// block to control printing success rate to screen
     	//*****************************************************************************
@@ -395,13 +412,14 @@ int main(int argc ,char *argv[])
 			ss <<"\n"<< acceptedCounter<<"/"<<sample<<" Successful. "<<printsDone<<"/"<<SSO.numSamplePrints<<" completed at ";
 			ss << asctime (timeinfo);
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared_reduced<<", RV = "<<RV_chiSquared_reduced <<", Total = "<< TOTAL_chiSquared_reduced<<endl;
-			ss << "lowest chiSquare so far = "<< chiSquareMin <<endl;
+			ss << "lowest reduced chiSquare so far = "<< chiSquareMin <<endl;
 			printLine = ss.str();
 			ss.clear();
 			ss.str(std::string());
 			cout<<printLine;
 			SSlog<< printLine;
         }
+        //cout<<"mcONLYorbSimulator.cpp, line# "<<405<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         //*****************************************************************************
         // Generate random numbers in the required ranges for the inputs to the orbCalc
         //*****************************************************************************
@@ -417,6 +435,7 @@ int main(int argc ,char *argv[])
 				a_total_proposed = RanGen.UniformRandom(SSO.a_totalMIN, SSO.a_totalMAX);
         }
 		DIt.a_total = a_total_proposed;
+		//cout<<"mcONLYorbSimulator.cpp, line# "<<421<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         //Take care of proposals for all cases of eMAX
         if ((SSO.eMAX<0.3)&&(SSO.eMAX!=0))
         {
@@ -438,25 +457,42 @@ int main(int argc ,char *argv[])
         	if ((SSO.argPeri_degMAX!=0)&&(SSO.argPeri_degMIN!=0))
         			argPeri_deg_proposed = RanGen.UniformRandom(SSO.argPeri_degMIN, SSO.argPeri_degMAX);
         }
+        //cout<<"mcONLYorbSimulator.cpp, line# "<<443<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         DIt.e = e_proposed;
         DIt.argPeri_deg = argPeri_deg_proposed;
         if ((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
         	period_proposed = RanGen.UniformRandom(SSO.periodMIN, SSO.periodMAX); //  [yrs]
         DIt.period = period_proposed;
         Tmin = earliestEpoch-period_proposed*365.242;
+       // cout<<"mcONLYorbSimulator.cpp, line# "<<450<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         if (Tmin<TMIN)
         	Tmin = TMIN;
         DIt.T = RanGen.UniformRandom(Tmin, TMAX); // thus between a full period before first observation and the time of first observation
+        //cout<<"mcONLYorbSimulator.cpp, line# "<<454<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         //reset RVoffsets_proposed vector and get current param vals for K and offsets.
         vector<double> RVoffsets_proposed;
         if (SSO.DIonly==false)
         {
+        	//cout<<"mcONLYorbSimulator.cpp, line# "<<459<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         	if (vary_K)
         		K_proposed = RanGen.UniformRandom(SSO.K_MIN,SSO.K_MAX);
-
-        	for (int dataset=0; dataset<SSO.RVoffsetMINs.size();++dataset)
-        		RVoffsets_proposed[dataset] = RanGen.UniformRandom(SSO.RVoffsetMINs[dataset],SSO.RVoffsetMAXs[dataset]);
+        	//cout<<"mcONLYorbSimulator.cpp, line# "<<462<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        	for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
+        	{
+        		double offset_proposed=0;
+        		if (SSO.RVoffsetMAXs[dataset]!=0)
+        		{
+					//cout<<"mcONLYorbSimulator.cpp, line# "<<465<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					//cout<< SSO.RVoffsetMINs[dataset]<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					//cout<< SSO.RVoffsetMAXs[dataset]<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					//cout<< <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					offset_proposed = RanGen.UniformRandom(SSO.RVoffsetMINs[dataset],SSO.RVoffsetMAXs[dataset]);
+					//cout<<"mcONLYorbSimulator.cpp, line# "<<467<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        		}
+        		RVoffsets_proposed.push_back(offset_proposed);
+        	}
 		}
+        //cout<<"mcONLYorbSimulator.cpp, line# "<<469<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         //DIt.inclination_deg = 1;
 		//DIt.longAN_deg =  1;

@@ -116,7 +116,7 @@ def multiProcessStarter(paramSettingsDict):
     numProcesses = paramSettingsDict['numProcesses']
     for processNumber in range(numProcesses):
         # create title for this thread's output data file
-        [filenameRootNOext,ext] = os.path.splitext(paramSettingsDict['outputData_filenameRoot']) 
+        ext = os.path.splitext(paramSettingsDict['outputData_filenameRoot'])[1]
         
         if ext=='':
             ext='.dat' # just a default value, '.txt' is also fine
@@ -404,7 +404,7 @@ def multiProcessStarter(paramSettingsDict):
     # write total elapsed time to screen and log.
     toc=timeit.default_timer()
     totalTimeString2 = tools.gen.timeString(toc - tic)
-    s= '\n\nTotal simulation + post processing took '+totalTimeString2+' to complete.\n'
+    s= '\n\nMultiprocess:  Total simulation + post processing took '+totalTimeString2+' to complete.\n'
     print s
     PMlogFile.write(s+'\n\nCLOSING PM LOG NOW!!\n\n')
     PMlogFile.close()

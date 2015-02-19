@@ -867,6 +867,12 @@ int main(int argc ,char *argv[])
 				ss<<"RVoffset for dataset "<<set<<", was = "<< ODT.RVoffsets[bestOrbit][set]<<endl;
     }
 
+    // put inverse variances into the log
+    ss<<"\n one_over_nu values for all three chiSquare calcs:"<<endl;
+    ss<<"one_over_nu_DI = "<< one_over_nu_DI <<endl;
+    ss<<"one_over_nu_RV = "<< one_over_nu_RV <<endl;
+    ss<<"one_over_nu_TOTAL = "<< one_over_nu_TOTAL <<endl;
+
 	// calc how long sim took to run
     time_t endTime;
     endTime = time(NULL);

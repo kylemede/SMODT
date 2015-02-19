@@ -317,13 +317,11 @@ int main(int argc ,char *argv[])
 			}
 		}
 	}
-	if (true)
-	{
-		ss<<"\n one_over_nu values for all three chiSquare calcs:"<<endl;
-		ss<<"one_over_nu_DI = "<< SAOFO.one_over_nu_DI <<endl;
-		ss<<"one_over_nu_RV = "<< SAOFO.one_over_nu_RV <<endl;
-		ss<<"one_over_nu_TOTAL = "<< SAOFO.one_over_nu_TOTAL <<endl;
-	}
+
+	ss<<"\n one_over_nu values for all three chiSquare calcs:"<<endl;
+	ss<<"one_over_nu_DI = "<< SAOFO.one_over_nu_DI <<endl;
+	ss<<"one_over_nu_RV = "<< SAOFO.one_over_nu_RV <<endl;
+	ss<<"one_over_nu_TOTAL = "<< SAOFO.one_over_nu_TOTAL <<endl;
 
 	printLine3=ss.str();
 	ss.clear();

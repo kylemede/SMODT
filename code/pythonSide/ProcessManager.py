@@ -110,6 +110,7 @@ def multiProcessStarter(paramSettingsDict):
     #PMlogFile.close()
     
     simSettingsFilename = paramSettingsDict['UpdatedSettingsFile']
+    outSimSettingsFilename = os.path.join(paramSettingsDict['outputData_dir'],os.path.basename(paramSettingsDict['UpdatedSettingsFile']))
     
     
     ### start running threads ###
@@ -158,10 +159,11 @@ def multiProcessStarter(paramSettingsDict):
     for processNumber in range(numProcesses):
         dataFiles.append(master[processNumber].filename)
         
-    sysDatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+os.path.basename(paramSettingsDict['SystemDataFilename']))
+    sysDatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['SystemDataFilename'])
     print "\n\n"+"*"*50
     print "sysDatafilename = "+sysDatafilename
     print "SystemDataFilename = "+paramSettingsDict['SystemDataFilename']
+    print "os.path.basename(paramSettingsDict['SystemDataFilename'] = "+os.path.basename(paramSettingsDict['SystemDataFilename'])
     print "*"*50+"\n\n"
     sysDataDict = tools.gen.sysDataToDict(sysDatafilename)
     
@@ -228,7 +230,7 @@ def multiProcessStarter(paramSettingsDict):
     PMlogFile.write(s)
     #PMlogFile.close()
     ## Make DI ellipse plot if DI data exists
-    DIdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+os.path.basename(paramSettingsDict['DIdataFilename']))
+    DIdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['DIdataFilename'])
     if os.path.exists(DIdatafilename)and ((paramSettingsDict['RVonly']==False)and(paramSettingsDict['makeOrbitPlots'])):
         s = '\n**** Now starting to make a DI orbit plot ***\n'
         print s
@@ -256,7 +258,7 @@ def multiProcessStarter(paramSettingsDict):
         #PMlogFile.close()
     ## Make RV scatter.trend plots if RV data exists
     #print '\nWARNING: RV plotting still disabled in mcONLY_ProcessManagerDuo!'
-    RVdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+os.path.basename(paramSettingsDict['RVdataFilename']))
+    RVdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['RVdataFilename'])
     if True:
         s= "RVdatafilename = "+paramSettingsDict['RVdataFilename']
         print s

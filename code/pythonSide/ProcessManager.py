@@ -88,9 +88,7 @@ def multiProcessStarter(paramSettingsDict):
     s =  "\n"+'*'*95+"\n"+'*'*33+"  About to compile C++ code  " +'*'*33+"\n"+'*'*95+"\n"
     s = s+ 'makeDir:'+makeDir
     print s
-    #PMlogFile = open(logFilename,'a')
     PMlogFile.write(s)
-    #PMlogFile.close()
     
     os.chdir(makeDir)
     if paramSettingsDict['simAnneal']:
@@ -107,7 +105,6 @@ def multiProcessStarter(paramSettingsDict):
     s = s+ '\nMultiprocess: $$$$$$$$$$$$$ STARTED Multiprocess MCMC $$$$$$$$$$$$$$$\n'
     print s
     PMlogFile.write(s)
-    #PMlogFile.close()
     
     simSettingsFilename = paramSettingsDict['UpdatedSettingsFile']
     outSimSettingsFilename = os.path.join(paramSettingsDict['outputData_dir'],os.path.basename(paramSettingsDict['UpdatedSettingsFile']))
@@ -143,9 +140,7 @@ def multiProcessStarter(paramSettingsDict):
     totalTimeString2 = tools.gen.timeString(toc - tic)
     s= s+'\n\nTotal simulation took '+totalTimeString2+' to complete.\n'
     print s
-    #PMlogFile = open(logFilename,'a')
     PMlogFile.write(s)
-    #PMlogFile.close()
     
     # collect all temp filenames together and write to 'burn in included' final files in finalFolder
     dataFiles = []
@@ -153,9 +148,8 @@ def multiProcessStarter(paramSettingsDict):
     
     s= '\nStarting to write original data to final combined file'
     print s
-    #PMlogFile = open(logFilename,'a')
     PMlogFile.write(s)
-    #PMlogFile.close()
+    
     for processNumber in range(numProcesses):
         dataFiles.append(master[processNumber].filename)
         
@@ -183,16 +177,12 @@ def multiProcessStarter(paramSettingsDict):
     else:
         s=s+'\nTcStepping also found to be false, so making plots of To instead of Tc'
     print s
-    #PMlogFile = open(logFilename,'a')
-    PMlogFile.write(s)
-    #PMlogFile.close()
-        
+    PMlogFile.write(s)      
 
     s= '\n**** Now combining all files into one final file ****\n'
     print s
-    #PMlogFile = open(logFilename,'a')
     PMlogFile.write(s)
-    #PMlogFile.close()
+
     # combine the input files into one final file
     tools.gen.dataFileCombiner(dataFiles, dataFinalFilename)
     
@@ -202,9 +192,7 @@ def multiProcessStarter(paramSettingsDict):
     logFilename = os.path.join(paramSettingsDict['outputData_dir'],'log-chain_1.txt')
     [nu,nuRV,nuDI,printStr] = tools.gen.findNuFromLog(logFilename)
     print printStr+'\n'+'#'*50
-    #PMlogFile = open(logFilename,'a')
     PMlogFile.write(printStr+'\n'+'#'*50+'\n')
-    #PMlogFile.close()
     
     
     ## make general parameter result summary figures
@@ -212,9 +200,8 @@ def multiProcessStarter(paramSettingsDict):
 
     s= '\n**** Now starting to make a non-weighted, conf Levels summary plots of data in final file if requested  ****'
     print s
-    #PMlogFile = open(logFilename,'a')
     PMlogFile.write(s)
-    #PMlogFile.close()
+    
     cleanDataFilename=''
     if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
         if True:
@@ -226,17 +213,16 @@ def multiProcessStarter(paramSettingsDict):
             tools.plot.summaryPlotter(dataFinalFilename, summaryPlotFile, weight=False, confLevels=True, nu=nu, plot4x1=plot4x1, TcStepping=paramSettingsDict['TcStepping'] ) 
     s = '\n**** Back from making summary plot if requested ***\n'
     print s
-    #PMlogFile = open(logFilename,'a')
     PMlogFile.write(s)
-    #PMlogFile.close()
+    
+    ############################################################
     ## Make DI ellipse plot if DI data exists
+    ############################################################
     DIdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['DIdataFilename'])
     if os.path.exists(DIdatafilename)and ((paramSettingsDict['RVonly']==False)and(paramSettingsDict['makeOrbitPlots'])):
         s = '\n**** Now starting to make a DI orbit plot ***\n'
         print s
-        #PMlogFile = open(logFilename,'a')
         PMlogFile.write(s)
-        #PMlogFile.close()
         DIdataDict = tools.di.DIdataToDict(DIdatafilename)
         
         orbitEllipsePlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'orbitEllipsePlot')
@@ -253,24 +239,20 @@ def multiProcessStarter(paramSettingsDict):
                              sysDataDict,DIdataDict,plotFilename=orbitEllipsePlotFilename,show=False,To=bestOrbit[2], nuDI=nuDI)          
         s = '\n**** Back from making a DI orbit plot ***\n'
         print s
-        #PMlogFile = open(logFilename,'a')
         PMlogFile.write(s)
-        #PMlogFile.close()
+        
+    ############################################################
     ## Make RV scatter.trend plots if RV data exists
-    #print '\nWARNING: RV plotting still disabled in mcONLY_ProcessManagerDuo!'
+    ############################################################
     RVdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['RVdataFilename'])
     if True:
         s= "RVdatafilename = "+paramSettingsDict['RVdataFilename']
         print s
-        #PMlogFile = open(logFilename,'a')
         PMlogFile.write(s)
-        #PMlogFile.close()
     if os.path.exists(RVdatafilename) and (paramSettingsDict['DIonly']==False)and(paramSettingsDict['makeOrbitPlots']):
         s = '\n**** Now starting to make a RV orbit plot ***\n'
         print s
-        #PMlogFile = open(logFilename,'a')
         PMlogFile.write(s)
-        #PMlogFile.close()
         RVdataDict = tools.rv.RVdataToDict(RVdatafilename)
 
         #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -295,9 +277,8 @@ def multiProcessStarter(paramSettingsDict):
                         nuRV=nuRV, plotFilename=rvPlotFilename, show=False, plotFullOrbit=False)                            
         s = '\n**** Back from making a RV orbit plot ***\n'
         print s
-        #PMlogFile = open(logFilename,'a')
         PMlogFile.write(s)
-        #PMlogFile.close()
+        
 #        ## Handle 100 MOD dataset plots
 #        if paramSettingsDict['loopedMCMC']:
 #            
@@ -334,44 +315,42 @@ def multiProcessStarter(paramSettingsDict):
     ## Make progress summary plot of parameters   
     s= '\n**** Now starting to make a parameter progress summary plots for each chain (if requested) ****'
     print s
-    #PMlogFile = open(logFilename,'a')
     PMlogFile.write(s)
-    #PMlogFile.close()
+
     # set up files and make plots for simAnneal data as well if MCMC is being ran
-    
-    if paramSettingsDict['simAnneal']==False:
-        MCMCsummaryRootPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'MCMCprogressSummary')   
-        simAnnealSummaryRootPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'simAnnealProgressSummary')
+    if paramSettingsDict['mcONLY']==False:
+        if paramSettingsDict['simAnneal']==False:
+            MCMCsummaryRootPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'MCMCprogressSummary')   
+            simAnnealSummaryRootPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'simAnnealProgressSummary')
+            
+            # make list of simAnneal datafiles for plotting
+            simAnnealDataFiles = []
+            for f in dataFiles:
+                simAnnealFile = "SimAnneal_"+os.path.basename(f)
+                simAnnealFileFull = os.path.join(paramSettingsDict['outputData_dir'],simAnnealFile)
+                simAnnealDataFiles.append(simAnnealFileFull)
+            if paramSettingsDict['makeSimAnnealProgPlots']:
+                tools.plot.mcmcProgressPlotter(simAnnealDataFiles,simAnnealSummaryRootPlotFilename, nu=nu, plot4x1=plot4x1,TcStepping=paramSettingsDict['TcStepping'])
+            if paramSettingsDict['makeMCMCprogPlots']:
+                tools.plot.mcmcProgressPlotter(dataFiles,MCMCsummaryRootPlotFilename, nu=nu, plot4x1=plot4x1,TcStepping=paramSettingsDict['TcStepping'])
+            #check burn-in lengths of MCMC part of simAnneal and proper MCMC chains
+            if paramSettingsDict['CalcBurnIn']:
+                print '\nFor The Simulated Annealing files, the burn in values are:'
+                tools.gen.burnInCalcMultiFile(simAnnealDataFiles,simAnneal=True)
+                print '\nFor The MCMC files, the burn in values are:'
+                tools.gen.burnInCalcMultiFile(dataFiles,simAnneal=False)
+            
+            # calculate the correlation lengths of the MCMC part of the simAnneal and proper MCMC chains
+            if paramSettingsDict['calcCorrLengths']and False:
+                print '\nCalculating the number of effective points for the MCMC part of simAnneal chains\n'
+                tools.gen.MCMCeffectivePointsCalc(simAnnealDataFiles,simAnneal=True)
+                print '\nCalculating the number of effective points for the MCMC chains\n'
+                tools.gen.MCMCeffectivePointsCalc(dataFiles,simAnneal=False)
+        else:
+            if paramSettingsDict['makeSimAnnealProgPlots']:
+                MCMCsummaryRootPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'simAnnealProgressSummary')
+                tools.plot.mcmcProgressPlotter(dataFiles,MCMCsummaryRootPlotFilename, nu=nu, plot4x1=plot4x1,TcStepping=paramSettingsDict['TcStepping'])
         
-        # make list of simAnneal datafiles for plotting
-        simAnnealDataFiles = []
-        for f in dataFiles:
-            simAnnealFile = "SimAnneal_"+os.path.basename(f)
-            simAnnealFileFull = os.path.join(paramSettingsDict['outputData_dir'],simAnnealFile)
-            simAnnealDataFiles.append(simAnnealFileFull)
-        if paramSettingsDict['makeSimAnnealProgPlots']:
-            tools.plot.mcmcProgressPlotter(simAnnealDataFiles,simAnnealSummaryRootPlotFilename, nu=nu, plot4x1=plot4x1,TcStepping=paramSettingsDict['TcStepping'])
-        
-        #check burn-in lengths of MCMC part of simAnneal and proper MCMC chains
-        if paramSettingsDict['CalcBurnIn']:
-            print '\nFor The Simulated Annealing files, the burn in values are:'
-            tools.gen.burnInCalcMultiFile(simAnnealDataFiles,simAnneal=True)
-            print '\nFor The MCMC files, the burn in values are:'
-            tools.gen.burnInCalcMultiFile(dataFiles,simAnneal=False)
-        
-        # calculate the correlation lengths of the MCMC part of the simAnneal and proper MCMC chains
-        if paramSettingsDict['calcCorrLengths']and False:
-            print '\nCalculating the number of effective points for the MCMC part of simAnneal chains\n'
-            tools.gen.MCMCeffectivePointsCalc(simAnnealDataFiles,simAnneal=True)
-            print '\nCalculating the number of effective points for the MCMC chains\n'
-            tools.gen.MCMCeffectivePointsCalc(dataFiles,simAnneal=False)
-    elif paramSettingsDict['simAnneal']:
-        if paramSettingsDict['makeSimAnnealProgPlots']:
-            MCMCsummaryRootPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'simAnnealProgressSummary')
-            tools.plot.mcmcProgressPlotter(dataFiles,MCMCsummaryRootPlotFilename, nu=nu, plot4x1=plot4x1,TcStepping=paramSettingsDict['TcStepping'])
-    if paramSettingsDict['makeMCMCprogPlots']:
-        tools.plot.mcmcProgressPlotter(dataFiles,MCMCsummaryRootPlotFilename, nu=nu, plot4x1=plot4x1,TcStepping=paramSettingsDict['TcStepping'])
-    
     # finish the Gelman-Rubin statistic calculations if requested
     if paramSettingsDict['CalcGelmanRubin']and(paramSettingsDict['simAnneal']==False):
         tools.gen.gelmanRubinStage2(dataFiles)    
@@ -404,7 +383,6 @@ def multiProcessStarter(paramSettingsDict):
     
     s= '\n**** EVERYTHING FINISHED ****\n'
     print s
-    #PMlogFile = open(logFilename,'a')
     PMlogFile.write(s)
     
     # write total elapsed time to screen and log.

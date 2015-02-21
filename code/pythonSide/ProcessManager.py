@@ -203,8 +203,6 @@ def multiProcessStarter(paramSettingsDict):
         if False:
             print "\n\n"+"!"*75+'\nNOTE: Making Posteriors plot with the makeCleanSummaryPlot function instead of standard summaryPlotter2\n'+"!"*75+"\n\n"
             cleanDataFilename = tools.plot.makeCleanSummaryPlot(dataFinalFilename)
-        else:
-            tools.plot.summaryPlotter(dataFinalFilename, summaryPlotFile, weight=False, confLevels=True, nu=nu, plot4x1=plot4x1, TcStepping=paramSettingsDict['TcStepping'] ) 
     s = '\n**** Back from making summary plot if requested ***\n'
     print s
     PMlogFile.write(s)
@@ -219,14 +217,14 @@ def multiProcessStarter(paramSettingsDict):
         PMlogFile.write(s)
         DIdataDict = tools.di.DIdataToDict(DIdatafilename)
         orbitEllipsePlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'orbitEllipsePlot')
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #$$$$$$$$$$$$$$$$$$$  NOTE: We were not sure if there was a 180deg shift in argPeri between DI and RV models... $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        if False:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            argPeriUse = bestOrbit[6]+180.0#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        else:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            argPeriUse = bestOrbit[6]#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #$$$$$$$$$$$$  NOTE: We were not sure if there was a 180deg shift  $$$$$$$$$$$$
+        #$$$$$$$$$$$$        in argPeri between DI and RV models...        $$$$$$$$$$$$
+        if False:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            argPeriUse = bestOrbit[6]+180.0#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        else:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            argPeriUse = bestOrbit[6]#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         tools.plot.orbitEllipsePlotter(bestOrbit[0],bestOrbit[1],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7],\
                              sysDataDict,DIdataDict,plotFilename=orbitEllipsePlotFilename,show=False,To=bestOrbit[2], nuDI=nuDI)          
         s = '\n**** Back from making a DI orbit plot ***\n'
@@ -246,14 +244,14 @@ def multiProcessStarter(paramSettingsDict):
         print s
         PMlogFile.write(s)
         RVdataDict = tools.rv.RVdataToDict(RVdatafilename)
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #$$$$$$$$$$$$$$$$$$$  NOTE: We were not sure if there was a 180deg shift in argPeri between DI and RV models... $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        if False:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            argPeriUse = bestOrbit[6]-180.0#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        else:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            argPeriUse = bestOrbit[6]#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #$$$$$$$$$$$$  NOTE: We were not sure if there was a 180deg shift  $$$$$$$$$$$$
+        #$$$$$$$$$$$$        in argPeri between DI and RV models...        $$$$$$$$$$$$
+        if False:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            argPeriUse = bestOrbit[6]+180.0#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        else:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            argPeriUse = bestOrbit[6]#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         rvPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'orbitRVplot')
         if paramSettingsDict['loopedMCMC']==False:
             # full orbit

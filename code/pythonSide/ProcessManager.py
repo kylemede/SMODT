@@ -72,24 +72,20 @@ def multiProcessStarter(paramSettingsDict):
         cFileToSimSettingsDict function that converts the SimSettings.txt into
         a Python dictionary.
     """
-    #set up Python logfilename and open file
+    #set up Python log file name and open file
     logFilename = os.path.join(paramSettingsDict['outputData_dir'],"processManagerLogFile.txt")
     PMlogFile = open(logFilename,'a')
     
-    # record the time the chain started
-    tic=timeit.default_timer()
-    
-    master = []
-    
+    ###############################################################
     # make call to 'make' to build the C++ code for this simulation
     # to ensure it is good to go
+    ###############################################################
     pwd = os.curdir
     makeDir = paramSettingsDict['cppCodeDir']
     s =  "\n"+'*'*95+"\n"+'*'*33+"  About to compile C++ code  " +'*'*33+"\n"+'*'*95+"\n"
     s = s+ 'makeDir:'+makeDir
     print s
     PMlogFile.write(s)
-    
     os.chdir(makeDir)
     if paramSettingsDict['simAnneal']:
         os.system('make simAnnealOrbSimulator')
@@ -100,36 +96,37 @@ def multiProcessStarter(paramSettingsDict):
     else:
         os.system('make MCMCorbSimulator')
     os.chdir(pwd)
-    
     s =  "\n"+'*'*95+"\n"+'*'*38+' C++ code compiled '+'*'*38+"\n"+'*'*95+'\n'
     s = s+ '\nMultiprocess: $$$$$$$$$$$$$ STARTED Multiprocess MCMC $$$$$$$$$$$$$$$\n'
     print s
     PMlogFile.write(s)
     
-    simSettingsFilename = paramSettingsDict['UpdatedSettingsFile']
+    # Get copied settings filename with its directory
     outSimSettingsFilename = os.path.join(paramSettingsDict['outputData_dir'],os.path.basename(paramSettingsDict['UpdatedSettingsFile']))
     
-    
+    ############################################################
     ### start running threads ###
+    ############################################################
+    # record the time the Total Simulation started
+    tic=timeit.default_timer()
     numProcesses = paramSettingsDict['numProcesses']
+    master = []
     for processNumber in range(numProcesses):
         # create title for this thread's output data file
         ext = os.path.splitext(paramSettingsDict['outputData_filenameRoot'])[1]
         
         if ext=='':
             ext='.dat' # just a default value, '.txt' is also fine
-            
         filenameUSE = 'outputData-chain_'+str(processNumber+1)+ext
         filenameUSE_full = os.path.join(paramSettingsDict['outputData_dir'],filenameUSE)
         # start process
-        master.append(singleProcessStarter(simSettingsFilename=simSettingsFilename, 
+        master.append(singleProcessStarter(simSettingsFilename=outSimSettingsFilename, 
                                          filename=filenameUSE_full, 
                                          cppCodeDir=paramSettingsDict['cppCodeDir'],
                                          simAnneal=paramSettingsDict['simAnneal'],
                                          mcONLY=paramSettingsDict['mcONLY'],
                                          loopedMCMC=paramSettingsDict['loopedMCMC']))
         master[processNumber].start()
-        
     # wait for completion of all process $$$$ STILL DON'T UNDERSTAND HOW THIS WORKS $$$$
     for processNumber in range(numProcesses):
         master[processNumber].join()    
@@ -142,31 +139,30 @@ def multiProcessStarter(paramSettingsDict):
     print s
     PMlogFile.write(s)
     
-    # collect all temp filenames together and write to 'burn in included' final files in finalFolder
+    ############################################################
+    # combine the input files into one final file
+    ############################################################
     dataFiles = []
     dataFinalFilename = os.path.join(paramSettingsDict['outputData_dir'],'outputData-ALL.dat') 
-    
     s= '\nStarting to write original data to final combined file'
     print s
     PMlogFile.write(s)
-    
     for processNumber in range(numProcesses):
         dataFiles.append(master[processNumber].filename)
-        
+    tools.gen.dataFileCombiner(dataFiles, dataFinalFilename)
+    
+    ############################################################
+    # Prepare system data dictionary for plotting functions
+    ############################################################
     sysDatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['SystemDataFilename'])
-    print "\n\n"+"*"*50
-    print "sysDatafilename = "+sysDatafilename
-    print "SystemDataFilename = "+paramSettingsDict['SystemDataFilename']
-    print "os.path.basename(paramSettingsDict['SystemDataFilename'] = "+os.path.basename(paramSettingsDict['SystemDataFilename'])
-    print "*"*50+"\n\n"
     sysDataDict = tools.gen.sysDataToDict(sysDatafilename)
     
+    ############################################################
     # determine if to plot a 3x1 or 3x2 plot
+    ############################################################
     plot4x1 = False
     if ((paramSettingsDict["longAN_degMAX"]==0)and(paramSettingsDict["periodMAX"]==0)and(paramSettingsDict["inclination_degMAX"]==0)):
         plot4x1 = True
-    #plot4x1=False ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Fixed to False for now!!
-    
     if plot4x1:
         s='plot4x1 found to be True, so only plotting 4 key varied params.'
     else:
@@ -181,12 +177,11 @@ def multiProcessStarter(paramSettingsDict):
 
     s= '\n**** Now combining all files into one final file ****\n'
     print s
-    PMlogFile.write(s)
-
-    # combine the input files into one final file
-    tools.gen.dataFileCombiner(dataFiles, dataFinalFilename)
+    PMlogFile.write(s)   
     
+    ################################################################
     # Call the function to find the best orbit values for reference.
+    ################################################################
     print '#'*50
     bestOrbit = tools.gen.bestOrbitFinderNEW(dataFinalFilename, printToScreen=True, saveToFile=True, returnAsList=True)
     logFilename = os.path.join(paramSettingsDict['outputData_dir'],'log-chain_1.txt')
@@ -194,14 +189,13 @@ def multiProcessStarter(paramSettingsDict):
     print printStr+'\n'+'#'*50
     PMlogFile.write(printStr+'\n'+'#'*50+'\n')
     
-    
+    ############################################################
     ## make general parameter result summary figures
+    ############################################################
     summaryPlotFile = os.path.join(paramSettingsDict['outputData_dir'],'summaryPlot')
-
     s= '\n**** Now starting to make a non-weighted, conf Levels summary plots of data in final file if requested  ****'
     print s
     PMlogFile.write(s)
-    
     cleanDataFilename=''
     if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
         if True:
@@ -224,17 +218,15 @@ def multiProcessStarter(paramSettingsDict):
         print s
         PMlogFile.write(s)
         DIdataDict = tools.di.DIdataToDict(DIdatafilename)
-        
         orbitEllipsePlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'orbitEllipsePlot')
         #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #$$$$$$$$$$$$$$$$$$$  NOTE: We were not sure if there was a 180deg shift in argPeri between DI and RV models... $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         if False:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             argPeriUse = bestOrbit[6]+180.0#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         else:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             argPeriUse = bestOrbit[6]#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        
         tools.plot.orbitEllipsePlotter(bestOrbit[0],bestOrbit[1],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7],\
                              sysDataDict,DIdataDict,plotFilename=orbitEllipsePlotFilename,show=False,To=bestOrbit[2], nuDI=nuDI)          
         s = '\n**** Back from making a DI orbit plot ***\n'
@@ -254,16 +246,14 @@ def multiProcessStarter(paramSettingsDict):
         print s
         PMlogFile.write(s)
         RVdataDict = tools.rv.RVdataToDict(RVdatafilename)
-
         #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #$$$$$$$$$$$$$$$$$$$  NOTE: We were not sure if there was a 180deg shift in argPeri between DI and RV models... $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         if False:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             argPeriUse = bestOrbit[6]-180.0#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         else:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             argPeriUse = bestOrbit[6]#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
         rvPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'orbitRVplot')
         if paramSettingsDict['loopedMCMC']==False:
             # full orbit
@@ -279,6 +269,9 @@ def multiProcessStarter(paramSettingsDict):
         print s
         PMlogFile.write(s)
         
+        #################################################################################################
+        ##$$$$$$$$$$$$ This section is for the 'looped MCMC' method.  Not sure if we should #$$$$$$$$$$$$ 
+        ##$$$$$$$$$$$$ clean it up and get it working again.  So, doesn't work for now!!!!! #$$$$$$$$$$$$
 #        ## Handle 100 MOD dataset plots
 #        if paramSettingsDict['loopedMCMC']:
 #            
@@ -311,19 +304,20 @@ def multiProcessStarter(paramSettingsDict):
 #                                 AllOutputsDict["inclinations"][modDatasetNum],AllOutputsDict["argPeris"][modDatasetNum],AllOutputsDict["a_totals"][modDatasetNum], \
 #                                 sysDataDict,RVmodDataDictUSE,paramSettingsDict,RVoffsets=AllOutputsDict["RVoffsets"][modDatasetNum],\
 #                                 plotFilename=CURrvPlotFilename+'-FullOrbit', show=False, plotFullOrbit=True)
+        #################################################################################################
     
+    ############################################################
     ## Make progress summary plot of parameters   
+    ############################################################
     s= '\n**** Now starting to make a parameter progress summary plots for each chain (if requested) ****'
     print s
     PMlogFile.write(s)
-
     # set up files and make plots for simAnneal data as well if MCMC is being ran
     if paramSettingsDict['mcONLY']==False:
         if paramSettingsDict['simAnneal']==False:
             MCMCsummaryRootPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'MCMCprogressSummary')   
             simAnnealSummaryRootPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'simAnnealProgressSummary')
-            
-            # make list of simAnneal datafiles for plotting
+            # make list of simAnneal data files for plotting
             simAnnealDataFiles = []
             for f in dataFiles:
                 simAnnealFile = "SimAnneal_"+os.path.basename(f)
@@ -339,7 +333,6 @@ def multiProcessStarter(paramSettingsDict):
                 tools.gen.burnInCalcMultiFile(simAnnealDataFiles,simAnneal=True)
                 print '\nFor The MCMC files, the burn in values are:'
                 tools.gen.burnInCalcMultiFile(dataFiles,simAnneal=False)
-            
             # calculate the correlation lengths of the MCMC part of the simAnneal and proper MCMC chains
             if paramSettingsDict['calcCorrLengths']and False:
                 print '\nCalculating the number of effective points for the MCMC part of simAnneal chains\n'
@@ -351,11 +344,16 @@ def multiProcessStarter(paramSettingsDict):
                 MCMCsummaryRootPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'simAnnealProgressSummary')
                 tools.plot.mcmcProgressPlotter(dataFiles,MCMCsummaryRootPlotFilename, nu=nu, plot4x1=plot4x1,TcStepping=paramSettingsDict['TcStepping'])
         
+    ############################################################
     # finish the Gelman-Rubin statistic calculations if requested
+    ############################################################
     if paramSettingsDict['CalcGelmanRubin']and(paramSettingsDict['simAnneal']==False):
         tools.gen.gelmanRubinStage2(dataFiles)    
     
-    # check if the user wanted the individual chain data files deleted
+    ############################################################
+    ## Delete chain and/or combined data files?
+    ############################################################
+    ## check if the user wanted the individual chain data files deleted
     if paramSettingsDict['delChainsAfter']:
         if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict["mcONLY"]==False):
                 print '\n\nDeleting Simulated Annealing chain data files\n'+"-"*40
@@ -371,7 +369,6 @@ def multiProcessStarter(paramSettingsDict):
             for filename in dataFiles:
                 print 'Deleting file: '+os.path.basename(filename)
                 os.remove(filename)
-        
     ## delete combined data files if requested
     if paramSettingsDict['delCombinedDataAfter']:
         print 'Deleting combined data files\n'+"-"*40
@@ -385,7 +382,9 @@ def multiProcessStarter(paramSettingsDict):
     print s
     PMlogFile.write(s)
     
+    ############################################################
     # write total elapsed time to screen and log.
+    ############################################################
     toc=timeit.default_timer()
     totalTimeString2 = tools.gen.timeString(toc - tic)
     s= '\n\nMultiprocess:  Total simulation + post processing took '+totalTimeString2+' to complete.\n'
@@ -393,7 +392,9 @@ def multiProcessStarter(paramSettingsDict):
     PMlogFile.write(s+'\n\nCLOSING PM LOG NOW!!\n\n')
     PMlogFile.close()
     
+    ############################################################
     ## COPY OUTPUT PLOTS TO DROPBOX FOLDER?
+    ############################################################
     if paramSettingsDict['CopyToDrobox']:
         f = paramSettingsDict['outputData_dir']
         if f[-1]=='/':

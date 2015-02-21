@@ -1601,8 +1601,8 @@ def summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,x
         print "\n xLabel = "+xlabel#$$$$$$$$$$$$$$$$$$$$
         print "len(xCenters) = "+str(len(xCenters))#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         print "len(yChunks) = "+str(len(yChunks))#$$$$$$$$$$$$$$$$$$$$$$
-        print "min_env = "+str(min_env)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        print "min_env = "+str(max_env)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #print "min_env = "+str(min_env)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #print "max_env = "+str(max_env)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         subPlot2.fill_between(xCenters, min_env, max_env, color='gray',edgecolor='none', alpha=0.5)
         subPlot2.plot(xCenters, yCenters)
         subPlot2.plot([xCenters.min(),xCenters.max()],[bestDataVal,bestDataVal],color='green')

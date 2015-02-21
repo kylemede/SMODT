@@ -962,6 +962,7 @@ def dataReaderNEW(filename, column=0):
 def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False):
     """
     """
+    verboseInternal = False
     gotLog=True
     ## First get ranges of param and ChiSquared values
     if os.path.exists(filename):
@@ -982,8 +983,8 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
     s= '\nOpening and finding ranges for data in column # '+str(columNum)
     if gotLog:
         log.write(s+'\n')
-    #if verboseInternal:
-    #    print s
+    if verboseInternal:
+        print s
     
     ## Check if file has useful data for that column#
     # first find out how many lines in total
@@ -995,7 +996,8 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
             TotalSamples+= float(line.split()[-1])
     fp.close()
     TotalSamples = int(TotalSamples)
-    print '\nTotalSamples = '+str(TotalSamples)+'\n'#$$$$$$$$$$$$$$$$$$
+    if verboseInternal:
+        print '\nTotalSamples = '+str(TotalSamples)+'\n'#$$$$$$$$$$$$$$$$$$
     numDataLines =i-2
     # find values at start, mid and end of file
     fp = open(filename,'r')
@@ -1006,15 +1008,18 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
             splitAry = line.split()
             lastColLoc = len(splitAry)-1
             dataValueStart = float(splitAry[columNum])
-            print '\nstart = '+str(dataValueStart)+'\n'#$$$$$$$$$$$$$$$$$$
+            if verboseInternal:
+                print '\nstart = '+str(dataValueStart)+'\n'#$$$$$$$$$$$$$$$$$$
         elif i==((numDataLines//2)+2):
             splitAry = line.split()
             dataValueMid = float(splitAry[columNum])
-            print '\nmid = '+str(dataValueMid)+'\n'#$$$$$$$$$$$$$$$$$$
+            if verboseInternal:
+                print '\nmid = '+str(dataValueMid)+'\n'#$$$$$$$$$$$$$$$$$$
         elif i==numDataLines:
             splitAry = line.split()
             dataValueEnd = float(splitAry[columNum])
-            print '\nend = '+str(dataValueEnd)+'\n'#$$$$$$$$$$$$$$$$$$
+            if verboseInternal:
+                print '\nend = '+str(dataValueEnd)+'\n'#$$$$$$$$$$$$$$$$$$
     fp.close()
     
     doesntVary = True

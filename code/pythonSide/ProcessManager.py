@@ -97,12 +97,12 @@ def multiProcessStarter(paramSettingsDict):
         os.system('make MCMCorbSimulator')
     os.chdir(pwd)
     s =  "\n"+'*'*95+"\n"+'*'*38+' C++ code compiled '+'*'*38+"\n"+'*'*95+'\n'
-    s = s+ '\nMultiprocess: $$$$$$$$$$$$$ STARTED Multiprocess MCMC $$$$$$$$$$$$$$$\n'
+    s = s+ '\nMultiprocess: $$$$$$$$$$$$$ STARTED Multiprocess Sim $$$$$$$$$$$$$$$\n'
     print s
     PMlogFile.write(s)
     
     # Get copied settings filename with its directory
-    outSimSettingsFilename = os.path.join(paramSettingsDict['outputData_dir'],os.path.basename(paramSettingsDict['UpdatedSettingsFile']))
+    outSimSettingsFilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+os.path.basename(paramSettingsDict['UpdatedSettingsFile']))
     
     ############################################################
     ### start running threads ###

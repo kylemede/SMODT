@@ -1,13 +1,13 @@
 #These are all the general settings for the simulation
 
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax = 20
+chiSquaredMax = 2000
 # The number of samples orbital parameters to try/draw [int] for MAIN stage of simulation
-numSamples = 20000000
+numSamples = 200000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 20
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing = true
+useMultiProcessing = false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent = true		
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -25,17 +25,17 @@ outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #****************************************************************************************************************
 #****************************************************************************************************************
-outputData_filenameRoot = postK3testing-RVonly-simAnneal #MCMC-TauBoo-STAR-3D-ButlerAndDonati-1040to1090P-flatPprior-150to190Omegas-25to50incs-200to360omegas-phaseInBrackets-argPeriPlus180_OFF-46
+outputData_filenameRoot = postK3testing-3D-mcONLY #MCMC-TauBoo-STAR-3D-ButlerAndDonati-1040to1090P-flatPprior-150to190Omegas-25to50incs-200to360omegas-phaseInBrackets-argPeriPlus180_OFF-46
 #****************************************************************************************************************
 #****************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-RVonly = true
+RVonly = false
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 DIonly = false
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used!! NOTE: MConly doesn't work right now!!!!!
-mcONLY = false
+mcONLY = true
 # Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
-simAnneal = true
+simAnneal = false
 # Set to true to perform the 100 mod dataset MCMC loop
 loopedMCMC = false
 # make plot of posterior distributions? [bool]
@@ -93,7 +93,7 @@ a_totalMIN = 0
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMAX = 0
 # Minimum allowed value for the Period [double][yrs]#0.05
-periodMIN = 1040
+periodMIN = 975
 # Maximum allowed value for the Period [double][yrs]#0.064
 periodMAX = 1090
 # Minimum allowed value for the Inclination [double][deg]#86
@@ -116,7 +116,7 @@ K_MIN = 0
 K_MAX = 0
 # Minimum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMINs = [-100,-100]
+RVoffsetMINs = [0,0]
 # Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMAXs = [100,100]
+RVoffsetMAXs = [0,0]

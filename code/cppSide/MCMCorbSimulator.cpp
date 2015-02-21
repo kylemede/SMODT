@@ -91,6 +91,20 @@ int main(int argc ,char *argv[])
 	if (SSO.verbose==true)
 		cout<< inputsStr;
 
+	// Find out what 'mode' simulator will run in then log and print it to screen
+	string simModeStr;
+	if (SSO.RVonly==false && SSO.DIonly==true)
+		ss<<"\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nSimulation running in DIonly mode\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+	else if (SSO.RVonly==false && SSO.DIonly==false)
+		ss<<"\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nSimulation running in 3D mode\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+	else
+		ss<<"\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\nSimulation running in RVonly mode\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+	simModeStr = ss.str();
+	ss.clear();
+	ss.str(std::string());
+	SSlog<<simModeStr;
+	cout<<simModeStr<<endl;
+
 	//cout<<"\n$$$$ about to try and load up sys data"<<endl;
 	SYSdo.systemDataLoadUp(SystemDataFilename.c_str());
 	//cout<<"DI and RV data objects instantiated"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$

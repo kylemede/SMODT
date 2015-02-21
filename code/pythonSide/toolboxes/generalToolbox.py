@@ -2017,6 +2017,7 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                             print 'Value for data_dir, '+val+', was invalid.'
                             print 'Using default value of:'+default
                             valUse = default
+                        
                         returnDict['outputData_dir'] = valUse
                         if verbose:
                             print 'outputData_dir found to be = '+returnDict['outputData_dir']
@@ -2026,6 +2027,14 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                             print 'Value for filenameRoot, '+val+', was invalid.'
                             print 'Using default value of:'+default
                             valUse = default
+                        if "#" in val:
+                            if verbose:
+                                #print "\n\n"+"^"*50
+                                print "original outputData_filenameRoot = "+val
+                                print "updated outputData_filenameRoot = "+val.split("#")[0]
+                                #print "^"*50+"\n\n"
+                            # To handle cases where I put older filenames behind a pound for future use maybe
+                            valUse = val.split("#")[0]
                         returnDict['outputData_filenameRoot'] = valUse
                         if verbose:
                             print 'outputData_filenameRoot found to be = '+returnDict['outputData_filenameRoot']

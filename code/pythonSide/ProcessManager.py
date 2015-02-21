@@ -158,7 +158,11 @@ def multiProcessStarter(paramSettingsDict):
     for processNumber in range(numProcesses):
         dataFiles.append(master[processNumber].filename)
         
-    sysDatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/SystemData.txt')
+    sysDatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+os.path.basename(paramSettingsDict['SystemDataFilename']))
+    print "\n\n"+"*"*50
+    print "sysDatafilename = "+sysDatafilename
+    print "SystemDataFilename = "+paramSettingsDict['SystemDataFilename']
+    print "*"*50+"\n\n"
     sysDataDict = tools.gen.sysDataToDict(sysDatafilename)
     
     # determine if to plot a 3x1 or 3x2 plot
@@ -224,7 +228,7 @@ def multiProcessStarter(paramSettingsDict):
     PMlogFile.write(s)
     #PMlogFile.close()
     ## Make DI ellipse plot if DI data exists
-    DIdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/DIdata.dat')
+    DIdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+os.path.basename(paramSettingsDict['DIdataFilename']))
     if os.path.exists(DIdatafilename)and ((paramSettingsDict['RVonly']==False)and(paramSettingsDict['makeOrbitPlots'])):
         s = '\n**** Now starting to make a DI orbit plot ***\n'
         print s
@@ -252,9 +256,9 @@ def multiProcessStarter(paramSettingsDict):
         #PMlogFile.close()
     ## Make RV scatter.trend plots if RV data exists
     #print '\nWARNING: RV plotting still disabled in mcONLY_ProcessManagerDuo!'
-    RVdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/RVdata.dat')
+    RVdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+os.path.basename(paramSettingsDict['RVdataFilename']))
     if True:
-        s= "RVdatafilename = "+RVdatafilename
+        s= "RVdatafilename = "+paramSettingsDict['RVdataFilename']
         print s
         #PMlogFile = open(logFilename,'a')
         PMlogFile.write(s)
@@ -373,23 +377,23 @@ def multiProcessStarter(paramSettingsDict):
     # check if the user wanted the individual chain data files deleted
     if paramSettingsDict['delChainsAfter']:
         if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict["mcONLY"]==False):
-                print '\n\nDeleting Simulated Annealing chain data files'
+                print '\n\nDeleting Simulated Annealing chain data files\n'+"-"*40
                 for filename in simAnnealDataFiles:
                     print 'Deleting file: '+os.path.basename(filename)
                     os.remove(filename)
-                print 'Deleting MCMC chain data files'
+                print 'Deleting MCMC chain data files\n'+"-"*40
                 for filename in dataFiles:
                     print 'Deleting file: '+os.path.basename(filename)
                     os.remove(filename)
         else:
-            print '\n\nDeleting final output chain data files'
+            print '\n\nDeleting final output chain data files\n'+"-"*40
             for filename in dataFiles:
                 print 'Deleting file: '+os.path.basename(filename)
                 os.remove(filename)
         
     ## delete combined data files if requested
     if paramSettingsDict['delCombinedDataAfter']:
-        print 'Deleting combined data files'
+        print 'Deleting combined data files\n'+"-"*40
         print 'Deleting file: '+dataFinalFilename
         os.remove(dataFinalFilename)
         if cleanDataFilename!='':

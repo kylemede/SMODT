@@ -65,7 +65,9 @@ int main(int argc ,char *argv[])
 	//cout<< "Settings obj all loaded up"<<endl; //$$$$$$$$$$$$$$
 
 	// instantiate and load up DI and RV data objects as needed
-	string SystemDataFilename = SSO.settings_and_InputDataDir + SSO.SystemDataFilename;
+	string outSettingsDir = GT.findDirectory(settingsFilename.c_str())+"/";
+	//string SystemDataFilename = SSO.settings_and_InputDataDir + SSO.SystemDataFilename;
+	string SystemDataFilename = outSettingsDir + SSO.SystemDataFilename;
 	cout<<"SystemDataFilename = "<< SystemDataFilename <<endl;
 	DItools DIt;
 	DIdataObj DIdo;
@@ -101,7 +103,7 @@ int main(int argc ,char *argv[])
 	if ((SSO.DIonly==true) or (SSO.RVonly==false && SSO.DIonly==false))
 	{
 		//cout<<"Starting to load up DI data obj"<<endl; //$$$$$$$$$$$$$$$$$
-		string DIdataFilename = SSO.settings_and_InputDataDir + SSO.DIdataFilename;
+		string DIdataFilename = outSettingsDir + SSO.DIdataFilename;
 		DIdo.dataLoadUp(DIdataFilename.c_str());
 		DIdo.systemDataLoadUp(SystemDataFilename.c_str());
 		// instantiate DI tools obj and load it up with same values
@@ -112,7 +114,7 @@ int main(int argc ,char *argv[])
 	if ((SSO.RVonly==true) or (SSO.RVonly==false && SSO.DIonly==false))
 	{
 		//cout<<"starting to load up RV data obj"<<endl; //$$$$$$$$$$$$$$
-		string RVdataFilename = SSO.settings_and_InputDataDir + SSO.RVdataFilename;
+		string RVdataFilename = outSettingsDir + SSO.RVdataFilename;
 		RVdo.dataLoadUp(RVdataFilename.c_str());
 		RVdo.systemDataLoadUp(SystemDataFilename.c_str());
 		//cout<<"RVdo.planet_argPeri = "<<RVdo.planet_argPeri<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

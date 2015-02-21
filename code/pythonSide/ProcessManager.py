@@ -369,7 +369,7 @@ def multiProcessStarter(paramSettingsDict):
                 os.remove(filename)
     ## delete combined data files if requested
     if paramSettingsDict['delCombinedDataAfter']:
-        print 'Deleting combined data files\n'+"-"*40
+        print '\nDeleting combined data files\n'+"-"*40
         print 'Deleting file: '+dataFinalFilename
         os.remove(dataFinalFilename)
         if cleanDataFilename!='':

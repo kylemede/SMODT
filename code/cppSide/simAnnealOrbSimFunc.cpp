@@ -45,6 +45,7 @@ void simAnealOrbFuncObj::simulator()
 	std::stringstream SSlog;
 
 	int timesBeenHere = 0;
+	timesBeenHereTotal = 0;
 	int timesNONEpassed = 0;
 	int paramBeingVaried = 2;
 	//double K_p_errorPercent = 0;
@@ -1086,7 +1087,7 @@ void simAnealOrbFuncObj::simulator()
 				EATT.argPeri_deg = argPeri_deg_proposed;
 				EATT.e = e_proposed;
 				EATT.To = T_proposed;
-				EATT.Tc=Tc_proposed;
+				EATT.Tc= Tc_proposed;
 				EATT = GT.eccArgPeri2ToTcCalc(EATT);
 				//cout<<"T in = "<<T_proposed <<", Tc in = "<< Tc_proposed<<", T out = "<<EATT.To <<", Tc out = "<< EATT.Tc<<endl;
 				T_proposed = EATT.To;
@@ -1731,6 +1732,7 @@ void simAnealOrbFuncObj::simulator()
 				ODT.Ks.push_back(K_proposed);
 				ODT.RVoffsets.push_back(RVoffsets_proposed);
 				ODT.timesBeenHeres.push_back(timesBeenHere+1);
+				timesBeenHereTotal+=timesBeenHere+1;
 				//reset timesBeenHere counter
 				timesBeenHere = 0;
 
@@ -1765,6 +1767,9 @@ void simAnealOrbFuncObj::simulator()
 				}
 
 			}// Done storing accepted orbit parameters
+			//****************************************************************
+			// alpha<=RHS not satisfied, increment timesBeenHere and try again
+			//****************************************************************
 			else
 			{
 				timesBeenHere+=1;
@@ -1787,6 +1792,9 @@ void simAnealOrbFuncObj::simulator()
 			}
 
 		}//end of ALLpassed block
+		//****************************************************************************
+		// Proposed parameters did not all pass, increment timesBeenHere and try again
+		//****************************************************************************
 		else
 		{
 			timesBeenHere+=1;
@@ -1955,11 +1963,11 @@ void simAnealOrbFuncObj::simulator()
 	//Done sampling, so save last position if not done yet
 	if (latestParamsSaved==false)
 	{
-		//cout<<"\nlatestParamsSaved==false, so storing last values at sample number "<<sample<<", the timesBeenHere = "<<timesBeenHere<<endl;
-		//cout<<"Before storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;
+		SSlog<<"\nlatestParamsSaved==false, so storing last values at sample number "<<sample<<", the timesBeenHere = "<<timesBeenHere<<endl;
+		SSlog<<"Before storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;
 		if (timesBeenHere>0)
 		{
-			cout<<"storing values now"<<endl;
+			SSlog<<"storing values now"<<endl;
 			// store inputs
 			ODT.longAN_degs.push_back(longAN_deg_latest);
 			ODT.es.push_back(e_latest);
@@ -1973,14 +1981,16 @@ void simAnealOrbFuncObj::simulator()
 			ODT.a_totals.push_back(ODT.a_totals.back());
 			ODT.Ks.push_back(K_latest);
 			ODT.RVoffsets.push_back(RVoffsets_latest);
-			ODT.timesBeenHeres.push_back(timesBeenHere-1);
+			ODT.timesBeenHeres.push_back(timesBeenHere);
+			timesBeenHereTotal+=timesBeenHere;
 			//cout<<"After storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;
 		}
 		//cout<<"After storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;
 	}
 
 	// final print to let us know it was able to get to end of file
-	cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$
+	cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
+	SSlog<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
 	cout<<"Leaving SimAnnealOrbSimFunc\n\n"<<endl;
 
 	//move all log prints to log string

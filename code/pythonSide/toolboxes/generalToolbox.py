@@ -962,7 +962,7 @@ def dataReaderNEW(filename, column=0):
 def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False):
     """
     """
-    verboseInternal = False
+    verboseInternal = True
     gotLog=True
     ## First get ranges of param and ChiSquared values
     if os.path.exists(filename):
@@ -990,15 +990,29 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
     # first find out how many lines in total
     fp = open(filename,'r')
     
-    TotalSamples=1
+    TotalSamples=0
+    if verboseInternal:
+        print "Starting to find TotalSamples value"
     for i,line in enumerate(fp):
-        if i>2:
-            TotalSamples+= float(line.split()[-1])
+        if i==0:
+            print "i = 0"
+        elif i==1:
+            print "i = 1"
+        if i>1:
+            try:
+                if line[0].isdigit():
+                    timesBeen = float(line.split()[-1])
+                    TotalSamples+= timesBeen
+            except:
+                print "failure loading up TotalSamples.  Value so far = "+str(TotalSamples)
+                print "type(line[0]) = "+repr(type(line[0]))
+                print "type(timesBeen) = "+repr(type(timesBeen))
+                print "line[0] = "+line[0]
     fp.close()
     TotalSamples = int(TotalSamples)
     if verboseInternal:
         print '\nTotalSamples = '+str(TotalSamples)+'\n'#$$$$$$$$$$$$$$$$$$
-    numDataLines =i-2
+    numDataLines =i-1
     # find values at start, mid and end of file
     fp = open(filename,'r')
     lastColLoc = 0
@@ -1025,7 +1039,6 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
     doesntVary = True
     dataAry = []
     chiSquareds = []
-    totalAccepted = 0
     bestOrbit = 0
     bestDataVal = 0
     totalAccepted = 0
@@ -1034,21 +1047,31 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
     dataMin = 1e9
     if ((dataValueStart!=dataValueMid)and(dataValueStart!=dataValueEnd)):
         log.write("Values for parameter found to be constant!!")
+        if verboseInternal:
+            print "Values for parameter found to be constant!!"
         doesntVary = False
         
     if ((doesntVary==False)or(ignoreConstParam==True)):#or(fast==False):  
         s=''
+        fp = open(filename,'r')
         #Old string parsing directly version UPDATED
         startTime2 = timeit.default_timer()
         totalAccepted = 0
         dataAry = [None]*TotalSamples
         chiSquareds = [None]*TotalSamples
-        i = 0
+        j = 0
         lineNum=0
-        for line in open(filename,'r'):
+        numNoDataLines=0
+        firstDataLine = ""
+        lastDataLine = ""
+        firstJ = ""
+        lastJ = ""
+        for i,line in enumerate(fp):
             lineNum+=1
-            if lineNum>2:
-                s = "?"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
+            if line[0].isdigit():
+                s2 = "?"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
+                if firstDataLine=="":
+                    firstDataLine=line
                 try:
                     dataLineCols = line.split()
                     ## this should never happen, but it is a check for a double decimal value
@@ -1057,37 +1080,54 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
                         dataValue = float(decimalSplit[0]+'.'+decimalSplit[1])
                     else:
                         dataValue = float(dataLineCols[columNum])
-                    s = "1060"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
+                    #s = "1060"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     chiSquared = float(dataLineCols[8])
-                    s = "1062"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
+                    #s = "1062"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     timesBeenHere = float(dataLineCols[-1])
-                    s = "1064, timesBeenHere = "+str(timesBeenHere)+", chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
+                    s2 = "timesBeenHere = "+str(timesBeenHere)+", chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     #if (chiSquared==0)or(dataValue==0):
                         # if verboseInternal:
                         #     print line
-                    for j in range(0,int(timesBeenHere)):
-                        s+="\n In itter loop"
-                        totalAccepted+=1
-                        dataAry[i]=dataValue
-                        if returnChiSquareds:
-                            chiSquareds[i]=chiSquared
-                        i+=1
-                        s+=".  survived itter #"+str(j)
-                    s = "1074"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
+                    for k in range(0,int(timesBeenHere)):
+                        if firstJ=="":
+                            firstJ=j
+                        s2+="\nIn itter loop, j="+str(j)+", totalAccepted="+str(totalAccepted)+", len(dataAry)="+str(len(dataAry))
+                        if totalAccepted>len(dataAry):
+                            print "\n*** totalAccepted>len(dataAry) ***"
+                            print s2
+                            break
+                        else:
+                            try:
+                                dataAry[j]=dataValue
+                            except:
+                                print s2
+                                print "\nfailed to load data into dataArray"+", chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)
+                            if returnChiSquareds:
+                                try:
+                                    chiSquareds[j]=chiSquared
+                                except:
+                                    print s2
+                                    print "\nfailed to load chiSquared into chiSquareds array"+", chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)
+                            totalAccepted+=1
+                            j+=1
+                            s2+=".  survived itter #"+str(k)
+                    #s = "1074"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     if dataValue>dataMax:
                         dataMax = dataValue
-                    s = "1077"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
+                    #s = "1077"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     if dataValue<dataMin:
                         dataMin = dataValue
-                    s = "1080"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
+                    #s = "1080"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     if chiSquared<chiSquaredMin:
                         chiSquaredMin = chiSquared
                         bestDataVal = dataValue
                         bestOrbit=lineNum   
-                    s = "1085"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$   
+                    #s = "1085"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$   
                 except:
-                    print "code line failed = "+s
+                    print "code line failed = "+s2
                     print 'Failed for line: '+line 
+            else:
+                numNoDataLines+=1
         endTime2 = timeit.default_timer()
         totalTime = (endTime2-startTime2) # in seconds
         totalTimeString = timeString(totalTime)
@@ -1095,14 +1135,25 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
         s=s+'The resulting arrays had '+str(totalAccepted)+' elements, with best value '+str(bestDataVal)+', and minChiSquared '+str(chiSquaredMin)
         if gotLog:
             log.write(s+'\n')
+        if verboseInternal:
+            print s+"\n"
+        lastDataLine = line
+        lastJ = j
+        fp.close()
     dataAry = np.array(dataAry)
     dataMedian = np.median(dataAry)
-    s=  '\nTotal number of orbits = '+str(totalAccepted)
+    s=  '\nTotal number of orbits = '+str(totalAccepted)+", len(dataAry)="+str(len(dataAry))+", i = "+str(i)+", j = "+str(j)
+    s+=", fistJ = "+str(firstJ)+", lastJ = "+str(lastJ)
+    s+=", lineNum = "+str(lineNum)+", numDataLines = "+str(numDataLines)+", numNoDataLines = "+str(numNoDataLines)
+    s+="\nfirstDataLine = "+firstDataLine+"\nlastDataLine = "+lastDataLine+"\n"
     s=s+'\nBest value found was '+str(bestDataVal)+", at line Number "+str(bestOrbit)+", and had a chiSquared = "+str(chiSquaredMin)
     s=s+'\nMedian value = '+str(dataMedian)
     s=s+'\n[Min,Max] values found for data were '+repr([dataMin,dataMax])
     if gotLog:
         log.write(s+'\n')
+    if verboseInternal:
+        print s
+        print "first and last elements of dataAry are "+str(dataAry[0])+", "+str(dataAry[-1])+"\n"
     
     return (log,dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd])
                 

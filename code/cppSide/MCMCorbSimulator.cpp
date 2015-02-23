@@ -213,11 +213,11 @@ int main(int argc ,char *argv[])
 
 	//*** Run Simulated Annealing simulation first to get starting params
 	if (SSO.silent==false)
-			cout<<"Calling SAOFO simulator"<<endl;
+			cout<<"Calling SAOFO function"<<endl;
 	SAOFO.simulator();
 	//SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	if (SSO.silent==false)
-		cout<<"Returned from SAOFO simulator :-)"<<endl;
+		cout<<"Returned from SAOFO function :-)"<<endl;
 	//move output log string from simulation run to SSlog
 	SSlog<<SAOFO.SSlogStr;
 	//###############################################################################

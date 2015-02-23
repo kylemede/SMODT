@@ -197,31 +197,36 @@ int main(int argc ,char *argv[])
     //cout<<"line # 185"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ss << "\n$$$$$$$$$$$$$$$ SIMULATOR COMPLETE $$$$$$$$$$$$$$$"<<endl;
     ss<< totalAccepted <<" orbits were accepted during simulation"<<endl;
-    ss<< "\nBest orbit found at step "<<SAOFO.bestOrbit<<" :"<<endl;
-    ss<< "chiSquaredMin = "<< SAOFO.chiSquaredMin <<endl;
-    ss<< "chiSquaredMin*one_over_nu_TOTAL = "<< SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL <<endl;
-    ss<< "mean Acceptance rate = "<<(double(totalAccepted)/double(SSO.numSamples))<<endl;
-    ss<< "LongAN = "<< SAOFO.ODT.longAN_degs[SAOFO.bestOrbit] <<endl;
-    ss<< "e = "<< SAOFO.ODT.es[SAOFO.bestOrbit] <<endl;
-    ss<< "To = "<<fixed <<SAOFO.ODT.Ts[SAOFO.bestOrbit] <<endl;
-    ss<< "Tc = "<< SAOFO.ODT.Tcs[SAOFO.bestOrbit]<<endl;
-    ss<< "period = "<< SAOFO.ODT.periods[SAOFO.bestOrbit] <<endl;
-    ss<< "inclination = "<< SAOFO.ODT.inclination_degs[SAOFO.bestOrbit] <<endl;
-    ss<< "argPeri = "<< SAOFO.ODT.argPeri_degs[SAOFO.bestOrbit] <<endl;
-    ss<< "a_total = "<< SAOFO.ODT.a_totals[SAOFO.bestOrbit] <<endl;
-
-    if (SAOFO.SSO.DIonly==false)
-    {
-    	ss<< "K = "<< SAOFO.ODT.Ks[SAOFO.bestOrbit]<<endl;
-    	for (int set=0;set<SAOFO.ODT.RVoffsets[SAOFO.bestOrbit].size();++set)
+    ss<< "timesBeenHereTotal = "<<SAOFO.timesBeenHereTotal<<endl;
+    double sum = GT.sumIntCalc(SAOFO.ODT.timesBeenHeres,SAOFO.ODT.timesBeenHeres.size());
+    ss<< "timesBeenHeres total = "<<sum<<endl;
+	ss<< "\nBest orbit found at step "<<SAOFO.bestOrbit<<" :"<<endl;
+	ss<<"chiSquareMin_reduced = "<<SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<endl;
+	ss<< "chiSquaredMin = "<< SAOFO.chiSquaredMin <<endl;
+	ss<< "chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds[SAOFO.bestOrbit]<<endl;
+	ss<< "One before chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds[SAOFO.bestOrbit-1]<<endl;
+	ss<< "One after chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds[SAOFO.bestOrbit+1]<<endl;
+	ss<< "mean Acceptance rate = "<<(double(totalAccepted)/double(SAOFO.numSamples_SA))<<endl;
+	ss<< "LongAN = "<< SAOFO.ODT.longAN_degs[SAOFO.bestOrbit] <<endl;
+	ss<< "e = "<< SAOFO.ODT.es[SAOFO.bestOrbit] <<endl;
+	ss<< "To = "<< fixed <<SAOFO.ODT.Ts[SAOFO.bestOrbit] <<endl;
+	ss<< "Tc = "<< SAOFO.ODT.Tcs[SAOFO.bestOrbit]<<endl;
+	ss<< "period = "<< SAOFO.ODT.periods[SAOFO.bestOrbit] <<endl;
+	ss<< "inclination = "<< SAOFO.ODT.inclination_degs[SAOFO.bestOrbit] <<endl;
+	ss<< "argPeri = "<< SAOFO.ODT.argPeri_degs[SAOFO.bestOrbit] <<endl;
+	ss<< "a_total = "<< SAOFO.ODT.a_totals[SAOFO.bestOrbit] <<endl;
+	if (SAOFO.SSO.DIonly==false)
+	{
+		ss<< "K = "<< SAOFO.ODT.Ks[SAOFO.bestOrbit]<<endl;
+		for (int set=0;set<SAOFO.ODT.RVoffsets[SAOFO.bestOrbit].size();++set)
 			ss<<"RVoffset for dataset "<<set<<", was = "<< SAOFO.ODT.RVoffsets[SAOFO.bestOrbit][set]<<endl;
-    }
-    //cout<<"line # 207"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-	if (true)
+	}
+
+	if (false)
 	{
 		ss<< "\nLast orbit found:"<<endl;
 		ss<< "chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds.back() <<endl;
-		ss<< "chiSquaredMin*one_over_nu_TOTAL = "<< SAOFO.ODT.chiSquareds.back()*SAOFO.one_over_nu_TOTAL <<endl;
+		ss<<"chiSquareMin_reduced = "<<SAOFO.ODT.chiSquareds.back()*SAOFO.one_over_nu_TOTAL<<endl;
 		ss<< "LongAN = "<< SAOFO.ODT.longAN_degs.back()<<endl;
 		ss<< "e = "<< SAOFO.ODT.es.back()<<endl;
 		ss<< "To = "<< SAOFO.ODT.Ts.back()<<endl;
@@ -229,20 +234,20 @@ int main(int argc ,char *argv[])
 		ss<< "period = "<< SAOFO.ODT.periods.back()<<endl;
 		ss<< "inclination = "<<SAOFO.ODT.inclination_degs.back() <<endl;
 		ss<< "argPeri = "<<SAOFO.ODT.argPeri_degs.back() <<endl;
-		ss<< "a_total = "<< SAOFO.ODT.a_totals.back() <<endl;
+		ss<< "a_total = "<<SAOFO.ODT.a_totals.back() <<endl;
 		if (SAOFO.SSO.DIonly==false)
 		{
 			ss<< "K = "<< SAOFO.ODT.Ks.back()<<endl;
 			for (int set=0;set<SAOFO.ODT.RVoffsets.back().size();++set)
 				ss<<"RVoffset for dataset "<<set<<", was = "<< SAOFO.ODT.RVoffsets.back()[set]<<endl;
 		}
+		ss<< "timesBeenHere = "<<SAOFO.ODT.timesBeenHeres.back() <<endl;
 	}
-	//cout<<"line # 228"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-	if (false)
+	if (true)
 	{
 		ss<< "\nSecond to last orbit found:"<<endl;
 		ss<< "chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds[totalAccepted-2] <<endl;
-		ss<< "chiSquaredMin*one_over_nu_TOTAL = "<< SAOFO.ODT.chiSquareds[totalAccepted-2]*SAOFO.one_over_nu_TOTAL <<endl;
+		ss<<"chiSquareMin_reduced = "<<SAOFO.ODT.chiSquareds[totalAccepted-2]*SAOFO.one_over_nu_TOTAL<<endl;
 		ss<< "LongAN = "<< SAOFO.ODT.longAN_degs[totalAccepted-2]<<endl;
 		ss<< "e = "<< SAOFO.ODT.es[totalAccepted-2]<<endl;
 		ss<< "To = "<< SAOFO.ODT.Ts[totalAccepted-2]<<endl;
@@ -257,6 +262,7 @@ int main(int argc ,char *argv[])
 			for (int set=0;set<SAOFO.ODT.RVoffsets[totalAccepted-2].size();++set)
 				ss<<"RVoffset for dataset "<<set<<", was = "<< SAOFO.ODT.RVoffsets[totalAccepted-2][set]<<endl;
 		}
+		ss<< "timesBeenHere = "<<SAOFO.ODT.timesBeenHeres[totalAccepted-2] <<endl;
 	}
 	if (true)
 	{
@@ -275,6 +281,8 @@ int main(int argc ,char *argv[])
 		ss<< "T_sigma = "<<fixed<<SAOFO.T_sigma<<" = sigPercent = "<<sig<<endl;
 		sig = SAOFO.a_total_sigma*(100.0/(SAOFO.SSO.a_totalMAX-SAOFO.SSO.a_totalMIN));
 		ss<< "a_total_sigma = "<<fixed<<SAOFO.a_total_sigma<<" = sigPercent = "<<sig<<endl;
+		ss<< "sqrtESinomega_sigma = "<<fixed<<SAOFO.sqrtESinomega_sigma<<" = sigPercent = "<<sig<<endl;
+		ss<< "sqrtECosomega_sigma = "<<fixed<<SAOFO.sqrtECosomega_sigma<<" = sigPercent = "<<sig<<endl;
 		if (SAOFO.SSO.DIonly==false)
 		{
 			sig = SAOFO.K_sigma*(100.0/(SAOFO.SSO.K_MAX-SAOFO.SSO.K_MIN));
@@ -291,14 +299,11 @@ int main(int argc ,char *argv[])
 			}
 		}
 	}
-	if (true)
-	{
-		ss<<"\n one_over_nu values for all three chiSquare calcs:"<<endl;
-		ss<<"one_over_nu_DI = "<< SAOFO.one_over_nu_DI <<endl;
-		ss<<"one_over_nu_RV = "<< SAOFO.one_over_nu_RV <<endl;
-		ss<<"one_over_nu_TOTAL = "<< SAOFO.one_over_nu_TOTAL <<endl;
-	}
 
+	ss<<"\n one_over_nu values for all three chiSquare calcs:"<<endl;
+	ss<<"one_over_nu_DI = "<< SAOFO.one_over_nu_DI <<endl;
+	ss<<"one_over_nu_RV = "<< SAOFO.one_over_nu_RV <<endl;
+	ss<<"one_over_nu_TOTAL = "<< SAOFO.one_over_nu_TOTAL <<endl;
 
 	//cout<<"line # 277"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	// calc how long sim took to run

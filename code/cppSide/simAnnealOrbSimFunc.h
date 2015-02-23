@@ -19,6 +19,7 @@ public:
 	double one_over_nu_DI;
 	double one_over_nu_TOTAL;
 	int bestOrbit;
+	int timesBeenHereTotal;
 	double earliestEpoch;
 	int randSeed;
 	outputDataType ODT;

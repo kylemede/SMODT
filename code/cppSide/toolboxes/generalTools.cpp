@@ -862,15 +862,16 @@ double generalTools::meanCalc(vector<double> v, int lastPoint)
 	 */
 	bool verbose = false;
 
-	double sum;
-	sum=0.0;
-	//loop through all data points to get total value
-	for (int j=0;j<(lastPoint+1);j++)
-	{
-		sum+=v[j];
-//		if ((false)&&(lastPoint>((v.size()/10)*5)))
-//			cout<<"sum in loop = "<<ave<<endl;
-	}
+	double sum = sumCalc(v,lastPoint);
+//	double sum;
+//	sum=0.0;
+//	//loop through all data points to get total value
+//	for (int j=0;j<(lastPoint+1);j++)
+//	{
+//		sum+=v[j];
+////		if ((false)&&(lastPoint>((v.size()/10)*5)))
+////			cout<<"sum in loop = "<<ave<<endl;
+//	}
 	//convert total value into average value
 	//ave/=(lastPoint+1);
 	double ave;
@@ -878,6 +879,30 @@ double generalTools::meanCalc(vector<double> v, int lastPoint)
 	if ((verbose)&&(lastPoint>((v.size()/10)*5)))
 		cout<<"sum = "<<fixed<<std::setprecision(15)<<sum<<", = "<<double(lastPoint+1) <<", ave output = "<<ave<<endl;
 	return ave;
+}
+
+double generalTools::sumCalc(vector<double> v,int lastPoint)
+{
+	double sum;
+	sum=0.0;
+	//loop through all data points to get total value
+	for (int j=0;j<(lastPoint+1);j++)
+	{
+		sum+=v[j];
+	}
+	return sum;
+}
+
+double generalTools::sumIntCalc(vector<int> v,int lastPoint)
+{
+	int sum;
+	sum=0.0;
+	//loop through all data points to get total value
+	for (int j=0;j<(lastPoint+1);j++)
+	{
+		sum+=v[j];
+	}
+	return sum;
 }
 
 void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)

@@ -893,7 +893,7 @@ double generalTools::sumCalc(vector<double> v,int lastPoint)
 	return sum;
 }
 
-double generalTools::sumIntCalc(vector<int> v,int lastPoint)
+int generalTools::sumIntCalc(vector<int> v,int lastPoint)
 {
 	int sum;
 	sum=0.0;

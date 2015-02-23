@@ -989,13 +989,14 @@ void MCMCorbFuncObj::simulator()
 
 	}//Done sample loops
 
-	//cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<"\n\n"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
 	//Done sampling, so save last position if not done yet
 	if (latestParamsSaved==false)
 	{
+		SSlog<<"\nlatestParamsSaved==false, so storing last values at sample number "<<sample<<", the timesBeenHere = "<<timesBeenHere<<endl;
+		SSlog<<"Before storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;
 		if (timesBeenHere>1)
 		{
+			SSlog<<"storing values now"<<endl;
 			// store inputs
 			ODT.longAN_degs.push_back(longAN_deg_latest);
 			ODT.es.push_back(e_latest);
@@ -1015,6 +1016,12 @@ void MCMCorbFuncObj::simulator()
 
 	//shrink final ODT vectors to their actual size
 	ODT = GT.odtFinish(ODT);
+
+	// final print to let us know it was able to get to end of file
+	//cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
+	SSlog<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
+	cout<<"Leaving MCMCOrbSimFunc\n\n"<<endl;
+	SSlog<<"Leaving MCMCOrbSimFunc\n\n"<<endl;
 
 	//move all log prints to log string
 	SSlogStr=SSlog.str();

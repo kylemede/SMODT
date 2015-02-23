@@ -99,7 +99,7 @@ public:
 	double atanTopBtm(double top, double btm);
 	double meanCalc(vector<double> v, int lastPoint);
 	double sumCalc(vector<double> v,int lastPoint);
-	double sumIntCalc(vector<int> v,int lastPoint);
+	int sumIntCalc(vector<int> v,int lastPoint);
 	void gelmanRubinStage1(outputDataType ODT,int numTimes);
 	GRfuncReturnType gelmanRubinStage1func(vector<double> data,vector<int> timesBeenHere,int numTimes);
 	string fileBasename(string str);

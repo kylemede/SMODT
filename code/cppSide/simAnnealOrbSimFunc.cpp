@@ -44,7 +44,7 @@ void simAnealOrbFuncObj::simulator()
 	std::stringstream ss;
 	std::stringstream SSlog;
 
-	int timesBeenHere = 0;
+	int timesBeenHere = 1;
 	timesBeenHereTotal = 0;
 	int timesNONEpassed = 0;
 	int paramBeingVaried = 2;
@@ -1731,10 +1731,10 @@ void simAnealOrbFuncObj::simulator()
 				ODT.a_totals.push_back(a_total_curr);
 				ODT.Ks.push_back(K_proposed);
 				ODT.RVoffsets.push_back(RVoffsets_proposed);
-				ODT.timesBeenHeres.push_back(timesBeenHere+1);
-				timesBeenHereTotal+=timesBeenHere+1;
+				ODT.timesBeenHeres.push_back(timesBeenHere);
+				timesBeenHereTotal+=timesBeenHere;
 				//reset timesBeenHere counter
-				timesBeenHere = 0;
+				timesBeenHere = 1;
 
 				//Replace 'latest' values
 				inclination_deg_latest = DIt.inclination_deg;
@@ -1965,7 +1965,7 @@ void simAnealOrbFuncObj::simulator()
 	{
 		SSlog<<"\nlatestParamsSaved==false, so storing last values at sample number "<<sample<<", the timesBeenHere = "<<timesBeenHere<<endl;
 		SSlog<<"Before storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;
-		if (timesBeenHere>0)
+		if (timesBeenHere>1)
 		{
 			SSlog<<"storing values now"<<endl;
 			// store inputs
@@ -1981,8 +1981,8 @@ void simAnealOrbFuncObj::simulator()
 			ODT.a_totals.push_back(ODT.a_totals.back());
 			ODT.Ks.push_back(K_latest);
 			ODT.RVoffsets.push_back(RVoffsets_latest);
-			ODT.timesBeenHeres.push_back(timesBeenHere);
-			timesBeenHereTotal+=timesBeenHere;
+			ODT.timesBeenHeres.push_back(timesBeenHere-1);
+			timesBeenHereTotal+=timesBeenHere-1;
 			//cout<<"After storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;
 		}
 		//cout<<"After storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;
@@ -1992,6 +1992,7 @@ void simAnealOrbFuncObj::simulator()
 	cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
 	SSlog<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
 	cout<<"Leaving SimAnnealOrbSimFunc\n\n"<<endl;
+	SSlog<<"Leaving SimAnnealOrbSimFunc\n\n"<<endl;
 
 	//move all log prints to log string
 	SSlogStr=SSlog.str();

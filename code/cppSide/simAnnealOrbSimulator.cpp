@@ -198,7 +198,7 @@ int main(int argc ,char *argv[])
     ss << "\n$$$$$$$$$$$$$$$ SIMULATOR COMPLETE $$$$$$$$$$$$$$$"<<endl;
     ss<< totalAccepted <<" orbits were accepted during simulation"<<endl;
     ss<< "timesBeenHereTotal = "<<SAOFO.timesBeenHereTotal<<endl;
-    double sum = GT.sumIntCalc(SAOFO.ODT.timesBeenHeres,SAOFO.ODT.timesBeenHeres.size());
+    int sum = GT.sumIntCalc(SAOFO.ODT.timesBeenHeres,SAOFO.ODT.timesBeenHeres.size());
     ss<< "timesBeenHeres total = "<<sum<<endl;
 	ss<< "\nBest orbit found at step "<<SAOFO.bestOrbit<<" :"<<endl;
 	ss<<"chiSquareMin_reduced = "<<SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<endl;

@@ -233,6 +233,9 @@ int main(int argc ,char *argv[])
 	// Get all best orbit values
 	ss << "\nMCMC: $$$$$$$$$$$$$$$ Simulated Annealing COMPLETE $$$$$$$$$$$$$$$"<<endl;
 	ss<< totalAccepted <<" orbits were accepted during simulation"<<endl;
+	ss<< "timesBeenHereTotal = "<<SAOFO.timesBeenHereTotal<<endl;
+	int sum = GT.sumIntCalc(SAOFO.ODT.timesBeenHeres,SAOFO.ODT.timesBeenHeres.size());
+	ss<< "timesBeenHeres total = "<<sum<<endl;
 	ss<< "\nBest orbit found at step "<<SAOFO.bestOrbit<<" :"<<endl;
 	ss<<"chiSquareMin_reduced = "<<SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<endl;
 	ss<< "chiSquaredMin = "<< SAOFO.chiSquaredMin <<endl;

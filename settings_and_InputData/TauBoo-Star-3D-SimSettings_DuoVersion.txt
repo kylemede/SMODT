@@ -3,11 +3,11 @@
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax =2000
 # The number of samples orbital parameters to try/draw [int] for MAIN stage of simulation
-numSamples =100000
+numSamples =30000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =20
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing =False
+useMultiProcessing =True
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =True
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -41,7 +41,7 @@ loopedMCMC =False
 # make plot of posterior distributions? [bool]
 makePosteriorsPlot =true
 # make plots of RV and DI/AM orbit fits [bool]
-makeOrbitPlots =false
+makeOrbitPlots =true
 # Make plots of Simulated Annealing progress plots? [bool]
 makeSimAnnealProgPlots =true
 # Simulated Annealing starting temperature [double]
@@ -49,7 +49,7 @@ startTemp =1000.0
 # Delete chain files after simulation is complete? [bool]
 delChainsAfter =true
 # Delete combined data files after simulation is complete? [bool]
-delCombinedDataAfter =false
+delCombinedDataAfter =true
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 TcStepping =false
 # Copy output non-data files to a Dropbox folder? [bool]

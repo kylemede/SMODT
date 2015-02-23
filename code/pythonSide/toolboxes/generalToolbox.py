@@ -962,7 +962,7 @@ def dataReaderNEW(filename, column=0):
 def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False):
     """
     """
-    verboseInternal = True
+    verboseInternal = False
     gotLog=True
     ## First get ranges of param and ChiSquared values
     if os.path.exists(filename):
@@ -1142,10 +1142,10 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
         fp.close()
     dataAry = np.array(dataAry)
     dataMedian = np.median(dataAry)
-    s=  '\nTotal number of orbits = '+str(totalAccepted)+", len(dataAry)="+str(len(dataAry))+", i = "+str(i)+", j = "+str(j)
-    s+=", fistJ = "+str(firstJ)+", lastJ = "+str(lastJ)
-    s+=", lineNum = "+str(lineNum)+", numDataLines = "+str(numDataLines)+", numNoDataLines = "+str(numNoDataLines)
-    s+="\nfirstDataLine = "+firstDataLine+"\nlastDataLine = "+lastDataLine+"\n"
+    s=  '\nTotal number of orbits = '+str(totalAccepted)#+", len(dataAry)="+str(len(dataAry))+", i = "+str(i)+", j = "+str(j)
+    #s+=", fistJ = "+str(firstJ)+", lastJ = "+str(lastJ)
+    #s+=", lineNum = "+str(lineNum)+", numDataLines = "+str(numDataLines)+", numNoDataLines = "+str(numNoDataLines)
+    #s+="\nfirstDataLine = "+firstDataLine+"\nlastDataLine = "+lastDataLine+"\n"
     s=s+'\nBest value found was '+str(bestDataVal)+", at line Number "+str(bestOrbit)+", and had a chiSquared = "+str(chiSquaredMin)
     s=s+'\nMedian value = '+str(dataMedian)
     s=s+'\n[Min,Max] values found for data were '+repr([dataMin,dataMax])

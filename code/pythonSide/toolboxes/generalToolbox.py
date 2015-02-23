@@ -1048,6 +1048,7 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
         for line in open(filename,'r'):
             lineNum+=1
             if lineNum>2:
+                s = "?"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                 try:
                     dataLineCols = line.split()
                     ## this should never happen, but it is a check for a double decimal value
@@ -1056,26 +1057,36 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
                         dataValue = float(decimalSplit[0]+'.'+decimalSplit[1])
                     else:
                         dataValue = float(dataLineCols[columNum])
+                    s = "1060"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     chiSquared = float(dataLineCols[8])
+                    s = "1062"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     timesBeenHere = float(dataLineCols[-1])
+                    s = "1064, timesBeenHere = "+str(timesBeenHere)+", chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     #if (chiSquared==0)or(dataValue==0):
-                       # if verboseInternal:
-                       #     print line
+                        # if verboseInternal:
+                        #     print line
                     for j in range(0,int(timesBeenHere)):
+                        s+="\n In itter loop"
                         totalAccepted+=1
                         dataAry[i]=dataValue
                         if returnChiSquareds:
                             chiSquareds[i]=chiSquared
                         i+=1
+                        s+=".  survived itter #"+str(j)
+                    s = "1074"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     if dataValue>dataMax:
                         dataMax = dataValue
+                    s = "1077"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     if dataValue<dataMin:
                         dataMin = dataValue
+                    s = "1080"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     if chiSquared<chiSquaredMin:
                         chiSquaredMin = chiSquared
                         bestDataVal = dataValue
-                        bestOrbit=lineNum      
+                        bestOrbit=lineNum   
+                    s = "1085"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$   
                 except:
+                    print "code line failed = "+s
                     print 'Failed for line: '+line 
         endTime2 = timeit.default_timer()
         totalTime = (endTime2-startTime2) # in seconds

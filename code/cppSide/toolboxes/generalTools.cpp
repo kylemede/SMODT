@@ -499,11 +499,11 @@ void generalTools::fileWriter(outputDataType ODT)
 	ofstream file;
 	file.open(ODT.data_filename.c_str()) ;     //open the output file
 	file << ODT.data_filename <<endl;
-	file << "longAN [deg]   e [N/A]   To [julian date]  Tc [julian date]     period [yrs]  ";
-	file <<"   inclination [deg]  argPeri [deg]  a_total [AU]    chiSquared    K [m/s]";
+	file << "longAN [deg]     e [N/A]   To [julian date]  Tc [julian date]     period [yrs]  ";
+	file <<"     inclination [deg]  argPeri [deg]  a_total [AU]    chiSquared         K [m/s]";
 	for (int dataset=0;dataset<int(ODT.RVoffsets[0].size());++dataset)
-		file<<"  RVorigin_"<<dataset<<" [m/s]  ";
-	file <<" timesBeenHere"<<endl;
+		file<<"     RVorigin_"<<dataset<<" [m/s]  ";
+	file <<"   timesBeenHere"<<endl;
 
 	for (int sample=0; sample<ODT.numSamplesAccepted; sample++)
 	{
@@ -520,7 +520,7 @@ void generalTools::fileWriter(outputDataType ODT)
 		for (int set=0;set<int(ODT.RVoffsets[0].size());++set)
 			file<<"      "<<ODT.RVoffsets[sample][set]<<"   ";
 
-		file<< "             "<<ODT.timesBeenHeres[sample]<<endl;
+		file<< "       "<<ODT.timesBeenHeres[sample]<<endl;
 	}//finished writing inputs file
 	file.close () ;
 	cout<<"\n***************************************************************"<<endl;

@@ -25,7 +25,7 @@ void simAnealOrbFuncObj::simulator()
 
 	generalTools GT;
 
-	cout<<"\n$$$$$ inside simAnealfunc $$$$\n"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	//cout<<"\n$$$$$ inside simAnealfunc $$$$\n"<<endl;//$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$
 	// ** overall tuning params **
 	double sigmaPercent_min = sigmaPercent;
 	double minTemp = 0.1;
@@ -54,12 +54,13 @@ void simAnealOrbFuncObj::simulator()
 	double chiSquaredMin_RV=SSO.chiSquaredMax;
 	if (SSO.DIonly==true)
 		chiSquaredMin_RV=0;
-	chiSquaredMin = SSO.chiSquaredMax;
+	chiSquaredMin = 10000000;//SSO.chiSquaredMax;
 	double DI_chiSquared = 0;
 	double RV_chiSquared = 0;
 	double numDIepochs = 0;
 	double numRVepochs = 0;
 	double TOTAL_chiSquared = 0;
+	double TOTAL_chiSquared_reduced;
 	one_over_nu_RV=1;
 	one_over_nu_DI=1;
 	one_over_nu_TOTAL=1;
@@ -253,7 +254,7 @@ void simAnealOrbFuncObj::simulator()
 		}
 	}
 	ss<<fixed<<std::setprecision(6)<<"\n\nTMIN = "<<TMIN<<", TMAX = "<<TMAX<<"\n\n"<<endl;
-	//cout<<"line # 247"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	//cout<<"line # 247"<<endl;//$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$
 	// load initial T and Tc values from system data file
 	double T_latest;
 	double Tc_latest;
@@ -495,7 +496,7 @@ void simAnealOrbFuncObj::simulator()
 	int sample;
 	for ( sample=0; sample<numSamples_SA; ++sample)
 	{
-		//cout<<"\n\n ---------------------  Trying sample  "<<sample<<"  ----------------\n\n"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//cout<<" ---------------------  Trying sample  "<<sample<<"  ----------------"<<endl;//$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 		latestParamsSaved=false;
 
@@ -571,6 +572,7 @@ void simAnealOrbFuncObj::simulator()
 		dropTempCount = dropTempCount+1;
 		if (dropTempCount==dropTempTime)
 		{
+			//cout<<"trying to drop temp"<<endl;
 			dropTempCount = 0;
 			tempStepNumber = tempStepNumber+1;
 			double tempIn = temp;
@@ -589,12 +591,12 @@ void simAnealOrbFuncObj::simulator()
 				if (temp<minTemp)
 					temp = minTemp;
 			}
-			//cout<<" dropping temp from "<<tempIn<<" to "<<temp<< " at sampleNumber "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<" dropping temp from "<<tempIn<<" to "<<temp<< " at sampleNumber "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 			//*****************************************************************************
 			//Emergency jump in param values if nothing is being accepted
 			//*****************************************************************************
-			if (chiSquaredMin>=SSO.chiSquaredMax)
+			if ((chiSquaredMin*one_over_nu_TOTAL)>=SSO.chiSquaredMax)
 			{
 				ss<<"\n****** WARNING: Chain has been stuck for a temperature step worth of trials so trying a new starting point. ******\n"<<endl;
 				//cout<<"\n****** WARNING: Chain has been stuck for a temperature step worth of trials so trying a new starting point. ******\n"<<endl;
@@ -608,20 +610,10 @@ void simAnealOrbFuncObj::simulator()
 					e_latest = RanGen.UniformRandom(SSO.eMIN, SSO.eMAX);
 				if (vary_K)
 					K_latest = RanGen.UniformRandom(SSO.K_MIN, SSO.K_MAX);
-//				if ((SSO.periodMIN==0)&&(SSO.periodMAX==0))
-//				{
-//					if (SSO.simulate_StarPlanet==true)
-//						period_latest = RVdo.planet_P;
-//					else
-//						period_latest = RVdo.star_P;
-//				}
 				if (SSO.periodMAX!=0)
 					period_latest = RanGen.UniformRandom(SSO.periodMIN, SSO.periodMAX); //  [yrs]
 				if (TMAX!=0)
 				{
-					//if ((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
-					//	Tmin = earliestEpoch-period_proposed*365.242;
-					//cout<<"earliestEpoch = "<< earliestEpoch <<", periodProposed = "<<period_proposed <<", Tmin = "<< Tmin<<endl;
 					if (SSO.TcStepping)
 						Tc_latest = RanGen.UniformRandom(TMIN, TMAX);
 					else
@@ -656,7 +648,7 @@ void simAnealOrbFuncObj::simulator()
 		printCount = printCount + 1;
 		if ( printCount==printTime )
 		{
-			//cout<<"line # 637"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"Trying to print print block"<<endl;//$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$
 			printsDone = printsDone+1;
 			printCount = 0;
 			int sampleUSE = sample;
@@ -679,6 +671,7 @@ void simAnealOrbFuncObj::simulator()
 			ss << "Largest allowed reduced chiSquareds: DI = "<<SSO.chiSquaredMax*one_over_nu_DI <<", RV = "<<SSO.chiSquaredMax*one_over_nu_RV  <<", Total = "<<SSO.chiSquaredMax*one_over_nu_TOTAL  <<endl;
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared*one_over_nu_DI<<", RV = "<<RV_chiSquared*one_over_nu_RV <<", Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
 			ss << "LOWEST reduced chiSquareds: DI = "<< chiSquaredMin_DI*one_over_nu_DI <<", RV = "<< chiSquaredMin_RV*one_over_nu_RV <<", Total = "<< chiSquaredMin*one_over_nu_TOTAL <<endl;
+			//cout<<"SimAnnealFunc, line #"<<679<<endl;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if (false)
 			{
 				ss<<"-----------------------------------------------"<<endl;
@@ -718,7 +711,7 @@ void simAnealOrbFuncObj::simulator()
 					}
 				}
 			}
-			//cout<<"line # 699"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"line # 699"<<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$
 			if (false)
 			{
 				ss<<"\nLatest gaussian proposed general parameters were:"<<endl;
@@ -750,6 +743,7 @@ void simAnealOrbFuncObj::simulator()
 				for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
 					cout<<"RVoffsets_proposed for dataset "<<dataset <<" = "<<RVoffsets_proposed[dataset] <<endl;
 			}
+			//cout<<"SimAnnealFunc, line #"<<751<<endl;//$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$
 			if (true)
 			{
 				ss<<"\nLatest parameters set as latest: "<<endl;
@@ -775,31 +769,39 @@ void simAnealOrbFuncObj::simulator()
 					ss<<"RVoffsets_latest for dataset "<<dataset <<" = "<<RVoffsets_latest[dataset] <<endl;
 				}
 			}
-			if (true)
+			//cout<<"SimAnnealFunc, line #"<<777<<endl;//$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			if (acceptedCounter>0)
 			{
-				cout<<bestOrbit<<endl;
-				ss<<"\nBEST parameters set so far: "<<endl;
-				ss<<"inclination_deg = "<< ODT.inclination_degs[bestOrbit]<<endl;
-				ss<<"longAN_deg = "<< ODT.longAN_degs[bestOrbit]<<endl;
-				ss<<"argPeri_deg = "<< ODT.argPeri_degs[bestOrbit]<<endl;
-				ss<<"e = "<< ODT.es[bestOrbit]<<endl;
-				ss<<"a_total = "<< ODT.a_totals[bestOrbit]<<endl;
-				ss<<"period = "<< ODT.periods[bestOrbit]<<endl;
-				ss<<"T =  "<<ODT.Ts[bestOrbit] <<endl;
-				ss<<"Tc = "<<ODT.Tcs[bestOrbit] <<endl;
-				ss<<"K = "<<ODT.Ks[bestOrbit] <<endl;
-				for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
+				if (true)
 				{
-					//if (SSO.RVoffsetMAXs[dataset]!=0)
-					ss<<"RVoffsets for dataset "<<dataset <<" = "<<ODT.RVoffsets[bestOrbit][dataset] <<endl;
+					//cout<<bestOrbit<<endl;
+					ss<<"\nBEST parameters set so far: "<<endl;
+					ss<<"inclination_deg = "<< ODT.inclination_degs[bestOrbit]<<endl;
+					//cout<<"SimAnnealFunc, line #"<<783<<endl;//$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$
+					ss<<"longAN_deg = "<< ODT.longAN_degs[bestOrbit]<<endl;
+					ss<<"argPeri_deg = "<< ODT.argPeri_degs[bestOrbit]<<endl;
+					ss<<"e = "<< ODT.es[bestOrbit]<<endl;
+					ss<<"a_total = "<< ODT.a_totals[bestOrbit]<<endl;
+					ss<<"period = "<< ODT.periods[bestOrbit]<<endl;
+					ss<<"T =  "<<ODT.Ts[bestOrbit] <<endl;
+					ss<<"Tc = "<<ODT.Tcs[bestOrbit] <<endl;
+					ss<<"K = "<<ODT.Ks[bestOrbit] <<endl;
+					for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
+					{
+						//if (SSO.RVoffsetMAXs[dataset]!=0)
+						ss<<"RVoffsets for dataset "<<dataset <<" = "<<ODT.RVoffsets[bestOrbit][dataset] <<endl;
+					}
 				}
 			}
+			else
+				ss<<"\n****\n NO SAMPLES ACCEPTED YET!!!\n****"<<endl;
+			//cout<<"SimAnnealFunc, line #"<<797<<endl;//$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$
 			if (true)
 			{
 				ss<<"\nKp_calculated = "<<Kp_calculated<<endl;
 				ss<<"Ks_calculated = "<<Ks_calculated<<"\n"<<endl;
 			}
-
+			//cout<<"SimAnnealFunc, line #"<<803<<endl;//$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$
 			ss<<"#######################################################################################"<<endl;
 			ss<<acceptString;
 			printLine = ss.str();
@@ -809,7 +811,7 @@ void simAnealOrbFuncObj::simulator()
 			SSlog<< printLine;
 
 		}
-		//cout<<"line # 791"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//cout<<"line # 791"<<endl; //$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$
 		// Set proposed values to latest
 		longAN_deg_proposed = longAN_deg_latest;
 		e_proposed = e_latest;
@@ -839,8 +841,8 @@ void simAnealOrbFuncObj::simulator()
 		//*****************************************************************************
 		// ******* Determine which param to vary *************************
 		//*****************************************************************************
-		//cout<<"About to generate proposed params for sample number "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//cout<<"paramBeingVaried = "<<paramBeingVaried<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//cout<<"About to generate proposed params for sample number "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//cout<<"paramBeingVaried = "<<paramBeingVaried<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		if (paramBeingVaried==0)
 		{
 			// sigma is a percentage of total range, so convert its current percentage to a range value
@@ -930,7 +932,7 @@ void simAnealOrbFuncObj::simulator()
 					ss<<"dataset = " <<dataset<<", RVoffsets_proposed[dataset] = "<<RVoffsets_proposed[dataset] <<", RVoffsetMIN = "<<SSO.RVoffsetMINs[dataset]<<", MAX = "<< SSO.RVoffsetMAXs[dataset]<<endl;
 			}
 		}
-		//cout<<"line # 907"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//cout<<"line # 907"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //		if (true)
 //		{
 //			cout<<"\n\n Ecc ArgPeri Testing \n"<<endl;
@@ -1093,7 +1095,7 @@ void simAnealOrbFuncObj::simulator()
 		}
 		else
 			Tc_proposed = T_proposed;
-		//cout<<"line # 1066"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//cout<<"line # 1066"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //		inclination_deg_proposed =  87.89;
 //		longAN_deg_proposed =  142.156752;
@@ -1147,7 +1149,7 @@ void simAnealOrbFuncObj::simulator()
 			SMT_out = GT.semiMajorConverter(SMT_in);
 			a_total_proposed = SMT_out.a_total;
 		}
-		//cout<<"Done producing proposed params for sample "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//cout<<"Done producing proposed params for sample "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		// **** Done producing 'proposed' versions of all params being varied this round ****
 
 		//*****************************************************************************
@@ -1161,7 +1163,7 @@ void simAnealOrbFuncObj::simulator()
 				ALLpassed=false;
 				ALLpassedStr = "false";
 			}
-			//cout<<"longAN_deg_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"longAN_deg_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		}
 		if (SSO.eMAX!=0)
 		{
@@ -1170,7 +1172,7 @@ void simAnealOrbFuncObj::simulator()
 				ParamThatFailed = "e";
 				ALLpassed=false;
 				ALLpassedStr = "false";
-				//cout<<"e_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"e_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$
 			}
 		}
 		if (TMAX!=0)
@@ -1182,7 +1184,7 @@ void simAnealOrbFuncObj::simulator()
 					ParamThatFailed = "Tc";
 					ALLpassed=false;
 					ALLpassedStr = "false";
-					//cout<<"Tc_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					//cout<<"Tc_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				}
 			}
 			else
@@ -1192,7 +1194,7 @@ void simAnealOrbFuncObj::simulator()
 					ParamThatFailed = "T";
 					ALLpassed=false;
 					ALLpassedStr = "false";
-					//cout<<"T_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					//cout<<"T_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				}
 			}
 		}
@@ -1204,7 +1206,7 @@ void simAnealOrbFuncObj::simulator()
 				ALLpassed=false;
 				ALLpassedStr = "false";
 			}
-			//cout<<"period_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"period_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		}
 		if (SSO.inclination_degMAX!=0)
 		{
@@ -1214,7 +1216,7 @@ void simAnealOrbFuncObj::simulator()
 				ALLpassed=false;
 				ALLpassedStr = "false";
 			}
-			//cout<<"inclination_deg_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"inclination_deg_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		}
 		if (SSO.argPeri_degMAX!=0)
 		{
@@ -1223,7 +1225,7 @@ void simAnealOrbFuncObj::simulator()
 				ParamThatFailed = "argPeri_deg";
 				ALLpassed=false;
 				ALLpassedStr = "false";
-				//cout<<"argPeri_deg_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"argPeri_deg_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			}
 		}
 		if (SSO.a_totalMAX!=0)
@@ -1233,10 +1235,10 @@ void simAnealOrbFuncObj::simulator()
 				ParamThatFailed = "a_total";
 				ALLpassed=false;
 				ALLpassedStr = "false";
-				//cout<<"a_total_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"a_total_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			}
 		}
-		//cout<<"finished checking argPeri_deg_proposed"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//cout<<"finished checking argPeri_deg_proposed"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		if (SSO.DIonly==false)
 		{
 			if (vary_K)
@@ -1247,7 +1249,7 @@ void simAnealOrbFuncObj::simulator()
 					ALLpassed=false;
 					ALLpassedStr = "false";
 				}
-				//cout<<"K_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"K_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			}
 
 			for (int dataset=0; dataset<RVoffsets_latest.size();++dataset)
@@ -1263,10 +1265,10 @@ void simAnealOrbFuncObj::simulator()
 							ss<<"dataset = " <<dataset<<", RVoffsets_proposed[dataset] = "<<RVoffsets_proposed[dataset] <<", RVoffsetMIN = "<<SSO.RVoffsetMINs[dataset]<<", MAX = "<< SSO.RVoffsetMAXs[dataset]<<endl;
 					}
 				}
-				//cout<<"RVoffsets_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"RVoffsets_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			}
 		}
-		//cout<<"Finsihed checking all params if in range, resulting in ALLpassed = "<<ALLpassedStr<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//cout<<"Finsihed checking all params if in range, resulting in ALLpassed = "<<ALLpassedStr<<endl;//$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$
 		// **** Done checking 'proposed' versions of all params being varied this round ****
 
 
@@ -1283,7 +1285,7 @@ void simAnealOrbFuncObj::simulator()
 		//*****************************************************************************
 		if(ALLpassed)
 		{
-			//cout<<"ALLpassed = True"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"ALLpassed = True"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if (e_proposed<0)
 				cout<<"e<0!!!!!!!!!!!!!!!!!, ALLpassed = "<< ALLpassedStr<<", paramBeingVaried = "<<paramBeingVaried <<endl;
 
@@ -1308,7 +1310,7 @@ void simAnealOrbFuncObj::simulator()
 
 			if ( SSO.silent==false )
 				cout<<"ALL DI random numbers loaded"<<endl;
-			//cout<<"ALL DI random numbers loaded"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"ALL DI random numbers loaded"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 			if ( (SSO.silent==false)||(timesNONEpassed>100) )
 			{
@@ -1338,51 +1340,51 @@ void simAnealOrbFuncObj::simulator()
 			multiEpochOrbCalcReturnType MEOCRT;
 			if (SSO.RVonly==false)
 			{
-				//SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-				//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//SSO.silent=false;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
+				//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$
 				// #### DO STUFF FOR DI ORBIT CALCNS #####
 				if ( SSO.silent==false )
 					cout<<"Calculating DI orbit for this round "<<endl;
 
 				// Call the orbCalc to have it apply the model to the inputs and produce outputs
 				MEOCRT = DIt.multiEpochOrbCalc();
-				//cout<<"line # 1297"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"line # 1297"<<endl; //$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				a_total_curr = MEOCRT.a_total;
-				//cout<<"line # 1300"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"line # 1300"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 				// Calculate the chiSquared from the returned chiSquared
 				DI_chiSquared = MEOCRT.chi_squared_total;
-				//cout<<"line # 1304"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"line # 1304"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				if (one_over_nu_DI==1)
 				{
 					numDIepochs = DIdo.numEpochs_DI;
 					one_over_nu_DI = (1.0/((2.0*numDIepochs)-numDIparams));
 				}
-				//SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//SSO.silent=false;//$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$
 				if ( SSO.silent==false )
 				{
-					cout<<"line # 1314"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					cout<<"line # 1314"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 					cout<<"DI_chiSquared = "<<DI_chiSquared<<endl;
 					cout<<"one_over_nu_DI = "<<one_over_nu_DI<<endl;
 					cout<<"DI_chiSquared_reduced = "<<DI_chiSquared*one_over_nu_DI<<endl;
 				}
-				//SSO.silent=true;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//SSO.silent=true;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
 				// update lowest DI reduced chiSquared if current one is lower
 //				if ( DI_chiSquared<chiSquaredMin_DI )
 //					chiSquaredMin_DI = DI_chiSquared;
 			}
 			else
 			{
-				//cout<<"In DI else block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"In DI else block"<<endl;//$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$
 				//chiSquaredMin_DI = 0;
 				//numDIepochs=0;
 			}
-			//cout<<"line # 1331"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"line # 1331"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if (SSO.DIonly==false)
 			{
 				RV_chiSquared = 0;
 
-				//cout<<"In RV block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"In RV block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$
 				if ( SSO.silent==false )
 					cout<<"Calculating RV residuals for this round"<<endl;
 				// ##### DO STUFF FOR RV CALCNS ######
@@ -1450,8 +1452,8 @@ void simAnealOrbFuncObj::simulator()
 						VRCsp = GT.VRcalcStarPlanetLoadUp(RVdo);
 
 					//K_p_errorPercent = VRCsp.K_p_error/VRCsp.K_p;
-					//cout<<"Back from VRcalcStarPlanetLoadUp"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$
-					//cout<<"there were "<<RVdo.epochs_RV.size()<<" datasets found in the RVdata file"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$
+					//cout<<"Back from VRcalcStarPlanetLoadUp"<<endl;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$
+					//cout<<"there were "<<RVdo.epochs_RV.size()<<" datasets found in the RVdata file"<<endl;//$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
 					VRCsp.verbose = false;
 					// run through all RV data sets and calc RVs for it
 					for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
@@ -1461,7 +1463,7 @@ void simAnealOrbFuncObj::simulator()
 							cout<<"Calculating P-S RVs for dataset "<<(dataset+1)<<"/"<<int(RVdo.epochs_RV.size())<<endl;
 						VRCsp.epochs_p = RVdo.epochs_RV[dataset];
 						vector<double> VRp_vector;
-						//cout<<"about to call multiEpochCalc for dataset "<<dataset<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+						//cout<<"about to call multiEpochCalc for dataset "<<dataset<<endl;//$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$
 						VRp_vector = VRCsp.multiEpochCalc();
 						VRp_vector2.push_back(VRp_vector);
 					}
@@ -1539,12 +1541,12 @@ void simAnealOrbFuncObj::simulator()
 						if (RVdo.planet_P!=0)
 						{
 							planetVR = VRp_vector2[dataset][epoch];
-							//cout<<"planetVR for epoch "<<epoch <<" is "<<planetVR <<endl;//$$$$$$$$$$$$$$$$
+							//cout<<"planetVR for epoch "<<epoch <<" is "<<planetVR <<endl;//$$$$$$$$$ DEBUGGING $$$$$$$$$$
 						}
 						if (RVdo.star_P!=0)
 						{
 							companionStarVR = VRs_vector2[dataset][epoch];
-							//cout<<"companionStarVR for epoch "<<epoch <<" is "<<companionStarVR <<endl;//$$$$$$$$$$$$$$$$
+							//cout<<"companionStarVR for epoch "<<epoch <<" is "<<companionStarVR <<endl;//$$$$$$$$$$ DEBUGGING $$$$$$$$$
 						}
 
 						//double updatedRV_inv_var = RVdo.RV_inv_var[dataset][epoch];
@@ -1592,7 +1594,7 @@ void simAnealOrbFuncObj::simulator()
 				RVoffsets_latest.push_back(0);
 				//chiSquaredMin_RV=0;
 			}
-			//cout<<"line # 1539"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"line # 1539"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$
 
 			// ****  Done all DI and RV calculations so put it all together ********
 			// ****  and see if this proposed orbit will be accepted        ********
@@ -1601,8 +1603,9 @@ void simAnealOrbFuncObj::simulator()
 			TOTAL_chiSquared  = DI_chiSquared+RV_chiSquared;
 			if (one_over_nu_TOTAL==1)
 				one_over_nu_TOTAL = 1.0/(2.0*numDIepochs+1.0*numRVepochs-numParams);
+			TOTAL_chiSquared_reduced = TOTAL_chiSquared*one_over_nu_TOTAL;
 
-			//SSO.silent=false;//$$$$$$$$$$$$$$$$$$
+			//SSO.silent=false;//$$$$$$$$$$ DEBUGGING $$$$$$$$$$$
 			if ( SSO.silent==false )
 			{
 				cout<<"\nDI_chiSquared = "<<DI_chiSquared <<endl;
@@ -1614,14 +1617,13 @@ void simAnealOrbFuncObj::simulator()
 				cout<<"one_over_nu_TOTAL = "<< one_over_nu_TOTAL <<endl;
 				cout<<"TOTAL_chiSquared_reduced = "<< one_over_nu_TOTAL*TOTAL_chiSquared  <<endl;
 			}
-			//SSO.silent=true;//$$$$$$$$$$$$$$
+			//SSO.silent=true;//$$$$$$$$ DEBUGGING $$$$$$$$$
 
 			//
 			// Determine if the orbit should be accepted
 			//
 
 			//Calculate priors ratio
-			//e_prior = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if (((period_latest*365.242)<1000.0)||(SSO.eMAX==0))
 				e_prior = 1.0;
 			else
@@ -1630,7 +1632,6 @@ void simAnealOrbFuncObj::simulator()
 				inc_prior = sin(DIt.inclination_deg*(PI/180.0))/sin(inclination_deg_latest*(PI/180.0));
 			else
 				inc_prior = 1.0;
-			//P_prior = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if (false)//((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
 				P_prior = DIt.period/period_latest;
 			else
@@ -1642,11 +1643,12 @@ void simAnealOrbFuncObj::simulator()
 			alpha = RanGen.UniformRandom(0.0, 1.0);
 			//alpha=0.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-			if (false)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			if (false)//$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			{
 				cout<<"&&&&&&&&&&&&&&&&&& BEFORE ALFA<RHS  CHECK &&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
 				cout<< "chiSquare_latest = "<<chiSquare_latest <<endl;
 				cout<< "TOTAL_chiSquared = "<<TOTAL_chiSquared  <<endl;
+				cout<<" TOTAL_chiSquared_reduced = "<<TOTAL_chiSquared_reduced<<endl;
 				cout<< "temp = "<< temp<<endl;
 				cout<<"P_prior = "<<P_prior <<endl;
 				cout<<"e_prior = "<<e_prior <<endl;
@@ -1669,8 +1671,10 @@ void simAnealOrbFuncObj::simulator()
 				if (false)
 				{
 					cout<<"&&&&&&&&&&&&&&&&&& VALUES PASSED ALPHA<RHS CHECK &&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
+					cout<<"sample = "<<sample<<endl;
 					cout<< "chiSquare_latest = "<<chiSquare_latest <<endl;
 					cout<< "TOTAL_chiSquared = "<<TOTAL_chiSquared  <<endl;
+					cout<<" TOTAL_chiSquared_reduced = "<<TOTAL_chiSquared_reduced<<endl;
 					cout<< "temp = "<< temp<<endl;
 					cout<<"P_prior = "<<P_prior <<endl;
 					cout<<"e_prior = "<<e_prior <<endl;
@@ -1803,7 +1807,7 @@ void simAnealOrbFuncObj::simulator()
 					cout<<"acceptedIntsRecentlyAry.size() = "<<acceptedIntsRecentlyAry.size() <<endl;
 				}
 			}
-			if (false)//$$$$$$$$$$$$$$$$$$$$$$$$
+			if (false)//$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$
 				cout<<"No params passed for sample number "<<sample<<endl;
 		}
 
@@ -1815,6 +1819,11 @@ void simAnealOrbFuncObj::simulator()
 		if (false)
 			cout<<"\n randInt = "<<randInt<<"-> paramBeingVaried = "<<paramBeingVaried<<endl;
 
+		//***********************************************************
+		// Finished Simulated Annealing, time to switch to MCMC.
+		// This means fixing the temp=1 and allowing the sigma values
+		// to vary and be tunned.
+		//***********************************************************
 		if (sample>=switchToMCMCsample)
 		{
 			//time to update sigma and acceptance rate?
@@ -1844,7 +1853,7 @@ void simAnealOrbFuncObj::simulator()
 					// calculate latest acceptance ratio for param
 					latestAcceptRate = totalAccepted/totalVaried;
 
-					if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 						ss<<"For paramInt "<<paramInt<<", (totalAccepted) "<< totalAccepted<<"/"<< totalVaried<< " (totalVaried) = latestAcceptRate = "<< latestAcceptRate<<endl;
 
 					// ******* Determine which param's sigma to vary *************************
@@ -1886,14 +1895,14 @@ void simAnealOrbFuncObj::simulator()
 					{
 						if (sigmaPercent_latest<sigmaPercent_max)
 							sigmaPercent_latest = sigmaPercent_latest+sigmaPercent_min;
-						if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+						if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 							ss<<"latest acceptance was "<<latestAcceptRate <<" which is >"<<upperLimit<<", so sigmaPercent_latest raised to "<< sigmaPercent_latest<<" for parameter # "<<paramInt<<endl;
 					}
 					else if (latestAcceptRate<lowerLimit)
 					{
 						if (sigmaPercent_latest>=(sigmaPercent_min*2.0))
 							sigmaPercent_latest = sigmaPercent_latest-sigmaPercent_min;
-						if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+						if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 							ss<<"latest acceptance was "<<latestAcceptRate <<" which is <"<<lowerLimit<<", so sigmaPercent_latest lowered to "<< sigmaPercent_latest<<" for parameter # "<<paramInt<<endl;
 					}
 
@@ -1971,7 +1980,7 @@ void simAnealOrbFuncObj::simulator()
 	}
 
 	// final print to let us know it was able to get to end of file
-	cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;//$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$
 	cout<<"Leaving SimAnnealOrbSimFunc\n\n"<<endl;
 
 	//move all log prints to log string

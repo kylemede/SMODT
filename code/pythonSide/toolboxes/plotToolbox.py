@@ -1313,7 +1313,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(815)
             paramColNum = 5
             xlabel = 'Inclination [deg]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
             ##################$$$$$$$$$$$$$ This extra garbage collection might not be needed but I want it for now as a code EX. ######
             #del inclination_degsAlls
             #gc.collect()
@@ -1325,7 +1325,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(811)
             paramColNum = 0
             xlabel = 'Longitude of Ascending Node [deg]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
             #longANMedian = np.median(longAN_degsAlls)
             s= "done plotting longAN_degsAlls"
             print s
@@ -1349,7 +1349,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(513)
             paramColNum = 9
             xlabel = 'K [m/s]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
             #periodMedian = np.median(periodsAlls)
             s= "done plotting Ks"
             print s
@@ -1360,7 +1360,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(814)
             paramColNum = 4
             xlabel = 'Period [Years]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
             #periodMedian = np.median(periodsAlls)
             s= "done plotting periodsAlls"
             print s
@@ -1371,7 +1371,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(817)
             paramColNum = 7
             xlabel = 'Semi-Majors [AU]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
             #periodMedian = np.median(periodsAlls)
             s= "done plotting semi-majors"
             print s
@@ -1391,7 +1391,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             else:
                 paramColNum = 2
                 xlabel = 'Time of Last Periapsis [JD]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
             #TMedian = np.median(TsAlls)
             s= "done plotting TsAlls"
             print s
@@ -1404,7 +1404,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(515)
         paramColNum = 8
         xlabel = 'ChiSquareds'
-        (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+        (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,ignoreConstParam=True)
         #(CLevels,data) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False)
         #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
         yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))
@@ -1440,7 +1440,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig3.add_subplot(211)
             paramColNum = 8
             xlabel = 'ChiSquareds'
-            (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+            (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,ignoreConstParam=True)
             #(CLevels,data) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False)
             #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
             yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))
@@ -1513,7 +1513,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
                         subPlot2 = fig2.add_subplot(311)
                     paramColNum = 10
                     xlabel = 'RV offset 1 [m/s]'
-                    (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+                    (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
                     s= "Done plotting RV offsets for dataset 1"
                     print s
                     log.write(s+'\n')
@@ -1526,7 +1526,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
                         subPlot2 = fig2.add_subplot(312)
                     paramColNum = 11
                     xlabel = 'RV offset 2 [m/s]'
-                    (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+                    (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
                     s= "Done plotting RV offsets for dataset 2"
                     print s
                     log.write(s+'\n')
@@ -1536,7 +1536,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
                     subPlot2 = fig2.add_subplot(313)
                     paramColNum = 12
                     xlabel = 'RV offset 3 [m/s]'
-                    (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize)
+                    (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
                     s= "Done plotting RV offsets for dataset 3"
                     print s
                     log.write(s+'\n')
@@ -1585,10 +1585,14 @@ def summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,x
     (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True, ignoreConstParam=ignoreConstParam)
     #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
     if type(data)!=float:
-        yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))
-        max_env = yChunks.max(axis=1)
-        min_env = yChunks.min(axis=1)
-        yCenters = yChunks.mean(axis=1)
+        if len(data)>0:
+            yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))
+            max_env = yChunks.max(axis=1)
+            min_env = yChunks.min(axis=1)
+            yCenters = yChunks.mean(axis=1)
+        else:
+            yChunks = np.array([dataValueStart]*len(xCenters))
+            yCenters = yChunks
 #         if paramColNum==0:
 #             log.write("len data = "+str(data.size))
 #             log.write("\n\nData Vals:  \n")

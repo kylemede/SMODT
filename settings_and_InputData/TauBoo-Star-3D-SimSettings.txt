@@ -3,11 +3,11 @@
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax = 2000
 # The number of samples orbital parameters to try/draw [int] for MAIN stage of simulation
-numSamples = 10000000
+numSamples = 100000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 20
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing = true
+useMultiProcessing = false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent = true		
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -25,13 +25,13 @@ outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #****************************************************************************************************************
 #****************************************************************************************************************
-outputData_filenameRoot = postK3testing-DIonly-MCMC-aNotZero #MCMC-TauBoo-STAR-3D-ButlerAndDonati-1040to1090P-flatPprior-150to190Omegas-25to50incs-200to360omegas-phaseInBrackets-argPeriPlus180_OFF-46
+outputData_filenameRoot = postK3testing-RVonly-MCMC-aNotZero #MCMC-TauBoo-STAR-3D-ButlerAndDonati-1040to1090P-flatPprior-150to190Omegas-25to50incs-200to360omegas-phaseInBrackets-argPeriPlus180_OFF-46
 #****************************************************************************************************************
 #****************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-RVonly = false
+RVonly = true
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-DIonly = true
+DIonly = false
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used!! NOTE: MConly doesn't work right now!!!!!
 mcONLY = false
 # Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
@@ -61,7 +61,7 @@ CalcBurnIn =False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths =false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 10000000
+numSamples_SimAnneal = 1000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots = true
 # Calculate the Gelman-Rubin statistic? [bool]

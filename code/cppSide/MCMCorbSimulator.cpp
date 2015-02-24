@@ -480,6 +480,9 @@ int main(int argc ,char *argv[])
 		// Get all best orbit values
 		ss << "\nMCMC: $$$$$$$$$$$$$$$ MCMC SIMULATOR COMPLETE $$$$$$$$$$$$$$$"<<endl;
 		ss<< totalAccepted2 <<" orbits were accepted during simulation"<<endl;
+		ss<< "timesBeenHereTotal = "<<MCMCOFO.timesBeenHereTotal<<endl;
+		int sum2 = GT.sumIntCalc(MCMCOFO.ODT.timesBeenHeres,MCMCOFO.ODT.timesBeenHeres.size());
+		ss<< "timesBeenHeres total = "<<sum2<<endl;
 		ss<< "\nBest orbit found at step "<<MCMCOFO.bestOrbit<<" :"<<endl;
 		ss<<"chiSquareMin_reduced = "<<MCMCOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<endl;
 		ss<< "chiSquaredMin = "<< MCMCOFO.chiSquaredMin <<endl;

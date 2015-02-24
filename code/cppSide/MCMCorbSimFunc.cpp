@@ -40,6 +40,7 @@ void MCMCorbFuncObj::simulator()
 	double latestAcceptRate = 0;
 	int timesNONEpassed = 0;
 	int timesBeenHere = 1;
+	timesBeenHereTotal = 0;
 	int paramBeingVaried = 2;
 	bool latestParamsSaved;
 	//double K_p_errorPercent = 0;
@@ -224,7 +225,7 @@ void MCMCorbFuncObj::simulator()
 			printLine = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			cout<<"\n#######################################################################################"<<endl;
+			cout<<"\n#################################### MCMC #############################################"<<endl;
 			cout<<printLine;
 			if (true)
 				cout<<acceptString;
@@ -438,7 +439,9 @@ void MCMCorbFuncObj::simulator()
 		}
 		// **** Done producing 'proposed' versions of all params being varied this round ****
 
-		// ****** Check all are good   *********
+		//*****************************************************************************
+		// ***** Check all proposed values are good  *******
+		//*****************************************************************************
 		if ((SSO.longAN_degMAX!=0)&&(SSO.RVonly==false))
 		{
 			if ((longAN_deg_proposed>SSO.longAN_degMAX)||(longAN_deg_proposed<SSO.longAN_degMIN))
@@ -521,7 +524,7 @@ void MCMCorbFuncObj::simulator()
 			if (SSO.simulate_StarStar==true)
 				DIt.Mass2 =  star_Mass2_proposed;
 			else
-				DIt.Mass2 = planet_MsinI_proposed ;
+				DIt.Mass2 = planet_MsinI_proposed;
 
 			if ( SSO.silent==false )
 				cout<<"ALL random numbers loaded"<<endl;
@@ -552,7 +555,6 @@ void MCMCorbFuncObj::simulator()
 				if ( SSO.silent==false )
 					cout<<"Calculating DI orbit for this round "<<endl;
 
-
 				// Call the orbCalc to have it apply the model to the inputs and produce outputs
 				//DIt.verbose=SSO.verbose;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				MEOCRT = DIt.multiEpochOrbCalc();
@@ -563,7 +565,6 @@ void MCMCorbFuncObj::simulator()
 				// Calculate the reduced chiSquared from the returned chiSquared
 				DI_chiSquared = MEOCRT.chi_squared_total;
 
-
 				// update lowest DI reduced chiSquared if current one is lower
 //				if ( DI_chiSquared<chiSquaredMin_DI )
 //					chiSquaredMin_DI = DI_chiSquared;
@@ -573,7 +574,6 @@ void MCMCorbFuncObj::simulator()
 				//cout<<"In DI else block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				//chiSquaredMin_DI = 0;
 			}
-
 			if (SSO.DIonly==false)
 			{
 				//cout<<"In RV block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -603,7 +603,7 @@ void MCMCorbFuncObj::simulator()
 						RVdo.planet_K = K_proposed;
 					RVdo.planet_argPeri = argPeri_deg_proposed ;
 					RVdo.planet_inc = DIt.inclination_deg ;
-					RVdo.planet_MsinI = planet_MsinI_proposed ;
+					RVdo.planet_MsinI = DIt.Mass2 ;
 				}
 				if (SSO.simulate_StarStar==true)
 				{
@@ -616,7 +616,7 @@ void MCMCorbFuncObj::simulator()
 					//RVdo.star_Mass2 = DIt.Mass2 ;
 					RVdo.star_argPeri = argPeri_deg_proposed ;
 					RVdo.star_inc = DIt.inclination_deg ;
-					RVdo.star_Mass2 =  star_Mass2_proposed;
+					RVdo.star_Mass2 =  DIt.Mass2;
 				}
 				// get residual velocities for companion planet if needed
 				if (RVdo.planet_P!=0 )
@@ -777,7 +777,6 @@ void MCMCorbFuncObj::simulator()
 				//chiSquaredMin_RV=0;
 			}
 
-
 			// Do TOTAL chiSquared value calcs
 			TOTAL_chiSquared  = DI_chiSquared+RV_chiSquared;
 
@@ -818,6 +817,7 @@ void MCMCorbFuncObj::simulator()
 					cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
 					cout<< "chiSquare_latest = "<<chiSquare_latest <<endl;
 					cout<< "TOTAL_chiSquared = "<<TOTAL_chiSquared <<endl;
+					cout<<" TOTAL_chiSquared_reduced = "<<TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
 					cout<<"priors_ratio = "<<priors_ratio <<endl;
 					cout<<"e_prior = "<<e_prior <<endl;
 					cout<<"inc_prior = "<< inc_prior<<endl;
@@ -866,6 +866,7 @@ void MCMCorbFuncObj::simulator()
 				ODT.Ks.push_back(K_proposed);
 				ODT.RVoffsets.push_back(RVoffsets_proposed);
 				ODT.timesBeenHeres.push_back(timesBeenHere);
+				timesBeenHereTotal+=timesBeenHere;
 				//reset timesBeenHere counter
 				timesBeenHere = 1;
 				//Replace 'latest' values
@@ -1011,6 +1012,7 @@ void MCMCorbFuncObj::simulator()
 			ODT.Ks.push_back(K_latest);
 			ODT.RVoffsets.push_back(RVoffsets_latest);
 			ODT.timesBeenHeres.push_back(timesBeenHere-1);
+			timesBeenHereTotal+=timesBeenHere-1;
 		}
 	}
 

@@ -25,7 +25,7 @@ void simAnealOrbFuncObj::simulator()
 
 	generalTools GT;
 
-	//cout<<"\n$$$$$ inside simAnealfunc $$$$\n"<<endl;//$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$
+	cout<<"\n$$$$$ inside simAnealfunc $$$$\n"<<endl;//$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$
 	// ** overall tuning params **
 	double sigmaPercent_min = sigmaPercent;
 	double minTemp = 0.1;
@@ -367,7 +367,7 @@ void simAnealOrbFuncObj::simulator()
 
 	numParams = paramsToVaryIntsAry.size();
 
-	double inc_sigmaPercent_latest = 15;//sigmaPercent_min;
+	double inc_sigmaPercent_latest = 10;//sigmaPercent_min;
 	double longAN_sigmaPercent_latest = 1.0;//sigmaPercent_min;
 	double argPeri_sigmaPercent_latest = 0.4;//1.0;
 	double e_sigmaPercent_latest = 1.6;//2.0;
@@ -480,13 +480,8 @@ void simAnealOrbFuncObj::simulator()
 	double a_total_proposed = a_total_latest;
 	double Sys_Dist_PC_proposed = SYSdo.Sys_Dist_PC;
 	double Mass1_proposed = SYSdo.Mass1;
-	double Mass2_proposed = 0;
 	double planet_MsinI_proposed = SYSdo.planet_MsinI;
 	double star_Mass2_proposed = SYSdo.star_Mass2;
-	//if (SSO.simulate_StarPlanet==false)
-	//	Mass2_proposed = star_Mass2_proposed;
-	//else
-	//	Mass2_proposed = planet_MsinI_proposed;
 	double sqrtESinomega_proposed = sqrtESinomega_latest;
 	double sqrtECosomega_proposed = sqrtECosomega_latest;
 
@@ -662,7 +657,7 @@ void simAnealOrbFuncObj::simulator()
 			int len=ODT.es.size();
 			// print number of samples accepted so far and current time
 			string printLine;
-			ss<<"\n#######################################################################################"<<endl;
+			ss<<"\n############################### Simulated Annealing ######################################"<<endl;
 			ss << int(acceptedCounter)<<"/"<<sample<<" Successful, "<<len<<" saved. "<<printsDone<<"/"<<SSO.numSamplePrints<<" completed at ";
 			ss << asctime (timeinfo);
 			ss <<"Finished "<< tempStepNumber<<"/"<< numTempSteps<< " temp steps, Current Temp = "<<temp<<", sigmaPercent_min = "<<sigmaPercent_min<<endl;
@@ -720,7 +715,6 @@ void simAnealOrbFuncObj::simulator()
 				ss<<"Mass1_proposed = "<<Mass1_proposed <<", peak value is = "<< SYSdo.Mass1<<endl;
 				ss<<"planet_MsinI_proposed = "<< planet_MsinI_proposed<<", peak value is = "<<SYSdo.planet_MsinI <<endl;
 				ss<<"star_Mass2_proposed = "<<star_Mass2_proposed <<", peak value is = "<< SYSdo.star_Mass2<<endl;
-				//ss<<"Mass2_proposed = "<<Mass2_proposed<<endl;
 			}
 			if (false)
 			{
@@ -730,6 +724,7 @@ void simAnealOrbFuncObj::simulator()
 				ss<<"argPeri_deg_proposed = "<< argPeri_deg_proposed<<endl;
 				ss<<"e_proposed = "<< e_proposed<<endl;
 				ss<<"period_proposed = "<< period_proposed<<endl;
+				ss << "a_total_latest = "<< a_total_latest<<endl;
 				ss<<"T_proposed = "<<T_proposed <<endl;
 				ss<<"Tc_proposed = "<<Tc_proposed <<endl;
 				ss<<"K_proposed = "<<K_proposed <<endl;
@@ -753,6 +748,7 @@ void simAnealOrbFuncObj::simulator()
 				ss<<"argPeri_deg_latest = "<< argPeri_deg_latest<<endl;
 				ss<<"e_latest = "<< e_latest<<endl;
 				ss<<"period_latest = "<< period_latest<<endl;
+				ss << "a_total_latest = "<< a_total_latest<<endl;
 				ss<<"T_latest =  "<<T_latest <<endl;
 				ss<<"Tc_latest = "<<Tc_latest <<endl;
 				ss<<"K_latest = "<<K_latest <<endl;
@@ -826,10 +822,6 @@ void simAnealOrbFuncObj::simulator()
 		Mass1_proposed = SYSdo.Mass1;
 		//planet_MsinI_proposed = SYSdo.planet_MsinI;
 		//star_Mass2_proposed = SYSdo.star_Mass2;
-		//if (SSO.simulate_StarPlanet==false)
-		//	Mass2_proposed = star_Mass2_proposed;
-		//else
-		//	Mass2_proposed = planet_MsinI_proposed;
 		sqrtESinomega_proposed = sqrtESinomega_latest;
 		sqrtECosomega_proposed = sqrtECosomega_latest;
 
@@ -1616,7 +1608,7 @@ void simAnealOrbFuncObj::simulator()
 				cout<<"numParams = "<< numParams<<endl;
 				cout<<"TOTAL_chiSquared  = "<< TOTAL_chiSquared  <<endl;
 				cout<<"one_over_nu_TOTAL = "<< one_over_nu_TOTAL <<endl;
-				cout<<"TOTAL_chiSquared_reduced = "<< one_over_nu_TOTAL*TOTAL_chiSquared  <<endl;
+				cout<<"TOTAL_chiSquared_reduced = "<<  TOTAL_chiSquared_reduced<<endl;
 			}
 			//SSO.silent=true;//$$$$$$$$ DEBUGGING $$$$$$$$$
 
@@ -1687,7 +1679,6 @@ void simAnealOrbFuncObj::simulator()
 					cout<<"accepted = "<<accepted<<endl;
 					cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
 				}
-
 
 				acceptedCounter +=1;
 				chiSquare_latest = TOTAL_chiSquared ;

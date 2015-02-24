@@ -994,10 +994,6 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
     if verboseInternal:
         print "Starting to find TotalSamples value"
     for i,line in enumerate(fp):
-        if i==0:
-            print "i = 0"
-        elif i==1:
-            print "i = 1"
         if i>1:
             try:
                 if line[0].isdigit():

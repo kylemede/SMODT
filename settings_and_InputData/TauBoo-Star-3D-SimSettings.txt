@@ -3,7 +3,7 @@
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax = 2000
 # The number of samples orbital parameters to try/draw [int] for MAIN stage of simulation
-numSamples = 20000000
+numSamples = 2000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 20
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
@@ -61,9 +61,9 @@ CalcBurnIn =False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths =false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 10000000
+numSamples_SimAnneal = 1000000
 # Make plots of MCMC progress plots? [bool]
-makeMCMCprogPlots = true
+makeMCMCprogPlots = false
 # Calculate the Gelman-Rubin statistic? [bool]
 CalcGelmanRubin = false
 # How many times do you want the Gelman-Rubin statistic calculated [int]
@@ -81,9 +81,9 @@ simulate_StarPlanet = false
 
 # Ranges for acceptable random number inputs ######
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]#130
-longAN_degMIN = 150
+longAN_degMIN = 180
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]#210
-longAN_degMAX = 250
+longAN_degMAX = 360
 # Minimum allowed value for the Eccentricity [double]# 0.79
 eMIN = 0.7
 # Maximum allowed value for the Eccentricity　[double]#0.875
@@ -101,7 +101,7 @@ inclination_degMIN = 1
 # Maximum allowed value for the Inclination [double][deg]#88.5
 inclination_degMAX = 70
 # Minimum allowed value for the Argument of Perigee [double][deg]#250
-argPeri_degMIN = 280
+argPeri_degMIN = 1
 # Maximum allowed value for the Argument of Perigee [double][deg]
 argPeri_degMAX = 360
 # Minimuim value for the Time of Last Periapsis (or Time of Center Transit) [JD]#2454437.0

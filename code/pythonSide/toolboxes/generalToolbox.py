@@ -1047,14 +1047,20 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
             print "Values for parameter found to be constant!!"
         doesntVary = False
         
-    if ((doesntVary==False)or(ignoreConstParam==True)):#or(fast==False):  
+    if ((doesntVary==True)and(ignoreConstParam==False)):
+        if returnData:
+            dataAry = [dataValueStart]*TotalSamples
+        if returnChiSquareds:
+            chiSquareds = [0]*TotalSamples
+    elif ((doesntVary==False)or(ignoreConstParam==True)):#or(fast==False):  
         s=''
         fp = open(filename,'r')
         #Old string parsing directly version UPDATED
         startTime2 = timeit.default_timer()
         totalAccepted = 0
         dataAry = [None]*TotalSamples
-        chiSquareds = [None]*TotalSamples
+        if returnChiSquareds:
+            chiSquareds = [None]*TotalSamples
         j = 0
         lineNum=0
         numNoDataLines=0

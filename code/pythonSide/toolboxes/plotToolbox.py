@@ -1313,7 +1313,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(815)
             paramColNum = 5
             xlabel = 'Inclination [deg]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             ##################$$$$$$$$$$$$$ This extra garbage collection might not be needed but I want it for now as a code EX. ######
             #del inclination_degsAlls
             #gc.collect()
@@ -1325,7 +1325,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(811)
             paramColNum = 0
             xlabel = 'Longitude of Ascending Node [deg]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             #longANMedian = np.median(longAN_degsAlls)
             s= "done plotting longAN_degsAlls"
             print s
@@ -1338,7 +1338,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(511)
         paramColNum = 1
         xlabel = 'e'
-        (log,subPlot2,data,beste)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+        (log,subPlot2,data,beste)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
         #eMedian = np.median(esAlls)
         s= "done plotting esAlls"
         print s
@@ -1349,7 +1349,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(513)
             paramColNum = 9
             xlabel = 'K [m/s]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             #periodMedian = np.median(periodsAlls)
             s= "done plotting Ks"
             print s
@@ -1360,7 +1360,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(814)
             paramColNum = 4
             xlabel = 'Period [Years]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             #periodMedian = np.median(periodsAlls)
             s= "done plotting periodsAlls"
             print s
@@ -1371,7 +1371,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(817)
             paramColNum = 7
             xlabel = 'Semi-Majors [AU]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             #periodMedian = np.median(periodsAlls)
             s= "done plotting semi-majors"
             print s
@@ -1391,7 +1391,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             else:
                 paramColNum = 2
                 xlabel = 'Time of Last Periapsis [JD]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             #TMedian = np.median(TsAlls)
             s= "done plotting TsAlls"
             print s
@@ -1404,7 +1404,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(515)
         paramColNum = 8
         xlabel = 'ChiSquareds'
-        (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,ignoreConstParam=True)
+        (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,ignoreConstParam=False)
         #(CLevels,data) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False)
         #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
         yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))
@@ -1558,9 +1558,14 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
                 plt.close()
             except:
                 plt.close()
-                s= '\nNo RV offsets to plot' 
+                s= '\n!!! A problem occured while trying to make RV offsets to plot !!!\n' 
                 print s
                 log.write(s+'\n')     
+        else:
+            s= '\nNo RV offsets to plot' 
+            print s
+            log.write(s+'\n') 
+            
         # record the time the chain finished and print
         endTime = timeit.default_timer()
         totalTime = (endTime-startTime) # in seconds
@@ -1581,8 +1586,9 @@ def summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,x
     """
     works for summaryPlotter2MCMC to do the plot for each param and reduce code doubling
     """
+    verboseInternal = False
     #(CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=True,)
-    (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True, ignoreConstParam=ignoreConstParam)
+    (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True, ignoreConstParam=ignoreConstParam)
     #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
     if type(data)!=float:
         if len(data)>0:
@@ -1602,11 +1608,12 @@ def summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,x
 #             for line in range(0,yCenters.size):
 #                 log.write(str(yCenters[line])+'\n')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #             log.write("\n\n")
-        print "\n xLabel = "+xlabel#$$$$$$$$$$$$$$$$$$$$
-        print "len(xCenters) = "+str(len(xCenters))#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        print "len(yChunks) = "+str(len(yChunks))#$$$$$$$$$$$$$$$$$$$$$$
-        #print "min_env = "+str(min_env)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #print "max_env = "+str(max_env)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        if verboseInternal:
+            print "\n xLabel = "+xlabel#$$$$$$$$$$$$$$$$$$$$
+            print "len(xCenters) = "+str(len(xCenters))#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            print "len(yChunks) = "+str(len(yChunks))#$$$$$$$$$$$$$$$$$$$$$$
+            print "min_env = "+str(min_env)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            print "max_env = "+str(max_env)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         subPlot2.fill_between(xCenters, min_env, max_env, color='gray',edgecolor='none', alpha=0.5)
         subPlot2.plot(xCenters, yCenters)
         subPlot2.plot([xCenters.min(),xCenters.max()],[bestDataVal,bestDataVal],color='green')

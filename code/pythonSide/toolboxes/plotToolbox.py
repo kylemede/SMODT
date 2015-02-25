@@ -1072,7 +1072,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             log.write(s+'\n')
         plt.close()
         
-        if (numRVdatasets>0)and(False):
+        if (numRVdatasets>0)and(True):
             ## Create a second figure of RV offsets. ####
             try:
                 # Create empty figure to be filled up with plots
@@ -1488,6 +1488,9 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         ## Create a second figure of RV offsets. ####
         if numRVdatasets>0:
             try:
+                s = "\nTrying to produce posterior histograms of the RV offsets"
+                print s
+                log.write(s+'\n')
                 # Create empty figure to be filled up with plots
                 # Create sub plot and fill it up for the Semi-major
                 if numRVdatasets==1:
@@ -2735,7 +2738,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         s = '\n'+'*'*50+'\nPlanet Radial Velocities:\n'
         for orb in range(0,len(e)):
             for dataset in range(0,len(RVsOUT)):
-                s=s+'\nFor dataset # '+str(dataset)+':'
+                s=s+'\nFor dataset # '+str(dataset)+':\n'
                 for epoch in range(0,len(RVsOUT[dataset])): 
                     if planetVRs3[orb][dataset][epoch]!=0:
                         s = s+str(planetVRs3[orb][dataset][epoch])+'\n'
@@ -2748,7 +2751,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         s = '\n'+'*'*50+'\nStar Radial Velocities:\n'
         for orb in range(0,len(e)):
             for dataset in range(0,len(RVsOUT)):
-                s=s+'\nFor dataset # '+str(dataset)+':'
+                s=s+'\nFor dataset # '+str(dataset)+':\n'
                 for epoch in range(0,len(RVsOUT[dataset])): 
                     if starVRs3[orb][dataset][epoch]!=0:
                         s = s+str(starVRs3[orb][dataset][epoch])+'\n'

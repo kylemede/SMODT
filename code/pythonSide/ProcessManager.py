@@ -358,7 +358,7 @@ def multiProcessStarter(paramSettingsDict):
                 for filename in simAnnealDataFiles:
                     print 'Deleting file: '+os.path.basename(filename)
                     os.remove(filename)
-                print 'Deleting MCMC chain data files\n'+"-"*40
+                print '\nDeleting MCMC chain data files\n'+"-"*40
                 for filename in dataFiles:
                     print 'Deleting file: '+os.path.basename(filename)
                     os.remove(filename)

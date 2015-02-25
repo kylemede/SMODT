@@ -3,7 +3,7 @@
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax =2000
 # The number of samples orbital parameters to try/draw [int] for MAIN stage of simulation
-numSamples =200000
+numSamples =10000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =20
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
@@ -61,7 +61,7 @@ CalcBurnIn =False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths =false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal =1000000
+numSamples_SimAnneal =10000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots =false
 # Calculate the Gelman-Rubin statistic? [bool]

@@ -821,56 +821,15 @@ def orbitCalculatorSAPA(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, perio
         PA_deg_RP_model = totalAngle_RP -360.0
     else:
         PA_deg_RP_model = totalAngle_RP
-    
-    #print 'longAN_deg = ',longAN_deg
-    #print 'totalAngle_RP = ',totalAngle_RP
+
     if verbose:
         print 'Position Angle in reference plane [deg] = ',PA_deg_RP_model
-    
-#    if ang_LN_to_M2_deg>360.0:
-#        ang_LN_to_M2_deg = ang_LN_to_M2_deg-360.0
-#    
-#    tanCos = math.atan(math.tan(math.radians(ang_LN_to_M2_deg))*math.cos(inclination_rad))
-#    PA_deg_RP_model2 = math.degrees(tanCos)+longAN_deg
-#        
-#    if (ang_LN_to_M2_deg>0.0) and(ang_LN_to_M2_deg<90.0):
-#        #quadrant 1
-#        PA_deg_RP_model2_corr = PA_deg_RP_model2
-#    elif (ang_LN_to_M2_deg>90.0) and(ang_LN_to_M2_deg<180.0):
-#        #quadrant 2
-#        PA_deg_RP_model2_corr = PA_deg_RP_model2+180.0
-#    elif (ang_LN_to_M2_deg>180.0) and(ang_LN_to_M2_deg<270.0):
-#        #quadrant 3
-#        PA_deg_RP_model2_corr = PA_deg_RP_model2+180.0
-#    elif (ang_LN_to_M2_deg>270.0) and(ang_LN_to_M2_deg<360.0):
-#        #quadrant 4
-#        PA_deg_RP_model2_corr = PA_deg_RP_model2+360.0
-#        
-#    if abs(PA_deg_RP_model2_corr-PA_deg_RP_model)>0.000001:
-#        print '\norbCalc2-2153: Warning: Two differently calculated Position Angles DO NOT match!!'
-#        print '               Will continue to use only PA_deg_RP_model.'
-#        print 'PA_deg_RP_model = ',PA_deg_RP_model
-#        print 'PA_deg_RP_model2_corr = ',PA_deg_RP_model2_corr
-#        print 'PA_deg_RP_model2 = ',PA_deg_RP_model2
-#        print 'ang_LN_to_M2_deg = ',ang_LN_to_M2_deg
-#        print 'math.tan(math.radians(ang_LN_to_M2_deg)) = '+str(math.tan(math.radians(ang_LN_to_M2_deg)))
-        
+            
     ## calculate measured Separation Angle (model)
     SA_arcsec_RP_model = Sep_Dist_AU_RP/Sys_Dist_PC # PC->AU and rad->arcsec cancel
     if verbose:
         print 'Separation Angle measured (model) [arcsec] = ',SA_arcsec_RP_model
-    
-#    # calculate Separation Angle a second way (from Double Stars pg 35)
-#    squaredSines = (math.sin(math.radians(ang_LN_to_M2_deg)))**2.0*(math.sin(inclination_rad))**2.0
-#    SA_arcsec_RP_model2 = (Sep_Dist_AU_OP/Sys_Dist_PC)*(1.0-squaredSines)**(1.0/2.0)
-#    
-#    # check two differently calculated sep angles match
-#    if abs(SA_arcsec_RP_model2-SA_arcsec_RP_model)>0.000001:
-#        print '\norbCalc2-2043: Warning: Two differently calculated Separation Angles DO NOT match!!'
-#        print '               Will continue and use only SA_arcsec_RP_model.'
-#        print 'SA_arcsec_RP_model = ',SA_arcsec_RP_model
-#        print 'SA_arcsec_RP_model2 = ',SA_arcsec_RP_model2
-        
+            
     if (Mass1 is not 1) and (Mass2 is not 1) and (a_total!=False):
         # this means these two parameters are non-default values and 
         # the system must then be a binary star system, thus calculate the
@@ -879,10 +838,8 @@ def orbitCalculatorSAPA(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, perio
         
         # first find the mass ratio of system
         X = Mass2/Mass1
-        
         # find a1 from the a1=X*a2 and a_total=a1+a2
         a2 = a_total/(1.0+X)
-        
         # now use a1=X*a2 to get a2
         a1 = a2*X
         

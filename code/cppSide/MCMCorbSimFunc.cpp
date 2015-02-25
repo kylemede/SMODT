@@ -96,7 +96,9 @@ void MCMCorbFuncObj::simulator()
 	double Kp_calculated=0;
 	double Ks_calculated=0;
 
+	//*****************************************************************************
 	// set up starting values for input params
+	//*****************************************************************************
 	double inclination_deg_latest = start_inc_deg;
 	double longAN_deg_latest = start_longAN;
 	double argPeri_deg_latest = start_argPeri;
@@ -108,16 +110,6 @@ void MCMCorbFuncObj::simulator()
 	double Tc_latest = start_Tc;
 	double sqrtESinomega_latest = sqrt(e_latest)*sin((PI/180.0)*argPeri_deg_latest);
 	double sqrtECosomega_latest = sqrt(e_latest)*cos((PI/180.0)*argPeri_deg_latest);
-//	// calculate starting Tc from provided To
-//	eccArgPeri2ToTcType EATT;
-//	EATT.period = period_latest;
-//	EATT.argPeri_deg = argPeri_deg_latest;
-//	EATT.e = e_latest;
-//	EATT.To = T_latest;
-//	EATT.Tc=0;
-//	EATT = GT.eccArgPeri2ToTcCalc(EATT);
-//	double Tc_latest;
-//	Tc_latest = EATT.Tc;
 
 	string startParms2;
 	ss<<"***********************************************"<<endl;
@@ -150,7 +142,9 @@ void MCMCorbFuncObj::simulator()
 	cout<<startParms2;
 	SSlog<< startParms2;
 
+	//*****************************************************************************
 	// setting initially 'proposed' states equal to initial 'latest' states
+	//*****************************************************************************
 	double longAN_deg_proposed = longAN_deg_latest;
 	double e_proposed = e_latest;
 	double T_proposed = T_latest;
@@ -174,7 +168,9 @@ void MCMCorbFuncObj::simulator()
 
 	bool ALLpassed;
 
+	//*****************************************************************************
 	// ***** Start the samples loop *****
+	//*****************************************************************************
 	int sample;
 	for ( sample=1; sample<(SSO.numSamples+1); sample++)
 	{
@@ -199,6 +195,9 @@ void MCMCorbFuncObj::simulator()
 
 		// block to control printing success rate to screen
 		printCount = printCount + 1;
+		//*****************************************************************************
+		// print block
+		//*****************************************************************************
 		if ( printCount==printTime )
 		{
 			printsDone = printsDone+1;
@@ -274,7 +273,9 @@ void MCMCorbFuncObj::simulator()
 			SSlog<< printLine2;
 		}
 
-		// Generate random numbers in the required ranges for the inputs to the orbCalc
+		//*****************************************************************************
+		// Generate random numbers in the required ranges
+		//*****************************************************************************
 		ALLpassed = true;//just the starting value, set to false in proposal block if out of range
 		int dataset;
 		if (sample>1)
@@ -426,7 +427,9 @@ void MCMCorbFuncObj::simulator()
 		//K_proposed = 465.0347;
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
+		//*****************************************************************************
 		// Generate Gaussian values for the sys dist and masses
+		//*****************************************************************************
 		if (false)
 		{
 			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,0.5*SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
@@ -501,19 +504,23 @@ void MCMCorbFuncObj::simulator()
 				}
 			}
 		}
-
 		// **** Done checking 'proposed' versions of all params being varied this round ****
 
-		// if all are good, move on to calculating orbit.
+		//*****************************************************************************
+		// if all are good, move on to calculating orbit fit.
+		//*****************************************************************************
 		if(ALLpassed)
 		{
+			//*****************************************************************************
+			//Load up a Direct Imaging tool object for use with both DI and RV model inputs
+			//*****************************************************************************
 			timesNONEpassed = 0;
 			DIt.inclination_deg = inclination_deg_proposed;
 			DIt.longAN_deg = longAN_deg_proposed;
-//			if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//				DIt.argPeri_deg = argPeri_deg_proposed+180.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//			else//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			DIt.argPeri_deg = argPeri_deg_proposed;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//			if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$
+//				DIt.argPeri_deg = argPeri_deg_proposed+180.0;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//			else//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$
+			DIt.argPeri_deg = argPeri_deg_proposed;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			DIt.e = e_proposed;
 			DIt.period = period_proposed; //  [yrs]
 			DIt.a_total = a_total_proposed;//[AU]
@@ -528,9 +535,6 @@ void MCMCorbFuncObj::simulator()
 
 			if ( SSO.silent==false )
 				cout<<"ALL random numbers loaded"<<endl;
-
-			// Brick for generating Mass1, Mass2 & Sys_Dist values from $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			// Gaussian distributions.									$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 			if ( SSO.silent==false )
 			{
@@ -547,9 +551,12 @@ void MCMCorbFuncObj::simulator()
 				cout<<printLine2;
 			}
 
-			multiEpochOrbCalcReturnType MEOCRT;
+			//*****************************************************************************
+			// Calculate Direct Imaging fit if requested
+			//*****************************************************************************
 			if (SSO.RVonly==false)
 			{
+				multiEpochOrbCalcReturnType MEOCRT;
 				//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				// #### DO STUFF FOR DI ORBIT CALCNS #####
 				if ( SSO.silent==false )
@@ -574,6 +581,9 @@ void MCMCorbFuncObj::simulator()
 				//cout<<"In DI else block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				//chiSquaredMin_DI = 0;
 			}
+			//*****************************************************************************
+			// Calculate Radial Velocity fit if requested
+			//*****************************************************************************
 			if (SSO.DIonly==false)
 			{
 				//cout<<"In RV block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -716,8 +726,9 @@ void MCMCorbFuncObj::simulator()
 					if ( SSO.silent==false )
 						cout<<"K_s = "<<VRCss.K_s<<endl;
 				}
-
+				//****************************************************************
 				// go through all residual vels and calculate the RV chiSquareds
+				//****************************************************************
 				for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
 				{
 					if ( SSO.silent==false )
@@ -762,27 +773,19 @@ void MCMCorbFuncObj::simulator()
 						}
 					}//End epoch loop
 				}//End dataset loop
-
-
-
-
-				// update lowest reduced RV chisquared value found if current one is lower
-//				if ( RV_chiSquared<chiSquaredMin_RV )
-//					chiSquaredMin_RV = RV_chiSquared;
 			}//End RV calc block
 			else
 			{
 				//cout<<"In RV else block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				RVoffsets_latest.push_back(0);
-				//chiSquaredMin_RV=0;
 			}
 
 			// Do TOTAL chiSquared value calcs
 			TOTAL_chiSquared  = DI_chiSquared+RV_chiSquared;
 
-			//
+			//*******************************************
 			// Determine if the orbit should be accepted
-			//
+			//*******************************************
 			//Calculate priors ratio
 			//e_prior = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if (((period_latest*365.242)<1000.0)||(SSO.eMAX==0))
@@ -807,6 +810,9 @@ void MCMCorbFuncObj::simulator()
 
 			if ( alpha<=RHS )
 			{
+				//**************************************************************************************
+				//proposed orbit was accepted, so load it into output array and update 'latest' values
+				//**************************************************************************************
 				if (alpha>prior_likelihood_ratio)
 					cout<<"WARNING: alpha>RHS mess up, "<< alpha<<">"<< RHS<<", but was still accepted."<<endl;
 
@@ -887,27 +893,9 @@ void MCMCorbFuncObj::simulator()
 			}// Done storing accepted orbit parameters
 			else
 			{
-				if (false)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-				{//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-					cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-					cout<<"I WAS NOT ACCEPTED!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-					if (true)													//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-					{															//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-						cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;	//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-						cout<< "chiSquare_latest = "<<chiSquare_latest <<endl;		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-						cout<< "TOTAL_chiSquared = "<<TOTAL_chiSquared <<endl;		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-						cout<<"priors_ratio = "<<priors_ratio <<endl;				//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-						cout<<"e_prior = "<<e_prior <<endl;							//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-						cout<<"inc_prior = "<< inc_prior<<endl;						//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-						cout<<"P_prior = "<< P_prior<<endl;							//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-						cout<<"likelihood_ratio = "<<likelihood_ratio <<endl;		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-						cout<<"alpha = "<< alpha <<endl;							//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-						cout<<"RHS = "<< RHS<<endl;									//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-						cout<<"accepted = "<<accepted<<endl;						//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-						cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-					}																//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-					cout<<"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-				}//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//****************************************************************
+				// alpha<=RHS not satisfied, increment timesBeenHere and try again
+				//****************************************************************
 				timesBeenHere+=1;
 				accepted = "false";
 				if (paramsVariedRecentlyAry.size()<acceptCalcTime)
@@ -932,6 +920,9 @@ void MCMCorbFuncObj::simulator()
 		}//end of ALLpassed block
 		else
 		{
+			//****************************************************************************
+			// Proposed parameters did not all pass, increment timesBeenHere and try again
+			//****************************************************************************
 			timesBeenHere+=1;
 			accepted = "false";
 			if (paramsVariedRecentlyAry.size()<acceptCalcTime)
@@ -949,7 +940,9 @@ void MCMCorbFuncObj::simulator()
 		if (false)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			cout<<"\n randInt = "<<randInt<<"-> paramBeingVaried = "<<paramBeingVaried<<endl;
 
+		//********************************************
 		//time to update sigma and acceptance rate?
+		//********************************************
 		if (samplesTillAcceptRateCalc==acceptCalcTime)
 		{
 			if (true)
@@ -990,7 +983,9 @@ void MCMCorbFuncObj::simulator()
 
 	}//Done sample loops
 
+	//******************************************************
 	//Done sampling, so save last position if not done yet
+	//******************************************************
 	if (latestParamsSaved==false)
 	{
 		SSlog<<"\nlatestParamsSaved==false, so storing last values at sample number "<<sample<<", the timesBeenHere = "<<timesBeenHere<<endl;
@@ -1020,7 +1015,7 @@ void MCMCorbFuncObj::simulator()
 	ODT = GT.odtFinish(ODT);
 
 	// final print to let us know it was able to get to end of file
-	//cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
+	cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
 	SSlog<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
 	cout<<"Leaving MCMCOrbSimFunc\n\n"<<endl;
 	SSlog<<"Leaving MCMCOrbSimFunc\n\n"<<endl;

@@ -1125,7 +1125,9 @@ void simAnealOrbFuncObj::simulator()
 				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,0.5*SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
 		}
 
+		//*****************************************************************************
 		//calculate the proposed a_total using K3 in the case of RVonly and 3D simulations
+		//*****************************************************************************
 		if (SSO.DIonly==false)
 		{
 			semiMajorType SMT_in;
@@ -1278,6 +1280,9 @@ void simAnealOrbFuncObj::simulator()
 		//*****************************************************************************
 		if(ALLpassed)
 		{
+			//*****************************************************************************
+			//Load up a Direct Imaging tool object for use with both DI and RV model inputs
+			//*****************************************************************************
 			//cout<<"ALLpassed = True"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if (e_proposed<0)
 				cout<<"e<0!!!!!!!!!!!!!!!!!, ALLpassed = "<< ALLpassedStr<<", paramBeingVaried = "<<paramBeingVaried <<endl;
@@ -1285,10 +1290,10 @@ void simAnealOrbFuncObj::simulator()
 			timesNONEpassed = 0;
 			DIt.inclination_deg = inclination_deg_proposed;
 			DIt.longAN_deg = longAN_deg_proposed;
-//			if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//				DIt.argPeri_deg = argPeri_deg_proposed+180.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//			else//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			DIt.argPeri_deg = argPeri_deg_proposed;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//			if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//				DIt.argPeri_deg = argPeri_deg_proposed+180.0;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+//			else//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$
+			DIt.argPeri_deg = argPeri_deg_proposed;//$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			DIt.e = e_proposed;
 			DIt.period = period_proposed; //  [yrs]
 			DIt.T = T_proposed;
@@ -1330,9 +1335,13 @@ void simAnealOrbFuncObj::simulator()
 				cout<<printLine2;
 			}
 
-			multiEpochOrbCalcReturnType MEOCRT;
+			//*****************************************************************************
+			// Calculate Direct Imaging fit if requested
+			//*****************************************************************************
+
 			if (SSO.RVonly==false)
 			{
+				multiEpochOrbCalcReturnType MEOCRT;
 				//SSO.silent=false;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
 				//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$
 				// #### DO STUFF FOR DI ORBIT CALCNS #####
@@ -1373,6 +1382,9 @@ void simAnealOrbFuncObj::simulator()
 				//numDIepochs=0;
 			}
 			//cout<<"line # 1331"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//*****************************************************************************
+			// Calculate Radial Velocity fit if requested
+			//*****************************************************************************
 			if (SSO.DIonly==false)
 			{
 				RV_chiSquared = 0;
@@ -1515,8 +1527,9 @@ void simAnealOrbFuncObj::simulator()
 					if ( SSO.silent==false )
 						cout<<"K_s = "<<VRCss.K_s<<endl;
 				}
-
+				//****************************************************************
 				// go through all RVs and calculate the residuals and RV chiSquareds
+				//****************************************************************
 				for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
 				{
 
@@ -1612,10 +1625,9 @@ void simAnealOrbFuncObj::simulator()
 			}
 			//SSO.silent=true;//$$$$$$$$ DEBUGGING $$$$$$$$$
 
-			//
+			//*******************************************
 			// Determine if the orbit should be accepted
-			//
-
+			//*******************************************
 			//Calculate priors ratio
 			if (((period_latest*365.242)<1000.0)||(SSO.eMAX==0))
 				e_prior = 1.0;
@@ -1656,6 +1668,9 @@ void simAnealOrbFuncObj::simulator()
 
 			if ( alpha<=RHS )
 			{
+				//**************************************************************************************
+				//proposed orbit was accepted, so load it into output array and update 'latest' values
+				//**************************************************************************************
 				if (alpha>RHS)
 					cout<<"WARNING: alpha>RHS messup, "<< alpha<<">"<< RHS<<", but was still accepted."<<endl;
 
@@ -1758,11 +1773,11 @@ void simAnealOrbFuncObj::simulator()
 				}
 
 			}// Done storing accepted orbit parameters
-			//****************************************************************
-			// alpha<=RHS not satisfied, increment timesBeenHere and try again
-			//****************************************************************
 			else
 			{
+				//****************************************************************
+				// alpha<=RHS not satisfied, increment timesBeenHere and try again
+				//****************************************************************
 				timesBeenHere+=1;
 				accepted = "false";
 				if (sample>=switchToMCMCsample)
@@ -1781,13 +1796,12 @@ void simAnealOrbFuncObj::simulator()
 						cout<<"failed M-H block for sample number "<< sample<<endl;
 				}
 			}
-
 		}//end of ALLpassed block
-		//****************************************************************************
-		// Proposed parameters did not all pass, increment timesBeenHere and try again
-		//****************************************************************************
 		else
 		{
+			//****************************************************************************
+			// Proposed parameters did not all pass, increment timesBeenHere and try again
+			//****************************************************************************
 			timesBeenHere+=1;
 			accepted = "false";
 			if (sample>=switchToMCMCsample)
@@ -1825,7 +1839,9 @@ void simAnealOrbFuncObj::simulator()
 		//***********************************************************
 		if (sample>=switchToMCMCsample)
 		{
+			//********************************************
 			//time to update sigma and acceptance rate?
+			//********************************************
 			if (samplesTillAcceptRateCalc==acceptCalcTime)
 			{
 				if (true)
@@ -1951,7 +1967,9 @@ void simAnealOrbFuncObj::simulator()
 
 	}//Done sample loops
 
+	//******************************************************
 	//Done sampling, so save last position if not done yet
+	//******************************************************
 	if (latestParamsSaved==false)
 	{
 		SSlog<<"\nlatestParamsSaved==false, so storing last values at sample number "<<sample<<", the timesBeenHere = "<<timesBeenHere<<endl;

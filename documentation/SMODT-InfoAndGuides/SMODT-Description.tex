@@ -1,8 +1,13 @@
-\documentclass[10pt,preprint]{aastex}
+\documentclass[12pt,preprint]{aastex}
 %\usepackage{thumbpdf}
-\usepackage{fullpage,amssymb,mathtools}
+\usepackage{amssymb,float}
+\usepackage{psfig,graphicx} 
+\usepackage{fullpage,mathtools}
 \usepackage{mathrsfs}
 \usepackage{natbib}
+\usepackage{color}
+\usepackage{bm}
+\usepackage[title,titletoc,toc]{appendix}
 \bibliographystyle{apj}
 
 \addtolength{\oddsidemargin}{-.5in}
@@ -44,12 +49,11 @@ There are both Python and C++ versions of these functions/models.  The bulk of t
 \pagebreak
 
 %----------------------------------------------------------------------------------------------------------------------------------
-\subsection{Priors}
+\subsection{Priors}\label{sec:priors}
 
 In order to include previously determined information about the distribution some of the parameters tend to be for binary systems, sometimes non-uniform priors were used in the Metropolis-Hastings equation for the MCMC simulations.
 
-As found by \citet{duquennoy1991}, for systems with periods$\geq$1000 days, a function of f(e)=2e can be fit to their distribution, else no strong trend was seen.  Thus, we adopt this result and use the normalized prior probability in equation (\ref{eq:eProb1000}) for cases when the period is likely well over 1000days, else a uniform prior is used matching the choice of \citet{gregory2005} for shorter period planets.
-
+As found by \cite{duquennoy1991}, for systems with periods$\geq$1000 days, a function of f({\it e})=2{\it e} can be fit to their distribution, else no strong trend was seen.  Thus, we adopt this result and use the normalized prior probability in Equation (\ref{eq:eProb1000}) for cases when the period is likely well over 1000days.  Although, for those systems with close-in planets, the parametrizations $\sqrt{{\it e}}$ $\cos(\omega$) and $\sqrt{{\it e}}$ $\sin(\omega$) are used to allow for more efficient sampling and convergence when the eccentricity is very low ($\le$0.1), following the suggestion in \citet{albrecht2012}. This new parametrization result in a flat prior for {\it e} and $\omega$.
 \begin{equation}\label{eq:eProb1000}
 P_n(e) =  2e
 \end{equation}
@@ -61,26 +65,27 @@ P_n(e) =  2e
 To take account for the random possible orbital orientations, a prior proportional to sin(i) is used, (\ref{eq:iProb}).
 
 \begin{equation}\label{eq:iProb}
-P_n(i) =  \frac{sin(i)}{cos(i_{min})-cos(i_{max})}
+P_n(i) =  \frac{\sin(i)}{\cos(i_{min})-\cos(i_{max})}
 \end{equation}
 
-For situations where the data of the orbit is sparsely sampled, such as in the case of almost all planet and binary systems, one must be careful to avoid aliasing that can lead to a multitude of orbital period solutions.  This effect is thoroughly discussed in \citet{gregory2005}, and the suggestion of using a Jeffreys prior was described as the adequate solution to this problem, (\ref{eq:pProb}).
+For situations where the data of the orbit is sparsely sampled, such as in the case systems with periods over a month, one must be careful to avoid aliasing that can lead to a multitude of orbital period solutions.  This effect is thoroughly discussed in \citet{gregory2005}, and the suggestion of using a Jeffreys prior was described as the adequate solution to this problem, (\ref{eq:pProb}).
 
 \begin{equation}\label{eq:pProb}
 P_n(P) =  \frac{1}{P ln(\frac{P_{max}}{P_{min}})}
 \end{equation}
 
-Assuming the data is gaussian distributed, the rejection function of the Metropolis-Hastings algorithm reduces to (\ref{eq:metHastingsReduced}) once these normalized priors for orbits over 1000days are taken into account.  For those cases where the orbit is well under 1000days, the ratio of the eccentricities simply becomes 1.
+Assuming the data is Gaussian distributed, the rejection function of the Metropolis-Hastings algorithm reduces to (\ref{eq:metHastingsReduced}) once these normalized priors for orbits over 1000days are taken into account.  For those cases where the orbit is well under 1000days, or if $\sqrt{{\it e}}$ $\cos(\omega$) and $\sqrt{{\it e}}$ $\sin(\omega$) are used, the ratio of the eccentricities in (\ref{eq:metHastingsReduced}) simply becomes 1.
 
 \begin{equation}\label{eq:metHastingsReduced}
-r(X_t,X_p) = max\bigg\{1, \frac{P_t}{P_p}\frac{e_p}{e_t}\frac{sin(i_p)}{sin(i_t)}e^{\frac{(\chi^2_t - \chi^2_p)}{2}} \bigg\}
+r(X_t,X_p) = max\bigg\{1, \frac{P_t}{P_p}\frac{e_p}{e_t}\frac{\sin(i_p)}{\sin(i_t)}e^{\frac{(\chi^2_t - \chi^2_p)}{2}} \bigg\}
 \end{equation}
-
-Where, $\chi^2$ is the chi squared fit to the data given by (\ref{eq:chiSquared}).
+where, $\chi^2$ is the chi squared fit to the data given by (\ref{eq:chiSquared}).
 
 \begin{equation}\label{eq:chiSquared}
 {\chi}^{2} \equiv  \sum_{i=1}^{i=E} \frac{(model_i - observed_i)^{2}}{\sigma^{2}_i}
 \end{equation}
+
+%\clearpage
 
 \pagebreak
 %----------------------------------------------------------------------------------------------------------------
@@ -126,61 +131,7 @@ $\theta$ & True Anomaly [$^{\circ}$]\\
  ** = Not currently returned, but easily could be if needed.
 \end{table}
 
-%\subsubsection{Equations}
 
-First calculate the Mean Motion from the provided period:
-\begin{equation}\label{eq:4.1.1}
-n = \frac{2\pi}{period} 
-\end{equation}
-
-Use the Mean Motion, n, time of current epoch(t), time of last periapsis(T), and time of transit center relative to last periapsis (Tc) to get the updated Mean Anomaly:
-\begin{subequations}\label{eq:RV-Ma}
-\begin{align}
-phase& = \frac{Tc-T}{period_{days}} \\
-%int\bigg(\frac{Tc-T}{period_{days}}\bigg)period_{days}
-\label{eq:RV-Mb}
-M& = n \bigg( \frac{(t-T)}{365.25} \bigg)+(phase)2\pi\\
-\label{eq:4.1.2}
-M& = n \bigg( \frac{(t-T)}{365.25} \bigg)
-\end{align}
-\end{subequations}
-%where 'int()' refers to taking the integer value of what is in the brackets.
-
-The phase of the companion in equation(\ref{eq:RV-Ma}) is unit-less value between 0 and 1.  In equation (\ref{eq:RV-Mb}), the first term is essentially a fraction of how far the current epoch is away from the time of last periapsis multiplied by the Mean Motion throughout the orbit, resulting in units of radians.  The second term involves the unit-less phase converted into radians, thereby having values of 0 and 2$\pi$ at the start and end of each full orbit to match that of the first term.  Following these equations (\ref{eq:4.1.3})-(\ref{eq:4.1.5b}) would be used to calculate the True Anomaly needed in the radial velocity calculations shown below.  This modified version of the Mean Anomaly equation is only needed in the case where the companion transits in front of the primary.  When this does not occur, the value of the Tc is set to T, so the modified version reduces to the original form shown in (\ref{eq:4.1.2}).
-It was found that because of the sine function in (\ref{eq:4.1.4}), shifting the phase ahead into a positive value within $2\pi$ cures any issues of angle ambiguity.
-
-The relation between the Eccentric Anomaly, E, and the Mean Anomaly, M, is a transcendental equation and must be solved using numerical methods, shown below.
-\begin{equation}\label{eq:4.1.3}
-M = E - e\times\sin(E)
-\end{equation}
-In order to obtain the solution for E the fastest using the Newton's loop and (\ref{eq:4.1.4}), the closest guess of E should be used as the initial value of E$\_$last.
-  This also helps to avoid ending up with one of the wrong solutions in the
-  cases where there are multiple crossings of the two functions that make up
-  equation (\ref{eq:4.1.3}).  A suggested initial guess, that we found to work well, is given by (\ref{eq:4.1.3.5}) as was recommended in \citet{Argyle}.
-
-\begin{equation}\label{eq:4.1.3.5}
-E_0 = M+e\sin(M) + \frac{e^2}{2M}sin(2M)
-\end{equation}
-
-Newton's method to calculate E:
-  
-\begin{equation}\label{eq:4.1.4}
-E\_latest = E\_last - \frac{[E\_last - e \times \sin(E\_last) - M]}{[1.0 - e \times \cos(E\_last)]}
-\end{equation}
-The loop completes when E$\_$latest and E$\_$last are the same to 10 decimal places.  It is also checked to ensure it satisfies the original equation (\ref{eq:4.1.3}) with similar precision.  The maximum value of e possible was found to be ~0.98, as precisional rounding issues caused division by zero above this.\\
-
-Use the resultant E$\_$latest to calculate the True Anomaly:
-\begin{subequations}
-\begin{align}
-\label{eq:4.1.5a}
-TA& = \arccos \bigg( \frac{[\cos(E\_latest) - e]}{[1.0 - e \times \cos(E\_latest)]} \bigg)\\
-\label{eq:4.1.5b}
-TA\_true& = \theta = \left\{ \begin{array}{l l} TA& \quad \text{ if E$\_$latest$\leq$ 180$^{\circ}$}\\ 360^{\circ}  - TA& \quad \text{ if E$\_$latest $>$ 180$^{\circ}$} \end{array}\right.
-\end{align}
-\end{subequations}
-
-Equation (\ref{eq:4.1.5a}) has one unfortunate attribute, as the Eccentric Anomaly grows over $\pi$ (180$^{\circ}$) the resulting value for the True Anomaly goes down, rather than up as should happen.  Thus, to solve this problem the conditional statements of (\ref{eq:4.1.5b}) are applied.\\  
-\pagebreak
 %----------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -235,73 +186,7 @@ a & Total Semi-major axis [AU]  \\
 
 %\subsubsection{Equations}
 
-If no semi-major axis value is provided, then it is calculated from the period, known masses of the bodies and Kepler's third law:
-\begin{equation}\label{eq:28}
-a = \bigg[\frac{P^2G(M_1+M_2)}{4\pi^2} \bigg]^{(1/3)}
-\end{equation}
 
-The Thiele-Innes method of solving for the orbital elements of binary systems was first found by \citet{Thiele}, and advanced with the inclusion of the Innes constants formulated by \citet{Van}.  This approach has been mainstream ever since, and the equations to find the ephemeris are given below and can be found in \citet{aitken}, \citet{binnendijk} and \citet{heintz}.
-
-
-
-\begin{subequations}
-\begin{align}\label{eq:24a}
-A& = a[cos(\Omega)cos(\omega)-sin(\Omega)sin(\omega)cos(i)]\\
-\label{eq:24b}
-B& = a[sin(\Omega)cos(\omega)+cos(\Omega)sin(\omega)cos(i)]\\
-\label{eq:24c}
-F& = a[-cos(\Omega)sin(\omega)-sin(\Omega)cos(\omega)cos(i)]\\
-\label{eq:24d}
-G& = a[-sin(\Omega)sin(\omega)+cos(\Omega)cos(\omega)cos(i)]
-\end{align}
-\end{subequations}
-
-
-
-The x and y components of the location on the apparent ellipse are found using:
-\begin{subequations}
-\begin{align}\label{eq:28-1a}
-x& = AX+FY\\
-\label{eq:28-1b}
-y& = BX + GY
-\end{align}
-\end{subequations}
-
-knowing,
-
-\begin{subequations}
-\begin{align}\label{eq:28-1.5a}
-X& = \frac{r_j}{a}cos(\theta_j) = cos(E_j)-e\\
-\label{eq:28-1.5b}
-Y& = \frac{r_j}{a}sin(\theta_j) = \sqrt{1-e^2}sin(E_j) 
-\end{align}
-\end{subequations}
-
-where, $\theta$ is the True Anomaly, E is the Eccentric Anomaly and r is the distance between the object and the center of mass at a particular time in the orbit.  These are the only equations where the current position through the orbit is taken into account, and it is critical for making the predicted x,y values match the observed ones at a particular epoch (j).
-
-Equations \ref{eq:4.1.1} - \ref{eq:4.1.5b} are used to calculate True Anomaly ($\theta$), Mean Anomaly (M), Eccentric Anomaly (E) and Mean Motion (n); although, because M and n are not needed afterwards, they are not returned at the moment, but could easily be if required.
-
-The respective values from the measured position angle ($\phi$) and separation angle ($\rho$) are:
-\begin{subequations}
-\begin{align}\label{eq:28-2a}
-x& = \rho cos(\phi)\\
-\label{eq:28-2b}
-y& = \rho sin(\phi)
-\end{align}
-\end{subequations}
-
-\begin{equation}\label{eq:33}
-\chi^{2} \equiv  \sum_{i=1}^{i=E} \frac{(model_i - observed_i)^{2}}{\sigma^{2}_i} = \sum_{i=1}^{i=E} \frac{(x_{model_i}-x_{observed_i}) ^{2}}{\sigma^{2}_{xi}} +\sum_{i=1}^{i=E} \frac{(y_{model_i}-y_{observed_i}) ^{2}}{\sigma^{2}_{yi}}
-\end{equation}
-
-\begin{subequations}
-\begin{align}\label{eq:reducedChiSquare}
-\chi^{2}_{\nu}& \equiv \frac{1}{\nu}\chi^{2}\\
-\label{eq:nu}
-\nu& \equiv \#\text{observables}-\#\text{free parameters}=2E-(\text{6 OR 7})
-\end{align}
-\end{subequations}
-The "(6 OR 7)" in (\ref{eq:nu}) is due to the option to vary the total semi-major axis, making 7 parameters free, or calculate it from Kepler's third law which reduces the number of free parameters to 6.  There is an option in the code to draw the mass of the two bodies and the system distance from Gaussian distributions centered on the measured values and the variance of those measurements being used as the distribution's variance.  Even though these values are then not fixed, they are not considered free parameters when calculationg $\nu$.
 \pagebreak
 %----------------------------------------------------------------------------------------------------------------------------------
 
@@ -350,51 +235,11 @@ K & Semi-major Amplitude of primary star [m/s]\\
 \end{table}
 
 %\subsubsection{Equations}
-In the case of calculating the radial velocity residuals, there are various forms of the equation to calculate predicted radial velocity of the host star due to its companion's motion.
 
-If no semi-major axis value is provided, then it is calculated from the period, known masses of the bodies and Kepler's third law (\ref{eq:28}) and equations (\ref{eq:4.1.10a} - \ref{eq:4.1.10c}).
-\begin{equation}\label{eq:28}
-a = \bigg[\frac{P^2G(M_1+M_2)}{4\pi^2} \bigg]^{(1/3)}
-\end{equation}
-
-The mass ratio can be calculated and used to determine the individual semi-major axis values for each object's orbit as follows:
-\begin{subequations}
-\begin{align}
-\label{eq:4.1.10a}
-x& = \frac{Mass2}{Mass1}\\
-\label{eq:4.1.10b}
-a1& = \frac{a\_total}{1+x}\\
-\label{eq:4.1.10c}
-a2& = \frac{a1}{x}
-\end{align}
-\end{subequations}
-
-Equations (\ref{eq:4.1.1} - \ref{eq:4.1.5b}) are used to calculate True Anomaly ($\theta$).
-
-Velocity residual due to a companion star (version used in VRcalcStarStar:VRcalculator):
-\begin{equation}\label{eq:30}
-vr_s = \bigg[\frac{2\pi G(M_1+M_2)}{P}\bigg]^{1/3}\frac{M_2}{M_1}\frac{sin(i)}{\sqrt{1-e^2}}[cos(\theta+\omega)+e cos(\omega)] = K_s[cos(\theta+\omega)+e cos(\omega)]
-\end{equation}
-
-Velocity residual due to a planet around the primary star (version used in VRcalcStarPlanet:VRcalculatorSemiMajorType):
-\begin{equation}\label{eq:29}
-vr_p = \frac{2\pi a_1sin(i)}{P\sqrt{1-e^2}}[cos(\theta+\omega)+e cos(\omega)]= K_p[cos(\theta+\omega)+e cos(\omega)]
-\end{equation}
-
-(Equivalent, but not used currently) Velocity residual due to a planet around the primary star (version used in VRcalcStarPlanet:VRcalculator):
-\begin{equation}\label{eq:31}
-vr_p = \bigg[\frac{2\pi G}{P}\bigg]^{1/3}\frac{M_2sin(i)}{M_1^{2/3}}\frac{1}{\sqrt{1-e^2}}[cos(\theta+\omega)+e cos(\omega)] = K_p[cos(\theta+\omega)+e cos(\omega)]
-\end{equation}
-
-Although, whether $\omega$ is equal to $\omega_1$ or $\omega_2$ is not properly described in \citet{Shulze-Hartung}.  Through personal communications with the author, it was clarified to be $\omega_2$ in all cases.  Following their convention, we set $\omega_1 = \omega_2+\pi$, as it is arbitrary as long as it the convention is mentioned in any resulting research papers.
-
-\begin{equation}\label{eq:33}
-{\chi}^{2} \equiv  \sum_{i=1}^{i=E} \frac{(model_i - observed_i)^{2}}{\sigma^{2}_i} = \sum_{i=1}^{i=E} \frac{[(vr_s+vr_p) - (RV_{data}-\gamma)]^{2}}{\sigma^{2}_i}
-\end{equation}
-
-where $\gamma $ is the velocity offset of that instrument.  In the case that the velocity of the system's center of mass WRT the Earth has not been removed, the observed component in (\ref{eq:33}) becomes ($RV_{data}-\gamma_{Instrument}-\gamma_{COM}$) (\citet{Paddock} \& \citet{Shulze-Hartung}).  The calculation of $\chi^{2}_{\nu}$ actually occurs outside these functions as the radial velocities due to the companions are calculated separately and then later handled by the higher level function that called the radial velocity model.
 
 %--------------------------------------------------------------------------------------------------------------------------------------
+
+\section{Orbital Models}
 
 \subsection{Astrometry Models}\label{sec:DI-OrbModels}
 
@@ -602,7 +447,7 @@ The orientation and definition of x and y depends on the choice of view of the b
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[scale=0.9]{Figures/Argyle-oribit-plots1-cropped-AND-cartesianCoordsPlot.jpg}
+\includegraphics[scale=0.9]{Argyle-oribit-plots1-cropped-AND-cartesianCoordsPlot.jpg}
 \caption[View of a Binary System]{ View of a binary system through a) A telescope, and b) The naked eye, both compared to c) 2D Cartesian coordinate system. \citet{Argyle}. }
 \label{fig:4}
 \end{center}
@@ -748,6 +593,7 @@ Finally the ${\chi}^{2} $ is calculated following:
 \end{equation}
 
 where $\gamma $ is the velocity offset of that instrument.  In the case that the velocity of the system's center of mass WRT the Earth has not been removed, the observed component in (\ref{eq:33}) becomes ($RV_{data}-\gamma_{Instrument}-\gamma_{COM}$) (\citet{Paddock} \& \citet{Shulze-Hartung}).
+
 
 
 %----------------------------------------------------------------------------------------------------

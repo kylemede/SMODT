@@ -1191,7 +1191,6 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
     log = open(logFilename,'a')
     log.write('\n'+75*'*'+'\n Inside summaryPlotter2MCMC \n'+75*'*'+'\n')
     
-    ## find number of RV datasets
     if os.path.exists(outputDataFilename):   
         s=  '\nCreating summary plot for file:\n'+outputDataFilename
         s=s+'\nInput plotfilename:\n'+plotFilename
@@ -1200,14 +1199,18 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         # record the time the chain started
         startTime = timeit.default_timer()
         
+        ##*******************************
         ## find number of RV datasets
+        ##*******************************
         f = open(outputDataFilename,'r')
         plotFileTitle = f.readline()[:-5]
         headings = f.readline()
         line = f.readline()
         dataLineCols = line.split()
+        rvFirstVal = 0
         if (len(line)>11):
             numRVdatasets = len(dataLineCols) - 11
+            rvFirstVal = float(dataLineCols[-2])
         else:
             line = f.readline()
             dataLineCols = line.split()
@@ -1218,7 +1221,9 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         log.write(s+'\n')
         f.close()
            
+        ##*************************************************************
         # check if the passed in value for plotFilename includes '.png'
+        ##*************************************************************
         if '.png' not in plotFilename:
             s='input plotFilename: ',plotFilename
             if logFilename!='':
@@ -1232,8 +1237,9 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
                 print s 
         else:
             plotFilename = plotFilename
-        
+        ##*************************************************************
         ## make an advanced title for plot from folder and filename
+        ##*************************************************************
         titleTop = os.path.dirname(outputDataFilename).split('/')[-1]
         titleBtm = os.path.basename(plotFilename).split('.')[0]+" Parameter Progress Plot"
         plotFileTitle = titleTop+'\n'+titleBtm
@@ -1243,7 +1249,9 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         if verbose:
             print s 
 
+        ##*************************************************************
         # Create empty figure to be filled up with plots
+        ##*************************************************************
         if not plot4x1:
             fig2 = plt.figure(2, figsize=(30,55),dpi=200)
             s= '\n** a 7x1 figure will be made for all 6 orbital parameters in the output datafile **'
@@ -1486,9 +1494,10 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         
         
         ## Create a second figure of RV offsets. ####
-        if numRVdatasets>0:
+        if ((numRVdatasets>0)and(rvFirstVal!=0)):
             try:
                 s = "\nTrying to produce posterior histograms of the RV offsets"
+                s+="/n ** First RV value was "+str(rvFirstVal)
                 print s
                 log.write(s+'\n')
                 # Create empty figure to be filled up with plots

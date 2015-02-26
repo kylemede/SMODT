@@ -1653,9 +1653,13 @@ def RADECtoPASA(RA, RA_error, DEC, DEC_error):
 def PASAtoRADEC(PA,PA_error,SA,SA_error):
     """
     Convert provided Position Angle and Separation Angle, and their errors, into 
-    RA and DEC with errors.  
+    RA and DEC with errors.  These are the same equations for calculating 
+    x and y in the Thiele-Innes orbit fitting.  Remember that x and y are 
+    reversed in that fitting approach due to how Thiele defined the coord 
+    system when deriving the equations used.
+    
     NOTE: this can also be used to calculate X and Y used in Thiele-Innes
-          With RA=Y and DEC=X.
+          With RA=y and DEC=x.  
     
     :returns: (RA, RA_error, DEC, DEC_error)
     """

@@ -1622,7 +1622,7 @@ def PASAcalculator(period, t, T, e, inclination_deg, longAN_deg, argPeri_deg, Sy
     
     return(PA_deg_RP_model, SA_arcsec_RP_model)
 
-def RADECtoSAPA(RA, RA_error, DEC, DEC_error):
+def RADECtoPASA(RA, RA_error, DEC, DEC_error):
     """
     Will calculate the Separation and Position Angles for a given RA and DEC, including their errors.
     
@@ -1649,6 +1649,28 @@ def RADECtoSAPA(RA, RA_error, DEC, DEC_error):
     SA_error = abs(top/btm)
     
     return (PA,PA_error,SA,SA_error)
+
+def PASAtoRADEC(PA,PA_error,SA,SA_error):
+    """
+    Convert provided Position Angle and Separation Angle, and their errors, into 
+    RA and DEC with errors.  
+    NOTE: this can also be used to calculate X and Y used in Thiele-Innes
+          With RA=Y and DEC=X.
+    
+    :returns: (RA, RA_error, DEC, DEC_error)
+    """
+    DEC = SA*math.cos(math.radians(PA))
+    RA = SA*math.sin(math.radians(PA))
+    
+    tempA = (SA_error*math.cos(math.radians(PA)))**2.0
+    tempB = (SA*math.sin(math.radians(PA))*math.radians(PA_error))**2.0
+    DEC_error = math.sqrt(tempA+tempB)
+    
+    tempC = (SA_error*math.sin(math.radians(PA)))**2.0
+    tempD = (SA*math.cos(math.radians(PA))*math.radians(PA_error))**2.0
+    RA_error = math.sqrt(tempC+tempD)
+    
+    return (RA, RA_error, DEC, DEC_error)
 
 
     

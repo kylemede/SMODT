@@ -3,7 +3,7 @@
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
 Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax = 10
+chiSquaredMax = 1000
 # The number of samples orbital parameters to try/draw [int]
 numSamples = 3000000
 # The number of times to print status updates to the screen/terminal during the run [int]
@@ -93,28 +93,29 @@ periodMIN = 10
 # Maximum allowed value for the Period [double][yrs]
 periodMAX = 30
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMIN = 50
+a_totalMIN = 0
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMAX = 250
+a_totalMAX = 0
 # Minimum allowed value for the Inclination [double][deg]
-inclination_degMIN = 1.0
+inclination_degMIN = 0
 # Maximum allowed value for the Inclination [double][deg]
-inclination_degMAX = 60.0
+inclination_degMAX = 0
 # Minimum allowed value for the Argument of Perigee [double][deg]
 argPeri_degMIN = 0.0
 # Maximum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMAX = 0.0
+argPeri_degMAX = 360.0
 # Minimum value for the Time of Last Periapsis [JD]#2455651.45   #2455651.2798
 T_Min = -1
 # Maximum value for the Time of Last Periapsis [JD]#2455653.765
 T_Max = -1
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MIN = 0
+K_MIN = 0.5
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MAX = 0
-# Maximum values of Radial Velocity Offsets.  
-# Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMAXs = [0]
+K_MAX = 1.1
 # Minimum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMINs = [0]
+RVoffsetMINs = [2,2]
+# Maximum values of Radial Velocity Offsets.  
+# Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
+RVoffsetMAXs = [15,15]
+

@@ -99,14 +99,21 @@ void simAnealOrbFuncObj::simulator()
 	vary_K = true;
 	double K_latest = 0.0;
 	if (SSO.DIonly==true)
+	{
 		vary_K = false;
-	else if ((SSO.inclination_degMAX!=0))
+		ss<<"\nvary_K = false"<<endl;
+	}
+	else if (SSO.inclination_degMAX!=0)
+	{
 		vary_K = false;
+		ss<<"\nvary_K = false"<<endl;
+	}
 	else
 	{
 		numRVparams+=1;
 		K_latest = RanGen.UniformRandom(SSO.K_MIN, SSO.K_MAX);
 		paramsToVaryIntsAry.push_back(7);
+		ss<<"\nvary_K = true"<<endl;
 	}
 	double inclination_deg_latest = 0;
 	if (SSO.inclination_degMAX==0)

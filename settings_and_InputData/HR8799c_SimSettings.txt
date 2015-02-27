@@ -26,14 +26,14 @@ RVdataFilename = RVdata.dat
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = HR8799c-mcONLY-allOPEN2
+outputData_filenameRoot = HR8799c-MCMC-allOPEN2
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 DIonly = true
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
-mcONLY = true
+mcONLY = false
 # Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
 simAnneal = false
 # Set to true to perform the 100 mod dataset MCMC loop
@@ -87,7 +87,7 @@ longAN_degMAX = 180.0
 # Minimum allowed value for the Eccentricity [double]
 eMIN = 0.0
 # Maximum allowed value for the Eccentricity　[double]
-eMAX =  0.4
+eMAX =  0.29
 # Minimum allowed value for the Period [double][yrs]
 periodMIN = 100
 # Maximum allowed value for the Period [double][yrs]

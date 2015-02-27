@@ -190,14 +190,22 @@ int main(int argc ,char *argv[])
     bool vary_K = true;
     double K_proposed = 0.0;
     if (SSO.DIonly==true)
+    {
 		vary_K = false;
-	else if ((SSO.RVonly==true)&&((SSO.inclination_degMIN!=0)&&(SSO.inclination_degMAX!=0)))
+    	ss<<"\nvary_K = false"<<endl;
+    }
+	else if (SSO.inclination_degMAX!=0)
+	{
 		vary_K = false;
+		ss<<"\nvary_K = false"<<endl;
+	}
 	else
 	{
 		numRVparams+=1;
     	numParams+=1;
+    	ss<<"\nvary_K = true"<<endl;
 	}
+
 
     double inclination_deg_proposed = 0.0;
     if ((SSO.inclination_degMIN!=0)&&(SSO.inclination_degMAX!=0))

@@ -3,13 +3,13 @@
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
 Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax = 100
+chiSquaredMax = 10
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 30000000
+numSamples = 3000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing = true
+useMultiProcessing = false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -26,12 +26,12 @@ RVdataFilename = RVdata.dat
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = HR8799c-mcONLY-allOPEN2
+outputData_filenameRoot = HIP10321-mcONLY-allOPEN    
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-RVonly =false
+RVonly =true
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-DIonly = true
+DIonly = false
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
 mcONLY = true
 # Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
@@ -43,7 +43,7 @@ makePosteriorsPlot = true
 # make plots of RV and DI/AM orbit fits [bool]
 makeOrbitPlots = true
 # Make plots of Simulated Annealing progress plots? [bool]
-makeSimAnnealProgPlots = false
+makeSimAnnealProgPlots = true
 # Simulated Annealing starting temperature [double]
 startTemp = 500.0
 # Delete chain files after simulation is complete? [bool]
@@ -61,7 +61,7 @@ CalcBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths = false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 10000000
+numSamples_SimAnneal = 5000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots = false
 # Calculate the Gelman-Rubin statistic? [bool]
@@ -85,17 +85,17 @@ longAN_degMIN = 1
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 longAN_degMAX = 180.0
 # Minimum allowed value for the Eccentricity [double]
-eMIN = 0.0
+eMIN = 0.02
 # Maximum allowed value for the Eccentricity　[double]
-eMAX =  0.4
+eMAX =  0.5
 # Minimum allowed value for the Period [double][yrs]
-periodMIN = 100
+periodMIN = 10
 # Maximum allowed value for the Period [double][yrs]
-periodMAX = 350
+periodMAX = 30
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMIN = 20
+a_totalMIN = 50
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMAX = 60
+a_totalMAX = 250
 # Minimum allowed value for the Inclination [double][deg]
 inclination_degMIN = 1.0
 # Maximum allowed value for the Inclination [double][deg]

@@ -426,6 +426,7 @@ int main(int argc ,char *argv[])
 			string printLine;
 			ss <<"\n"<< acceptedCounter<<"/"<<sample<<" Successful. "<<printsDone<<"/"<<SSO.numSamplePrints<<" completed at ";
 			ss << asctime (timeinfo);
+			ss << "largest reduced chiSquared total allowed = "<<SSO.chiSquaredMax<<endl;
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared_reduced<<", RV = "<<RV_chiSquared_reduced <<", Total = "<< TOTAL_chiSquared_reduced<<endl;
 			ss << "lowest reduced chiSquare so far = "<< chiSquareMin <<endl;
 			printLine = ss.str();

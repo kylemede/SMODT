@@ -66,6 +66,10 @@ star_e_error = 0
 star_T = 0
 # Star's time of last pariapsis error [JD][double]
 star_T_error = 0
+# Star's time of last center transit [JD][double]
+star_Tc = 0
+# Star's time of last center transit error [JD][double]
+star_Tc_error = 0
 # Star's period [years][double]
 star_P = 0
 # Star's period error [years][double]

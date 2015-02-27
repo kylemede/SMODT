@@ -3,7 +3,7 @@
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
 Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax = 1000
+chiSquaredMax = 20000
 # The number of samples orbital parameters to try/draw [int]
 numSamples = 3000000
 # The number of times to print status updates to the screen/terminal during the run [int]
@@ -23,17 +23,17 @@ DIdataFilename = DIdata.dat
 # Name of file where Radial Velocity data is [string, at least 2 chars long]
 RVdataFilename = RVdata.dat
 # Directory where you want the output data folder to go [string, at least 2 chars long]
-outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
+outputData_dir = /run/media/kmede/SharedData/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = HIP10321-mcONLY-allOPEN    
+outputData_filenameRoot = HIP10321-MCMC-allOPEN    
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =true
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 DIonly = false
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
-mcONLY = true
+mcONLY = false
 # Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
 simAnneal = false
 # Set to true to perform the 100 mod dataset MCMC loop
@@ -61,7 +61,7 @@ CalcBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths = false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 5000000
+numSamples_SimAnneal = 1000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots = false
 # Calculate the Gelman-Rubin statistic? [bool]
@@ -81,9 +81,9 @@ simulate_StarPlanet = true
 
 # Ranges for acceptable random number inputs ######
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMIN = 1
+longAN_degMIN = 0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMAX = 180.0
+longAN_degMAX = 0
 # Minimum allowed value for the Eccentricity [double]
 eMIN = 0.02
 # Maximum allowed value for the Eccentricity　[double]
@@ -101,7 +101,7 @@ inclination_degMIN = 0
 # Maximum allowed value for the Inclination [double][deg]
 inclination_degMAX = 0
 # Minimum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMIN = 0.0
+argPeri_degMIN = 1.0
 # Maximum allowed value for the Argument of Perigee [double][deg]
 argPeri_degMAX = 360.0
 # Minimum value for the Time of Last Periapsis [JD]#2455651.45   #2455651.2798
@@ -109,13 +109,13 @@ T_Min = -1
 # Maximum value for the Time of Last Periapsis [JD]#2455653.765
 T_Max = -1
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MIN = 0.5
+K_MIN = 700
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MAX = 1.1
+K_MAX = 1200
 # Minimum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMINs = [2,2]
+RVoffsetMINs = [4000,4000]
 # Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMAXs = [15,15]
+RVoffsetMAXs = [8000,8000]
 

@@ -5,7 +5,7 @@ Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax = 100
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 30000000
+numSamples = 5000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
@@ -26,7 +26,7 @@ RVdataFilename = RVdata.dat
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = HR8799c-MCMC-allOPEN2
+outputData_filenameRoot = HR8799c-MCMC-FaceOnCircular
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -61,7 +61,7 @@ CalcBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths = false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 10000000
+numSamples_SimAnneal = 1000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots = false
 # Calculate the Gelman-Rubin statistic? [bool]
@@ -81,25 +81,25 @@ simulate_StarPlanet = true
 
 # Ranges for acceptable random number inputs ######
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMIN = 1
+longAN_degMIN = 0.0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMAX = 180.0
+longAN_degMAX = 0.0
 # Minimum allowed value for the Eccentricity [double]
-eMIN = 0.0
+eMIN = 0
 # Maximum allowed value for the Eccentricity　[double]
-eMAX =  0.29
+eMAX =  0
 # Minimum allowed value for the Period [double][yrs]
-periodMIN = 100
+periodMIN = 150
 # Maximum allowed value for the Period [double][yrs]
-periodMAX = 350
+periodMAX = 300
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMIN = 20
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMAX = 60
 # Minimum allowed value for the Inclination [double][deg]
-inclination_degMIN = 1.0
+inclination_degMIN = 0.0
 # Maximum allowed value for the Inclination [double][deg]
-inclination_degMAX = 60.0
+inclination_degMAX = 0.0
 # Minimum allowed value for the Argument of Perigee [double][deg]
 argPeri_degMIN = 0.0
 # Maximum allowed value for the Argument of Perigee [double][deg]

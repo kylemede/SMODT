@@ -1329,12 +1329,16 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             print s
             log.write(s+'\n')
         
+        
+        
+        # create sub plot and fill it up for the longitude of ascending node
+        #longANMedian=0
         if not plot4x1:
             subPlot2 = fig2.add_subplot(811)
             paramColNum = 0
             xlabel = 'Longitude of Ascending Node [deg]'
             (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
-            #longANMedian = np.median(longAN_degsAlls)
+            #longANMedian = np.median(data)
             s= "done plotting longAN_degsAlls"
             print s
             log.write(s+'\n')
@@ -1351,17 +1355,6 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         s= "done plotting esAlls"
         print s
         log.write(s+'\n')
-           
-        # Create sub plot and fill it up for the Semi-Major Amplitude
-        if plot4x1: 
-            subPlot2 = fig2.add_subplot(513)
-            paramColNum = 9
-            xlabel = 'K [m/s]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
-            #periodMedian = np.median(periodsAlls)
-            s= "done plotting Ks"
-            print s
-            log.write(s+'\n')
             
         # Create sub plot and fill it up for the Period
         if not plot4x1: 
@@ -1375,13 +1368,28 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             log.write(s+'\n')
             
         # Create sub plot and fill it up for the semi-majors
+        semiMajorBest = 0.0
         if not plot4x1: 
             subPlot2 = fig2.add_subplot(817)
             paramColNum = 7
             xlabel = 'Semi-Majors [AU]'
             (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
-            #periodMedian = np.median(periodsAlls)
+            semiMajorBest = bestDataVal
             s= "done plotting semi-majors"
+            print s
+            log.write(s+'\n')
+            
+        # Create sub plot and fill it up for the Semi-Major Amplitude
+        # put it over the longAN plot if it is empty
+        if not plot4x1: 
+            subPlot2 = fig2.add_subplot(817)
+        else:
+            subPlot2 = fig2.add_subplot(513)
+        if semiMajorBest==0.0:
+            paramColNum = 9
+            xlabel = 'K [m/s]'
+            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
+            s= "done plotting Ks"
             print s
             log.write(s+'\n')
             

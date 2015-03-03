@@ -253,7 +253,7 @@ int main(int argc ,char *argv[])
 		}
 	}
     double argPeri_deg_proposed=90;
-    if ((SSO.argPeri_degMAX!=0)&&(SSO.argPeri_degMIN!=0))
+    if (SSO.argPeri_degMAX!=0)
     {
     	numRVparams+=1;
     	numDIparams+=1;

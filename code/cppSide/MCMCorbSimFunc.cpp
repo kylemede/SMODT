@@ -349,9 +349,9 @@ void MCMCorbFuncObj::simulator()
 				if (argPeri_deg_proposed<0)
 					argPeri_deg_proposed = argPeri_deg_proposed+360.0;
 			}
-			//fix for when arg peri is negative, which is not what we want.
-			if (argPeri_deg_proposed<0.0)
-				argPeri_deg_proposed = argPeri_deg_proposed+180.0;
+			//fix for when arg peri is -90, which is not what we want.
+			if (argPeri_deg_proposed==-90.0)
+				argPeri_deg_proposed = 90.0;
 		}
 		if (SSO.DIonly==false)
 		{

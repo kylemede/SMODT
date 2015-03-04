@@ -26,7 +26,7 @@ RVdataFilename = RVdata.dat
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = HR8799e-MCMC-25PercentDecreasedErrors-FaceOnCircular2
+outputData_filenameRoot = HR8799e-MCMC-25PercentDecreasedErrors-FaceOn
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -85,9 +85,9 @@ longAN_degMIN = 0.0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 longAN_degMAX = 0.0
 # Minimum allowed value for the Eccentricity [double]# 0.0001
-eMIN = 0
+eMIN = 0.00001
 # Maximum allowed value for the Eccentricity　[double]#0.29
-eMAX =  0
+eMAX =  0.29
 # Minimum allowed value for the Period [double][yrs]
 periodMIN = 35
 # Maximum allowed value for the Period [double][yrs]
@@ -105,9 +105,9 @@ argPeri_degMIN = 0
 # Maximum allowed value for the Argument of Perigee [double][deg]#450.0
 argPeri_degMAX = 0
 # Minimum value for the Time of Last Periapsis [JD]
-T_Min =  2445000
+T_Min =  -1
 # Maximum value for the Time of Last Periapsis [JD]
-T_Max =  2450000
+T_Max =  -1
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
 K_MIN = 0
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]

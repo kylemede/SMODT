@@ -478,7 +478,7 @@ int main(int argc ,char *argv[])
         {
         	if (SSO.eMAX!=0)
         		e_proposed = RanGen.UniformRandom(SSO.eMIN, SSO.eMAX);
-        	if ((SSO.argPeri_degMAX!=0)&&(SSO.argPeri_degMIN!=0))
+        	if (SSO.argPeri_degMAX!=0)
         			argPeri_deg_proposed = RanGen.UniformRandom(SSO.argPeri_degMIN, SSO.argPeri_degMAX);
         }
         //cout<<"mcONLYorbSimulator.cpp, line# "<<443<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

@@ -867,8 +867,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
                 print s
                 log.write(s+'\n')
-        if False:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            #elif (bestLongAN==0):
+        elif (bestLongAN==0):
             startTime = timeit.default_timer()
             s='\nStarting to plot hist for Ks:'
             print s
@@ -1375,6 +1374,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             xlabel = 'Semi-Majors [AU]'
             (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             semiMajorBest = bestDataVal
+            #print "\n\n"+"%"*100+"semiMajorBest = "+str(semiMajorBest)+"%"*100+"\n\n"
             s= "done plotting semi-majors"
             print s
             log.write(s+'\n')

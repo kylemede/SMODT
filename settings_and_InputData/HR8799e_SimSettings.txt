@@ -87,11 +87,11 @@ longAN_degMAX = 0.0
 # Minimum allowed value for the Eccentricity [double]# 0.0001
 eMIN = 0.00001
 # Maximum allowed value for the Eccentricity　[double]#0.29
-eMAX =  0.29
+eMAX =  0.04
 # Minimum allowed value for the Period [double][yrs]
 periodMIN = 44
 # Maximum allowed value for the Period [double][yrs]
-periodMAX = 80
+periodMAX = 65
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMIN = 14
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
@@ -105,9 +105,9 @@ argPeri_degMIN = 0
 # Maximum allowed value for the Argument of Perigee [double][deg]#450.0
 argPeri_degMAX = 0
 # Minimum value for the Time of Last Periapsis [JD]
-T_Min =  -1
+T_Min =  2445000
 # Maximum value for the Time of Last Periapsis [JD]
-T_Max =  -1
+T_Max =  2450000
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
 K_MIN = 0
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]

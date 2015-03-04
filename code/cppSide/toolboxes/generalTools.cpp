@@ -310,9 +310,6 @@ eccArgPeriCalcType generalTools::eccArgPeriCalc(eccArgPeriCalcType EACT)
 	}
 	// Calculate argPeri and correct for if it calculates it as a negative angle.
 	double atan_deg=ATAN_rad * 180 / PI;
-	if (atan_deg<0.0)
-		atan_deg=atan_deg+180.0;
-	EACT.argPeri_deg = atan_deg;
 
 	return EACT;
 }

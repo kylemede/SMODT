@@ -105,9 +105,9 @@ argPeri_degMIN = 0
 # Maximum allowed value for the Argument of Perigee [double][deg]
 argPeri_degMAX = 0
 # Minimum value for the Time of Last Periapsis [JD]#2455651.45   #2455651.2798
-T_Min = -1
+T_Min = 2440000
 # Maximum value for the Time of Last Periapsis [JD]#2455653.765
-T_Max = -1
+T_Max = 2450000
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
 K_MIN = 0
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]

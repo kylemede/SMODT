@@ -473,6 +473,9 @@ int main(int argc ,char *argv[])
 				if (argPeri_deg_proposed<0)
 					argPeri_deg_proposed = argPeri_deg_proposed+360.0;
 			}
+			//fix for when arg peri is negative, which is not what we want.
+			if (argPeri_deg_proposed<0.0)
+				argPeri_deg_proposed = argPeri_deg_proposed+180.0;
         }
         else
         {

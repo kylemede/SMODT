@@ -89,11 +89,11 @@ eMIN = 0.00001
 # Maximum allowed value for the Eccentricity　[double]#0.29
 eMAX =  0.29
 # Minimum allowed value for the Period [double][yrs]
-periodMIN = 35
+periodMIN = 44
 # Maximum allowed value for the Period [double][yrs]
 periodMAX = 80
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMIN = 8
+a_totalMIN = 14
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMAX = 25
 # Minimum allowed value for the Inclination [double][deg]

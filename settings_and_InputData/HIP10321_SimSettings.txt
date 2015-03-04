@@ -1,73 +1,73 @@
 #These are all the general settings for the simulation
 
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
-Duo = true
+Duo =true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax = 100
+chiSquaredMax =1000
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 5000000
+numSamples =10000
 # The number of times to print status updates to the screen/terminal during the run [int]
-numSamplePrints = 10
+numSamplePrints =10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing = true
+useMultiProcessing =false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
-silent =true
+silent =True
 # set to 'true' to receive prints from the functions called by main for testing [bool]
 verbose =false
 # Directory where input data and settings files are [string, at least 2 chars long]
-settings_and_InputDataDir = /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/settings_and_InputData
+settings_and_InputDataDir =/mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/settings_and_InputData
 # Name of file where system data is [string, at least 2 chars long]
-SystemDataFilename = SystemData.txt
+SystemDataFilename =HIP10321_SystemData.txt
 # Name of file where Direct Imaging data is [string, at least 2 chars long]
-DIdataFilename = DIdata.dat
+DIdataFilename =HIP10321_DIdata.dat
 # Name of file where Radial Velocity data is [string, at least 2 chars long]
-RVdataFilename = RVdata.dat
+RVdataFilename =HIP10321_RVdata.dat
 # Directory where you want the output data folder to go [string, at least 2 chars long]
-outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
+outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = HR8799c-MCMC-FaceOn2
+outputData_filenameRoot =HIP10321-MCMC-singleRVoffset-extraJitterForSophie2-allOPEN
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-RVonly =false
+RVonly =True
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-DIonly = true
+DIonly =False
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
-mcONLY = false
+mcONLY =False
 # Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
-simAnneal = false
+simAnneal =False
 # Set to true to perform the 100 mod dataset MCMC loop
-loopedMCMC = false
+loopedMCMC =False
 # make plot of posterior distributions? [bool]
-makePosteriorsPlot = true
+makePosteriorsPlot =true
 # make plots of RV and DI/AM orbit fits [bool]
-makeOrbitPlots = true
+makeOrbitPlots =true
 # Make plots of Simulated Annealing progress plots? [bool]
-makeSimAnnealProgPlots = false
+makeSimAnnealProgPlots =false
 # Simulated Annealing starting temperature [double]
-startTemp = 500.0
+startTemp =500.0
 # Delete chain files after simulation is complete? [bool]
-delChainsAfter = true
+delChainsAfter =true
 # Delete combined data files after simulation is complete? [bool]
-delCombinedDataAfter = true
+delCombinedDataAfter =true
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
-TcStepping = false
+TcStepping =false
 # Copy output non-data files to a Dropbox folder? [bool]
-CopyToDrobox = false
+CopyToDrobox =false
 
 # Settings for MCMC mode (triggered by setting mcONLY=simAnneal=false):
 # Calculate the length of the burn in for each chain? [bool] 
-CalcBurnIn = False
+CalcBurnIn =False
 # Calculate the Correlation lengths of each chain? [bool]
-calcCorrLengths = false
+calcCorrLengths =false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 1000000
+numSamples_SimAnneal =5000000
 # Make plots of MCMC progress plots? [bool]
-makeMCMCprogPlots = false
+makeMCMCprogPlots =false
 # Calculate the Gelman-Rubin statistic? [bool]
-CalcGelmanRubin = false
+CalcGelmanRubin =false
 # How many times do you want the Gelman-Rubin statistic calculated [int]
-numTimesCalcGR = 100
+numTimesCalcGR =100
 
 # Settings for possible RV cases:
 # If RV data is of a companion star, set simulate_StarStar=true
@@ -76,45 +76,46 @@ numTimesCalcGR = 100
 # If a second companion exists with a known orbit, its values MUST 
 # be set in the 'SystemData.txt' file to ensure it is included in 
 # residual velocity calculations.
-simulate_StarStar = false
-simulate_StarPlanet = true
+simulate_StarStar =False
+simulate_StarPlanet =True
 
 # Ranges for acceptable random number inputs ######
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMIN = 0.0
+longAN_degMIN =0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMAX = 0.0
+longAN_degMAX =0.0
 # Minimum allowed value for the Eccentricity [double]
-eMIN = 0.0001
+eMIN =0.2
 # Maximum allowed value for the Eccentricity　[double]
-eMAX =  0.29
+eMAX =0.5
 # Minimum allowed value for the Period [double][yrs]
-periodMIN = 170
+periodMIN =17
 # Maximum allowed value for the Period [double][yrs]
-periodMAX = 300
+periodMAX =25.0
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMIN = 25
+a_totalMIN =0
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMAX = 55
+a_totalMAX =0
 # Minimum allowed value for the Inclination [double][deg]
-inclination_degMIN = 0.0
+inclination_degMIN =0
 # Maximum allowed value for the Inclination [double][deg]
-inclination_degMAX = 0.0
+inclination_degMAX =0.0
 # Minimum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMIN = 0.0
+argPeri_degMIN =90.0
 # Maximum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMAX = 0.0
+argPeri_degMAX =190.0
 # Minimum value for the Time of Last Periapsis [JD]#2455651.45   #2455651.2798
-T_Min = 2400000
+T_Min =-1
 # Maximum value for the Time of Last Periapsis [JD]#2455653.765
-T_Max = 2420000
+T_Max =-1
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MIN = 0
+K_MIN =500
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MAX = 0
-# Maximum values of Radial Velocity Offsets.  
-# Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMAXs = [0]
+K_MAX =1200
 # Minimum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMINs = [0]
+RVoffsetMINs =[5000,5000]
+# Maximum values of Radial Velocity Offsets.  
+# Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
+RVoffsetMAXs =[15000,15000]
+

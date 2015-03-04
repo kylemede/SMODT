@@ -26,7 +26,7 @@ RVdataFilename = RVdata.dat
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = HR8799c-MCMC-FaceOn2
+outputData_filenameRoot = HR8799c-MCMC-circular3
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -81,33 +81,33 @@ simulate_StarPlanet = true
 
 # Ranges for acceptable random number inputs ######
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMIN = 0.0
+longAN_degMIN = 80.0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMAX = 0.0
+longAN_degMAX = 160.0
 # Minimum allowed value for the Eccentricity [double]
-eMIN = 0.0001
+eMIN = 0.00
 # Maximum allowed value for the Eccentricity　[double]
-eMAX =  0.04
+eMAX =  0.0
 # Minimum allowed value for the Period [double][yrs]
-periodMIN = 170
+periodMIN = 145
 # Maximum allowed value for the Period [double][yrs]
-periodMAX = 250
+periodMAX = 260
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMIN = 35
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMAX = 45
+a_totalMAX = 48
 # Minimum allowed value for the Inclination [double][deg]
-inclination_degMIN = 0.0
+inclination_degMIN = 1.0
 # Maximum allowed value for the Inclination [double][deg]
-inclination_degMAX = 0.0
+inclination_degMAX = 50.0
 # Minimum allowed value for the Argument of Perigee [double][deg]
 argPeri_degMIN = 0.0
 # Maximum allowed value for the Argument of Perigee [double][deg]
 argPeri_degMAX = 0.0
 # Minimum value for the Time of Last Periapsis [JD]#2455651.45   #2455651.2798
-T_Min = 2400000
+T_Min = 2405000
 # Maximum value for the Time of Last Periapsis [JD]#2455653.765
-T_Max = 2420000
+T_Max = 2430000
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
 K_MIN = 0
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]

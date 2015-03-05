@@ -3,13 +3,13 @@
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
 Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax = 100
+chiSquaredMax = 3000
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 5000000
+numSamples = 200000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing = true
+useMultiProcessing = false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -26,12 +26,12 @@ RVdataFilename = RVdata.dat
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = HR8799c-MCMC-faceOn3
+outputData_filenameRoot = HR1412-mcONLY-RVonly
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-RVonly =false
+RVonly =true
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-DIonly = true
+DIonly = false
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
 mcONLY = false
 # Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
@@ -61,7 +61,7 @@ CalcBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths = false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 1000000
+numSamples_SimAnneal = 3000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots = false
 # Calculate the Gelman-Rubin statistic? [bool]
@@ -76,45 +76,45 @@ numTimesCalcGR = 100
 # If a second companion exists with a known orbit, its values MUST 
 # be set in the 'SystemData.txt' file to ensure it is included in 
 # residual velocity calculations.
-simulate_StarStar = false
-simulate_StarPlanet = true
+simulate_StarStar = true
+simulate_StarPlanet = false
 
 # Ranges for acceptable random number inputs ######
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMIN =0.0
+longAN_degMIN =1.0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMAX =0.0
-# Minimum allowed value for the Eccentricity [double]
+longAN_degMAX =180.0
+# Minimum allowed value for the Eccentricity [double]# 0.0001
 eMIN =0.0001
-# Maximum allowed value for the Eccentricity　[double]
-eMAX =0.04
+# Maximum allowed value for the Eccentricity　[double]#0.29
+eMAX =0.9
 # Minimum allowed value for the Period [double][yrs]
-periodMIN =170
+periodMIN =0.2
 # Maximum allowed value for the Period [double][yrs]
-periodMAX =250.0
+periodMAX =0.8
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMIN =35
+a_totalMIN =0.1
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMAX =45
+a_totalMAX =200
 # Minimum allowed value for the Inclination [double][deg]
 inclination_degMIN =0.0
 # Maximum allowed value for the Inclination [double][deg]
 inclination_degMAX =0.0
-# Minimum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMIN =1.0
-# Maximum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMAX =360.0
-# Minimum value for the Time of Last Periapsis [JD]#2455651.45   #2455651.2798
-T_Min =2400000
-# Maximum value for the Time of Last Periapsis [JD]#2455653.765
-T_Max =2420000
+# Minimum allowed value for the Argument of Perigee [double][deg] #100.0
+argPeri_degMIN =1
+# Maximum allowed value for the Argument of Perigee [double][deg]#450.0
+argPeri_degMAX =360
+# Minimum value for the Time of Last Periapsis [JD]
+T_Min =-1
+# Maximum value for the Time of Last Periapsis [JD]
+T_Max =-1
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MIN =0
+K_MIN =25000
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MAX =0
-# Maximum values of Radial Velocity Offsets.  
-# Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMAXs =[0]
+K_MAX =45000
 # Minimum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMINs =[0]
+RVoffsetMINs =[-100]
+# Maximum values of Radial Velocity Offsets.  
+# Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
+RVoffsetMAXs =[100]

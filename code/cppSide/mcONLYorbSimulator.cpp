@@ -494,7 +494,67 @@ int main(int argc ,char *argv[])
        // cout<<"mcONLYorbSimulator.cpp, line# "<<450<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         if (Tmin<TMIN)
         	Tmin = TMIN;
-        DIt.T = RanGen.UniformRandom(Tmin, TMAX); // thus between a full period before first observation and the time of first observation
+        if (SSO.TcStepping)
+			Tc_proposed = RanGen.UniformRandom(Tmin, TMAX);// thus between a full period before first observation and the time of first observation
+        else
+        	T_proposed = RanGen.UniformRandom(Tmin, TMAX); // thus between a full period before first observation and the time of first observation
+        //Calculate the T from Tc or vice versa
+        if (SSO.DIonly==false)
+		{
+			if (TMAX!=0)
+			{
+				if (SSO.TcStepping)
+				{
+					//cout<<" values in SYSdo: planet_T = "<< SYSdo.planet_T<<", star_T = "<<SYSdo.star_T <<endl;
+					if (SSO.simulate_StarPlanet==true)
+						T_proposed = SYSdo.planet_T;
+					else
+						T_proposed = SYSdo.star_T;
+				}
+				else
+				{
+					//cout<<" values in SYSdo: planet_Tc = "<<SYSdo.planet_Tc <<", star_Tc = "<< SYSdo.star_Tc<<endl;
+					if (SSO.simulate_StarPlanet==true)
+						Tc_proposed = SYSdo.planet_Tc;
+					else
+						Tc_proposed = SYSdo.star_Tc;
+				}
+			}
+			else
+			{
+				if (SSO.simulate_StarPlanet==true)
+				{
+					T_proposed = SYSdo.planet_T;
+					Tc_proposed = SYSdo.planet_Tc;
+				}
+				else
+				{
+					T_proposed = SYSdo.star_T;
+					Tc_proposed = SYSdo.star_Tc;
+				}
+			}
+			//cout<<"T in = "<<T_proposed <<", Tc in = "<< Tc_proposed<<endl;
+
+			//update non-updated T if it was 0 in the dictionary
+			if ((T_proposed==0)||(Tc_proposed==0))
+			{
+				// calculate starting To from provided Tc, or the other way around it TcStepping==False
+				// calculate the To value from proposed values (omega, e, P & Tc)
+				eccArgPeri2ToTcType EATT;
+				EATT.period = period_proposed;
+				EATT.argPeri_deg = argPeri_deg_proposed;
+				EATT.e = e_proposed;
+				EATT.To = T_proposed;
+				EATT.Tc= Tc_proposed;
+				EATT = GT.eccArgPeri2ToTcCalc(EATT);
+				//cout<<"T in = "<<T_proposed <<", Tc in = "<< Tc_proposed<<", T out = "<<EATT.To <<", Tc out = "<< EATT.Tc<<endl;
+				T_proposed = EATT.To;
+				Tc_proposed = EATT.Tc;
+			}
+		}
+		else
+			Tc_proposed = T_proposed;
+        DIt.T = T_proposed;
         //cout<<"mcONLYorbSimulator.cpp, line# "<<454<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         //reset RVoffsets_proposed vector and get current param vals for K and offsets.
         vector<double> RVoffsets_proposed;
@@ -581,6 +641,8 @@ int main(int argc ,char *argv[])
         	ss<<"Sys_Dist_PC = "<< DIt.Sys_Dist_PC<<"\n";
         	ss<<"Mass1 = "<<DIt.Mass1 <<"\n";
         	ss<<"Mass2 = "<< DIt.Mass2<<"\n";
+        	ss<<"K = "<<K_proposed<<"\n";
+        	ss<<"Tc = "<<Tc_proposed<<"\n";
         	ss<<  "T = "<< DIt.T  <<"\n\n";
         	printLine2 = ss.str();
 			ss.clear();
@@ -676,6 +738,8 @@ int main(int argc ,char *argv[])
         		RVdo.star_e  = DIt.e ;
         		RVdo.star_T  = DIt.T ;
         		RVdo.star_P  = DIt.period ;
+        		if (vary_K)
+        		  	RVdo.star_K = K_proposed;
         		RVdo.star_Mass2  = DIt.Mass2 ;
         		RVdo.star_argPeri  = DIt.argPeri_deg ;
         		RVdo.star_inc  = DIt.inclination_deg ;

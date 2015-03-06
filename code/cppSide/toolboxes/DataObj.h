@@ -32,6 +32,8 @@ public:
 
 	// Orbital params for companion star
 	// (for if investigating orbit of planet around primary star)
+	double star_K;
+	double star_K_error;
 	double star_e;
 	double star_e_error;
 	double star_T;

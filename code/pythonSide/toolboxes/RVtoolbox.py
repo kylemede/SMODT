@@ -6,6 +6,7 @@ import os
 import pylab
 from math import pi
 from DItoolbox import *
+import generalToolbox as genTools
 
 def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
     """
@@ -370,7 +371,7 @@ def rv1bodyCalculator(RV_epochs, RVs, RVerrors, sigma_jitter, i, p, e, T, argPer
         (v_r_c, K_c) = vrCalculatorStar2(RV_epochs[epoch],e, T, p, argPeri, a, i=i, K=False, verbose=False)
         
         # calculate chiSquared for this epoch
-        chiSquaredCurr = chiSquaredCalc(RVs[epoch], (RVerrors[epoch]+sigma_jitter), (v_r_c))
+        chiSquaredCurr =genTools.chiSquaredCalc(RVs[epoch], (RVerrors[epoch]+sigma_jitter), (v_r_c))
         
         chiSquaredTotal = chiSquaredTotal + chiSquaredCurr
         
@@ -411,7 +412,7 @@ def rv1bodyCalculator2(RV_epochs, RVs, RVerrors, sigma_jitter, p, e, T, argPeri,
         # calculate the velocity residual due to the companion 
         (v_r_c, K_c) = vrCalculatorPlanet(RV_epochs[epoch],e, T, p, argPeri,M1,M2SineI=M2SineI, K=False, verbose=False)
         # calculate chiSquared for this epoch
-        chiSquaredCurr = chiSquaredCalc(RVs[epoch], (RVerrors[epoch]+sigma_jitter), (v_r_c))
+        chiSquaredCurr =genTools.chiSquaredCalc(RVs[epoch], (RVerrors[epoch]+sigma_jitter), (v_r_c))
         
         chiSquaredTotal = chiSquaredTotal + chiSquaredCurr
         
@@ -459,7 +460,7 @@ def rv2bodyCalculator3(RV_epochs, RVs, RVerrors, sigma_jitter, M1, M2_c, i_c, p_
         (v_r_p, K_p) = vrCalculatorPlanet(RV_epochs[epoch], e_p, T_p, p_p, argPeri_p, M1, M2SineI=False, K=K_p, verbose=False)
 
         # calculate chiSquared for this epoch
-        chiSquaredCurr = chiSquaredCalc(RVs[epoch], (RVerrors[epoch]+sigma_jitter), (v_r_c+v_r_p))
+        chiSquaredCurr =genTools.chiSquaredCalc(RVs[epoch], (RVerrors[epoch]+sigma_jitter), (v_r_c+v_r_p))
         
         chiSquaredTotal = chiSquaredTotal + chiSquaredCurr
         
@@ -505,7 +506,7 @@ def rv2bodyCalculator4(RV_epochs, RVs, RVerrors, sigma_jitter, M1, a1, i_c, p_c,
         (v_r_p, K_p) = vrCalculatorPlanet(RV_epochs[epoch], e_p, T_p, p_p, argPeri_p, M1, M2SineI=False, K=K_p, verbose=False)
         
         # calculate chiSquared for this epoch
-        chiSquaredCurr = chiSquaredCalc(RVs[epoch], (RVerrors[epoch]+sigma_jitter), (v_r_c+v_r_p))
+        chiSquaredCurr =genTools.chiSquaredCalc(RVs[epoch], (RVerrors[epoch]+sigma_jitter), (v_r_c+v_r_p))
         
         chiSquaredTotal = chiSquaredTotal + chiSquaredCurr
         
@@ -597,7 +598,7 @@ def vrCalculatorStar(t,e,T,period,argPeri,M1,M2,T_center=0,i=False, K=False, ver
     """
         
     if (K==False) and (i==False):
-        print 'vrCalcStar1268: The value of i and K cannot both be False, one MUST be defined'
+        print 'vrCalcStar601: The value of i and K cannot both be False, one MUST be defined'
     if (K==False) and (i!=False):
         if period==0:
             K=0

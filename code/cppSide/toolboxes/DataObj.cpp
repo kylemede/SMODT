@@ -49,6 +49,8 @@ void DataObj::systemDataLoadUp(const char* filename)
 
 	// Orbital params for companion star
 	// (for if investigating orbit of star around primary star)
+	star_K = 0;
+	star_K_error = 0;
 	star_e = 0;
 	star_e_error = 0;
 	star_T = 0;
@@ -413,6 +415,34 @@ void DataObj::systemDataLoadUp(const char* filename)
 						cout<<"planet_inc_error: "<<planet_inc_error<<endl;
 				}
 				// Orbital params for the possible well studied companion star
+				else if ((key.compare("star_K")==0)&&(key.compare("star_K_error")!=0))
+				{
+					double valOut;
+					ss<<val;
+					ss>>valOut;
+					ss.clear();
+					ss.str(std::string());
+					if (valOut>100000 or valOut<0)
+						valOut = star_K;
+					else
+						star_K = valOut;
+					if (verbose)
+						cout<<"star_K: "<<star_K<<endl;
+				}
+				else if (key.compare("star_K_error")==0)
+				{
+					double valOut;
+					ss<<val;
+					ss>>valOut;
+					ss.clear();
+					ss.str(std::string());
+					if (valOut>100000 or valOut<0)
+						valOut = star_K_error;
+					else
+						star_K_error = valOut;
+					if (verbose)
+						cout<<"star_K_error: "<<star_K_error<<endl;
+				}
 				else if ((key.compare("star_e")==0)&&(key.compare("star_e_error")!=0))
 				{
 					double valOut;

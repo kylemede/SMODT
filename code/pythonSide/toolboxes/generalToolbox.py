@@ -2297,6 +2297,10 @@ def sysDataToDict(filename):
                         if verbose:
                             print 'planet_argPeri found to be = '+str(returnDict['planet_argPeri'])
                     # load up companion star data
+                    elif ('star_K'in key) and ('error' not in key):
+                        valUse=returnDict['star_K']=float(val)
+                        if verbose:
+                            print 'star_K found to be = '+str(returnDict['star_K'])
                     elif ('star_e'in key) and ('error' not in key):
                         valUse=returnDict['star_e']=float(val)
                         if verbose:

@@ -606,6 +606,7 @@ VRcalcStarStar generalTools::VRcalcStarStarLoadUp(RVdataObj RVdo)
 	 * general RVdataObj.
 	 */
 	VRcalcStarStar VRCss;
+	VRCss.K_s = RVdo.star_K;
 	VRCss.T_s = RVdo.star_T;
 	VRCss.Tc_s = RVdo.star_Tc;
 	VRCss.argPeri_deg_s = RVdo.star_argPeri;

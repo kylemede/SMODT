@@ -3,9 +3,9 @@
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
 Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax = 3000
+chiSquaredMax = 420
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 200000
+numSamples = 1000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
@@ -26,7 +26,7 @@ RVdataFilename = RVdata.dat
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = HR1412-mcONLY-RVonly
+outputData_filenameRoot = HR1412-mcmc-RVonly
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =true
@@ -45,11 +45,11 @@ makeOrbitPlots = true
 # Make plots of Simulated Annealing progress plots? [bool]
 makeSimAnnealProgPlots = false
 # Simulated Annealing starting temperature [double]
-startTemp = 500.0
+startTemp = 5000.0
 # Delete chain files after simulation is complete? [bool]
 delChainsAfter = true
 # Delete combined data files after simulation is complete? [bool]
-delCombinedDataAfter = true
+delCombinedDataAfter = false
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 TcStepping = false
 # Copy output non-data files to a Dropbox folder? [bool]
@@ -61,7 +61,7 @@ CalcBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths = false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 3000000
+numSamples_SimAnneal = 30000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots = false
 # Calculate the Gelman-Rubin statistic? [bool]
@@ -81,11 +81,11 @@ simulate_StarPlanet = false
 
 # Ranges for acceptable random number inputs ######
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMIN =1.0
+longAN_degMIN =0.0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMAX =180.0
+longAN_degMAX =0.0
 # Minimum allowed value for the Eccentricity [double]# 0.0001
-eMIN =0.0001
+eMIN =0.1
 # Maximum allowed value for the Eccentricity　[double]#0.29
 eMAX =0.9
 # Minimum allowed value for the Period [double][yrs]
@@ -95,26 +95,26 @@ periodMAX =0.8
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMIN =0.1
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMAX =200
+a_totalMAX =600
 # Minimum allowed value for the Inclination [double][deg]
 inclination_degMIN =0.0
 # Maximum allowed value for the Inclination [double][deg]
 inclination_degMAX =0.0
 # Minimum allowed value for the Argument of Perigee [double][deg] #100.0
-argPeri_degMIN =1
+argPeri_degMIN =200
 # Maximum allowed value for the Argument of Perigee [double][deg]#450.0
-argPeri_degMAX =360
+argPeri_degMAX =300
 # Minimum value for the Time of Last Periapsis [JD]
 T_Min =-1
 # Maximum value for the Time of Last Periapsis [JD]
 T_Max =-1
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MIN =25000
+K_MIN =39000
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MAX =45000
+K_MAX =35000
 # Minimum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMINs =[-100]
+RVoffsetMINs =[-1000]
 # Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMAXs =[100]
+RVoffsetMAXs =[1000]

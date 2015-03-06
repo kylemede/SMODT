@@ -2379,7 +2379,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     planet's mass in the system data file/ provided dict, to calculate the residual vel.  If the value
     in the dictionary/file is actually, please set inc=0 to tell this func to ignore it and use the file's value.
     """
-    verbose = False
+    verbose = True
     
     ## make string with input values for possible printing
     s= '\nInputs to rvPlotterDuo were:'+'\n'
@@ -2526,6 +2526,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     if star_Tc==0:
         (To,Tcent) = genTools.eccArgPeri2ToTcCalc(star_e, star_P, star_argPeri, star_T, Tc=0)
         star_Tc = Tcent
+    star_K = sysDataDict["star_K"]
     star_inc = sysDataDict["star_inc"]
     star_Mass2 = sysDataDict["star_Mass2"]
     
@@ -2542,6 +2543,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     star_Ts = []
     star_Tcs = []
     star_Ps = []
+    star_Ks = []
     star_argPeris = []
     star_incs = []
     K_use = False
@@ -2600,7 +2602,17 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         star_Ps = period
         star_argPeris = argPeri_deg
         star_incs = inc
+        star_Ks = K
+        K_use = K[0]
         Mass2 = star_Mass2
+#         for orb in range(0,len(e)):
+#             star_es.append(star_e)
+#             star_Ts.append(star_T)
+#             star_Tcs.append(star_Tc)
+#             star_Ps.append(star_P)
+#             star_argPeris.append(star_argPeri)
+#             star_Ks.append(star_K)
+#             star_incs.append(star_inc)
     else:
         for orb in range(0,len(e)):
             star_es.append(star_e)
@@ -2608,6 +2620,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             star_Tcs.append(star_Tc)
             star_Ps.append(star_P)
             star_argPeris.append(star_argPeri)
+            star_Ks.append(star_K)
             star_incs.append(star_inc)
             
     residuals3 = []
@@ -2652,6 +2665,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             s=s+ "\nstar_Ps[orb] = "+str(star_Ps[orb])
             s=s+ "\nstar_argPeris[orb] = "+str(star_argPeris[orb])
             s=s+ "\na1_s = "+str(a1_s)
+            s=s+ "\nstar_Ks[orb] = "+str(star_Ks[orb])
             s=s+ "\nstar_incs[orb] = "+str(star_incs[orb])
             #s=s+ "\nstar_Ks[orb] = "+str(star_Ks[orb])
             log.write(s+'\n')
@@ -2668,7 +2682,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                 if (star_Ps[orb]==0):
                     (v_r_c,K_s)=(0,0)
                 else:
-                    (v_r_c,K_s) = rvTools.vrCalculatorStar2(epochs[epoch],star_es[orb],T[orb],star_Ps[orb],star_argPeris[orb],a1_s,T_center=star_Tcs[orb],i=star_incs[orb], K=False, verbose=False)
+                    (v_r_c,K_s) = rvTools.vrCalculatorStar2(epochs[epoch],star_es[orb],T[orb],star_Ps[orb],star_argPeris[orb],a1_s,T_center=star_Tcs[orb],i=star_incs[orb], K=star_Ks[orb], verbose=False)
                 # calculate the velocity residual due to the planet around primary
                 if (planet_Ps[orb]==0):
                     (v_r_p,K_p)=(0,0)
@@ -3026,11 +3040,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         for dataset in range(0,len(RVs)):
             residual_trimmed = []
             for epoch in range(0,len(residuals3[orb][dataset])):
-                if 2449767.0263<=RV_epochsIN2[dataset][epoch]:
-                    residual_trimmed.append(residuals3[orb][dataset][epoch]/RV_errors[dataset][epoch])
+                residual_trimmed.append(residuals3[orb][dataset][epoch]/RV_errors[dataset][epoch])
         residuals2_trimmed.append(residual_trimmed)
     residuals3_trimmed.append(residuals2_trimmed)
-    
+    print "len(RV_epochsIN2) = "+str(RV_epochsIN2)+"\n"+"len(residuals3) = "+str(residuals3)+"\n"+"len(residual_trimmed) = "+str(residual_trimmed)+"\n"+"len(residuals2_trimmed) = "+str(residuals2_trimmed)+"\n"+"len(residuals3_trimmed) = "+str(residuals3_trimmed)+"\n"   #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     fig3 = plt.figure(3,figsize=(10,10))
     residualsGaussian = fig3.add_subplot(111)
     residualsGaussian.hist(residuals3_trimmed,normed=1)

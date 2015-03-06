@@ -55,7 +55,7 @@ void simAnealOrbFuncObj::simulator()
 	double chiSquaredMin_RV=SSO.chiSquaredMax;
 	if (SSO.DIonly==true)
 		chiSquaredMin_RV=0;
-	chiSquaredMin = 10000000;//SSO.chiSquaredMax;
+	chiSquaredMin = 10000000000;//SSO.chiSquaredMax;
 	double DI_chiSquared = 0;
 	double RV_chiSquared = 0;
 	double numDIepochs = 0;

@@ -5,16 +5,16 @@ Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax = 42000000
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 100000
+numSamples = 1
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
 useMultiProcessing = false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
-silent =true
+silent =false
 # set to 'true' to receive prints from the functions called by main for testing [bool]
 verbose =false
-# Directory where input data and settings files are [string, at least 2 chars long]
+# Directory where input data and settings fileconcieveds are [string, at least 2 chars long]
 settings_and_InputDataDir = /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/settings_and_InputData
 # Name of file where system data is [string, at least 2 chars long]
 SystemDataFilename = SystemData.txt
@@ -26,7 +26,7 @@ RVdataFilename = RVdata.dat
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = HR1412-mcmc-RVonly
+outputData_filenameRoot = HR1412-mconly-negAvels-RVonly-shiftTest2
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =true
@@ -34,8 +34,8 @@ RVonly =true
 DIonly = false
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
 mcONLY = false
-# Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
-simAnneal = false
+# Set to true to perform only Simulate Annealing, else MCMC will be ran after Simulated Annealing
+simAnneal = true
 # Set to true to perform the 100 mod dataset MCMC loop
 loopedMCMC = false
 # make plot of posterior distributions? [bool]
@@ -61,7 +61,7 @@ CalcBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths = false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal = 500000
+numSamples_SimAnneal = 1
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots = false
 # Calculate the Gelman-Rubin statistic? [bool]
@@ -85,13 +85,13 @@ longAN_degMIN =0.0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 longAN_degMAX =0.0
 # Minimum allowed value for the Eccentricity [double]# 0.0001
-eMIN =0.01
+eMIN =0.73
 # Maximum allowed value for the Eccentricity　[double]#0.29
-eMAX =0.8
+eMAX =0.74
 # Minimum allowed value for the Period [double][yrs]
-periodMIN =0.1
+periodMIN =0.38
 # Maximum allowed value for the Period [double][yrs]
-periodMAX =0.5
+periodMAX =0.39
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMIN =0.1
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
@@ -101,20 +101,20 @@ inclination_degMIN =0.0
 # Maximum allowed value for the Inclination [double][deg]
 inclination_degMAX =0.0
 # Minimum allowed value for the Argument of Perigee [double][deg] #100.0
-argPeri_degMIN =1
+argPeri_degMIN =250
 # Maximum allowed value for the Argument of Perigee [double][deg]#450.0
-argPeri_degMAX =360
+argPeri_degMAX =251
 # Minimum value for the Time of Last Periapsis [JD]
-T_Min =-1
+T_Min =2447750
 # Maximum value for the Time of Last Periapsis [JD]
-T_Max =-1
+T_Max =2447751
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MIN =3000
+K_MIN =46904
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MAX =50000
+K_MAX =46905
 # Minimum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMINs =[-40000]
+RVoffsetMINs =[-1177]
 # Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMAXs =[40000]
+RVoffsetMAXs =[-1176]

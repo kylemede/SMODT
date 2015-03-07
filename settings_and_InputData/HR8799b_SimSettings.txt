@@ -5,7 +5,7 @@ Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax = 100
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 5000000
+numSamples = 20000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
@@ -26,7 +26,7 @@ RVdataFilename = RVdata.dat
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = HR8799b-MCMC-faceOn3
+outputData_filenameRoot = HR8799b-MCMC-circular3
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -34,7 +34,7 @@ RVonly =false
 DIonly = true
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
 mcONLY = false
-# Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
+# Set to true to perform only Simulate Annealing, else MCMC will be ran after Simulated Annealing
 simAnneal = false
 # Set to true to perform the 100 mod dataset MCMC loop
 loopedMCMC = false
@@ -81,33 +81,33 @@ simulate_StarPlanet = true
 
 # Ranges for acceptable random number inputs ######
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMIN =0.0
+longAN_degMIN =1.0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMAX =0.0
+longAN_degMAX =80.0
 # Minimum allowed value for the Eccentricity [double]
-eMIN =0.00001
+eMIN =0.000
 # Maximum allowed value for the Eccentricity　[double]
-eMAX =0.03
+eMAX =0.0
 # Minimum allowed value for the Period [double][yrs]
-periodMIN =350
+periodMIN =375
 # Maximum allowed value for the Period [double][yrs]
-periodMAX =525.0
+periodMAX =650.0
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMIN =55
+a_totalMIN =60
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMAX =69.5
+a_totalMAX =90
 # Minimum allowed value for the Inclination [double][deg]
-inclination_degMIN =0.0
+inclination_degMIN =1.0
 # Maximum allowed value for the Inclination [double][deg]
-inclination_degMAX =0.0
+inclination_degMAX =50.0
 # Minimum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMIN =1.0
+argPeri_degMIN =0
 # Maximum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMAX =360.0
-# Minimum value for the Time of Last Periapsis [JD]#2455651.45   #2455651.2798
-T_Min =-1
-# Maximum value for the Time of Last Periapsis [JD]#2455653.765
-T_Max =-1
+argPeri_degMAX =0.0
+# Minimum value for the Time of Last Periapsis [JD]
+T_Min =2250000
+# Maximum value for the Time of Last Periapsis [JD]
+T_Max =2350000
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
 K_MIN =0
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]

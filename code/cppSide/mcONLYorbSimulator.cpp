@@ -838,8 +838,8 @@ int main(int argc ,char *argv[])
 					{
 						cout<<"\nWorking on epoch "<<epoch<<endl;
 						//cout<<"\noffset = "<< RVoffsets_proposed[dataset]<<endl;
-						cout<<"RVdo.RVs[dataset][epoch] = "<<RVdo.RVs[dataset][epoch]<<", ("<<RVdo.RVs[dataset][epoch]<<" - "<<RVoffsets_proposed[dataset]<<")="<<(RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]) <<", planetVR= "<< planetVR<<", companionStarVR= "<< companionStarVR<<endl;
-						cout<<"Difference = "<<RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]-planetVR<<endl;
+						cout<<"RVdo.RVs[dataset][epoch] = "<<RVdo.RVs[dataset][epoch]<<", RVoffsets_proposed = "<<RVoffsets_proposed[dataset]<<", -> ("<<RVdo.RVs[dataset][epoch]<<" - "<<RVoffsets_proposed[dataset]<<")="<<(RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]) <<", planetVR= "<< planetVR<<", companionStarVR= "<< companionStarVR<<endl;
+						cout<<"Difference = "<<RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]-planetVR-companionStarVR<<endl;
 						cout<<"ChiSquared for this RV is = "<<RV_chiSquared_cur<<endl;
 						cout<<"Total NON-reducedChiSquared so far is = "<<RV_chiSquared_original<<endl;
 					}
@@ -854,7 +854,7 @@ int main(int argc ,char *argv[])
         	RV_chiSquared_reduced = one_over_nu_RV*RV_chiSquared_original;
         	if ( SSO.silent==false )
         	{
-				cout<<"\numRVepochs = "<< numRVepochs <<endl;
+				cout<<"\nnumRVepochs = "<< numRVepochs <<endl;
 				cout<<"one_over_nu_RV = "<< one_over_nu_RV <<endl;
 				cout<<"RV_chiSquared_original = "<< RV_chiSquared_original<<endl;
 				cout<<"RV_chiSquared_reduced = "<< RV_chiSquared_reduced <<endl;

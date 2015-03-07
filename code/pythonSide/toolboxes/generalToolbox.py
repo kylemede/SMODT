@@ -1541,7 +1541,7 @@ def confLevelFinderNEWdataVersion(filename, columNum=False, returnData=False, re
         line4: space delimited data
     
     """
-    verboseInternal = True
+    verboseInternal = False
     bestCentered = False
 
 #     gotLog=True

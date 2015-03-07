@@ -627,6 +627,8 @@ void MCMCorbFuncObj::simulator()
 					RVdo.star_Tc = Tc_proposed;
 					RVdo.star_P = DIt.period ;
 					//RVdo.star_Mass2 = DIt.Mass2 ;
+					if (vary_K)
+						RVdo.star_K = K_proposed;
 					RVdo.star_argPeri = argPeri_deg_proposed ;
 					RVdo.star_inc = DIt.inclination_deg ;
 					RVdo.star_Mass2 =  DIt.Mass2;
@@ -638,13 +640,14 @@ void MCMCorbFuncObj::simulator()
 						cout<<"Starting to calculate residual vel for star-planet"<<endl;
 					// instantiate S-P calc object and load up its params
 					//VRcalcStarPlanet VRCsp;
-					//generate latest params for planet VR calcs from Gaussians
+					//generate latest params for planet VR calcs from Gaussians  $$$$ Make this a boolean in settings files $$$$
 					if (false)
 					{
 						if (SSO.simulate_StarStar==true)
 						{
 							RVdo2.planet_e = RanGen2.NormalTrunc(RVdo.planet_e,RVdo.planet_e_error,3.0*RVdo.planet_e_error);
 							RVdo2.planet_T = RanGen2.NormalTrunc(RVdo.planet_T,RVdo.planet_T_error,3.0*RVdo.planet_T_error);
+							RVdo2.planet_Tc = RanGen2.NormalTrunc(RVdo.planet_Tc,RVdo.planet_Tc_error,3.0*RVdo.planet_Tc_error);
 							RVdo2.planet_P = RanGen2.NormalTrunc(RVdo.planet_P,RVdo.planet_P_error,3.0*RVdo.planet_P_error);
 							if (RVdo.planet_K>0)
 								RVdo2.planet_K=0;
@@ -692,13 +695,14 @@ void MCMCorbFuncObj::simulator()
 					// instantiate S-S calc object and load up its params
 					//VRcalcStarStar VRCss;
 
-					//generate latest params for planet VR calcs from Gaussians
+					//generate latest params for planet VR calcs from Gaussians  $$$$ Make this a boolean in settings files $$$$
 					if (false)
 					{
 						if (SSO.simulate_StarStar==true)
 						{
 							RVdo2.star_e = RanGen2.NormalTrunc(RVdo.star_e,RVdo.star_e_error,3.0*RVdo.star_e_error);
 							RVdo2.star_T = RanGen2.NormalTrunc(RVdo.star_T,RVdo.star_T_error,3.0*RVdo.star_T_error);
+							RVdo2.star_Tc = RanGen2.NormalTrunc(RVdo.star_Tc,RVdo.star_Tc_error,3.0*RVdo.star_Tc_error);
 							RVdo2.star_P = RanGen2.NormalTrunc(RVdo.star_P,RVdo.star_P_error,3.0*RVdo.star_P_error);
 							RVdo2.star_argPeri = RanGen2.NormalTrunc(RVdo.star_argPeri,RVdo.star_argPeri_error,3.0*RVdo.star_argPeri_error);
 							RVdo2.star_inc = RanGen2.NormalTrunc(RVdo.star_inc,RVdo.star_inc_error,3.0*RVdo.star_inc_error);
@@ -768,8 +772,8 @@ void MCMCorbFuncObj::simulator()
 						RV_chiSquared = RV_chiSquared + RV_chiSquared_cur;
 						if ( SSO.silent==false )
 						{
-							cout<<"\noffset = "<< RVoffsets_proposed[dataset]<<endl;
-							cout<<"RVdo.RVs[dataset][epoch] = "<<RVdo.RVs[dataset][epoch]<<", ("<<RVdo.RVs[dataset][epoch]<<" - "<<RVoffsets_proposed[dataset]<<")="<<(RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]) <<", planetVR= "<< planetVR<<", companionStarVR= "<< companionStarVR<<endl;
+							cout<<"\nWorking on epoch "<<epoch<<endl;
+							cout<<"RVdo.RVs[dataset][epoch] = "<<RVdo.RVs[dataset][epoch]<<", RVoffsets_proposed = "<<RVoffsets_proposed[dataset]<<", -> ("<<RVdo.RVs[dataset][epoch]<<" - "<<RVoffsets_proposed[dataset]<<")="<<(RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]) <<", planetVR= "<< planetVR<<", companionStarVR= "<< companionStarVR<<endl;
 							cout<<"Difference = "<<RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]-planetVR-companionStarVR<<endl;
 							cout<<"ChiSquared for this RV is = "<<RV_chiSquared_cur<<endl;
 							cout<<"Total NON-reducedChiSquared so far is = "<<RV_chiSquared<<endl;

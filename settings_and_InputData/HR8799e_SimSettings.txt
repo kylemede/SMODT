@@ -5,7 +5,7 @@ Duo = true
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax = 100
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 10000000
+numSamples = 100000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
@@ -34,7 +34,7 @@ RVonly =false
 DIonly = true
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
 mcONLY = false
-# Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
+# Set to true to perform only Simulate Annealing, else MCMC will be ran after Simulated Annealing
 simAnneal = false
 # Set to true to perform the 100 mod dataset MCMC loop
 loopedMCMC = false

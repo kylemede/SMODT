@@ -14,7 +14,53 @@ from math import pi
 """
 This toolbox is a collection of the calculator type functions that were used in multiple 
 places throughout the code to conduct various types of binary star system simulations.
-"""     
+"""   
+def bestOrbitFileToList(filename=''):
+    """
+    This will pull out the best fit values in the 'bestOrbit.txt' file produced with the 
+    bestOrbitFinderNEW func.
+    File format must be:
+    
+    Best orbit found:
+    LongAN = 0.0
+    e = 0.733664
+    To = 2447750.77847
+    Tc = 2447619.90861
+    period = 0.386953410656
+    inclination = 0.0
+    argPeri = 333.56844
+    a_total = 0.90924
+    K = 19474.7451436
+    RV offset 1 =-1177.10579991
+    chiSquaredMin = 58589.1863931
+    """  
+    verboseInternal = False
+
+    if os.path.exists(filename):
+        file = open(filename)
+        lines = file.readlines()
+        empty = lines[0]
+        header = lines[1]
+        longANBest = float(lines[2].split("=")[-1])
+        eBest = float(lines[3].split("=")[-1])
+        TBest = float(lines[4].split("=")[-1])
+        TcBest = float(lines[5].split("=")[-1])
+        periodBest = float(lines[6].split("=")[-1])
+        incBest = float(lines[7].split("=")[-1])
+        argPeriBest = float(lines[8].split("=")[-1])
+        aBest = float(lines[9].split("=")[-1])
+        KBest = float(lines[10].split("=")[-1])
+        rvOffsetsBest = []
+        if len(lines)>12:
+            for dataset in range(11,len(lines)-1):
+                rvOffsetsBest.append(float(lines[dataset].split("=")[-1]))
+        chiSquaredBest = float(lines[-1].split("=")[-1])
+        
+    if len(rvOffsetsBest)>0:
+       list = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, rvOffsetsBest]
+    else:
+       list = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest]
+    
      
 def eccArgPeri2ToTcCalc(e, period, argPeri_deg, To, Tc=0):
     
@@ -95,51 +141,61 @@ def bestOrbitFinderNEW(filename, printToScreen=True, saveToFile=True, returnAsLi
     KBest = 0
     rvOffsetsBest=[]
     
-    # strip off the .txt part to make the plot version of the filename
-    print "\nWorking on file: "+os.path.basename(filename)
-    f = open(filename, 'r')
-    plotFileTitle = f.readline()[:-5]
-    headings = f.readline()
-    line = 'asdf'
-    while line!='':
-        line = f.readline()
-        if line!='':
-            dataLineCols = line.split()
-            chiSquared = float(dataLineCols[8])
-            
-            if (chiSquared<lowestChiSquared)and(chiSquared>0.00001):
-                lowestChiSquared = chiSquared
-                incBest = float(dataLineCols[5])
-                eBest = float(dataLineCols[1])
-                longANBest = float(dataLineCols[0])
-                periodBest = float(dataLineCols[4])
-                argPeriBest = float(dataLineCols[6])
-                aBest = float(dataLineCols[7])
-                TBest = float(dataLineCols[2])
-                TcBest = float(dataLineCols[3])
-                if len(dataLineCols)>11:
-                    KBest = float(dataLineCols[9])
-                    rvOffsetsBest=[]
-                    for dataset in range(0,int(len(dataLineCols) - 11)):
-                        rvOffsetsBest.append(float(dataLineCols[10+dataset]))
-            
-    # print the values for the best orbit
-    line= '\nBest orbit found:'
-    line=line+ "\nLongAN = "+str(longANBest)
-    line=line+ "\ne = "+str(eBest)
-    line=line+ "\nTo = "+str(TBest)
-    line=line+ "\nTc = "+str(TcBest)
-    line=line+ "\nperiod = "+str(periodBest)
-    line=line+ "\ninclination = "+str(incBest)
-    line=line+ "\nargPeri = "+str(argPeriBest)
-    line=line+ "\na_total = "+str(aBest)
-    line=line+ "\nK = "+str(KBest)
-    for dataset in range(0,len(rvOffsetsBest)):
-        line = line+ "\nRV offset "+str(dataset+1)+" ="+str(rvOffsetsBest[dataset])
-    line=line+ "\nchiSquaredMin = "+str(lowestChiSquared)
+    list = []
+    bestOrbitFilename = os.path.join(os.path.basename(filename),'bestOrbit.txt')
+    if os.path.exists(bestOrbitFilename):
+        list = bestOrbitFileToList(bestOrbitFilename)
+    else:
+        # strip off the .txt part to make the plot version of the filename
+        print "\nWorking on file: "+os.path.basename(filename)
+        f = open(filename, 'r')
+        plotFileTitle = f.readline()[:-5]
+        headings = f.readline()
+        line = 'asdf'
+        while line!='':
+            line = f.readline()
+            if line!='':
+                dataLineCols = line.split()
+                chiSquared = float(dataLineCols[8])
+                
+                if (chiSquared<lowestChiSquared)and(chiSquared>0.00001):
+                    lowestChiSquared = chiSquared
+                    incBest = float(dataLineCols[5])
+                    eBest = float(dataLineCols[1])
+                    longANBest = float(dataLineCols[0])
+                    periodBest = float(dataLineCols[4])
+                    argPeriBest = float(dataLineCols[6])
+                    aBest = float(dataLineCols[7])
+                    TBest = float(dataLineCols[2])
+                    TcBest = float(dataLineCols[3])
+                    if len(dataLineCols)>11:
+                        KBest = float(dataLineCols[9])
+                        rvOffsetsBest=[]
+                        for dataset in range(0,int(len(dataLineCols) - 11)):
+                            rvOffsetsBest.append(float(dataLineCols[10+dataset]))
+                
+        # print the values for the best orbit
+        s= '\nBest orbit found:'
+        s=s+ "\nLongAN = "+str(longANBest)
+        s=s+ "\ne = "+str(eBest)
+        s=s+ "\nTo = "+str(TBest)
+        s=s+ "\nTc = "+str(TcBest)
+        s=s+ "\nperiod = "+str(periodBest)
+        s=s+ "\ninclination = "+str(incBest)
+        s=s+ "\nargPeri = "+str(argPeriBest)
+        s=s+ "\na_total = "+str(aBest)
+        s=s+ "\nK = "+str(KBest)
+        for dataset in range(0,len(rvOffsetsBest)):
+            s = s+ "\nRV offset "+str(dataset+1)+" ="+str(rvOffsetsBest[dataset])
+        s=s+ "\nchiSquaredMin = "+str(lowestChiSquared)
+        
+        if len(rvOffsetsBest)>0:
+            list = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, rvOffsetsBest]
+        else:
+            list = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest]
     
     if printToScreen:
-        print line
+        print s
     
     if saveToFile:
         outFilename = os.path.dirname(filename)+'/bestOrbit.txt'
@@ -147,15 +203,11 @@ def bestOrbitFinderNEW(filename, printToScreen=True, saveToFile=True, returnAsLi
             print '\nbestOrbFinderNEW68: Warning: '+outFilename+' all ready exists, so not overwriting.'
         else:
             f = open(outFilename, 'w')
-            f.write(line)
+            f.write(s)
             f.close()
             print '\nbestOrbFinderNEW68: Best orbit values saved to: '+outFilename
             
     if returnAsList:
-        if len(rvOffsetsBest)>0:
-            list = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, rvOffsetsBest]
-        else:
-            list = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest]
         return list 
     
 def burnInCalc3(chiSquareds, medianALLchains,jumpy=True):

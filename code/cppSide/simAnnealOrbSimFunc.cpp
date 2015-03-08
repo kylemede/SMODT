@@ -1233,6 +1233,9 @@ void simAnealOrbFuncObj::simulator()
 				//cout<<"argPeri_deg_proposed checked and result was = "<< ALLpassedStr <<endl;//$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			}
 		}
+		// Forcing to 90 if not varying it, indicated mostly with MIN && MAX==0
+		if ((SSO.argPeri_degMAX==0)&&(SSO.argPeri_degMIN==0))
+			argPeri_deg_proposed = 90.0;
 		if (SSO.a_totalMAX!=0)
 		{
 			if ((a_total_proposed>SSO.a_totalMAX)||(a_total_proposed<SSO.a_totalMIN))

@@ -482,8 +482,11 @@ int main(int argc ,char *argv[])
         	if (SSO.eMAX!=0)
         		e_proposed = RanGen.UniformRandom(SSO.eMIN, SSO.eMAX);
         	if (SSO.argPeri_degMAX!=0)
-        			argPeri_deg_proposed = RanGen.UniformRandom(SSO.argPeri_degMIN, SSO.argPeri_degMAX);
+        		argPeri_deg_proposed = RanGen.UniformRandom(SSO.argPeri_degMIN, SSO.argPeri_degMAX);
         }
+        // Forcing to 90 if not varying it, indicated mostly with MIN && MAX==0
+		if ((SSO.argPeri_degMAX==0)&&(SSO.argPeri_degMIN==0))
+			argPeri_deg_proposed = 90.0;
         //cout<<"mcONLYorbSimulator.cpp, line# "<<443<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         DIt.e = e_proposed;
         DIt.argPeri_deg = argPeri_deg_proposed;

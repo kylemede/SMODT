@@ -26,7 +26,7 @@ RVdataFilename = RVdata.dat
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
 #########################################################################################################################
-outputData_filenameRoot = HR8799b-MCMC-circular3
+outputData_filenameRoot = HR8799b-MCMC-circular4
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -81,17 +81,17 @@ simulate_StarPlanet = true
 
 # Ranges for acceptable random number inputs ######
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMIN =1.0
+longAN_degMIN =20.0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMAX =80.0
+longAN_degMAX =100.0
 # Minimum allowed value for the Eccentricity [double]
 eMIN =0.000
 # Maximum allowed value for the Eccentricity　[double]
 eMAX =0.0
 # Minimum allowed value for the Period [double][yrs]
-periodMIN =375
+periodMIN =420
 # Maximum allowed value for the Period [double][yrs]
-periodMAX =650.0
+periodMAX =500.0
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMIN =60
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
@@ -105,7 +105,7 @@ argPeri_degMIN =0
 # Maximum allowed value for the Argument of Perigee [double][deg]
 argPeri_degMAX =0.0
 # Minimum value for the Time of Last Periapsis [JD]
-T_Min =2250000
+T_Min =2310000
 # Maximum value for the Time of Last Periapsis [JD]
 T_Max =2350000
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]

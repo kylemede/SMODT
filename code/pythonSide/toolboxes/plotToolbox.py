@@ -1833,8 +1833,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     ##************************************************************************************
     ##****************** Calculate the predicted location and fixed JDs ******************
     ##************************************************************************************
-    ts = [2452847,
-          2453166
+    ts = [2457235.500000,
+          2457357.500000
           ]
     
     for orb in range(0,len(longAN_deg)):
@@ -1854,15 +1854,15 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             s2=s2+str(x)+'    '+str(y)+'\n'
             s3=s3+str(SA)+'     '+str(PA)+'\n'
         s=s+ '@'*50+"\n"
-        s=s+ '\n       *** Excel Format ***\n       x                  y      \n'
+        s=s+ '\n       *** Excel Format ***\n       x                         y      \n'
         s=s+ s2
         
-        s = s+'\n       SA           PA        \n'
+        s = s+'\n       SA                  PA        \n'
         s=s+s3
         
         print s
-        
         log.write(s+'\n')
+        PredictedLocationString = s
         
     ##************************************************************************************
     ##************************************************************************************
@@ -1923,11 +1923,13 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         Yend = -Yend
     endStar = star((asConversion/1000.0)*0.6*a[0], Xend, Yend, color='purple', N=20, thin = 0.5)
       
+    colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
+    
     #######################################################################################              
     ## Get the calculated chiSquared fit to the data for these orbital parameters
     legendStr = ''
     for orb in range(0,len(longAN_deg)):
-        legendStr = legendStr+"\nFor orbit # "+str(orb)+':\n'
+        legendStr = legendStr+"\nFor orbit # "+str(orb)+' (color = '+colorsList[orb]+') :\n'
         legendStr = legendStr+"inc[orb] = "+str(inc[orb])+'\n'
         legendStr = legendStr+"longAN_deg[orb] = "+str(longAN_deg[orb])+'\n'
         legendStr = legendStr+"e[orb] = "+str(e[orb])+'\n'
@@ -1957,7 +1959,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         
     # Draw orbits
     for orb in range(0,len(longAN_deg)):
-        main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2) #$$$$ add title, labels, axes
+        main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2,color=colorsList[orb]) #$$$$ add title, labels, axes
     # Draw Ellipse ## found this didn't work and thus the orbit method above is used now.
     #main.plot(X,Y, c='black')
     
@@ -2083,6 +2085,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         ## Create figure for writting the sorta legend to
         fig = plt.figure(1,figsize=(10,10))
         #main = fig.add_subplot(111)
+        if True:
+            legendStr = legendStr+"\n\n"+PredictedLocationString
         fig.text(0.05,0.05,legendStr,ha='left')
         if plotFilename!='':
             legendFigFilename = plotFilename[:-4]+"-paramInfo.png"
@@ -2240,68 +2244,93 @@ def diPlotterTester(outputDatafile=''):
 def PostSimCompleteAnalysisFunc(outputDatafile=''):
     """
     A function that performs many of the post simulation completion plotting 
-    or Gelman Rubin statistic calculations as done in MCMC_ProcessManager.  This 
+    or Gelman Rubin statistic calculations as done in ProcessManager.  This 
     can be used for custom plotting or testing, or to perform any plotting that 
     was turned off in the initial run of a simulation that you might now want.
     """
+    ####################################################
+    ## Determine the files and riectories for input files
+    ####################################################
+    baseDir = ""
+    prepend = ""
     if outputDatafile=='':
-        sysDatafilename = os.path.join("/mnt/Data1/Todai_Work/Dropbox/workspace/Binary-project/SimSettings_and_InputData",'SystemData.txt')
-        RVdatafilename = os.path.join("/mnt/Data1/Todai_Work/Dropbox/workspace/Binary-project/SimSettings_and_InputData",'RVdata.dat')
-        inputSettingsFile = os.path.join("/mnt/Data1/Todai_Work/Dropbox/workspace/Binary-project/SimSettings_and_InputData",'SimSettings.txt')
-    else:
-        sysDatafilename = os.path.join(os.path.dirname(outputDatafile),'code-used/SystemData.txt')
-        RVdatafilename = os.path.join(os.path.dirname(outputDatafile),'code-used/RVdata.dat')
-        inputSettingsFile = os.path.join(os.path.dirname(outputDatafile),'code-used/SimSettings.txt')
+        #baseDir = "/mnt/Data1/Todai_Work/Dropbox/EclipseWorkspace/SMODT/settings_and_InputData"
+        baseDir = "/mnt/Data1/Todai_Work/Data/data_SMODT/HR8799e-MCMC-75PercentDecreasedErrors-updatedOct2010Vals-oldTos-circular5--70-Million-in_Total/outputData-ALL.dat"
+        prepend = "HR8799e_"
+    elif outputDatafile!="":
+        baseDir = os.path.dirname(outputDatafile)
+        prepend = baseDir.split("/")[-1].split("-")[0]+"_"
+        print "\n\nUSING the prepend '"+prepend+"'\n\n"
+    sysDatafilename = os.path.join(baseDir,"code-used/"+prepend+'SystemData.txt')
+    RVdatafilename = os.path.join(baseDir,"code-used/"+prepend+'RVdata.dat')
+    inputSettingsFile = os.path.join(baseDir,"code-used/"+prepend+'SimSettings.txt')
+    ####################################################
+    # Get data dicts
+    ####################################################
     sysDataDict = genTools.sysDataToDict(sysDatafilename)
     RVdataDict = rvTools.RVdataToDict(RVdatafilename)
     paramSettingsDict = genTools.cFileToSimSettingsDict(inputSettingsFile)
-    
+    ####################################################
+    # Make output plot filenames
+    ####################################################
     numModDataSets = 10
-    rvPlotFilename = os.path.join(os.path.dirname(outputDatafile),"RVplot-Manual")#"DotaniAndButlerPre1995PlanetOrbitFit"
-    diPlotFilename = os.path.join(os.path.dirname(outputDatafile),"DIplot-Manual")
+    rvPlotFilename = os.path.join(baseDir,"RVplot-Manual")
+    diPlotFilename = os.path.join(baseDir,"DIplot-Manual")
     modDatasetsFilename =  os.path.join("/mnt/Data1/Todai_Work/Data/data_Binary/data_Duo","mod"+str(numModDataSets)+"Dataset.dat")
     TvsEccPlotFilename = os.path.join("/mnt/Data1/Todai_Work/Data/data_Binary/data_Duo","TvsEccentricityPlot")
-    
-    ## get nu value, then calculate chiSquared cut off
-    # get log
-    logFilename = os.path.join(os.path.dirname(outputDatafile),'log-chain_1.txt')
-    [nu,nuRV,nuDI,printStr] = genTools.findNuFromLog(logFilename)
-    
     if outputDatafile=='':
-        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_Binary/data_Duo/DotaniAndButlerPre1995-planetOrbit-results/looped5000MCMC-TauBoo-RVonly-ButlerANDdonati-noPre1995data-TrendRemoved-planet-chiSquaredUpdate-withoutFlaggedPoints-nonLogEccePriors-3--700-Thousand-in_Total/outputData-ALL.dat"
-        summaryPlotFile = os.path.join("/run/media/Kyle/Data1/Todai_Work/Data/data_Binary/data_Duo","SummaryPlot-Manual")
+        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/DotaniAndButlerPre1995-planetOrbit-results/looped5000MCMC-TauBoo-RVonly-ButlerANDdonati-noPre1995data-TrendRemoved-planet-chiSquaredUpdate-withoutFlaggedPoints-nonLogEccePriors-3--700-Thousand-in_Total/outputData-ALL.dat"
+        summaryPlotFile = os.path.join("/run/media/Kyle/Data1/Todai_Work/Data/data_SMODT","SummaryPlot-Manual")
     else:
         os.path.abspath(outputDatafile)
-        summaryPlotFile = os.path.join(os.path.dirname(outputDatafile),"SummaryPlot-Manual")
+        summaryPlotFile = os.path.join(baseDir,"SummaryPlot-Manual")
+    ####################################################
+    ## get nu value, then calculate chiSquared cut off
+    # get log
+    ####################################################
+    logFilename = os.path.join(baseDir,'log-chain_1.txt')
+    [nu,nuRV,nuDI,printStr] = genTools.findNuFromLog(logFilename)
 
+    ####################################################
+    # combine output chain data files into one $$$$$$$$$ Not sure why you would need this anymore though...$$$
+    ####################################################
     if False:
         numChains = 7
         dataFiles = []
-        dataFinalFilename = os.path.join(os.path.dirname(outputDatafile),'outputData-ALL.dat')
+        dataFinalFilename = os.path.join(baseDir,'outputData-ALL.dat')
         for num in range(1,numChains+1):
-            fname = os.path.join(os.path.dirname(outputDatafile),'outputData-chain_'+str(num)+'.dat')
+            fname = os.path.join(baseDir,'outputData-chain_'+str(num)+'.dat')
             dataFiles.append(fname)
             print 'Adding filename to list: '+fname
         genTools.dataFileCombiner(dataFiles, dataFinalFilename)
         
-    if True:      
-        print '#'*50
-        bestOrbit = genTools.bestOrbitFinderNEW(outputDatafile, printToScreen=True, saveToFile=True, returnAsList=True)
-        print '#'*50
-        longAns = bestOrbit[0]
-        e = bestOrbit[1]
-        period = bestOrbit[4]
-        inc = bestOrbit[5]
-        argPeri_deg = bestOrbit[6]
-        a = bestOrbit[7]
-        T = bestOrbit[2]
-        Tc = bestOrbit[3]
-        K = bestOrbit[8]
-        if paramSettingsDict["DIonly"]==False:
-            print 'DIonly = '+repr(paramSettingsDict["DIonly"])
-            RVoffsets=bestOrbit[9]
-            
+    ####################################################
+    # Perform orbit plotting, either DI, RV or both
+    ####################################################
+    if True:    
+        bestOrbit = []  
+        try:
+            print '#'*50
+            bestOrbit = genTools.bestOrbitFinderNEW(outputDatafile, printToScreen=True, saveToFile=True, returnAsList=True)
+            print '#'*50
+            #longAN = bestOrbit[0]
+            e = bestOrbit[1]
+            period = bestOrbit[4]
+            inc = bestOrbit[5]
+            argPeri_deg = bestOrbit[6]
+            a = bestOrbit[7]
+            T = bestOrbit[2]
+            Tc = bestOrbit[3]
+            K = bestOrbit[8]
+            if paramSettingsDict["DIonly"]==False:
+                print 'DIonly = '+repr(paramSettingsDict["DIonly"])
+                RVoffsets=bestOrbit[9]
+        except:
+            print 'No data file was provided and no bestOrbit.txt file existed in the directory provided, so the best orbit values could not be found!!!!'
+        #################################################### 
         ## Now manually choose what you want to plot
+        ####################################################
+        ##############   RV plot(s)  #######################
         if False:
             ## make RV fit plot
             rvPlotter(e,T,Tc,period,inc,argPeri_deg,a, \
@@ -2315,18 +2344,20 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
             ## Make bootstrap type data for RV data
             rvModDatasetMaker(e, T, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, paramSettingsDict,\
                      RVoffsets=RVoffsets, modDatasetsFilename=modDatasetsFilename, numModDatasets=numModDataSets)
-        if False:
+        ##############   DI plot(s)  #######################
+        if True:
             ## Make a DI fit plot
-            DIdatafilename = os.path.join(os.path.dirname(outputDatafile),'code-used/DIdata.dat')
+            DIdatafilename = os.path.join(baseDir,"code-used/"+prepend+'DIdata.dat')
             DIdataDict = diTools.DIdataToDict(DIdatafilename)
             if True:
-                longANs = [bestOrbit[0],28.4,169.96,174.0]
-                argPeris = [bestOrbit[6],99.34,0.67,322.0]
-                incs = [bestOrbit[5],51.68,70.6,49.0]
-                periods = [bestOrbit[4],2000.0,389.25,996.0]
-                a_totals = [bestOrbit[7],245.0,98.41,120.0]
-                Ts = [bestOrbit[2],1727754.0,2331859.0,2100788.0]
-                es = [bestOrbit[1],0.91,0.4189,0.76]
+                longANs = [138.74,144.09]
+                argPeris = [90,90]
+                incs = [35.07,40.66]
+                periods = [59.47,64.84]
+                a_totals = [17.67,19.15]
+                Ts = [2433023.17,2431325.09]
+                es = [0.0,0.0]
+                #if 
             else:
                 longANs = [bestOrbit[0]]
                 argPeris = [bestOrbit[6]]
@@ -2338,6 +2369,10 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
            
             orbitEllipsePlotter(longANs,es,periods,incs,argPeris,a_totals,\
                              sysDataDict,DIdataDict,plotFilename=diPlotFilename,show=False,To=Ts, nuDI=nuDI)  
+    ####################################################
+    # Extra non-orbit plots and statistic calculations
+    ####################################################
+    ##############   Parameter Summary plot(s)  #######################
     if False:
         ## make MCMC progress plots
         numChains = 7
@@ -2345,20 +2380,20 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
         for num in range(1,numChains+1):
             fileList.append(os.path.join(os.path.dirname(outputDatafile),'outputData-chain_'+str(num)+'.txt'))
         summaryPlotter2MCMC(outputDatafile, summaryPlotFile+"-MCMCprogress", weight=False, confLevels=True, nu=1, SimPlanetStar=paramSettingsDict["simulate_StarPlanet"])
-    if True:
+    if False:
         ## Make the posterior prob histograms.
         summaryPlotter(outputDatafile, summaryPlotFile, weight=False, confLevels=True, nu=1, plot4x1=False)
     if False:
+        ## Make the 'cleaned' posterior prob histograms
         makeCleanSummaryPlot(outputDatafile)
-    
+    ##############   Scatter plot(s)  #######################
     if False:
         ## make a scatter hist figure ###$$$ not sure if this works right now.
         outDict = genTools.outputDatafileToDict(outputDatafile)
-        #outDict["Ts"]
-        #outDict["es"]
         #esCLevels = ConfLevelFunc(chiSquareds,outDict["es"])
         chiSquareds = outDict["chiSquareds"]
         histAndScatterPlotter(outDict["Ts"], outDict["es"], xLabel='Ts', yLabel='es', plotFilename=TvsEccPlotFilename, xLim=False, yLim=False, show=True, save=False)
+    ############### Calc wrap up statistics ####################
     if False:
         ### Perform second round of Gelman-Rubin
         numChains = 7
@@ -3571,7 +3606,7 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
         RVoffsets = [RVoffsets]
        
     cwd = os.getcwd()
-    if '/Toolboxes'==cwd[-10:]:
+    if '/toolboxes'==cwd[-10:]:
         os.chdir(cwd[:-9])
         print '\nTemporarily changed cwd to '+os.getcwd()
     

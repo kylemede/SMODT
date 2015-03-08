@@ -185,131 +185,133 @@ def RVdataToDict(filename):
         print 'Changing output filename from '+filename+' to '+filename+'.dat'
         filename = filename+'.dat'
     
-    # First load first file into memory
-    file = open(filename, 'r')
-    lines = file.readlines()
-    INtitle = lines[0]
-    colHeaders = lines[1]
-    numLines = len(lines)
-    file.close()
-    
-    lineNum = 0
-    gotNumColumns = False
-    numColumns = 0
-    while (lineNum<numLines) and (gotNumColumns==False):
-        if lines[lineNum][0]=='#':
-            #comment line so do nothing
-            gotNumColumns = False
-        elif len(lines[lineNum])<=2:
-            #blank line so do nothing
-            gotNumColumns = False
-        else:
-            gotNumColumns = True
-            numColumns = len(lines[lineNum].split())
-        lineNum = lineNum+1
-    
-    dataDict = {}
-    obsDates2 = []
-    RVs2 = []
-    RV_errors2 = []
-    Jitters2 = []
-    reachedEndOfDataset = True
-    obsDates = []
-    RVs = []
-    RV_errors = []
-    Jitters = [0]
-    numEpochs = 0
-
-    if ((numColumns is not 4) and (numColumns is not 3)):
-        print 'WARNING: There must be 3 or 4columns of data to use RVdataToDict!'
-        print str(numColumns)+" were found."
-        print 'The line the columns were counted with was:'+lines[2]
-    else:
+    if os.path.exists(filename):
+        # First load first file into memory
+        file = open(filename, 'r')
+        lines = file.readlines()
+        INtitle = lines[0]
+        colHeaders = lines[1]
+        numLines = len(lines)
+        file.close()
+        
+        lineNum = 0
+        gotNumColumns = False
+        numColumns = 0
+        while (lineNum<numLines) and (gotNumColumns==False):
+            if lines[lineNum][0]=='#':
+                #comment line so do nothing
+                gotNumColumns = False
+            elif len(lines[lineNum])<=2:
+                #blank line so do nothing
+                gotNumColumns = False
+            else:
+                gotNumColumns = True
+                numColumns = len(lines[lineNum].split())
+            lineNum = lineNum+1
+        
+        dataDict = {}
+        obsDates2 = []
+        RVs2 = []
+        RV_errors2 = []
+        Jitters2 = []
         reachedEndOfDataset = True
         obsDates = []
         RVs = []
         RV_errors = []
         Jitters = [0]
-        for lineNum in range(2,numLines):
-            if verbose:
-                print 'cur line:'+lines[lineNum]
-            # Check if line is a comment
-            if lines[lineNum][0]!='#':
-                if reachedEndOfDataset:
-                    obsDates = []
-                    RVs = []
-                    RV_errors = []
-                    Jitters = []
-                    
-                vals =  lines[lineNum].split()
-                if len(vals)==3 or len(vals)==4:
-                    if verbose:
-                        print 'Found a dataline on linenum '+str(lineNum)+", and it was:"+lines[lineNum]
-                    reachedEndOfDataset = False
-                    try:
-                        obsDates.append(float(vals[0]))
-                        RVs.append(float(vals[1]))
-                        RV_errors.append(float(vals[2]))
-                        numEpochs+=1
-                        if verbose:
-                            print str(len(vals))+" values were loaded the data arrays"
-                    except:
-                        if verbose:
-                            print "WARNING: found line that didn't have good data in RVdataToDict"
-                            print "line was:"+lines[lineNum]
-                            print "The line had "+str(len(vals))+", values extracted"
-                            print "continuing to next line."
-                            if len(vals)>=3:
-                                print 'The first value was:'+str(float(vals[0]))
-                                print 'The second value was:'+str(float(vals[1]))
-                                print 'The third value was:'+str(float(vals[2]))
-                                
-                if len(vals)==4:
-                    reachedEndOfDataset = False
-                    Jitters.append(float(vals[3]))
-                if (((len(vals)==0)or(lineNum==(numLines-1)))and(reachedEndOfDataset==False)):
-                    # blank line, or last line in file, so it means we are onto next dataset
-                    if verbose:
-                        print "loading a dataset of length "+str(len(RVs))+' into the ouput data array'
-                    reachedEndOfDataset = True
-                    obsDates2.append(obsDates)
-                    RVs2.append(RVs)
-                    RV_errors2.append(RV_errors)
-                    Jitters2.append(Jitters)
-       
-    # all lines loaded int lists, so convert into dict
-    dataDict['RV_epochs'] = obsDates2
-    dataDict['RVs'] = RVs2
-    dataDict['RV_errors'] = RV_errors2
-    dataDict['numEpochs'] = numEpochs
+        numEpochs = 0
     
-    if verbose:
-        print 'A total of '+str(len(RVs2))+" epochs of RV data were loaded"
-    
-    ## Update errors with the jitter values if they exist.
-    RV_errors2_updated = []
-    for dataset in range(0,len(RVs2)):
-        jitter = 0
-        RV_errors_updated = []
-        for epoch in range(0,len(RV_errors2[dataset])):
-            if len(Jitters2[dataset])==0:
-                Jitters2[dataset] = [0]
-            elif len(Jitters2[dataset])==1:
-                jitter = Jitters2[dataset][0]
-            elif len(Jitters2[dataset])==len(RV_errors2[dataset]):
-                jitter = Jitters2[dataset][epoch]   
-            errorOut = math.sqrt(RV_errors2[dataset][epoch]**2.0 + jitter**2.0)
-            RV_errors_updated.append(errorOut)
-            if verbose:
-                print 'Input RV_error = ',RV_errors2[dataset][epoch]
-                print 'Input Jitter = ',jitter
-                print 'Output RV_error = ',errorOut
-        RV_errors2_updated.append(RV_errors_updated)
+        if ((numColumns is not 4) and (numColumns is not 3)):
+            print 'WARNING: There must be 3 or 4columns of data to use RVdataToDict!'
+            print str(numColumns)+" were found."
+            print 'The line the columns were counted with was:'+lines[2]
+        else:
+            reachedEndOfDataset = True
+            obsDates = []
+            RVs = []
+            RV_errors = []
+            Jitters = [0]
+            for lineNum in range(2,numLines):
+                if verbose:
+                    print 'cur line:'+lines[lineNum]
+                # Check if line is a comment
+                if lines[lineNum][0]!='#':
+                    if reachedEndOfDataset:
+                        obsDates = []
+                        RVs = []
+                        RV_errors = []
+                        Jitters = []
+                        
+                    vals =  lines[lineNum].split()
+                    if len(vals)==3 or len(vals)==4:
+                        if verbose:
+                            print 'Found a dataline on linenum '+str(lineNum)+", and it was:"+lines[lineNum]
+                        reachedEndOfDataset = False
+                        try:
+                            obsDates.append(float(vals[0]))
+                            RVs.append(float(vals[1]))
+                            RV_errors.append(float(vals[2]))
+                            numEpochs+=1
+                            if verbose:
+                                print str(len(vals))+" values were loaded the data arrays"
+                        except:
+                            if verbose:
+                                print "WARNING: found line that didn't have good data in RVdataToDict"
+                                print "line was:"+lines[lineNum]
+                                print "The line had "+str(len(vals))+", values extracted"
+                                print "continuing to next line."
+                                if len(vals)>=3:
+                                    print 'The first value was:'+str(float(vals[0]))
+                                    print 'The second value was:'+str(float(vals[1]))
+                                    print 'The third value was:'+str(float(vals[2]))
+                                    
+                    if len(vals)==4:
+                        reachedEndOfDataset = False
+                        Jitters.append(float(vals[3]))
+                    if (((len(vals)==0)or(lineNum==(numLines-1)))and(reachedEndOfDataset==False)):
+                        # blank line, or last line in file, so it means we are onto next dataset
+                        if verbose:
+                            print "loading a dataset of length "+str(len(RVs))+' into the ouput data array'
+                        reachedEndOfDataset = True
+                        obsDates2.append(obsDates)
+                        RVs2.append(RVs)
+                        RV_errors2.append(RV_errors)
+                        Jitters2.append(Jitters)
+           
+        # all lines loaded int lists, so convert into dict
+        dataDict['RV_epochs'] = obsDates2
+        dataDict['RVs'] = RVs2
+        dataDict['RV_errors'] = RV_errors2
+        dataDict['numEpochs'] = numEpochs
         
-    dataDict['RV_errors'] = RV_errors2_updated
-    dataDict['jitters'] = Jitters2
-
-    return dataDict
+        if verbose:
+            print 'A total of '+str(len(RVs2))+" epochs of RV data were loaded"
+        
+        ## Update errors with the jitter values if they exist.
+        RV_errors2_updated = []
+        for dataset in range(0,len(RVs2)):
+            jitter = 0
+            RV_errors_updated = []
+            for epoch in range(0,len(RV_errors2[dataset])):
+                if len(Jitters2[dataset])==0:
+                    Jitters2[dataset] = [0]
+                elif len(Jitters2[dataset])==1:
+                    jitter = Jitters2[dataset][0]
+                elif len(Jitters2[dataset])==len(RV_errors2[dataset]):
+                    jitter = Jitters2[dataset][epoch]   
+                errorOut = math.sqrt(RV_errors2[dataset][epoch]**2.0 + jitter**2.0)
+                RV_errors_updated.append(errorOut)
+                if verbose:
+                    print 'Input RV_error = ',RV_errors2[dataset][epoch]
+                    print 'Input Jitter = ',jitter
+                    print 'Output RV_error = ',errorOut
+            RV_errors2_updated.append(RV_errors_updated)
+            
+        dataDict['RV_errors'] = RV_errors2_updated
+        dataDict['jitters'] = Jitters2
+        return dataDict
+    else:
+        print "filename '"+filename+"' does not exist!!!"
    
 def rvResidualWithoutPlanetResidual():
     """

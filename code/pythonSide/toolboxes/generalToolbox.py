@@ -1028,7 +1028,7 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
             logFilename = os.path.join(datadir,'processManagerLogFile.txt')
         if os.path.exists(logFilename):
             log = open(logFilename,'a')
-            log.write('\n'+75*'-'+'\n Inside confLevelFinderNEWdataVersion \n'+75*'-'+'\n')
+            log.write('\n'+75*'-'+'\n Inside dataReaderNew2 \n'+75*'-'+'\n')
         else:
             gotLog=False
             
@@ -1787,6 +1787,7 @@ def confLevelFinderNEWdataVersion(filename, columNum=False, returnData=False, re
         gotLog=False
         if log:
             gotLot=True
+            log.write('\n'+75*'-'+'\n Inside confLevelFinderNEWdataVersion \n'+75*'-'+'\n')
             
         if len(dataAry>0):
             #Convert data array to a numpy array

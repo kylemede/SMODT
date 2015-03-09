@@ -419,7 +419,7 @@ def star(R, x0, y0, color='w', N=5, thin = 0.5):
         angle = i*pi/N
         r = R*(1-thin*(i%2))
         polystar[i] = [r*np.cos(angle)+x0, r*np.sin(angle)+y0]
-    return Polygon(polystar, fc=color, ec=color)    
+    return Polygon(polystar, fc=color, ec='black',linewidth=1.5)    
 
 def starAndErrorPolys(SAs,SAerrors,PAs,PAerrors,asConversion, transData, telescopeView=False):
     """
@@ -462,14 +462,14 @@ def starAndErrorPolys(SAs,SAerrors,PAs,PAerrors,asConversion, transData, telesco
         if ymin>yCorner:
             ymin = yCorner
             
-        rect = patches.Rectangle((xCorner,yCorner),width=w,height=h,color='red',alpha=0.2)
+        rect = patches.Rectangle((xCorner,yCorner),width=w,height=h,facecolor='black',edgecolor='black',alpha=1.0,linewidth=1.5)
         t = pylab.matplotlib.transforms.Affine2D().rotate_deg_around(xCent,yCent,-PAs[i]) +transData
         rect.set_transform(t)
         errorBoxes.append(rect)
         
         # determin x and y locations of the observed PA and SA's for companion star/planet
         # then make a star polygon for each, same as for M1 but much smaller
-        m2starPolygons.append(star((asConversion/1000.0)*7.0*SAs[0], xCent, yCent, color='red', N=5, thin = 0.8))
+        m2starPolygons.append(star((asConversion/1000.0)*12.0*SAs[0], xCent, yCent, color='red', N=5, thin = 0.5))
         
     return (errorBoxes, m2starPolygons,[xmin,xmax,ymin,ymax])
 
@@ -1684,7 +1684,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     :param sys_dist:        Distance to System in [pc]
     :type sys_dist:         float
     """
-    
+    colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     mas = False
     if mas:
         asConversion = 1000.0
@@ -1829,40 +1829,87 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         ellipseXs2.append(ellipseXs)
         ellipseYs2.append(ellipseYs)
         
+    ######################################################################
+    #$$ HACK!  Trying to plot errors of plots $$$$$$$
+    ###################################################################### 
+    incErrors = [33.0,33.1,inc[0],  19.0,19.1,inc[1],  40.0,40.2,inc[2]]
+    longAN_degErrors = [125.1,145.3,longAN_deg[0], 92.0,131.0,longAN_deg[1], 137.5,148.5,longAN_deg[2]]
+    eErrors = [0,0,0.0,0.0,0,0,0,0,0]
+    periodErrors = [54.5,60.9,period[0],  48.5,53.9,period[1],  61.5,67.0,period[2]]
+    argPeri_degErrors = [90,90,90.0,90.0,90,90,90,90,90]
+    aErrors = [16.7,17.,a[1],  14.99,15.53,a[1],  18.7,19.2,a[2]]
+    
+    ellipseErrorsXs2 = []
+    ellipseErrorsYs2 = []
+    for orb in range(0,len(longAN_degErrors)):
+        ellipseErrorsXs = []
+        ellipseErrorsYs = []
+        numSteps = 5000.0
+        periodIncrement = (periodErrors[orb]*365.25)/numSteps
+        t = 1.0 
+        for step in range(0,int(numSteps)):
+            T = 0.0
+            t = t + periodIncrement
+            (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, a1, a2) =\
+                diTools.orbitCalculatorSAPA(t, sys_dist, incErrors[orb], longAN_degErrors[orb], eErrors[orb], T, periodErrors[orb], argPeri_degErrors[orb], aErrors[orb],\
+                                                            Mass1=1, Mass2=1, verbose=False)
+            #(PA, SA) = PASAcalculator(period, t, T, e, inc, longAN_deg, argPeri_deg, sys_dist, a, a1=0, verbose=False)
+            #orbitTAs.append(TA_deg)
+            #orbitPAs.append(PA)
+            #orbitSAs.append(SA)
+            ellipseErrorsX = SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
+            ellipseErrorsY = SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
+            if telescopeView:
+                ellipseErrorsX = -ellipseErrorsX
+                ellipseErrorsY = -ellipseErrorsY
+            ellipseErrorsXs.append(ellipseErrorsX)
+            ellipseErrorsYs.append(ellipseErrorsY)
+            #sep_dist = math.sqrt(math.pow(ellipseX,2.0)+math.pow(ellipseY,2.0))
+            #sep_dists.append(sep_dist)
+        ellipseErrorsXs2.append(ellipseErrorsXs)
+        ellipseErrorsYs2.append(ellipseErrorsYs)
+        
     
     ##************************************************************************************
     ##****************** Calculate the predicted location and fixed JDs ******************
     ##************************************************************************************
-    ts = [2457235.500000,
-          2457357.500000
-          ]
-    
-    for orb in range(0,len(longAN_deg)):
-        s= '@'*50+'\n'
-        s=s+ "Calculating the predicted location of the companion for a fixed list of epochs:\n\n"
-        s2=''
-        s3=''
-        print 'To[orb] = '+str(To[orb])#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        for t in ts:
-            (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, a1, a2) =\
-                diTools.orbitCalculatorSAPA(t, sys_dist, inc[orb], longAN_deg[orb], e[orb], To[orb], period[orb], argPeri_deg[orb], a[orb],\
-                                                            Mass1=1, Mass2=1, verbose=False)
-                
-            x = SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
-            y = SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
-            s=s+ 'Epoch '+str(t)+': x = '+str(x)+' , y = '+str(y)+'\n'
-            s2=s2+str(x)+'    '+str(y)+'\n'
-            s3=s3+str(SA)+'     '+str(PA)+'\n'
-        s=s+ '@'*50+"\n"
-        s=s+ '\n       *** Excel Format ***\n       x                         y      \n'
-        s=s+ s2
-        
-        s = s+'\n       SA                  PA        \n'
-        s=s+s3
-        
-        print s
-        log.write(s+'\n')
-        PredictedLocationString = s
+    predictedXs = []
+    predictedYs = []
+    PredictedLocationString=''
+    predictedPatches = []
+    if True:
+        ts = [2457235.500000,
+              2457357.500000
+              ]
+        for orb in range(0,len(longAN_deg)):
+            s= '@'*50+'\n'
+            s+="for Orbit # "+str(orb)+"\n"
+            s=s+ "Calculating the predicted location of the companion for a fixed list of epochs:\n\n"
+            s2=''
+            s3=''
+            print 'To[orb] = '+str(To[orb])#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            for t in ts:
+                (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, a1, a2) =\
+                    diTools.orbitCalculatorSAPA(t, sys_dist, inc[orb], longAN_deg[orb], e[orb], To[orb], period[orb], argPeri_deg[orb], a[orb],\
+                                                                Mass1=1, Mass2=1, verbose=False)
+                    
+                x = SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
+                y = SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
+                predictedXs.append(x)
+                predictedYs.append(y)
+                predictedLocPatch = star((asConversion/1000.0)*0.4*a[0], x, y, color=colorsList[orb], N=8, thin = 0.5)
+                predictedPatches.append(predictedLocPatch)
+                s=s+ 'Epoch '+str(t)+': x = '+str(x)+' , y = '+str(y)+'\n'
+                s2=s2+str(x)+'    '+str(y)+'\n'
+                s3=s3+str(SA)+'     '+str(PA)+'\n'
+            s=s+ '@'*50+"\n"
+            #s=s+ '\n       *** Excel Format ***\n       x                         y      \n'
+            #s=s+ s2
+            #s = s+'\n       SA                  PA        \n'
+            #s=s+s3
+            print s
+            log.write(s+'\n')
+            PredictedLocationString+= s+"\n"
         
     ##************************************************************************************
     ##************************************************************************************
@@ -1922,8 +1969,6 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         Xend = -Xend
         Yend = -Yend
     endStar = star((asConversion/1000.0)*0.6*a[0], Xend, Yend, color='purple', N=20, thin = 0.5)
-      
-    colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     
     #######################################################################################              
     ## Get the calculated chiSquared fit to the data for these orbital parameters
@@ -1951,15 +1996,31 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     #######################################################################################        
     
     ## Create figure, axes and start plotting/drawing everything
-    fig = plt.figure(1,figsize=(10,10))
+    fig = plt.figure(1,figsize=(12,12))
     main = fig.add_subplot(111)
     main.set_xlabel(xLabel, fontsize=30)
     main.set_ylabel(yLabel, fontsize=30)
     plt.suptitle(plotFileTitle, fontsize=10)
         
+    # Draw orbit ERRORS !!
+    if False:
+        for orb in range(0,len(periodErrors)):
+            if ((orb==0)or(orb==1)or(orb==3)or(orb==4)or(orb==6)or(orb==7)):
+                main.plot(ellipseErrorsXs2[orb],ellipseErrorsYs2[orb],linewidth=1,color=colorsList[int(orb/3.0)],alpha=1.0) 
+                print str(orb)+"color = "+colorsList[int(orb/3.0)]
+            #else:
+            #     main.plot(ellipseErrorsXs2[orb],ellipseErrorsYs2[orb],linewidth=1,color=colorsList[int(orb/3.0)],alpha=1.0) 
+        print "error fills"
+        for orb in range(0,len(periodErrors)):
+            if ((orb==0)or(orb==3)or(orb==6)):
+                main.fill(ellipseErrorsXs2[orb:orb+2],ellipseErrorsYs2[orb:orb+2], color=colorsList[int(orb/3.0)], edgecolor=colorsList[int(orb/3.0)], alpha=0.3)
+                print str(orb)+"color = "+colorsList[int(orb/3.0)]
+                #print repr(ellipseErrorsXs2[orb:orb+2])
+    
+        
     # Draw orbits
     for orb in range(0,len(longAN_deg)):
-        main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2,color=colorsList[orb]) #$$$$ add title, labels, axes
+        main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2.5,color=colorsList[orb]) 
     # Draw Ellipse ## found this didn't work and thus the orbit method above is used now.
     #main.plot(X,Y, c='black')
     
@@ -1983,6 +2044,9 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         main.add_patch(halfStar)
         main.add_patch(threeQuarterStar)
         #main.add_patch(endStar)
+    if True:
+        for predStar in predictedPatches:
+            main.add_patch(predStar)
     
     # Draw larger star for primary star's location
     main.add_patch(starPolygon)
@@ -1992,15 +2056,35 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     (errorBoxes, m2starPolygons,[xmin,xmax,ymin,ymax]) = starAndErrorPolys(SAs,SAerrors,PAs,PAerrors,asConversion, main.transData, telescopeView)
     
     dataMaxMins = [xmin,xmax,ymin,ymax]
+    print "original dataMaxMins = "+repr(dataMaxMins)
     
     #print "from starAndErrorPolys [xmin,xmax,ymin,ymax] = "+repr([xmin,xmax,ymin,ymax])
     ## set the xLim and yLim if their values are False
     ## and pad max and min values found by 10%
+    dataXrange = abs(dataMaxMins[1])+abs(dataMaxMins[0])
+    dataYrange = abs(dataMaxMins[3])+abs(dataMaxMins[2])
+    xLimData = []
     if not xLim:
         min = genTools.findArrayMin(ellipseXs2[:])
+        predictXmin = genTools.findArrayMin(predictedXs)
+        print "min = "+str(min)+", predictXmin = "+str(predictXmin)
+        if min>predictXmin:
+            min = predictXmin
+        if xmin>predictXmin:
+            xmin = predictXmin
         max = genTools.findArrayMax(ellipseXs2[:])
+        predictXmax = genTools.findArrayMax(predictedXs)
+        print "max = "+str(max)+", predictXmax = "+str(predictXmax)
+        if max<predictXmax:
+            max = predictXmax
+        if xmax<predictXmax:
+            xmax = predictXmax
         Range = abs(max)+abs(min)
+        print "new x range = "+str(Range)
+        dataXrange = abs(xmax)+abs(xmin)
+        xLimData = (xmin-abs(dataXrange*0.05),xmax+abs(dataXrange*0.05))
         xLim = (min-abs(Range*0.05),max+abs(Range*0.05))
+        print  "xLim = "+repr(xLim)
         xLim = (genTools.findArrayMin([xLim[0],xmin]), genTools.findArrayMax([xLim[1],xmax])) 
         #print 'elipseXs2 min = '+str(min)+", max = "+str(max)+", final xLim = "+repr(xLim)
     else:
@@ -2008,11 +2092,28 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             s= 'PROBLEM: xLim is not of type tuple'
             print s
             log.write(s+'\n')
+    yLimData = []
     if not yLim:
         min = genTools.findArrayMin(ellipseYs2[:])
+        predictYmin = genTools.findArrayMin(predictedYs)
+        print "min = "+str(min)+", predictYmin = "+str(predictYmin)
+        if min>predictYmin:
+            min = predictYmin
+        if ymin>predictYmin:
+            ymin = predictYmin
         max = genTools.findArrayMax(ellipseYs2[:])
+        predictYmax = genTools.findArrayMax(predictedYs)
+        print "max = "+str(max)+", predictYmax = "+str(predictYmax)
+        if max<predictYmax:
+            max = predictYmax
+        if ymax<predictYmax:
+            ymax = predictYmax
         Range = abs(max)+abs(min)
+        dataYrange = abs(ymax)+abs(ymin)
+        print "new y range = "+str(Range)
+        yLimData = (ymin-abs(dataYrange*0.05),ymax+abs(dataYrange*0.05))
         yLim = (min-abs(Range*0.05),max+abs(Range*0.05))
+        print  "yLim = "+repr(yLim)
         yLim = (genTools.findArrayMin([yLim[0],ymin]), genTools.findArrayMax([yLim[1],ymax])) 
         #print 'elipseYs2 min = '+str(min)+", max = "+str(max)+", final yLim = "+repr(yLim)
     else:
@@ -2020,6 +2121,9 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             s= 'PROBLEM: yLim is not of type tuple'
             print s
             log.write(s+'\n')
+    if True:
+        dataMaxMins = [xLim[0],xLim[1],yLim[0],yLim[1]]
+        print "new dataMaxMins = "+repr(dataMaxMins)
     
     # Draw lines for horizontal and vertical from origin
     main.plot([xLim[0],xLim[1]],[0,0],c='black',linewidth=2)
@@ -2058,11 +2162,14 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         plt.savefig(plotFilename, dpi=300, orientation='landscape')
     
     ## find cropped limits for just data plus 5% pad
-    dataMaxMins = [xmin,xmax,ymin,ymax]
-    dataXrange = abs(xmax)+abs(xmin)
-    dataYrange = abs(ymax)+abs(ymin)
-    xlimData = [xmax+0.025*dataXrange,xmin-0.025*dataXrange]
-    ylimData = [ymin-0.025*dataYrange,ymax+0.025*dataYrange]
+    #dataMaxMins = [xmin,xmax,ymin,ymax]
+    try:
+        xlimData = [xLimData[1],xLimData[0]]
+        ylimData = yLimData
+    except:
+        xlimData = [dataMaxMins[1]+0.0005*dataXrange,dataMaxMins[0]-0.0005*dataXrange]
+        ylimData = [dataMaxMins[2]-0.0005*dataYrange,dataMaxMins[3]+0.0005*dataYrange]
+    print "those used in cropped plot xlimData = "+repr(xlimData)+", ylimData = "+repr(ylimData)
     main.axes.set_xlim(xlimData)
     main.axes.set_ylim(ylimData)
     
@@ -2083,7 +2190,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     
     if True:
         ## Create figure for writting the sorta legend to
-        fig = plt.figure(1,figsize=(10,10))
+        fig = plt.figure(1,figsize=(10,20))
         #main = fig.add_subplot(111)
         if True:
             legendStr = legendStr+"\n\n"+PredictedLocationString
@@ -2350,13 +2457,13 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
             DIdatafilename = os.path.join(baseDir,"code-used/"+prepend+'DIdata.dat')
             DIdataDict = diTools.DIdataToDict(DIdatafilename)
             if True:
-                longANs = [138.74,144.09]
-                argPeris = [90,90]
-                incs = [35.07,40.66]
-                periods = [59.47,64.84]
-                a_totals = [17.67,19.15]
-                Ts = [2433023.17,2431325.09]
-                es = [0.0,0.0]
+                longANs = [136.48,115.03,143.82]
+                argPeris = [90,90,90]
+                incs = [33.04,19.09,40.10]
+                periods = [57.82,51.27,64.21]
+                a_totals = [17.22,15.29,18.99]
+                Ts = [2454635.9,2453560.2,2454996.53]
+                es = [0.0,0.0,0.0]
                 #if 
             else:
                 longANs = [bestOrbit[0]]

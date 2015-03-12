@@ -2013,7 +2013,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         print "error fills"
         for orb in range(0,len(periodErrors)):
             if ((orb==0)or(orb==3)or(orb==6)):
-                main.fill(ellipseErrorsXs2[orb:orb+2],ellipseErrorsYs2[orb:orb+2], color=colorsList[int(orb/3.0)], edgecolor=colorsList[int(orb/3.0)], alpha=0.3)
+                main.fill(ellipseErrorsXs2[orb:orb+2],ellipseErrorsYs2[orb:orb+2], color=colorsList[int(orb/3.0)], edgecolor=colorsList[int(orb/3.0)], alpha=0.1)
                 print str(orb)+"color = "+colorsList[int(orb/3.0)]
                 #print repr(ellipseErrorsXs2[orb:orb+2])
     

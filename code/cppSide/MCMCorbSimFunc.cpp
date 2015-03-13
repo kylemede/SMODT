@@ -218,7 +218,7 @@ void MCMCorbFuncObj::simulator()
 			ss << "Latest acceptance rate = "<<latestAcceptRate<<endl;
 			ss << "Latest param being varied = "<<paramBeingVaried<<", timesBeenHere = "<<timesBeenHere<<endl;
 			ss << "Times NONE of params passed = "<<timesNONEpassed<<endl;
-			ss << "Largest allowed reduced chiSquareds: DI = "<<SSO.chiSquaredMax*one_over_nu_DI <<", RV = "<<SSO.chiSquaredMax*one_over_nu_RV  <<", Total = "<<SSO.chiSquaredMax*one_over_nu_TOTAL  <<endl;
+			ss << "Largest allowed reduced chiSquareds: DI = "<<SSO.chiSquaredMax<<", RV = "<<SSO.chiSquaredMax<<", Total = "<<SSO.chiSquaredMax<<endl;
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared*one_over_nu_DI<<", RV = "<<RV_chiSquared*one_over_nu_RV <<", Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
 			ss << "LOWEST reduced chiSquareds: DI = "<< chiSquaredMin_DI*one_over_nu_DI <<", RV = "<< chiSquaredMin_RV*one_over_nu_RV <<", Total = "<< chiSquaredMin*one_over_nu_TOTAL <<endl;
 			printLine = ss.str();

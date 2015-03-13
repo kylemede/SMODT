@@ -63,7 +63,7 @@ Here we will go over the large array of settings in the settings file and the po
 First, lets go through ALL the settings in the "SimSettings" file, as it is where the user is expected to spend the bulk of their time playing around to get things to run the way they want.
 
 {\bf chiSquaredMax}\\
-This will set the maximum allowed reduced $\chi^2$ allowed during simple Monte Carlo runs.  During Simulated Annealing it also poses a use to allow the starting parameters to jump to a new set if the simulation is stagnant for a certain period of time.  That situation can occur if you have a low starting temperature, or the initial parameters are unfortunately in a very bad section of the parameter space.  Thus, the jumping routine helps get out of those ruts and this parameter determines if it is in said rut.
+This will set the maximum allowed reduced $\chi^2$ allowed during simple Monte Carlo runs.  During Simulated Annealing it also poses a use to allow the starting parameters to jump to a new set if the chain has yet to find a solution under that value.  That situation can occur if you have a low starting temperature, or the initial parameters are unfortunately in a very bad section of the parameter space.  Thus, the jumping routine helps get out of those ruts and this parameter determines if it is in said rut.
 
 {\bf numSamples}\\
 The total number of samples to produce for a single chain.  This is the number of samples for MCMC, Simulated Annealing or Monte Carlo if running in those modes, while the separate Simulated Annealing samples can be controlled with the "numSamples\_SimAnneal" when running in MCMC mode.  Remember that if you use multi-processing, then the true total number of samples will be this number multiplied by how many processes/chains you run.
@@ -209,11 +209,11 @@ Zero for the MIN and MAX values indicate to not let it vary.  Or you could set i
 
 {\bf T\_Min}\\
 Minimum value for the Time of Last of Periapsis parameter, OR, the Time of Center Transit if TcStepping=True.
-Zero for the MIN and MAX values indicate to not let it vary.  Or you could set it to very tight values around a fixed value if you like.
+Zero for the MIN and MAX values indicate to not let it vary and instead take it as a fixed value from the SystemData.txt file.  -1 indicates to use [earliestsEpoch-period,earliestEpoch], with earliestEpoch being the earliest observation in the data between the astrometry and RV data files.  Or you could set it to very tight values around a fixed value if you like.
 
 {\bf T\_Max}\\
 Maximum value for the Time of Last of Periapsis parameter, OR, the Time of Center Transit if TcStepping=True.
-Zero for the MIN and MAX values indicate to not let it vary.  Or you could set it to very tight values around a fixed value if you like.
+Zero for the MIN and MAX values indicate to not let it vary and instead take it as a fixed value from the SystemData.txt file.  -1 indicates to use [earliestsEpoch-period,earliestEpoch], with earliestEpoch being the earliest observation in the data between the astrometry and RV data files.  Or you could set it to very tight values around a fixed value if you like.
 
 {\bf K\_MIN}\\
 Minimum value for the Radial Velocity Semi-Major Amplitude parameter.

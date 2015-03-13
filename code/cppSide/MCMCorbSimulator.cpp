@@ -378,6 +378,7 @@ int main(int argc ,char *argv[])
 //    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[SAOFO.bestOrbit];
 //   MCMCOFO.start_e = SAOFO.ODT.es[SAOFO.bestOrbit];
 //   MCMCOFO.start_T = SAOFO.ODT.Ts[SAOFO.bestOrbit];
+ //   MCMCOFO.start_Tc = SAOFO.ODT.Tcs[SAOFO.bestOrbit];
 //    MCMCOFO.start_period = SAOFO.ODT.periods[SAOFO.bestOrbit];
 //    MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs[SAOFO.bestOrbit];
 //    MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs[SAOFO.bestOrbit];
@@ -389,6 +390,7 @@ int main(int argc ,char *argv[])
     MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs.back();
     MCMCOFO.start_e = SAOFO.ODT.es.back();
     MCMCOFO.start_T = SAOFO.ODT.Ts.back();
+    MCMCOFO.start_Tc = SAOFO.ODT.Tcs.back();
     MCMCOFO.start_period = SAOFO.ODT.periods.back();
     MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs.back();
     MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs.back();
@@ -447,11 +449,12 @@ int main(int argc ,char *argv[])
     MCMCOFO.paramChangeStepSizePercent = 0.025;
     //MCMCOFO.sigmaPercent = 2.45;
 
-    if (SAOFO.chiSquaredMin>SSO.chiSquaredMax)
+    if (SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL>SSO.chiSquaredMax)
     {
     	cout<<"MCMC: ERROR: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
     	cout<<"MCMC: ERROR: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
     	cout<<"MCMC: ERROR: no orbit was found during Simulated Annealing below the chiSquaredMax in order to start a proper MCMC run!"<<endl;
+    	cout<<"MCMC: ERROR: Lowest reduced chi squared found was "<<SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<", and max allowed "<<SSO.chiSquaredMax<<endl;
     	cout<<"MCMC: ERROR: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
     	cout<<"MCMC: ERROR: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
     	// load up a string for entire log and write it to file

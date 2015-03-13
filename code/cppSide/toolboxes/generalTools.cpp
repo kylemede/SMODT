@@ -77,7 +77,7 @@ eccArgPeri2ToTcType generalTools::eccArgPeri2ToTcCalc(eccArgPeri2ToTcType EATT)
 	bool verbose = false;
 	bool backHalf = false;
 
-	if (EATT.e==0)
+	if (EATT.e==0.0)
 	{
 		if (EATT.Tc!=0)
 			EATT.To = EATT.Tc;

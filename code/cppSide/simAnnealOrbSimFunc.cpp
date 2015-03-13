@@ -49,10 +49,10 @@ void simAnealOrbFuncObj::simulator()
 	int timesNONEpassed = 0;
 	int paramBeingVaried = 2;
 	//double K_p_errorPercent = 0;
-	double chiSquaredMin_DI=SSO.chiSquaredMax;
+	double chiSquaredMin_DI=10000000000;
 	if (SSO.RVonly==true)
 		chiSquaredMin_DI=0;
-	double chiSquaredMin_RV=SSO.chiSquaredMax;
+	double chiSquaredMin_RV=10000000000;
 	if (SSO.DIonly==true)
 		chiSquaredMin_RV=0;
 	chiSquaredMin = 10000000000;//SSO.chiSquaredMax;
@@ -516,7 +516,7 @@ void simAnealOrbFuncObj::simulator()
 			sigmaPercent_min=sigmaPercent_min_simAnneal;
 			ss << "Latest param being varied = "<<paramBeingVaried<<", timesBeenHere = "<<timesBeenHere<<endl;
 			ss << "Largest allowed reduced chiSquareds: DI = "<<SSO.chiSquaredMax <<", RV = "<<SSO.chiSquaredMax <<", Total = "<<SSO.chiSquaredMax  <<endl;
-			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared*one_over_nu_DI<<", RV = "<<RV_chiSquared*one_over_nu_RV <<", Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
+			ss << "latest reduced chiSquareds Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
 			ss << "LOWEST reduced chiSquareds: DI = "<< chiSquaredMin_DI*one_over_nu_DI <<", RV = "<< chiSquaredMin_RV*one_over_nu_RV <<", Total = "<< chiSquaredMin*one_over_nu_TOTAL <<endl;
 			ss << "\nLast Accepted parameters:"<<endl;
 			ss << "inclination_deg_latest = "<< inclination_deg_latest<<endl;
@@ -671,7 +671,7 @@ void simAnealOrbFuncObj::simulator()
 			ss << "Latest acceptance rate = "<<latestAcceptRate<<endl<<endl;
 			ss << "Latest param being varied = "<<paramBeingVaried<<", timesBeenHere = "<<timesBeenHere<<endl;
 			ss << "Times NONE of params passed = "<<timesNONEpassed<<endl;
-			ss << "Largest allowed reduced chiSquareds: DI = "<<SSO.chiSquaredMax<<", RV = "<<SSO.chiSquaredMax<<", Total = "<<SSO.chiSquaredMax<<endl;
+			ss << "Largest allowed reduced chiSquareds Total = "<<SSO.chiSquaredMax<<endl;
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared*one_over_nu_DI<<", RV = "<<RV_chiSquared*one_over_nu_RV <<", Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
 			ss << "LOWEST reduced chiSquareds: DI = "<< chiSquaredMin_DI*one_over_nu_DI <<", RV = "<< chiSquaredMin_RV*one_over_nu_RV <<", Total = "<< chiSquaredMin*one_over_nu_TOTAL <<endl;
 			//cout<<"SimAnnealFunc, line #"<<679<<endl;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$

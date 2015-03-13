@@ -610,6 +610,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         headings = f.readline()
         line = f.readline()
         dataLineCols = line.split()
+        numRVdatasets=0
         if (len(line)>11):
             numRVdatasets = len(dataLineCols) - 11
         else:
@@ -622,7 +623,6 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             s=s+"\nTcStepping passed in was True, so plotting Tc instead of To"
         else:
             s=s+"\nTcStepping passed in was False, so plotting To instead of Tc"
-        
         print s
         log.write(s+'\n')
         f.close()
@@ -829,44 +829,44 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         print s
         log.write(s+'\n')
             
-        if True:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            # Create sub plot and fill it up for the Ks
-            if plot4x1: 
-                startTime = timeit.default_timer()
-                s='\nStarting to plot hist for Ks:'
-                print s
-                log.write(s+'\n')
-                subPlot = fig.add_subplot(224)
-                paramColNum = 9
-                xlabel = 'K [m/s]'
-                startTime1 = timeit.default_timer()
-                print 'Getting data'
-                
-                (CLevels,data,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-                
-                endTime1 = timeit.default_timer()
-                totalTime = (endTime1-startTime1) # in seconds
-                totalTimeString = genTools.timeString(totalTime)
-                s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-                startTime1 = timeit.default_timer()
-                
-                subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-                
-                endTime1 = timeit.default_timer()
-                totalTime = (endTime1-startTime1) # in seconds
-                totalTimeString = genTools.timeString(totalTime)
-                s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-                if (type(data)!=float)and(NumSamples==0):
-                    NumSamples=data.size
-                #periodMedian = np.median(periodsAlls)
-                s= s+"done plotting Ks\n"
-                # record the time the chain finished and print
-                endTime = timeit.default_timer()
-                totalTime = (endTime-startTime) # in seconds
-                totalTimeString = genTools.timeString(totalTime)
-                s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-                print s
-                log.write(s+'\n')
+        
+        # Create sub plot and fill it up for the Ks
+        if plot4x1: 
+            startTime = timeit.default_timer()
+            s='\nStarting to plot hist for Ks:'
+            print s
+            log.write(s+'\n')
+            subPlot = fig.add_subplot(224)
+            paramColNum = 9
+            xlabel = 'K [m/s]'
+            startTime1 = timeit.default_timer()
+            print 'Getting data'
+            
+            (CLevels,data,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+            
+            endTime1 = timeit.default_timer()
+            totalTime = (endTime1-startTime1) # in seconds
+            totalTimeString = genTools.timeString(totalTime)
+            s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+            startTime1 = timeit.default_timer()
+            
+            subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
+            
+            endTime1 = timeit.default_timer()
+            totalTime = (endTime1-startTime1) # in seconds
+            totalTimeString = genTools.timeString(totalTime)
+            s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+            if (type(data)!=float)and(NumSamples==0):
+                NumSamples=data.size
+            #periodMedian = np.median(periodsAlls)
+            s= s+"done plotting Ks\n"
+            # record the time the chain finished and print
+            endTime = timeit.default_timer()
+            totalTime = (endTime-startTime) # in seconds
+            totalTimeString = genTools.timeString(totalTime)
+            s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+            print s
+            log.write(s+'\n')
         elif (bestLongAN==0):
             startTime = timeit.default_timer()
             s='\nStarting to plot hist for Ks:'
@@ -1684,6 +1684,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     :param sys_dist:        Distance to System in [pc]
     :type sys_dist:         float
     """
+    verboseInternal = False
     colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     mas = False
     if mas:
@@ -1832,12 +1833,20 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     ######################################################################
     #$$ HACK!  Trying to plot errors of plots $$$$$$$
     ###################################################################### 
-    incErrors = [33.0,33.1,inc[0],  19.0,19.1,inc[1],  40.0,40.2,inc[2]]
-    longAN_degErrors = [125.1,145.3,longAN_deg[0], 92.0,131.0,longAN_deg[1], 137.5,148.5,longAN_deg[2]]
-    eErrors = [0,0,0.0,0.0,0,0,0,0,0]
-    periodErrors = [54.5,60.9,period[0],  48.5,53.9,period[1],  61.5,67.0,period[2]]
-    argPeri_degErrors = [90,90,90.0,90.0,90,90,90,90,90]
-    aErrors = [16.7,17.,a[1],  14.99,15.53,a[1],  18.7,19.2,a[2]]
+    if False:
+        incErrors = [33.0,33.1,inc[0],  19.0,19.1,inc[1],  40.0,40.2,inc[2]]
+        longAN_degErrors = [125.1,145.3,longAN_deg[0], 92.0,131.0,longAN_deg[1], 137.5,148.5,longAN_deg[2]]
+        eErrors = [0,0,0.0,0.0,0,0,0,0,0]
+        periodErrors = [54.5,60.9,period[0],  48.5,53.9,period[1],  61.5,67.0,period[2]]
+        argPeri_degErrors = [90,90,90.0,90.0,90,90,90,90,90]
+        aErrors = [16.7,17.,a[1],  14.99,15.53,a[1],  18.7,19.2,a[2]]
+    else:
+        incErrors = inc
+        longAN_degErrors = longAN_deg
+        eErrors = e
+        periodErrors = period
+        argPeri_degErrors = argPeri_deg
+        aErrors = a
     
     ellipseErrorsXs2 = []
     ellipseErrorsYs2 = []
@@ -1873,11 +1882,12 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     ##************************************************************************************
     ##****************** Calculate the predicted location and fixed JDs ******************
     ##************************************************************************************
+    makePredictions = False
     predictedXs = []
     predictedYs = []
     PredictedLocationString=''
     predictedPatches = []
-    if True:
+    if makePredictions:
         ts = [2457235.500000,
               2457357.500000
               ]
@@ -1907,7 +1917,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             #s=s+ s2
             #s = s+'\n       SA                  PA        \n'
             #s=s+s3
-            print s
+            if verboseInternal:
+                print s
             log.write(s+'\n')
             PredictedLocationString+= s+"\n"
         
@@ -1986,13 +1997,15 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             (chi_squared_total, ns, Ms, Es, thetas, Sep_Dists, SA_arcsec_measured_models, PA_deg_measured_models, a1s, a2s) =\
             diTools.multiEpochOrbCalc(SAs, SAerrors, PAs, PAerrors,epochs, sys_dist, inc[orb], longAN_deg[orb],\
                             e[orb], To[orb], period[orb], argPeri_deg[orb], a_total=a[orb], Mass1=1, Mass2=1, verbose=False)
-            print "!!!!!!!!!!!!!!!!!!!!\n\n Try1: for orbit #"+str(orb)+", the chiSquared fit to the DI data was = "+str(chi_squared_total)+', or reduced = '+str(chi_squared_total/nuDI)+"\n!!!!!!!!!!!!!!!!!!!!!!!!!"
+            if verboseInternal:
+                print "!!!!!!!!!!!!!!!!!!!!\n\n Try1: for orbit #"+str(orb)+", the chiSquared fit to the DI data was = "+str(chi_squared_total)+', or reduced = '+str(chi_squared_total/nuDI)+"\n!!!!!!!!!!!!!!!!!!!!!!!!!"
         (chi_squared_total, ns, Ms, Es, thetas, xs, ys, a1s, a2s) =\
         diTools.multiEpochOrbCalc3(SAs, SAerrors, PAs, PAerrors,epochs, sys_dist, inc[orb], longAN_deg[orb],\
                         e[orb], To[orb], period[orb], argPeri_deg[orb], a_total=a[orb], Mass1=1, Mass2=1, verbose=False)
         chiSquaredStr = "The chiSquared fit to the DI data was = "+str(chi_squared_total)+', or reduced = '+str(chi_squared_total/nuDI)
         legendStr = legendStr+chiSquaredStr+'\n'
-        print "\n\n Try2: for orbit #"+str(orb)+", "+chiSquaredStr+"\n"
+        if verboseInternal:
+            print "\n\n Try2: for orbit #"+str(orb)+", "+chiSquaredStr+"\n"
     #######################################################################################        
     
     ## Create figure, axes and start plotting/drawing everything
@@ -2007,14 +2020,17 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         for orb in range(0,len(periodErrors)):
             if ((orb==0)or(orb==1)or(orb==3)or(orb==4)or(orb==6)or(orb==7)):
                 main.plot(ellipseErrorsXs2[orb],ellipseErrorsYs2[orb],linewidth=1,color=colorsList[int(orb/3.0)],alpha=1.0) 
-                print str(orb)+"color = "+colorsList[int(orb/3.0)]
+                if verboseInternal:
+                    print str(orb)+"color = "+colorsList[int(orb/3.0)]
             #else:
             #     main.plot(ellipseErrorsXs2[orb],ellipseErrorsYs2[orb],linewidth=1,color=colorsList[int(orb/3.0)],alpha=1.0) 
-        print "error fills"
+        if verboseInternal:
+            print "error fills"
         for orb in range(0,len(periodErrors)):
             if ((orb==0)or(orb==3)or(orb==6)):
                 main.fill(ellipseErrorsXs2[orb:orb+2],ellipseErrorsYs2[orb:orb+2], color=colorsList[int(orb/3.0)], edgecolor=colorsList[int(orb/3.0)], alpha=0.1)
-                print str(orb)+"color = "+colorsList[int(orb/3.0)]
+                if verboseInternal:
+                    print str(orb)+"color = "+colorsList[int(orb/3.0)]
                 #print repr(ellipseErrorsXs2[orb:orb+2])
     
         
@@ -2056,7 +2072,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     (errorBoxes, m2starPolygons,[xmin,xmax,ymin,ymax]) = starAndErrorPolys(SAs,SAerrors,PAs,PAerrors,asConversion, main.transData, telescopeView)
     
     dataMaxMins = [xmin,xmax,ymin,ymax]
-    print "original dataMaxMins = "+repr(dataMaxMins)
+    if verboseInternal:
+        print "original dataMaxMins = "+repr(dataMaxMins)
     
     #print "from starAndErrorPolys [xmin,xmax,ymin,ymax] = "+repr([xmin,xmax,ymin,ymax])
     ## set the xLim and yLim if their values are False
@@ -2067,24 +2084,34 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     if not xLim:
         min = genTools.findArrayMin(ellipseXs2[:])
         predictXmin = genTools.findArrayMin(predictedXs)
-        print "min = "+str(min)+", predictXmin = "+str(predictXmin)
+        s = "min = "+str(min)
+        if makePredictions:
+            s+=", predictXmin = "+str(predictXmin)
+        if verboseInternal:
+            print s
         if min>predictXmin:
             min = predictXmin
         if xmin>predictXmin:
             xmin = predictXmin
         max = genTools.findArrayMax(ellipseXs2[:])
         predictXmax = genTools.findArrayMax(predictedXs)
-        print "max = "+str(max)+", predictXmax = "+str(predictXmax)
+        s = "max = "+str(max)
+        if makePredictions:
+            s+=", predictXmax = "+str(predictXmax)
+        if verboseInternal:
+            print s
         if max<predictXmax:
             max = predictXmax
         if xmax<predictXmax:
             xmax = predictXmax
         Range = abs(max)+abs(min)
-        print "new x range = "+str(Range)
+        if verboseInternal:
+            print "new x range = "+str(Range)
         dataXrange = abs(xmax)+abs(xmin)
         xLimData = (xmin-abs(dataXrange*0.05),xmax+abs(dataXrange*0.05))
         xLim = (min-abs(Range*0.05),max+abs(Range*0.05))
-        print  "xLim = "+repr(xLim)
+        if verboseInternal:
+            print  "xLim = "+repr(xLim)
         xLim = (genTools.findArrayMin([xLim[0],xmin]), genTools.findArrayMax([xLim[1],xmax])) 
         #print 'elipseXs2 min = '+str(min)+", max = "+str(max)+", final xLim = "+repr(xLim)
     else:
@@ -2096,24 +2123,34 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     if not yLim:
         min = genTools.findArrayMin(ellipseYs2[:])
         predictYmin = genTools.findArrayMin(predictedYs)
-        print "min = "+str(min)+", predictYmin = "+str(predictYmin)
+        s = "min = "+str(min)
+        if makePredictions:
+            s+=", predictYmin = "+str(predictYmin)
+        if verboseInternal:
+            print s
         if min>predictYmin:
             min = predictYmin
         if ymin>predictYmin:
             ymin = predictYmin
         max = genTools.findArrayMax(ellipseYs2[:])
         predictYmax = genTools.findArrayMax(predictedYs)
-        print "max = "+str(max)+", predictYmax = "+str(predictYmax)
+        s = "max = "+str(max)
+        if makePredictions:
+            s+=", predictYmax = "+str(predictYmax)
+        if verboseInternal:
+            print s
         if max<predictYmax:
             max = predictYmax
         if ymax<predictYmax:
             ymax = predictYmax
         Range = abs(max)+abs(min)
         dataYrange = abs(ymax)+abs(ymin)
-        print "new y range = "+str(Range)
+        if verboseInternal:
+            print "new y range = "+str(Range)
         yLimData = (ymin-abs(dataYrange*0.05),ymax+abs(dataYrange*0.05))
         yLim = (min-abs(Range*0.05),max+abs(Range*0.05))
-        print  "yLim = "+repr(yLim)
+        if verboseInternal:
+            print  "yLim = "+repr(yLim)
         yLim = (genTools.findArrayMin([yLim[0],ymin]), genTools.findArrayMax([yLim[1],ymax])) 
         #print 'elipseYs2 min = '+str(min)+", max = "+str(max)+", final yLim = "+repr(yLim)
     else:
@@ -2123,7 +2160,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             log.write(s+'\n')
     if True:
         dataMaxMins = [xLim[0],xLim[1],yLim[0],yLim[1]]
-        print "new dataMaxMins = "+repr(dataMaxMins)
+        if verboseInternal:
+            print "new dataMaxMins = "+repr(dataMaxMins)
     
     # Draw lines for horizontal and vertical from origin
     main.plot([xLim[0],xLim[1]],[0,0],c='black',linewidth=2)
@@ -2169,7 +2207,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     except:
         xlimData = [dataMaxMins[1]+0.0005*dataXrange,dataMaxMins[0]-0.0005*dataXrange]
         ylimData = [dataMaxMins[2]-0.0005*dataYrange,dataMaxMins[3]+0.0005*dataYrange]
-    print "those used in cropped plot xlimData = "+repr(xlimData)+", ylimData = "+repr(ylimData)
+    if verboseInternal:
+            print "those used in cropped plot xlimData = "+repr(xlimData)+", ylimData = "+repr(ylimData)
     main.axes.set_xlim(xlimData)
     main.axes.set_ylim(ylimData)
     

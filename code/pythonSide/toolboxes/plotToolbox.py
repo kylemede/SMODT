@@ -1795,7 +1795,9 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     # create a primary star polygon
     starPolygon = star((asConversion/1000.0)*2.0*a[0], 0, 0, color='black', N=10, thin = 0.4)
     
+    ###################################################################################################################
     ## calculate the locations of companion for 'numOrbs' locations throughout the orbit to make an orbit ellipse    
+    ###################################################################################################################
     ellipseXs2 = []
     ellipseYs2 = []
     #orbitTAs = []
@@ -1830,53 +1832,47 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         ellipseXs2.append(ellipseXs)
         ellipseYs2.append(ellipseYs)
         
-    ######################################################################
-    #$$ HACK!  Trying to plot errors of plots $$$$$$$
-    ###################################################################### 
-    if False:
+    #########################################################################################
+    #$$ Fixed value code to plot errors of fit(s).  ie. the 68% or 95% min and maxes $$$$$$$
+    #########################################################################################
+    ellipseErrorsXs2 = []
+    ellipseErrorsYs2 = []
+    plotFitErrors = False
+    if plotFitErrors:
         incErrors = [33.0,33.1,inc[0],  19.0,19.1,inc[1],  40.0,40.2,inc[2]]
         longAN_degErrors = [125.1,145.3,longAN_deg[0], 92.0,131.0,longAN_deg[1], 137.5,148.5,longAN_deg[2]]
         eErrors = [0,0,0.0,0.0,0,0,0,0,0]
         periodErrors = [54.5,60.9,period[0],  48.5,53.9,period[1],  61.5,67.0,period[2]]
         argPeri_degErrors = [90,90,90.0,90.0,90,90,90,90,90]
         aErrors = [16.7,17.,a[1],  14.99,15.53,a[1],  18.7,19.2,a[2]]
-    else:
-        incErrors = inc
-        longAN_degErrors = longAN_deg
-        eErrors = e
-        periodErrors = period
-        argPeri_degErrors = argPeri_deg
-        aErrors = a
-    
-    ellipseErrorsXs2 = []
-    ellipseErrorsYs2 = []
-    for orb in range(0,len(longAN_degErrors)):
-        ellipseErrorsXs = []
-        ellipseErrorsYs = []
-        numSteps = 5000.0
-        periodIncrement = (periodErrors[orb]*365.25)/numSteps
-        t = 1.0 
-        for step in range(0,int(numSteps)):
-            T = 0.0
-            t = t + periodIncrement
-            (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, a1, a2) =\
-                diTools.orbitCalculatorSAPA(t, sys_dist, incErrors[orb], longAN_degErrors[orb], eErrors[orb], T, periodErrors[orb], argPeri_degErrors[orb], aErrors[orb],\
-                                                            Mass1=1, Mass2=1, verbose=False)
-            #(PA, SA) = PASAcalculator(period, t, T, e, inc, longAN_deg, argPeri_deg, sys_dist, a, a1=0, verbose=False)
-            #orbitTAs.append(TA_deg)
-            #orbitPAs.append(PA)
-            #orbitSAs.append(SA)
-            ellipseErrorsX = SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
-            ellipseErrorsY = SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
-            if telescopeView:
-                ellipseErrorsX = -ellipseErrorsX
-                ellipseErrorsY = -ellipseErrorsY
-            ellipseErrorsXs.append(ellipseErrorsX)
-            ellipseErrorsYs.append(ellipseErrorsY)
-            #sep_dist = math.sqrt(math.pow(ellipseX,2.0)+math.pow(ellipseY,2.0))
-            #sep_dists.append(sep_dist)
-        ellipseErrorsXs2.append(ellipseErrorsXs)
-        ellipseErrorsYs2.append(ellipseErrorsYs)
+
+        for orb in range(0,len(longAN_degErrors)):
+            ellipseErrorsXs = []
+            ellipseErrorsYs = []
+            numSteps = 5000.0
+            periodIncrement = (periodErrors[orb]*365.25)/numSteps
+            t = 1.0 
+            for step in range(0,int(numSteps)):
+                T = 0.0
+                t = t + periodIncrement
+                (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, a1, a2) =\
+                    diTools.orbitCalculatorSAPA(t, sys_dist, incErrors[orb], longAN_degErrors[orb], eErrors[orb], T, periodErrors[orb], argPeri_degErrors[orb], aErrors[orb],\
+                                                                Mass1=1, Mass2=1, verbose=False)
+                #(PA, SA) = PASAcalculator(period, t, T, e, inc, longAN_deg, argPeri_deg, sys_dist, a, a1=0, verbose=False)
+                #orbitTAs.append(TA_deg)
+                #orbitPAs.append(PA)
+                #orbitSAs.append(SA)
+                ellipseErrorsX = SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
+                ellipseErrorsY = SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
+                if telescopeView:
+                    ellipseErrorsX = -ellipseErrorsX
+                    ellipseErrorsY = -ellipseErrorsY
+                ellipseErrorsXs.append(ellipseErrorsX)
+                ellipseErrorsYs.append(ellipseErrorsY)
+                #sep_dist = math.sqrt(math.pow(ellipseX,2.0)+math.pow(ellipseY,2.0))
+                #sep_dists.append(sep_dist)
+            ellipseErrorsXs2.append(ellipseErrorsXs)
+            ellipseErrorsYs2.append(ellipseErrorsYs)
         
     
     ##************************************************************************************

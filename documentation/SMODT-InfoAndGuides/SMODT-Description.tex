@@ -30,7 +30,7 @@
 
 These are the outlines of the functions that act as the models to calculate the orbital elements for either a binary star system or planet orbit.  The equations are the result of combining Kepler's laws, the definitions of the orbital elements and the naturally occurring symmetries and rules of a stable binary system.
 
-There are both Python and C++ versions of these functions/models.  The bulk of the multi-process and file management,  post analysis and plotting of the results is done in Python while the computational stages of the simulation are done in C++ to take advantage of its speed.  A more detailed description of these issues and the simulator will be in another document to be written later.  All three astrometry models described here have been tested and produce the same resulting values/fit to within approximately 10 decimal places, well past the accuracy limits placed on the parameters by their associated 68\% or 95\% errors.
+There are both Python and C++ versions of these functions/models.  The bulk of the multi-process and file management,  post analysis and plotting of the results is done in Python while the computational stages of the simulation are done in C++ to take advantage of its speed.  A more detailed description of these issues and the simulator will be in another document to be written later.  All three astrometry models described here have been tested and produce the same resulting values/fit to within approximately 10 significant figures, well past the accuracy limits placed on the parameters by their associated 68\% or 95\% errors.
 
 \pagebreak
 
@@ -148,7 +148,7 @@ When running MCMC mode, this will set the number of samples for the Simulated An
 Make progress plots of the MCMC chains.  Just like the earlier setting for the Simulated Annealing chains, this can give you another visual way to investigate how the MCMC chains are exploring the parameter space.  As MCMC is statistically designed to explore the space efficiently, this is commonly useless, but could pose useful to some users.
 
 {\bf CalcGelmanRubin}\\
-The Gelman Rubin statistic (R) gives an indication on the simulations convergence to the final posterior distribution.  R values of 1.0 indicate a perfect convergence, while values much higher indicate the simulation needs to be ran longer.
+The Gelman Rubin statistic (R) gives an indication on the simulations convergence to the final posterior distribution.  R values of 1.0 indicate a perfect convergence, while values much higher indicate the simulation needs to be ran longer.  Typically R $\leq1.1$ is considered the criterion for convergence.
 
 {\bf numTimesCalcGR}\\
 How often should the R values be calculate?  This calculation is very heavy, so a smaller number is good, but remember you also want to know how the simulation is progressing as well.  A happy middle would be $\sim$ 100.
@@ -273,6 +273,7 @@ where, $\chi^2$ is the chi squared fit to the data given by (\ref{eq:chiSquared}
 %\clearpage
 
 \pagebreak
+
 %----------------------------------------------------------------------------------------------------------------------------------
 
 \section{Models}
@@ -468,6 +469,15 @@ simplifying to:
 \end{equation}
 
 Therefore, with these equations, one only needs to step through the parameter space along one of them and calculate the other from it along with {\it e}, P and $\omega$.
+
+%-------------------------------------------------------------------------------------------------------------
+\subsection{Differences Between Investigating Stellar or Planetary Companion}\label{sec:omegaIssues}
+
+The key difference when investigating a planetary compared to that of a stellar companion is the values of {\it a} and $\omega$ used in the astrometry model.  As discussed in \citet{Shulze-Hartung} and \citet{wright2009}, when the companion is a planet, the values of for the star are used, ie $a_1$ and $\omega_1$.  This is because the method was originally developed to find the orbit of the primary about the system's center of mass as the secondary was not seen.  More recently though, in most cases the companion is seen and the astrometric values are for the location of the secondary relative to the primary instead of the center of mass.  In these cases the apparent orbit is for the combined system and the values input into the astrometric model are $a_1+a_2$ and $\omega_2+\pi$, using the convention $\omega_1$ = $\omega_2+\pi$.
+
+One must be careful to take this into account when doing 3D simulations, to ensure that $\omega_2+\pi$ is passed into the astrometry model and simply $\omega_2$ is used in the radial velocity one.
+
+\pagebreak
 %----------------------------------------------------------------------------------------------------------
 \subsection{Direct Imaging (Astrometry) Model}\label{sec:DI-OrbModels}
 There are two versions of this model, the one used by C++ for the simulation, and the one used by Python in the post processing and plotting.  Both have been checked to ensure the produce the same results for a given set of inputs.  They were chosen to be optimized for each purpose.

@@ -353,6 +353,7 @@ void simAnealOrbFuncObj::simulator()
 	if (SSO.DIonly==false)
 	{
 		K_proposed = K_latest;
+		ss<<"Num RV data sets = "<<RVdo.epochs_RV.size() <<endl;
 		for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
 		{
 			double offsetStart=0;

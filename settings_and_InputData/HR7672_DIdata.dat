@@ -1,0 +1,11 @@
+#HR7672 DI data from Crepp 2012 Table 1
+# ObsDate[JD]	PositionAngle[deg]    PositionAngleError[deg]  SeparationAngle["]   SeparationAngleError["]
+2452144.0	157.9	0.5	0.786	0.006
+2452254.0	157.3	0.6	0.794	0.005
+2452473.0	156.6	0.9	0.788	0.006
+2453989.0	155.0	5.0	0.750	0.080
+2454367.0	151.8	2.9	0.742	0.035
+2455697.0	147.1	0.5	0.519	0.006
+
+
+

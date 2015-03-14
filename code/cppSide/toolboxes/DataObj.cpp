@@ -742,7 +742,7 @@ void RVdataObj::dataLoadUp(const char* filename)
 			jitter=0;
 			// line is blank
 			if (!silent)
-				cout<<"Found a blank line"<<endl;
+				cout<<"\n\nFound a blank line\n\n"<<endl;
 		}
 		else if (line[0]=='#')
 		{

@@ -2449,7 +2449,8 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     ####################################################
     # Perform orbit plotting, either DI, RV or both
     ####################################################
-    if True:    
+    #bestOrbit = [61.0,0.5,2456847.0,0,]
+    if False:    
         bestOrbit = []  
         try:
             print '#'*50

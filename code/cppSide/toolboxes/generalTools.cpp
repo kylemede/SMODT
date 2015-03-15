@@ -883,24 +883,38 @@ double generalTools::meanCalc(vector<double> v, int lastPoint)
 
 double generalTools::sumCalc(vector<double> v,int lastPoint)
 {
-	double sum;
-	sum=0.0;
+	bool verbose = false;
+		if (verbose)
+			cout<<"IN sumCalc"<<endl;
+	double sum = 0.0;
 	//loop through all data points to get total value
-	for (int j=0;j<(lastPoint+1);j++)
+	for (int j=0;j<(lastPoint);j++)
 	{
 		sum+=v[j];
+		if (verbose)
+		{
+			cout<<"v[j] = "<<v[j]<<endl;
+			cout<<"sum = "<<sum<<endl;
+		}
 	}
 	return sum;
 }
 
 int generalTools::sumIntCalc(vector<int> v,int lastPoint)
 {
-	int sum;
-	sum=0.0;
+	bool verbose = false;
+			if (verbose)
+				cout<<"IN sumIntCalc"<<endl;
+	int sum = 0;
 	//loop through all data points to get total value
-	for (int j=0;j<(lastPoint+1);j++)
+	for (int j=0;j<(lastPoint);j++)
 	{
 		sum+=v[j];
+		if (verbose)
+		{
+			cout<<"v[j] = "<<v[j]<<endl;
+			cout<<"sum = "<<sum<<endl;
+		}
 	}
 	return sum;
 }

@@ -258,7 +258,7 @@ int main(int argc ,char *argv[])
 			ss<<"RVoffset for dataset "<<set<<", was = "<< SAOFO.ODT.RVoffsets[SAOFO.bestOrbit][set]<<endl;
 	}
 
-	if (false)
+	if (true)
 	{
 		ss<< "\nLast orbit found:"<<endl;
 		ss<< "chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds.back() <<endl;

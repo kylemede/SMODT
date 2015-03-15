@@ -1285,9 +1285,10 @@ void simAnealOrbFuncObj::simulator()
 		{
 			timesNONEpassed +=1;
 			if ( SSO.silent==false )
+			{
 				cout<<"At least one parameter was out of range for sample draw # "<<sample<<endl;
-			if (false)
 				cout<<"The parameter that failed was: "<<ParamThatFailed<<endl;
+			}
 		}
 		//*****************************************************************************
 		// if all are good, move on to calculating orbit.
@@ -2014,7 +2015,7 @@ void simAnealOrbFuncObj::simulator()
 			ODT.Ks.push_back(K_latest);
 			ODT.RVoffsets.push_back(RVoffsets_latest);
 			ODT.timesBeenHeres.push_back(timesBeenHere-1);
-			timesBeenHereTotal+=timesBeenHere-1;
+			timesBeenHereTotal+=(timesBeenHere-1);
 			//cout<<"After storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;
 		}
 		//cout<<"After storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;

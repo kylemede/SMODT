@@ -172,7 +172,7 @@ void MCMCorbFuncObj::simulator()
 	// ***** Start the samples loop *****
 	//*****************************************************************************
 	int sample;
-	for ( sample=1; sample<(SSO.numSamples+1); sample++)
+	for ( sample=0; sample<SSO.numSamples; ++sample)
 	{
 		latestParamsSaved=false;
 
@@ -1017,7 +1017,7 @@ void MCMCorbFuncObj::simulator()
 			ODT.Ks.push_back(K_latest);
 			ODT.RVoffsets.push_back(RVoffsets_latest);
 			ODT.timesBeenHeres.push_back(timesBeenHere-1);
-			timesBeenHereTotal+=timesBeenHere-1;
+			timesBeenHereTotal+=(timesBeenHere-1);
 		}
 	}
 

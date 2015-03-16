@@ -16,7 +16,7 @@ orbitCalcReturnType DItools::orbitCalculator()
 	 * This will calculate the X and Y locations for a given epoch
 	 */
 
-	double verboseInternal = false; //set to true for debugging
+	double verboseInternal = true; //set to true for debugging
 	orbitCalcReturnType OCRT;
 
 	// Pull in values from OCIT
@@ -38,7 +38,8 @@ orbitCalcReturnType DItools::orbitCalculator()
 	double Y = sqrt(1.0-e*e)*sin(E_rad);
 
 	// Calculate the predicted x&y in ["]
-	OCRT.x_model = A*X +F*Y;
+	double hackNeg = -1.0;
+	OCRT.x_model = hackNeg*(A*X +F*Y);
 	OCRT.y_model = B*X +G*Y;
 
 	if (verboseInternal)
@@ -79,6 +80,7 @@ multiEpochOrbCalcReturnType DItools::multiEpochOrbCalc()
 	generalTools GT;
 
 	double chi_squared_total = 0.0;
+	double chi_squared_total2 = 0.0;
 
 	// add pi to the value of the argument of periapsis to convert it to the
 	// value for the star instead of the value input which is for the companion.
@@ -216,8 +218,16 @@ multiEpochOrbCalcReturnType DItools::multiEpochOrbCalc()
         {
         	cout << "x_data = "<< x_data<<", x_data_error = " <<x_data_error << ", OCRT.x_model = " << OCRT.x_model<<endl;
         	cout << "y_data = "<< y_data<<", y_data_error = " <<y_data_error << ", OCRT.y_model = " << OCRT.y_model<<endl;
+        	double x2 = -OCRT.x_model;
+        	double y2 = -OCRT.y_model;
+        	cout<< "x2 = "<<x2<<", y2 = "<<y2<<endl;
+        	double x_chi_squared2 = GT.chiSquaredCalc(x_data, x_data_inv_var, x2);
+        	double y_chi_squared2 = GT.chiSquaredCalc(y_data, y_data_inv_var, y2);
         	cout << "x chi_squared = "<< x_chi_squared<<  ", y chi_square = "<< y_chi_squared<< endl;
+        	cout << "x chi_squared2 = "<< x_chi_squared2<<  ", y chi_square2 = "<< y_chi_squared2<< endl;
+        	chi_squared_total2 = chi_squared_total2 + x_chi_squared2 + y_chi_squared2;
         	cout << fixed <<" in loop chi_squared_total = "<<chi_squared_total <<endl;
+        	cout << fixed <<" in loop chi_squared_total2 = "<<chi_squared_total2 <<endl;
         }
 		// increment to next epoch
 	}

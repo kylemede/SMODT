@@ -1807,7 +1807,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     for orb in range(0,len(longAN_deg)):
         ellipseXs = []
         ellipseYs = []
-        numSteps = 5000.0
+        numSteps = 100.0
         periodIncrement = (period[orb]*365.25)/numSteps
         t = 1.0 
         for step in range(0,int(numSteps)):
@@ -1825,8 +1825,27 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             if telescopeView:
                 ellipseX = -ellipseX
                 ellipseY = -ellipseY
-            ellipseXs.append(ellipseX)
-            ellipseYs.append(ellipseY)
+            if True:
+                ############################$$$$$$$$$$$$$$
+                #$$ Crepp2012 test $$$$$$$$$$$$$$$$$$$$$$$
+                ##########################$$$$$$$$$$$$$$$$
+                aUse = (a[orb]/sys_dist)*asConversion
+                x1=aUse*(math.cos(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) -  math.sin(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
+                y1=aUse*(math.sin(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) +  math.cos(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
+                (A,B,C,F,G) = diTools.ABCFG_values(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]))
+                # Calc Normalized rectangular coordinates
+                X = math.cos(math.radians(E_latest_deg))-e[orb]
+                Y = math.sqrt(1.0-e[orb]**2.0)*math.sin(math.radians(E_latest_deg))
+                # Calc x,y values on same coord system as plane of sky (same as data)
+                x_model = A*X+F*Y
+                y_model = B*X+G*Y
+                print '\n\n\nx1 = '+str(x1)+", y1 = "+str(y1)
+                print 'x_model = '+str(x_model)+', y_model = '+str(y_model)
+                print 'ellipseX = '+str(ellipseX)+", ellipseY = "+str(ellipseY)+"\n\n\n"
+                ellipseX = -1.0*x_model
+                ellipseY = y_model
+            ellipseXs.append(ellipseX)#$$$$$$$$$$$$$$$$$$4
+            ellipseYs.append(ellipseY)#$$$$$$$$$$$$$$$$$$$$4
             #sep_dist = math.sqrt(math.pow(ellipseX,2.0)+math.pow(ellipseY,2.0))
             #sep_dists.append(sep_dist)
         ellipseXs2.append(ellipseXs)
@@ -1878,14 +1897,18 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     ##************************************************************************************
     ##****************** Calculate the predicted location and fixed JDs ******************
     ##************************************************************************************
-    makePredictions = False
+    makePredictions = True
     predictedXs = []
     predictedYs = []
     PredictedLocationString=''
     predictedPatches = []
     if makePredictions:
-        ts = [2457235.500000,
-              2457357.500000
+        ts = [2452144.000000,
+              2452254.000000,
+              2452473.0,
+              2453989.0,
+              2454367.0,
+              2455697.0             
               ]
         for orb in range(0,len(longAN_deg)):
             s= '@'*50+'\n'
@@ -1894,13 +1917,35 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             s2=''
             s3=''
             print 'To[orb] = '+str(To[orb])#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            tcount = 0
             for t in ts:
                 (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, a1, a2) =\
                     diTools.orbitCalculatorSAPA(t, sys_dist, inc[orb], longAN_deg[orb], e[orb], To[orb], period[orb], argPeri_deg[orb], a[orb],\
                                                                 Mass1=1, Mass2=1, verbose=False)
-                    
+                
                 x = SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
                 y = SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
+                ############################$$$$$$$$$$$$$$
+                #$$ Crepp2012 test $$$$$$$$$$$$$$$$$$$$$$$
+                ##########################$$$$$$$$$$$$$$$$
+                aUse = (a[orb]/sys_dist)*asConversion
+                x1=aUse*(math.cos(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) -  math.sin(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
+                y1=aUse*(math.sin(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) +  math.cos(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
+                (A,B,C,F,G) = diTools.ABCFG_values(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]))
+                # Calc Normalized rectangular coordinates
+                X = math.cos(math.radians(E_latest_deg))-e[orb]
+                Y = math.sqrt(1.0-e[orb]**2.0)*math.sin(math.radians(E_latest_deg))
+                # Calc x,y values on same coord system as plane of sky (same as data)
+                x_model = A*X+F*Y
+                y_model = B*X+G*Y
+                xCent = SAs[tcount]*math.sin(math.radians(PAs[tcount]))*asConversion
+                yCent = SAs[tcount]*math.cos(math.radians(PAs[tcount]))*asConversion
+                tcount+=1
+                print '\nx CREPP = '+str(x1)+", y CREPP = "+str(y1)
+                print 'x_THI = '+str(x_model)+', y_THI = '+str(y_model)
+                print "x_data = "+str(xCent)+", y_data = "+str(yCent)
+                print 'x MINE= '+str(x)+", y MINE= "+str(y)+"\n"
+                #########################$$$$$$$$$$$$$$$$$
                 predictedXs.append(x)
                 predictedYs.append(y)
                 predictedLocPatch = star((asConversion/1000.0)*0.4*a[0], x, y, color=colorsList[orb], N=8, thin = 0.5)
@@ -2397,7 +2442,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     prepend = ""
     if outputDatafile=='':
         #baseDir = "/mnt/Data1/Todai_Work/Dropbox/EclipseWorkspace/SMODT/settings_and_InputData"
-        baseDir = "/mnt/Data1/Todai_Work/Data/data_SMODT/HR8799e-MCMC-75PercentDecreasedErrors-updatedOct2010Vals-oldTos-circular5--70-Million-in_Total/outputData-ALL.dat"
+        baseDir = "/mnt/Data1/Todai_Work/Data/data_SMODT/HR7672-MCMC-DIonly-ALLopen--140-Million-in_Total/outputData-ALL.dat"
         prepend = "HR8799e_"
     elif outputDatafile!="":
         baseDir = os.path.dirname(outputDatafile)
@@ -2450,7 +2495,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     # Perform orbit plotting, either DI, RV or both
     ####################################################
     #bestOrbit = [61.0,0.5,2456847.0,0,]
-    if False:    
+    if True:    
         bestOrbit = []  
         try:
             print '#'*50
@@ -2492,7 +2537,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
             ## Make a DI fit plot
             DIdatafilename = os.path.join(baseDir,"code-used/"+prepend+'DIdata.dat')
             DIdataDict = diTools.DIdataToDict(DIdatafilename)
-            if True:
+            if False:
                 longANs = [136.48,115.03,143.82]
                 argPeris = [90,90,90]
                 incs = [33.04,19.09,40.10]
@@ -2523,7 +2568,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
         for num in range(1,numChains+1):
             fileList.append(os.path.join(os.path.dirname(outputDatafile),'outputData-chain_'+str(num)+'.txt'))
         summaryPlotter2MCMC(outputDatafile, summaryPlotFile+"-MCMCprogress", weight=False, confLevels=True, nu=1, SimPlanetStar=paramSettingsDict["simulate_StarPlanet"])
-    if False:
+    if True:
         ## Make the posterior prob histograms.
         summaryPlotter(outputDatafile, summaryPlotFile, weight=False, confLevels=True, nu=1, plot4x1=False)
     if False:

@@ -1800,9 +1800,9 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     ###################################################################################################################
     ellipseXs2 = []
     ellipseYs2 = []
-    #orbitTAs = []
-    #orbitSAs = []
-    #orbitPAs = []
+    orbitTAs = []
+    orbitSAs = []
+    orbitPAs = []
     #sep_dists = []
     for orb in range(0,len(longAN_deg)):
         ellipseXs = []
@@ -1816,16 +1816,15 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, a1, a2) =\
                 diTools.orbitCalculatorSAPA(t, sys_dist, inc[orb], longAN_deg[orb], e[orb], T, period[orb], argPeri_deg[orb], a[orb],\
                                                             Mass1=1, Mass2=1, verbose=False)
-            #(PA, SA) = PASAcalculator(period, t, T, e, inc, longAN_deg, argPeri_deg, sys_dist, a, a1=0, verbose=False)
-            #orbitTAs.append(TA_deg)
-            #orbitPAs.append(PA)
-            #orbitSAs.append(SA)
+            orbitTAs.append(TA_deg)
+            orbitPAs.append(PA)
+            orbitSAs.append(SA)
             ellipseX = SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
             ellipseY = SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
             if telescopeView:
                 ellipseX = -ellipseX
                 ellipseY = -ellipseY
-            if True:
+            if False:
                 ############################$$$$$$$$$$$$$$
                 #$$ Crepp2012 test $$$$$$$$$$$$$$$$$$$$$$$
                 ##########################$$$$$$$$$$$$$$$$
@@ -1850,7 +1849,14 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             #sep_dists.append(sep_dist)
         ellipseXs2.append(ellipseXs)
         ellipseYs2.append(ellipseYs)
-        
+    ###################### ORBIT DEBUGGING ####################################
+    if False:
+        print '\n\n'+'*'*75+'\n      TA             PA                 SA'
+        for i in range(0,len(orbitTAs)):
+            print str(orbitTAs[i])+"   "+str(orbitPAs[i])+"    "+str(orbitSAs[i])
+        print '*'*75+"\n\n"
+    ###########################################################################
+    
     #########################################################################################
     #$$ Fixed value code to plot errors of fit(s).  ie. the 68% or 95% min and maxes $$$$$$$
     #########################################################################################
@@ -1868,7 +1874,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         for orb in range(0,len(longAN_degErrors)):
             ellipseErrorsXs = []
             ellipseErrorsYs = []
-            numSteps = 5000.0
+            numSteps = 500.0
             periodIncrement = (periodErrors[orb]*365.25)/numSteps
             t = 1.0 
             for step in range(0,int(numSteps)):
@@ -1903,13 +1909,27 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     PredictedLocationString=''
     predictedPatches = []
     if makePredictions:
-        ts = [2452144.000000,
-              2452254.000000,
-              2452473.0,
-              2453989.0,
-              2454367.0,
-              2455697.0             
-              ]
+        if False:
+            ts = [2452144.000000,
+                  2452254.000000,
+                  2452473.0,
+                  2453989.0,
+                  2454367.0,
+                  2455697.0             
+                  ]
+        else:
+            ts = [22451965,
+            2453425.282,
+            2454127.085,
+            2454185.028,
+            2454306.737,
+            2454481.192,
+            2454555.068,
+            2454584.106,
+            2455206,
+            2455278
+            ]
+
         for orb in range(0,len(longAN_deg)):
             s= '@'*50+'\n'
             s+="for Orbit # "+str(orb)+"\n"
@@ -1928,7 +1948,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
                 ############################$$$$$$$$$$$$$$
                 #$$ Crepp2012 test $$$$$$$$$$$$$$$$$$$$$$$
                 ##########################$$$$$$$$$$$$$$$$
-                aUse = (a[orb]/sys_dist)*asConversion
+                aUse = (a2/sys_dist)*asConversion
                 x1=aUse*(math.cos(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) -  math.sin(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
                 y1=aUse*(math.sin(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) +  math.cos(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
                 (A,B,C,F,G) = diTools.ABCFG_values(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]))
@@ -1940,11 +1960,27 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
                 y_model = B*X+G*Y
                 xCent = SAs[tcount]*math.sin(math.radians(PAs[tcount]))*asConversion
                 yCent = SAs[tcount]*math.cos(math.radians(PAs[tcount]))*asConversion
+                xCent2 = SAs[tcount]*math.cos(math.radians(PAs[tcount]))*asConversion
+                yCent2 = SAs[tcount]*math.sin(math.radians(PAs[tcount]))*asConversion
+                ##
+                x3,y3 = diTools.orbitCalculatorTH_Itoxy(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]), t, e[orb], To[orb], period[orb])
+                ##
                 tcount+=1
-                print '\nx CREPP = '+str(x1)+", y CREPP = "+str(y1)
-                print 'x_THI = '+str(x_model)+', y_THI = '+str(y_model)
-                print "x_data = "+str(xCent)+", y_data = "+str(yCent)
-                print 'x MINE= '+str(x)+", y MINE= "+str(y)+"\n"
+                if True:
+                    print "Epoch = "+str(t)
+                    print "E_latest_deg = "+str(E_latest_deg)
+                if False:
+                    print "Epoch = "+str(t)
+                    print "E_latest_deg = "+str(E_latest_deg)
+                    print 'x CREPP = '+str(x1)+", y CREPP = "+str(y1)
+                    print 'x_THI = '+str(x_model)+', y_THI = '+str(y_model)
+                    print "x_THI-new = "+str(x3)+", y_THI-new = "+str(y3)
+                    print "x_data (SA*COS(PA)) = "+str(xCent2)+", y_data  (SA*SIN(PA)) = "+str(yCent2)
+                    print 'x MINE (SA*cos(PA))= '+str(SA*math.cos(math.radians(PA))*asConversion)+", y MINE (SA*sin(PA))= "+str(SA*math.sin(math.radians(PA))*asConversion)
+                    print "x_data (SA*SIN(PA)) = "+str(xCent)+", y_data  (SA*cos(PA)) = "+str(yCent)
+                    print 'x MINE (SA*SIN(PA))= '+str(x)+", y MINE (SA*cos(PA))= "+str(y)
+                    print "\n"
+                
                 #########################$$$$$$$$$$$$$$$$$
                 predictedXs.append(x)
                 predictedYs.append(y)

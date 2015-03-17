@@ -32,6 +32,7 @@ def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
     if timeDiff_days<0.0:
         timeDiff_days = timeDiff_days+period_days
     phase = 0.0
+    phaseDiff_days = 0.0
     if T_center!=0.0:
         phaseDiff_days = (T_center-T)-int((T_center -T)/period_days)*period_days 
         if T>T_center:
@@ -97,6 +98,9 @@ def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
         count = count+1
 
     E_latest_deg = math.degrees(E_latest) # convert resulting E to degrees
+    if E_latest_deg<0.0:
+        E_latest_deg = 360.0-E_latest_deg
+        
     if verbose:
         print "The resultant E value is [deg] = ", E_latest_deg
     # check if the resultant value solves the original equation.
@@ -910,8 +914,6 @@ def orbitCalculatorXY(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period,
     :rtype: list of floats
     """
     testing = False
-    
-
 ########################################################################################################
 ###### UP TO THIS LINE, THIS IS THE EXACT SAME AS ORBITCALCULATOR2, SO JUST CALL IT TO SAVE CODE #######
 ########################################################################################################
@@ -1389,6 +1391,20 @@ def ABCFG_MaxMins2(aMax, aMin, argPeri_radMax, argPeri_radMin, longAN_radMax, lo
     return (Amax,Amin, Bmax,Bmin,  Cmax,Cmin, Fmax,Fmin, Gmax,Gmin)
    
    
+def orbitCalculatorTH_Itoxy(a_arcsec, argPeri_rad, longAN_rad, inclination_rad, t, e, T, period):
+    """
+    """
+    (A,B,C,F,G) = ABCFG_values(a_arcsec, argPeri_rad, longAN_rad, inclination_rad)
+    ## get the TAcalculator to find the TA in radians
+    (n, M_deg, E_latest_deg,TA_rad) = TAcalculator(t, e, T, period, T_center=0, verbose=True, debug=False)
+    # Calc Normalized rectangular coordinates
+    X = math.cos(math.radians(E_latest_deg))-e
+    Y = math.sqrt(1.0-e**2.0)*math.sin(math.radians(E_latest_deg))
+    # Calc x,y values on same coord system as plane of sky (same as data)
+    x = A*X+F*Y
+    y = B*X+G*Y
+    return (x,y)
+    
 def ABCFG_values(a, argPeri_rad, longAN_rad, inclination_rad):
     """
     Calculates the Thiele-Innes constants for the given Orbital Elements.

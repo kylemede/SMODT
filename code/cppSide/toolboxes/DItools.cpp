@@ -16,7 +16,7 @@ orbitCalcReturnType DItools::orbitCalculator()
 	 * This will calculate the X and Y locations for a given epoch
 	 */
 
-	double verboseInternal = true; //set to true for debugging
+	double verboseInternal = false; //set to true for debugging
 	orbitCalcReturnType OCRT;
 
 	// Pull in values from OCIT
@@ -38,7 +38,7 @@ orbitCalcReturnType DItools::orbitCalculator()
 	double Y = sqrt(1.0-e*e)*sin(E_rad);
 
 	// Calculate the predicted x&y in ["]
-	double hackNeg = -1.0;
+	double hackNeg = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	OCRT.x_model = hackNeg*(A*X +F*Y);
 	OCRT.y_model = B*X +G*Y;
 
@@ -78,12 +78,17 @@ multiEpochOrbCalcReturnType DItools::multiEpochOrbCalc()
 
 	multiEpochOrbCalcReturnType  MEOCRT;
 	generalTools GT;
+	bool verboseInternal;
+	verboseInternal = verbose;
+	verboseInternal = false;//$$$$$$$$$$$$$$
+
 
 	double chi_squared_total = 0.0;
 	double chi_squared_total2 = 0.0;
 
 	// add pi to the value of the argument of periapsis to convert it to the
 	// value for the star instead of the value input which is for the companion.
+	//NOTE: This is not fully implemented into the settings files, so left as false for now.
 	if (false)
 		argPeri_deg = argPeri_deg+180.0;
 	//This next step is to put it inside one circle, but not really needed as it
@@ -147,7 +152,7 @@ multiEpochOrbCalcReturnType DItools::multiEpochOrbCalc()
 	// to compare to those from the data
 	for ( int i=0; i<((int) epochs_DI.size()); i++ )
 	{
-		if (verbose)
+		if (verboseInternal)
 			cout << "----------------------------------------------------------------------------" <<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 		// load TACIT structures with necessary values from the MEOCIT & MEOCRT structures
@@ -179,17 +184,17 @@ multiEpochOrbCalcReturnType DItools::multiEpochOrbCalc()
 		double x_data = SA_arcsec_measured_REAL*cos(PA_deg_measured_REAL*(PI/180.0));
 		double y_data = SA_arcsec_measured_REAL*sin(PA_deg_measured_REAL*(PI/180.0));
 
-		if (verbose)
+		if (verboseInternal)
 		{
-			cout<<"\nSA_arcsec_measured_REAL = "<<SA_arcsec_measured_REAL <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			cout<<"PA_deg_measured_REAL = "<< PA_deg_measured_REAL<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			cout<<"cos(PA_deg_measured_REAL*(PI/180.0)) = "<< cos(PA_deg_measured_REAL*(PI/180.0))<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			cout<<"sin(PA_deg_measured_REAL*(PI/180.0)) = "<<sin(PA_deg_measured_REAL*(PI/180.0)) <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			cout<<"x_data = "<<x_data <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			cout<<"y_data = "<<y_data<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-			cout<<"SA_mean_error = "<< SA_mean_error<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			cout<<"PA_mean_error = "<<PA_mean_error <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"\nSA_arcsec_measured_REAL = "<<SA_arcsec_measured_REAL <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"PA_deg_measured_REAL = "<< PA_deg_measured_REAL<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"cos(PA_deg_measured_REAL*(PI/180.0)) = "<< cos(PA_deg_measured_REAL*(PI/180.0))<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"sin(PA_deg_measured_REAL*(PI/180.0)) = "<<sin(PA_deg_measured_REAL*(PI/180.0)) <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			cout<<"E_deg = "<<E_deg<<endl;
+			//cout<<"x_data = "<<x_data <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"y_data = "<<y_data<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"SA_mean_error = "<< SA_mean_error<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//cout<<"PA_mean_error = "<<PA_mean_error <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		}
 
 		// convert SA & PA errors into x&y errors
@@ -214,20 +219,20 @@ multiEpochOrbCalcReturnType DItools::multiEpochOrbCalc()
         // Add them to get the updated total
         chi_squared_total = chi_squared_total + x_chi_squared + y_chi_squared;
 
-        if (verbose)
+        if (verboseInternal)
         {
         	cout << "x_data = "<< x_data<<", x_data_error = " <<x_data_error << ", OCRT.x_model = " << OCRT.x_model<<endl;
         	cout << "y_data = "<< y_data<<", y_data_error = " <<y_data_error << ", OCRT.y_model = " << OCRT.y_model<<endl;
-        	double x2 = -OCRT.x_model;
-        	double y2 = -OCRT.y_model;
-        	cout<< "x2 = "<<x2<<", y2 = "<<y2<<endl;
-        	double x_chi_squared2 = GT.chiSquaredCalc(x_data, x_data_inv_var, x2);
-        	double y_chi_squared2 = GT.chiSquaredCalc(y_data, y_data_inv_var, y2);
+        	//double x2 = -OCRT.x_model;
+        	//double y2 = -OCRT.y_model;
+        	//cout<< "x2 = "<<x2<<", y2 = "<<y2<<endl;
+        	//double x_chi_squared2 = GT.chiSquaredCalc(x_data, x_data_inv_var, x2);
+        	//double y_chi_squared2 = GT.chiSquaredCalc(y_data, y_data_inv_var, y2);
         	cout << "x chi_squared = "<< x_chi_squared<<  ", y chi_square = "<< y_chi_squared<< endl;
-        	cout << "x chi_squared2 = "<< x_chi_squared2<<  ", y chi_square2 = "<< y_chi_squared2<< endl;
-        	chi_squared_total2 = chi_squared_total2 + x_chi_squared2 + y_chi_squared2;
+        	//cout << "x chi_squared2 = "<< x_chi_squared2<<  ", y chi_square2 = "<< y_chi_squared2<< endl;
+        	//chi_squared_total2 = chi_squared_total2 + x_chi_squared2 + y_chi_squared2;
         	cout << fixed <<" in loop chi_squared_total = "<<chi_squared_total <<endl;
-        	cout << fixed <<" in loop chi_squared_total2 = "<<chi_squared_total2 <<endl;
+        	//cout << fixed <<" in loop chi_squared_total2 = "<<chi_squared_total2 <<endl;
         }
 		// increment to next epoch
 	}

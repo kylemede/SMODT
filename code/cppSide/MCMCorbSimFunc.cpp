@@ -569,10 +569,10 @@ void MCMCorbFuncObj::simulator()
 					cout<<"Calculating DI orbit for this round "<<endl;
 
 				// Call the orbCalc to have it apply the model to the inputs and produce outputs
-				DIt.verbose=true;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//DIt.verbose=true;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				MEOCRT = DIt.multiEpochOrbCalc();
 				a_total_curr = MEOCRT.a_total;
-				DIt.verbose=SSO.verbose;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//DIt.verbose=SSO.verbose;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				if (a_total_curr>1e4)
 					cout<<"\n\n!!!!! a_total_curr>1e4 in DI section!!!!\n\n"<<endl;
 

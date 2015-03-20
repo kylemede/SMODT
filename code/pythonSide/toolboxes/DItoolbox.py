@@ -1396,7 +1396,7 @@ def orbitCalculatorTH_Itoxy(a_arcsec, argPeri_rad, longAN_rad, inclination_rad, 
     """
     (A,B,C,F,G) = ABCFG_values(a_arcsec, argPeri_rad, longAN_rad, inclination_rad)
     ## get the TAcalculator to find the TA in radians
-    (n, M_deg, E_latest_deg,TA_rad) = TAcalculator(t, e, T, period, T_center=0, verbose=True, debug=False)
+    (n, M_deg, E_latest_deg,TA_rad) = TAcalculator(t, e, T, period, T_center=0, verbose=False, debug=False)
     # Calc Normalized rectangular coordinates
     X = math.cos(math.radians(E_latest_deg))-e
     Y = math.sqrt(1.0-e**2.0)*math.sin(math.radians(E_latest_deg))
@@ -1645,14 +1645,16 @@ def RADECtoPASA(RA, RA_error, DEC, DEC_error):
     :returns: (PA,PA_error,SA,SA_error)
     """
     
-    PA = math.degrees(math.atan(RA/DEC))
-    
-    # correction factors for flaws of atan
-    #NOTE: this issue could be cured with proper use of np.arctan2(x1,x2), where it would normally be atan(x1/x2).
-    if (RA<0.0)and(DEC>0.0):
-        PA = 360.0+PA
-    elif DEC<0.0:
-        PA = 180.0+PA
+    PA = math.degrees(np.arctan2(np.array(RA),np.array(DEC)))
+#     # correction factors for flaws of atan
+#     #NOTE: this issue could be cured with proper use of np.arctan2(x1,x2), where it would normally be atan(x1/x2).
+#     if (RA<0.0)and(DEC>0.0):
+#         PA = 360.0+PA
+#     elif DEC<0.0:
+#         PA = 180.0+PA
+    # arctan2 allows negative output angles, so make PA a positive angle if not one   
+    if PA<0:
+        PA = PA+360.0
     
     SA = math.sqrt(RA**2.0 + DEC**2.0)
     
@@ -1682,13 +1684,29 @@ def PASAtoRADEC(PA,PA_error,SA,SA_error):
     DEC = SA*math.cos(math.radians(PA))
     RA = SA*math.sin(math.radians(PA))
     
-    tempA = (SA_error*math.cos(math.radians(PA)))**2.0
-    tempB = (SA*math.sin(math.radians(PA))*math.radians(PA_error))**2.0
-    DEC_error = math.sqrt(tempA+tempB)
+    tempA = (SA_error/SA)**2.0
+    tempB = ((math.cos(math.radians(PA+PA_error))-math.cos(math.radians(PA)))/math.cos(math.radians(PA)))**2.0
+    DEC_error = abs(DEC*math.sqrt(tempA+tempB))
     
-    tempC = (SA_error*math.sin(math.radians(PA)))**2.0
-    tempD = (SA*math.cos(math.radians(PA))*math.radians(PA_error))**2.0
-    RA_error = math.sqrt(tempC+tempD)
+    # Another way to calculate the error, but the one above is belived to be more currect as these units don't exactly match
+    tempA2 = (SA_error*math.cos(math.radians(PA)))**2.0
+    tempB2 = (SA*math.sin(math.radians(PA))*math.radians(PA_error))**2.0
+    DEC_error2 = math.sqrt(tempA2+tempB2)
+    
+    tempC = (SA_error/SA)**2.0
+    tempD = ((math.sin(math.radians(PA+PA_error))-math.sin(math.radians(PA)))/math.sin(math.radians(PA)))**2.0
+    RA_error = abs(RA*math.sqrt(tempC+tempD))
+    
+    # Another way to calculate the error, but the one above is belived to be more currect as these units don't exactly match
+    tempC2 = (SA_error*math.sin(math.radians(PA)))**2.0
+    tempD2 = (SA*math.cos(math.radians(PA))*math.radians(PA_error))**2.0
+    RA_error2 = math.sqrt(tempC2+tempD2)
+    
+    if False:
+        print 'DEC_error2-DEC_error = '+str(DEC_error2-DEC_error)
+        print 'RA_error2-RA_error = '+str(RA_error2-RA_error)
+        print 'RA_error2 = '+str(RA_error2)+', RA_error = '+str(RA_error)
+        print 'DEC_error2 = '+str(DEC_error2)+', DEC_error = '+str(DEC_error)
     
     return (RA, RA_error, DEC, DEC_error)
 

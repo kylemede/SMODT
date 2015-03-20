@@ -1807,9 +1807,11 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     for orb in range(0,len(longAN_deg)):
         ellipseXs = []
         ellipseYs = []
-        numSteps = 100.0
+        numSteps = 1000.0
         periodIncrement = (period[orb]*365.25)/numSteps
         t = 1.0 
+        numFailed = 0
+        numPassed = 0
         for step in range(0,int(numSteps)):
             T = 0.0
             t = t + periodIncrement
@@ -1824,13 +1826,15 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             if telescopeView:
                 ellipseX = -ellipseX
                 ellipseY = -ellipseY
-            if False:
+            if True:
                 ############################$$$$$$$$$$$$$$
                 #$$ Crepp2012 test $$$$$$$$$$$$$$$$$$$$$$$
                 ##########################$$$$$$$$$$$$$$$$
-                aUse = (a[orb]/sys_dist)*asConversion
-                x1=aUse*(math.cos(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) -  math.sin(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
-                y1=aUse*(math.sin(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) +  math.cos(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
+                rOvera = Sep_Dist_AU_OP/a2
+                r = Sep_Dist_AU_OP/sys_dist
+                aUse = ((a1+a2)/sys_dist)*asConversion
+                x1=r*(math.cos(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) -  math.sin(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
+                y1=r*(math.sin(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) +  math.cos(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
                 (A,B,C,F,G) = diTools.ABCFG_values(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]))
                 # Calc Normalized rectangular coordinates
                 X = math.cos(math.radians(E_latest_deg))-e[orb]
@@ -1838,17 +1842,28 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
                 # Calc x,y values on same coord system as plane of sky (same as data)
                 x_model = A*X+F*Y
                 y_model = B*X+G*Y
-                print '\n\n\nx1 = '+str(x1)+", y1 = "+str(y1)
-                print 'x_model = '+str(x_model)+', y_model = '+str(y_model)
-                print 'ellipseX = '+str(ellipseX)+", ellipseY = "+str(ellipseY)+"\n\n\n"
+                ##
+                x3,y3 = diTools.orbitCalculatorTH_Itoxy(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]), t, e[orb], T, period[orb])
+                ##
+                if (abs(x1-x3)>1e-6)or (abs(y1-y3)>1e-6):
+                    numFailed+=1
+                    print '\n\n\nx CREPP = '+str(x1)+", y CREPP = "+str(y1)
+                    print "x TH-I = "+str(x3)+", y TH-I = "+str(y3)
+                    print 'x_model = '+str(x_model)+', y_model = '+str(y_model)
+                    print 'ellipseX = '+str(ellipseX)+", ellipseY = "+str(ellipseY)+"\n\n\n"
+                else:
+                    numPassed+=1
                 ellipseX = -1.0*x_model
                 ellipseY = y_model
             ellipseXs.append(ellipseX)#$$$$$$$$$$$$$$$$$$4
             ellipseYs.append(ellipseY)#$$$$$$$$$$$$$$$$$$$$4
+            
             #sep_dist = math.sqrt(math.pow(ellipseX,2.0)+math.pow(ellipseY,2.0))
             #sep_dists.append(sep_dist)
         ellipseXs2.append(ellipseXs)
         ellipseYs2.append(ellipseYs)
+        if True:
+            print "\nThe number of epochs that had mismatched for x,y due to TH-I vs CREPP methods were #"+str(numFailed)+"/"+str(numPassed)+"\n"
     ###################### ORBIT DEBUGGING ####################################
     if False:
         print '\n\n'+'*'*75+'\n      TA             PA                 SA'
@@ -1918,7 +1933,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
                   2455697.0             
                   ]
         else:
-            ts = [22451965,
+            ts = [2451965,
             2453425.282,
             2454127.085,
             2454185.028,
@@ -1948,13 +1963,19 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
                 ############################$$$$$$$$$$$$$$
                 #$$ Crepp2012 test $$$$$$$$$$$$$$$$$$$$$$$
                 ##########################$$$$$$$$$$$$$$$$
-                aUse = (a2/sys_dist)*asConversion
-                x1=aUse*(math.cos(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) -  math.sin(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
-                y1=aUse*(math.sin(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) +  math.cos(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
+                rOvera = Sep_Dist_AU_OP/a2
+                r = Sep_Dist_AU_OP/sys_dist
+                aUse = ((a1+a2)/sys_dist)*asConversion
+                x1=r*(math.cos(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) -  math.sin(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
+                y1=r*(math.sin(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) +  math.cos(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
                 (A,B,C,F,G) = diTools.ABCFG_values(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]))
                 # Calc Normalized rectangular coordinates
                 X = math.cos(math.radians(E_latest_deg))-e[orb]
+                X2 = math.cos(math.radians(TA_deg))
                 Y = math.sqrt(1.0-e[orb]**2.0)*math.sin(math.radians(E_latest_deg))
+                Y2 = math.sin(math.radians(TA_deg))
+                #print "math.cos(math.radians(E_latest_deg))-e[orb] = "+str(X)+", rOvera*math.cos(math.radians(TA_deg)) = "+str(rOvera*X2)
+                #print "math.sqrt(1.0-e[orb]**2.0)*math.sin(math.radians(E_latest_deg)) = "+str(Y)+", rOvera*math.sin(math.radians(TA_deg)) = "+str(rOvera*Y2)
                 # Calc x,y values on same coord system as plane of sky (same as data)
                 x_model = A*X+F*Y
                 y_model = B*X+G*Y
@@ -1966,14 +1987,15 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
                 x3,y3 = diTools.orbitCalculatorTH_Itoxy(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]), t, e[orb], To[orb], period[orb])
                 ##
                 tcount+=1
-                if True:
-                    print "Epoch = "+str(t)
-                    print "E_latest_deg = "+str(E_latest_deg)
                 if False:
                     print "Epoch = "+str(t)
                     print "E_latest_deg = "+str(E_latest_deg)
+                if True:
+                    print "Epoch = "+str(t)
+                    print 'a1 = '+str(a1)
+                    #print "E_latest_deg = "+str(E_latest_deg)
                     print 'x CREPP = '+str(x1)+", y CREPP = "+str(y1)
-                    print 'x_THI = '+str(x_model)+', y_THI = '+str(y_model)
+                    #print 'x_THI = '+str(x_model)+', y_THI = '+str(y_model)
                     print "x_THI-new = "+str(x3)+", y_THI-new = "+str(y3)
                     print "x_data (SA*COS(PA)) = "+str(xCent2)+", y_data  (SA*SIN(PA)) = "+str(yCent2)
                     print 'x MINE (SA*cos(PA))= '+str(SA*math.cos(math.radians(PA))*asConversion)+", y MINE (SA*sin(PA))= "+str(SA*math.sin(math.radians(PA))*asConversion)

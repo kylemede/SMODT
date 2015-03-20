@@ -15,6 +15,7 @@ from math import pi
 This toolbox is a collection of the calculator type functions that were used in multiple 
 places throughout the code to conduct various types of binary star system simulations.
 """   
+
 def bestOrbitFileToList(filename=''):
     """
     This will pull out the best fit values in the 'bestOrbit.txt' file produced with the 

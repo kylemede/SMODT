@@ -79,7 +79,7 @@ def DIdataToDict(filename):
 
 def multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_REALs, PA_mean_errors,\
                        epochs, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total=False,\
-                       Mass1=1, Mass2=1, verbose=False):
+                       Mass1=1, Mass2=1, verbose=False, useTHI=True):
     """
     USES orbitCalculatorSAPA to compare the SA and PA values.
     
@@ -146,12 +146,13 @@ def multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_
         t = epochs[i]  
         
         # call orbitCalculator to take input variables and calc orbital elements
-        #(n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU, SA_arcsec_measured_model, PA_deg_measured_model, a1, a2) = \
-        #orbitCalculatorFullEQs(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total=a_total,\
-        #                Mass1=Mass1, Mass2=Mass2, verbose=verbose)
-        (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU, SA_arcsec_measured_model, PA_deg_measured_model, x, y, a1, a2) = \
-        orbitCalculatorTH_I(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total, Mass1, Mass2, verbose=verbose)
-        
+        if useTHI:
+            (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU, SA_arcsec_measured_model, PA_deg_measured_model, x_model, y_model, a1, a2) = \
+            orbitCalculatorTH_I(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total, Mass1, Mass2, verbose=verbose)
+        else:
+            (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU, SA_arcsec_measured_model, PA_deg_measured_model, x_model, y_model, a1, a2) = \
+            orbitCalculatorFullEQs(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total=a_total,\
+                        Mass1=Mass1, Mass2=Mass2, verbose=verbose)
         # store output orbital elements in lists for later plotting
         ns.append(n)
         Ms.append(M_deg)
@@ -160,8 +161,8 @@ def multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_
         Sep_Dists.append(Sep_Dist_AU)
         SA_arcsec_measured_models.append(SA_arcsec_measured_model)
         PA_deg_measured_models.append(PA_deg_measured_model)
-        xs.append(x)
-        ys.append(y)
+        xs.append(x_model)
+        ys.append(y_model)
         a1s.append(a1)
         a2s.append(a2)
             
@@ -362,7 +363,7 @@ def orbitCalculatorTH_I(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, perio
     G = a_arcsec*(-math.sin(longAN_rad)*math.sin(argPeri_rad)+\
                    math.cos(longAN_rad)*math.cos(argPeri_rad)*math.cos(inclination_rad))
     ## get the TAcalculator to find the TA in radians
-    (n, M_deg, E_latest_deg,TA_rad) = genTools.TAcalculator(t, e, T, period, T_center=0, verbose, debug=False)
+    (n, M_deg, E_latest_deg,TA_rad) = genTools.TAcalculator(t, e, T, period, T_center=0, verbose=verbose, debug=False)
     # Calc Normalized rectangular coordinates
     X = math.cos(math.radians(E_latest_deg))-e
     Y = math.sqrt(1.0-e**2.0)*math.sin(math.radians(E_latest_deg))
@@ -411,7 +412,7 @@ def ENtoPASA(E, E_error, N, N_error):
     
     PA_error=SA_error=0
     if (E_error==0)or(N_error==0):
-        if True:
+        if False:
             print "either the E or N error value was zero, so setting the PA and SA return errors to zero!!"
     else:
         top = (E/N)*math.sqrt((E_error/E)**2.0 + (N_error/N)**2.0)
@@ -442,7 +443,7 @@ def PASAtoEN(PA,PA_error,SA,SA_error):
     
     E_error=N_error=0
     if (SA_error==0)or(PA_error==0):
-        if True:
+        if False:
             print "either the PA and SA error value was zero, so setting the E or N return errors to zero!!"
     else:
         tempA = (SA_error/SA)**2.0

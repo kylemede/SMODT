@@ -1815,14 +1815,14 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         for step in range(0,int(numSteps)):
             T = 0.0
             t = t + periodIncrement
-            (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, a1, a2) =\
-                diTools.orbitCalculatorSAPA(t, sys_dist, inc[orb], longAN_deg[orb], e[orb], T, period[orb], argPeri_deg[orb], a[orb],\
+            (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, x, y, a1, a2) =\
+                diTools.orbitCalculatorTH_I(t, sys_dist, inc[orb], longAN_deg[orb], e[orb], T, period[orb], argPeri_deg[orb], a[orb],\
                                                             Mass1=1, Mass2=1, verbose=False)
             orbitTAs.append(TA_deg)
             orbitPAs.append(PA)
             orbitSAs.append(SA)
-            ellipseX = SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
-            ellipseY = SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
+            ellipseX = y*asConversion#SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
+            ellipseY = x*asConversion#SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
             if telescopeView:
                 ellipseX = -ellipseX
                 ellipseY = -ellipseY
@@ -1835,26 +1835,13 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
                 aUse = ((a1+a2)/sys_dist)*asConversion
                 x1=r*(math.cos(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) -  math.sin(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
                 y1=r*(math.sin(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) +  math.cos(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
-                (A,B,C,F,G) = diTools.ABCFG_values(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]))
-                # Calc Normalized rectangular coordinates
-                X = math.cos(math.radians(E_latest_deg))-e[orb]
-                Y = math.sqrt(1.0-e[orb]**2.0)*math.sin(math.radians(E_latest_deg))
-                # Calc x,y values on same coord system as plane of sky (same as data)
-                x_model = A*X+F*Y
-                y_model = B*X+G*Y
-                ##
-                x3,y3 = diTools.orbitCalculatorTH_Itoxy(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]), t, e[orb], T, period[orb])
-                ##
-                if (abs(x1-x3)>1e-6)or (abs(y1-y3)>1e-6):
+                if (abs(x1-x)>1e-6)or (abs(y1-y)>1e-6):
                     numFailed+=1
                     print '\n\n\nx CREPP = '+str(x1)+", y CREPP = "+str(y1)
-                    print "x TH-I = "+str(x3)+", y TH-I = "+str(y3)
-                    print 'x_model = '+str(x_model)+', y_model = '+str(y_model)
+                    print "x TH-I = "+str(x)+", y TH-I = "+str(y)
                     print 'ellipseX = '+str(ellipseX)+", ellipseY = "+str(ellipseY)+"\n\n\n"
                 else:
                     numPassed+=1
-                ellipseX = -1.0*x_model
-                ellipseY = y_model
             ellipseXs.append(ellipseX)#$$$$$$$$$$$$$$$$$$4
             ellipseYs.append(ellipseY)#$$$$$$$$$$$$$$$$$$$$4
             
@@ -1895,15 +1882,14 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             for step in range(0,int(numSteps)):
                 T = 0.0
                 t = t + periodIncrement
-                (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, a1, a2) =\
-                    diTools.orbitCalculatorSAPA(t, sys_dist, incErrors[orb], longAN_degErrors[orb], eErrors[orb], T, periodErrors[orb], argPeri_degErrors[orb], aErrors[orb],\
+                (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, x, y, a1, a2) =\
+                    diTools.orbitCalculatorTH_I(t, sys_dist, incErrors[orb], longAN_degErrors[orb], eErrors[orb], T, periodErrors[orb], argPeri_degErrors[orb], aErrors[orb],\
                                                                 Mass1=1, Mass2=1, verbose=False)
-                #(PA, SA) = PASAcalculator(period, t, T, e, inc, longAN_deg, argPeri_deg, sys_dist, a, a1=0, verbose=False)
                 #orbitTAs.append(TA_deg)
                 #orbitPAs.append(PA)
                 #orbitSAs.append(SA)
-                ellipseErrorsX = SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
-                ellipseErrorsY = SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
+                ellipseErrorsX = y*asConversion#SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
+                ellipseErrorsY = x*asConversion#SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
                 if telescopeView:
                     ellipseErrorsX = -ellipseErrorsX
                     ellipseErrorsY = -ellipseErrorsY
@@ -1954,37 +1940,37 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             print 'To[orb] = '+str(To[orb])#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             tcount = 0
             for t in ts:
-                (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, a1, a2) =\
-                    diTools.orbitCalculatorSAPA(t, sys_dist, inc[orb], longAN_deg[orb], e[orb], To[orb], period[orb], argPeri_deg[orb], a[orb],\
+                (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, x, y, a1, a2) = \
+                    diTools.orbitCalculatorTH_I(t, sys_dist, inc[orb], longAN_deg[orb], e[orb], To[orb], period[orb], argPeri_deg[orb], a[orb],\
                                                                 Mass1=1, Mass2=1, verbose=False)
                 
-                x = SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
-                y = SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
+                x2 = y*asConversion#SA*math.sin(math.radians(PA))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
+                y2 = x*asConversion#SA*math.cos(math.radians(PA))*asConversion#*sys_dist   # This will be in [mas] instead of [AU]
                 ############################$$$$$$$$$$$$$$
                 #$$ Crepp2012 test $$$$$$$$$$$$$$$$$$$$$$$
                 ##########################$$$$$$$$$$$$$$$$
-                rOvera = Sep_Dist_AU_OP/a2
+                #rOvera = Sep_Dist_AU_OP/a2
                 r = Sep_Dist_AU_OP/sys_dist
-                aUse = ((a1+a2)/sys_dist)*asConversion
+                #aUse = ((a1+a2)/sys_dist)*asConversion
                 x1=r*(math.cos(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) -  math.sin(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
                 y1=r*(math.sin(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) +  math.cos(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
-                (A,B,C,F,G) = diTools.ABCFG_values(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]))
+                #(A,B,C,F,G) = diTools.ABCFG_values(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]))
                 # Calc Normalized rectangular coordinates
-                X = math.cos(math.radians(E_latest_deg))-e[orb]
-                X2 = math.cos(math.radians(TA_deg))
-                Y = math.sqrt(1.0-e[orb]**2.0)*math.sin(math.radians(E_latest_deg))
-                Y2 = math.sin(math.radians(TA_deg))
+                #X = math.cos(math.radians(E_latest_deg))-e[orb]
+                #X2 = math.cos(math.radians(TA_deg))
+                #Y = math.sqrt(1.0-e[orb]**2.0)*math.sin(math.radians(E_latest_deg))
+                #Y2 = math.sin(math.radians(TA_deg))
                 #print "math.cos(math.radians(E_latest_deg))-e[orb] = "+str(X)+", rOvera*math.cos(math.radians(TA_deg)) = "+str(rOvera*X2)
                 #print "math.sqrt(1.0-e[orb]**2.0)*math.sin(math.radians(E_latest_deg)) = "+str(Y)+", rOvera*math.sin(math.radians(TA_deg)) = "+str(rOvera*Y2)
                 # Calc x,y values on same coord system as plane of sky (same as data)
-                x_model = A*X+F*Y
-                y_model = B*X+G*Y
+                #x_model = A*X+F*Y
+                #y_model = B*X+G*Y
                 xCent = SAs[tcount]*math.sin(math.radians(PAs[tcount]))*asConversion
                 yCent = SAs[tcount]*math.cos(math.radians(PAs[tcount]))*asConversion
                 xCent2 = SAs[tcount]*math.cos(math.radians(PAs[tcount]))*asConversion
                 yCent2 = SAs[tcount]*math.sin(math.radians(PAs[tcount]))*asConversion
                 ##
-                x3,y3 = diTools.orbitCalculatorTH_Itoxy(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]), t, e[orb], To[orb], period[orb])
+                #x3,y3 = diTools.orbitCalculatorTH_Itoxy(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]), t, e[orb], To[orb], period[orb])
                 ##
                 tcount+=1
                 if False:
@@ -1996,11 +1982,11 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
                     #print "E_latest_deg = "+str(E_latest_deg)
                     print 'x CREPP = '+str(x1)+", y CREPP = "+str(y1)
                     #print 'x_THI = '+str(x_model)+', y_THI = '+str(y_model)
-                    print "x_THI-new = "+str(x3)+", y_THI-new = "+str(y3)
+                    #print "x_THI-new = "+str(x3)+", y_THI-new = "+str(y3)
                     print "x_data (SA*COS(PA)) = "+str(xCent2)+", y_data  (SA*SIN(PA)) = "+str(yCent2)
                     print 'x MINE (SA*cos(PA))= '+str(SA*math.cos(math.radians(PA))*asConversion)+", y MINE (SA*sin(PA))= "+str(SA*math.sin(math.radians(PA))*asConversion)
                     print "x_data (SA*SIN(PA)) = "+str(xCent)+", y_data  (SA*cos(PA)) = "+str(yCent)
-                    print 'x MINE (SA*SIN(PA))= '+str(x)+", y MINE (SA*cos(PA))= "+str(y)
+                    print 'x MINE (SA*SIN(PA))= '+str(x2)+", y MINE (SA*cos(PA))= "+str(y2)
                     print "\n"
                 
                 #########################$$$$$$$$$$$$$$$$$
@@ -2030,8 +2016,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     #X,Y = ellipse(a_rp, b_rp, ang_corr, -xStar, -yStar, Nb=500)
     #X,Y = ellipse(a_rp, b_rp, ang, 0, 0, Nb=500)
     
-    (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SAstart, PAstart, a1, a2) =\
-            diTools.orbitCalculatorSAPA(0.0, sys_dist, inc[0], longAN_deg[0], e[0], 0.0, period[0], argPeri_deg[0], a[0],\
+    (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SAstart, PAstart, x, y, a1, a2) =\
+            diTools.orbitCalculatorTH_I(0.0, sys_dist, inc[0], longAN_deg[0], e[0], 0.0, period[0], argPeri_deg[0], a[0],\
                                                         Mass1=1, Mass2=1, verbose=False)
     Xstart = SAstart*math.sin(math.radians(PAstart))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
     Ystart = SAstart*math.cos(math.radians(PAstart))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
@@ -2040,8 +2026,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         Ystart = -Ystart
     startStar = star((asConversion/1000.0)*0.6*a[0], Xstart, Ystart, color='green', N=20, thin = 0.5)
     
-    (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SAstart, PAstart, a1, a2) =\
-            diTools.orbitCalculatorSAPA(((period[0]/4.0)*365.25), sys_dist, inc[0], longAN_deg[0], e[0], 0.0, period[0], argPeri_deg[0], a[0],\
+    (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SAstart, PAstart, x, y, a1, a2) =\
+            diTools.orbitCalculatorTH_I(((period[0]/4.0)*365.25), sys_dist, inc[0], longAN_deg[0], e[0], 0.0, period[0], argPeri_deg[0], a[0],\
                                                         Mass1=1, Mass2=1, verbose=False)
     XoneQuarter = SAstart*math.sin(math.radians(PAstart))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
     YoneQuarter = SAstart*math.cos(math.radians(PAstart))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
@@ -2050,8 +2036,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         YoneQuarter = -YoneQuarter
     oneQuarterStar = star((asConversion/1000.0)*0.6*a[0], XoneQuarter, YoneQuarter, color='blue', N=20, thin = 0.5)
     
-    (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SAhalf, PAhalf, a1, a2) =\
-            diTools.orbitCalculatorSAPA(((period[0]/2.0)*365.25), sys_dist, inc[0], longAN_deg[0], e[0], 0.0, period[0], argPeri_deg[0], a[0],\
+    (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SAhalf, PAhalf, x, y, a1, a2) =\
+            diTools.orbitCalculatorTH_I(((period[0]/2.0)*365.25), sys_dist, inc[0], longAN_deg[0], e[0], 0.0, period[0], argPeri_deg[0], a[0],\
                                                         Mass1=1, Mass2=1, verbose=False)
     Xhalf = SAhalf*math.sin(math.radians(PAhalf))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
     Yhalf = SAhalf*math.cos(math.radians(PAhalf))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
@@ -2060,8 +2046,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         Yhalf = -Yhalf
     halfStar = star((asConversion/1000.0)*0.6*a[0], Xhalf, Yhalf, color='blue', N=20, thin = 0.5)
     
-    (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SAstart, PAstart, a1, a2) =\
-            diTools.orbitCalculatorSAPA((3.0*(period[0]/4.0)*365.25), sys_dist, inc[0], longAN_deg[0], e[0], 0.0, period[0], argPeri_deg[0], a[0],\
+    (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SAstart, PAstart, x, y, a1, a2) =\
+            diTools.orbitCalculatorTH_I((3.0*(period[0]/4.0)*365.25), sys_dist, inc[0], longAN_deg[0], e[0], 0.0, period[0], argPeri_deg[0], a[0],\
                                                         Mass1=1, Mass2=1, verbose=False)
     XthreeQuarter = SAstart*math.sin(math.radians(PAstart))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
     YthreeQuarter = SAstart*math.cos(math.radians(PAstart))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
@@ -2070,8 +2056,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         YthreeQuarter = -YthreeQuarter
     threeQuarterStar = star((asConversion/1000.0)*0.6*a[0], XthreeQuarter, YthreeQuarter, color='blue', N=20, thin = 0.2)
     
-    (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SAstart, PAstart, a1, a2) =\
-            diTools.orbitCalculatorSAPA(((period[0])*365.25), sys_dist, inc[0], longAN_deg[0], e[0], 0.0, period[0], argPeri_deg[0], a[0],\
+    (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SAstart, PAstart, x, y, a1, a2) =\
+            diTools.orbitCalculatorTH_I(((period[0])*365.25), sys_dist, inc[0], longAN_deg[0], e[0], 0.0, period[0], argPeri_deg[0], a[0],\
                                                         Mass1=1, Mass2=1, verbose=False)
     Xend = SAstart*math.sin(math.radians(PAstart))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
     Yend = SAstart*math.cos(math.radians(PAstart))*asConversion#*sys_dist  # This will be in [mas] instead of [AU]
@@ -2093,18 +2079,19 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         legendStr = legendStr+"argPeri_deg[orb] = "+str(argPeri_deg[orb])+'\n'
         legendStr = legendStr+"a[orb] = "+str(a[orb])+'\n'
         if False:
-            (chi_squared_total, ns, Ms, Es, thetas, Sep_Dists, SA_arcsec_measured_models, PA_deg_measured_models, a1s, a2s) =\
+            (chi_squared_total, ns, Ms, Es, thetas, Sep_Dists, SA_arcsec_measured_models, PA_deg_measured_models, xs, ys, a1s, a2s) =\
             diTools.multiEpochOrbCalc(SAs, SAerrors, PAs, PAerrors,epochs, sys_dist, inc[orb], longAN_deg[orb],\
-                            e[orb], To[orb], period[orb], argPeri_deg[orb], a_total=a[orb], Mass1=1, Mass2=1, verbose=False)
-            if verboseInternal:
-                print "!!!!!!!!!!!!!!!!!!!!\n\n Try1: for orbit #"+str(orb)+", the chiSquared fit to the DI data was = "+str(chi_squared_total)+', or reduced = '+str(chi_squared_total/nuDI)+"\n!!!!!!!!!!!!!!!!!!!!!!!!!"
-        (chi_squared_total, ns, Ms, Es, thetas, xs, ys, a1s, a2s) =\
-        diTools.multiEpochOrbCalc3(SAs, SAerrors, PAs, PAerrors,epochs, sys_dist, inc[orb], longAN_deg[orb],\
+                            e[orb], To[orb], period[orb], argPeri_deg[orb], a_total=a[orb], Mass1=1, Mass2=1, verbose=False, useTHI=False)
+            if verboseInternal or True:
+                print "!!!!!!!!!!!!!!!!!!!!\n fullEQs: for orbit #"+str(orb)+", the chiSquared fit to the DI data was = "+\
+                str(chi_squared_total)+', or reduced = '+str(chi_squared_total/nuDI)+"\n!!!!!!!!!!!!!!!!!!!!!!!!!"
+        (chi_squared_total, ns, Ms, Es, thetas, Sep_Dists, SA_arcsec_measured_models, PA_deg_measured_models, xs, ys, a1s, a2s) =\
+        diTools.multiEpochOrbCalc(SAs, SAerrors, PAs, PAerrors,epochs, sys_dist, inc[orb], longAN_deg[orb],\
                         e[orb], To[orb], period[orb], argPeri_deg[orb], a_total=a[orb], Mass1=1, Mass2=1, verbose=False)
         chiSquaredStr = "The chiSquared fit to the DI data was = "+str(chi_squared_total)+', or reduced = '+str(chi_squared_total/nuDI)
         legendStr = legendStr+chiSquaredStr+'\n'
         if verboseInternal:
-            print "\n\n Try2: for orbit #"+str(orb)+", "+chiSquaredStr+"\n"
+            print "\n\n     TH-I: for orbit #"+str(orb)+", "+chiSquaredStr+"\n"
     #######################################################################################        
     
     ## Create figure, axes and start plotting/drawing everything

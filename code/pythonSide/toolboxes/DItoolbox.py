@@ -118,6 +118,15 @@ def multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_
     :type Mass2:                          float
     :param verbose:                       Send prints to screen? [True/False] (Default = False)
     :type verbose:                        Python boolean (True/False). Default = False
+    :param useTHI:                        Use Thiele-Innes approach? [True/False] (Default = True)
+    :type useTHI:                         Python boolean (True/False). Default = False
+    
+    :returns: (chi squared total, Mean Motions [rad/yr], Mean Anomalys [deg], Eccentric Anomalsy [deg],
+        True Anomalys [deg], Separation Distances in orbital plane [AU], 
+        measured Position Angles in image [deg], measured Position Angles in image [deg],
+        measured xs (North) value in image ["], measured ys (East) in the image ["],
+        semi-major axis' of M1 [AU], semi-major axis' of M2 [AU])
+    :rtype: list of lists of floats
     """
     testing = False
     # init output lists
@@ -193,8 +202,13 @@ def multiEpochOrbCalc(SA_arcsec_measured_REALs, SA_mean_errors, PA_deg_measured_
 def orbitCalculatorFullEQs(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total,\
                     Mass1=1, Mass2=1, verbose=False):
     """
-    NOTE: This is the old version of the orbitCalculator not used anymore.  
-    See the orbitCalculatorSAPA and orbitCalculatorXY being used now.
+    NOTE: This is the old version that calculates the predicted locations for a companion star/planet
+    that uses the full equations approach that Kyle Mede personally developed from first principles.  
+    While both have been tested and produce the same outputs, orbitCalculatorTH_I is the standard as it is simpler.
+    To use this formulation instead fo the Thiele-Innes approach, in the multiEpochOrbCalc, just set the useTHI boolean 
+    to False.
+    
+    NOTE2: Keep in mind that the 'x' and 'y' returned are the North and East values respectively.  Very important.
     
     This function will calculate the output orbital parameters from the inputs for a SINGLE epoch.  Use the 
     multiEpochOrbCalc to do this for multiple epochs at the same time.  
@@ -234,6 +248,7 @@ def orbitCalculatorFullEQs(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, pe
     :returns: (Mean Motion [rad/yr], Mean Anomaly [deg], Eccentric Anomaly [deg],
         True Anomaly [deg], Separation Distance in orbital plane [AU], 
         measured Position Angle in image [deg], measured Position Angle in image [deg],
+        measured x (North) value in image ["], measured y (East) in the image ["],
         semi-major axis of M1 [AU], semi-major axis of M2 [AU])
     :rtype: list of floats
     """
@@ -346,6 +361,54 @@ def orbitCalculatorFullEQs(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, pe
    
 def orbitCalculatorTH_I(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, period, argPeri_deg, a_total,Mass1=1, Mass2=1, verbose=False):
     """
+    NOTE: this is the standard function for calculating the predicted location of a companion star/planet.
+    The full equations approach developed from first principles by Kyle Mede is also availble, and has
+    been tested to verify both approaches give the same results.  This version is based on the Thiele-Innes 
+    equations and is simpler, thus prefered.
+    
+    NOTE2: Keep in mind that the 'x' and 'y' returned are the North and East values respectively.  Very important.
+    
+    This function will calculate the output orbital parameters from the inputs for a SINGLE epoch.  Use the 
+    multiEpochOrbCalc to do this for multiple epochs at the same time.  
+    The t and Sys_Dist_PC parameters are generally known/measured values,
+    while the rest are typically random numbers.
+    This function is designed to work as the calculator inside a Monte Carlo Simulator.
+    It is based on the Thiele-Innes equations.
+    
+    Note: RP stands for Reference Plane, ie the plane that values are measured in from Earth.
+          OP stands for Orbital Plane, ie in the plane that the stars are orbiting in.
+    
+    :param t:                             epoch of observation/image [julian date]
+    :type t:                              float
+    :param Sys_Dist_PC:                   measured system distance from Earth [PC]
+    :type Sys_Dist_PC:                    float
+    :param inclination_deg:               inclination [deg]
+    :type inclination_deg:                float
+    :param longAN_deg:                    Longitude of Ascending Node [deg]
+    :type longAN_deg:                     float
+    :param e:                             eccentricity of orbits [unitless]
+    :type e:                              float
+    :param T:                             Last Periapsis Epoch/time [julian date] 
+    :type T:                              float
+    :param period:                        period of orbits [yrs]
+    :type period:                         float
+    :param argPeri_deg:                   Argument of Periapsis in orbital plane [deg]
+    :type argPeri_deg:                    float
+    :param a_total:                       Total semi-major axis of system [AU]
+    :type a_total:                        float
+    :param Mass1:                         Mass of primary in system [solar masses] (Default=1, means M2 is a planet)
+    :type Mass1:                          float
+    :param Mass2:                         Mass of the secondary in system [solar masses] (Default=1, means M2 is a planet)
+    :type Mass2:                          float
+    :param verbose:                       Send prints to screen? [True/False] (Default = False)
+    :type verbose:                        Python boolean (True/False). Default = False
+    
+    :returns: (Mean Motion [rad/yr], Mean Anomaly [deg], Eccentric Anomaly [deg],
+        True Anomaly [deg], Separation Distance in orbital plane [AU], 
+        measured Position Angle in image [deg], measured Position Angle in image [deg],
+        measured x (North) value in image ["], measured y (East) in the image ["],
+        semi-major axis of M1 [AU], semi-major axis of M2 [AU])
+    :rtype: list of floats
     """
     a_arcsec = a_total/Sys_Dist_PC
     longAN_rad = math.radians(longAN_deg)

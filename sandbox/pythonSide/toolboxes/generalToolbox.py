@@ -10,10 +10,142 @@ import shutil
 from math import pi
 
 """
+EXTRA FUNCS FROM THE DUO VERSION OF SMODT THAT WERE NOT NEEDED OR COPIES.
+
 This toolbox is a collection of the calculator type functions that were used in multiple 
 places throughout the code to conduct various types of binary star system simulations.
 """     
      
+def dataReaderNEWsimple(filename, column=0):
+    """ 
+    THIS IS THE SUPER SIMPLE VERSION THAT TAKES A LONG TIME TO LOAD DATA IF DATASET IS LARGE.
+    
+    filename must be a string of format: 'blahblah.txt'
+        column = which column you want to have the data for, zero indexed.
+        
+        Columns must be:
+        longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+        
+        file format must be:
+        
+        line1: title
+        line2: data headings
+        line3: space delimited data
+        line4: space delimited data
+        .
+        .
+        .
+    """
+    verbose = False
+    ## instantiate data list
+    data = []
+    
+    if verbose:
+        print "\nWorking on file: "+os.path.basename(filename)
+    f = open(filename, 'r')
+    # strip off the .txt part to make the plot version of the filename
+    plotFileTitle = f.readline()[:-5]
+    headings = f.readline()
+    line = 'asdf'
+    while line!='':
+        line = f.readline()
+        if line!='':
+            dataLineCols = line.split()
+            dataValue = dataLineCols[column]
+            timesBeenHere = int(dataLineCols[-1])
+        
+            # This loop will append the value to the list based on the number of times 
+            # the simulator stayed at that step/orbit
+            for i in range(0,timesBeenHere): 
+                data.append(float(dataValue))
+      
+    if verbose:          
+        print "number of values in data column = "+str(len(data))
+    
+    # convert to numpy array
+    data = np.array(data)
+    
+    return data
+
+def dataReadTrimWriteNEW2(filename, chiSquareCutOff, verbose=False):
+    """
+    ### Same as dataReadTrimWriteNEW BUT with a inclination trimming feature that isn't really needed anymore ######
+    
+    
+    This function is ideal for the cases where your data sets are too big because of choosing a chiSquareMax that is
+    too big when running the simulator, resulting in large data files that are hard to load and plot.  In these cases
+    you can just find out what the standard range of chiSquareds are, and choose a lower cut-off to trim the volume
+    of data written to disk.  Just open the file and skim over the chiSquared column values to choose a new
+    cut-off.
+    These circumstances really only happen when you have a long 'daisy chain' run with rough settings, so this is 
+    not expected to be a commonly used function.
+    
+    NOTE: output files will have same name with 'chiSquare-cut-off-####' added to 
+          show it is the new trimmed version.
+    
+    :param filename:              filename
+    :type filename:               string
+    :param chiSquareCutOff:       max value of chiSquared for orbits to be written
+    :type chiSquareCutOff:        any number
+    """
+    
+    # check if the passed in value for filenameROOT includes '.txt'
+    if '.dat' not in filename:
+        INSfilename = filename+'.dat'
+    else:
+        INSfilename = filename
+
+    titleMod = '-chiSquare-cut-off-'+str(chiSquareCutOff)
+    # create output version of INS file and write new 
+    # strip off '.txt', add titleMod, then put it back on
+    newFilename = INSfilename[:-4]+titleMod+'.dat'
+    
+    if verbose:
+        print 'Starting to load, trim and write the data'
+    # open INS file and grab title and headings
+    INfile = open(INSfilename, 'r')
+    plotFileTitle = INfile.readline()[:-5]
+    headings = INfile.readline()
+    
+    OUTfile = open(newFilename, 'w')
+    OUTfile.write(plotFileTitle+titleMod+'\n')
+    OUTfile.write(headings)
+    # loop through data lines and only write those that
+    # have chiSquare below cut-off and store all 
+    # chiSquareds in a list
+    chiSquareds = []
+    line='asdf'#just a value that isn't '' to start, will be replaced below
+    totalKept = 0
+    while line!='':
+        line = INfile.readline()
+        if line!='':
+            dataLineCols = line.split()
+            #if len(dataLineCols)==10:
+            chiSquareStr = dataLineCols[8]
+#            elif len(dataLineCols)==9:
+#                chiSquareStr = dataLineCols[7]
+            chiSquared = float(chiSquareStr)
+#            inclination = float(dataLineCols[4])
+#            if chiSquared<chiSquareCutOff:
+#                if inclination<90.0:
+            if chiSquared<chiSquareCutOff:
+                OUTfile.write(line)
+                totalKept = totalKept+1
+    if verbose:
+        print str(totalKept)+' orbits were found to have a chiSquared < '+str(chiSquareCutOff)
+        print 'Done loading, trimming and writing. Output file = '+os.path.basename(INSfilename)
+    INfile.close()
+    OUTfile.close()    
+    
+    print 'Final trimmed data written to: '+newFilename
+    
+    if verbose:    
+        print '** All data from file trimmed and written to output file **'
+        
+    if True:
+        return newFilename
+
+
 def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
     """
     Calculate the True Anomaly.  This calculator uses and updated version of 

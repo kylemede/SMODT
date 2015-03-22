@@ -30,9 +30,9 @@ outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 outputData_filenameRoot =HR7672-MCMC-DIonly-CreppValues-THItest
 #########################################################################################################################
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-RVonly =False
+RVonly =false
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-DIonly =True
+DIonly =true
 # Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
 mcONLY =False
 # Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!

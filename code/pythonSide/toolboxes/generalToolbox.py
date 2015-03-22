@@ -19,9 +19,9 @@ places throughout the code to conduct various types of binary star system simula
 def bestOrbitFileToList(filename=''):
     """
     This will pull out the best fit values in the 'bestOrbit.txt' file produced with the 
-    bestOrbitFinderNEW func.
+    bestOrbitFinder func.
     File format must be:
-    
+    empty line
     Best orbit found:
     LongAN = 0.0
     e = 0.733664
@@ -38,10 +38,10 @@ def bestOrbitFileToList(filename=''):
     verboseInternal = False
 
     if os.path.exists(filename):
-        file = open(filename)
-        lines = file.readlines()
-        empty = lines[0]
-        header = lines[1]
+        f = open(filename)
+        lines = f.readlines()
+        #empty = lines[0]
+        #header = lines[1]
         longANBest = float(lines[2].split("=")[-1])
         eBest = float(lines[3].split("=")[-1])
         TBest = float(lines[4].split("=")[-1])
@@ -57,14 +57,32 @@ def bestOrbitFileToList(filename=''):
                 rvOffsetsBest.append(float(lines[dataset].split("=")[-1]))
         chiSquaredBest = float(lines[-1].split("=")[-1])
         
+    l = []
     if len(rvOffsetsBest)>0:
-       list = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, rvOffsetsBest]
+        l = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, rvOffsetsBest]
     else:
-       list = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest]
-    
+        l = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest]
+    return l
      
 def eccArgPeri2ToTcCalc(e, period, argPeri_deg, To, Tc=0):
+    """
+    Calculate either the Time of Periapsis (To) or the Time of Center Transit (Tc)
+    using the eccentricity and Argument of Periapsis.
     
+    :param e:                             eccentricity of orbits [unitless]
+    :type e:                              float
+    :param period:                        period of orbits [yrs]
+    :type period:                         float
+    :param argPeri_deg:                   Argument of Periapsis in orbital plane [deg]
+    :type argPeri_deg:                    float
+    :param To:                            Last Periapsis Epoch/time [julian date] 
+    :type To:                             float
+    :param Tc:                            Last Center Transit Epoch/time [julian date] 
+    :type Tc:                             float
+    
+    :returns:(To, Tc)
+    :rtype: list of floats
+    """
     verbose = True
     backHalf = False
     
@@ -124,10 +142,23 @@ def eccArgPeri2ToTcCalc(e, period, argPeri_deg, To, Tc=0):
         
     return (To,Tc)
         
-def bestOrbitFinderNEW(filename, printToScreen=True, saveToFile=True, returnAsList=False):
+def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=False):
     """
     Just a simple function to find the parameters for the lowest chiSquared orbit in a 
-    data file of the NEW format.
+    data file.
+    
+    columns must be:
+     longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+        
+        file format must be:
+        
+        line1: title
+        line2: data headings
+        line3: space delimited data
+        line4: space delimited data
+        .
+        .
+        .
     """
   
     lowestChiSquared = 10000000
@@ -211,7 +242,7 @@ def bestOrbitFinderNEW(filename, printToScreen=True, saveToFile=True, returnAsLi
     if returnAsList:
         return list 
     
-def burnInCalc3(chiSquareds, medianALLchains,jumpy=True):
+def burnInCalc(chiSquareds, medianALLchains,jumpy=True):
     """
     This function will calculate the burn in length and return its value.
     This can only truly be done for a proper MCMC that was started
@@ -261,8 +292,12 @@ def burnInCalc3(chiSquareds, medianALLchains,jumpy=True):
         
     return burnInLength
 
-def CorrLengthCalc(paramIN):
+def corrLengthCalcStd(paramIN):
     """
+    Using corrLengthCalcVar is the ideal choice, this function was developed for testing 
+    between the two different ways to calculate the correlation length, but left for 
+    users that might want to also look into the differences.
+    
     This version uses np.std
     
     This function will calculate the correlation length and return its value.
@@ -305,9 +340,10 @@ def CorrLengthCalc(paramIN):
         
     return CorrLength
 
-def CorrLengthCalc2(paramIN):
+def corrLengthCalcVar(paramIN):
     """
     This version uses np.var
+    This is the most ideal way to calculate the correlation length, instead of the std based version.
     
     This function will calculate the correlation length and return its value.
     
@@ -373,7 +409,7 @@ def burnInCalcMultiFile(dataFilenames,simAnneal=True):
     if simAnneal:
         for filename in dataFilenames:
             if os.path.exists(filename):
-                chiSquaredsChain = dataReaderNEW(filename,7)
+                chiSquaredsChain = dataReader(filename,7)
                 if startMCMCsample==0:
                     startMCMCsample = int(0.75*len(chiSquaredsChain))
                     if verbose:
@@ -382,7 +418,7 @@ def burnInCalcMultiFile(dataFilenames,simAnneal=True):
                 chiSquaredsALL=np.concatenate((chiSquaredsALL,chiSquaredsChain),axis=0)
     else:
         ALLfilename = os.path.join(os.path.dirname(dataFilenames[0]),'outputData-ALL.dat')
-        chiSquaredsALL = dataReaderNEW(ALLfilename,7)
+        chiSquaredsALL = dataReader(ALLfilename,7)
         
     # calculate median of 'all' array
     if type(chiSquaredsALL)!=np.ndarray:
@@ -407,11 +443,11 @@ def burnInCalcMultiFile(dataFilenames,simAnneal=True):
             else:
                 log.write("Calculating the burn-in for MCMC run:\n")
             
-            chiSquaredsChain = dataReaderNEW(filename,7)
+            chiSquaredsChain = dataReader(filename,7)
             if simAnneal:
                 chiSquaredsChain = chiSquaredsChain[startMCMCsample:-1]
             #medianChain = np.median(chiSquaredsChain)
-            burnInLength = burnInCalc3(chiSquaredsChain, medainALL,jumpy=False)
+            burnInLength = burnInCalc(chiSquaredsChain, medainALL,jumpy=False)
             
             s = 'median value for all chains = '+str(medainALL)
             s = s+"\nTotal number of points in the chain = "+str(len(chiSquaredsChain))+"\n\n"
@@ -560,7 +596,7 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
     startMCMCsample=0
     if simAnneal:
         if os.path.exists(dataFilenames[0]):
-            chiSquaredsChain = dataReaderNEW(dataFilenames[0],7)
+            chiSquaredsChain = dataReader(dataFilenames[0],7)
             startMCMCsample = int(0.75*len(chiSquaredsChain))
                 
     for filename in dataFilenames:           
@@ -575,13 +611,13 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
             
             ## find conff levels of data that is always outputed from sims
             s= '\nlongANs have:'
-            data = dataReaderNEW(filename,0)
+            data = dataReader(filename,0)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
             #N_eff = effectivePointsCalcFunc(data)
             #s=s+ '\nEffective number of points = '+repr(N_eff)
-            CorrLength = CorrLengthCalc2(data)
+            CorrLength = corrLengthCalcVar(data)
             if CorrLength == data.size:
                 s=s+"\nPROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
             else:
@@ -593,13 +629,13 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
                 print s
             
             s= '\nes have'
-            data = dataReaderNEW(filename,1)
+            data = dataReader(filename,1)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
             #N_eff = effectivePointsCalcFunc(data)
             #s=s+ '\nEffective number of points = '+repr(N_eff)
-            CorrLength = CorrLengthCalc2(data)
+            CorrLength = corrLengthCalcVar(data)
             if CorrLength == data.size:
                 s=s+"\nPROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
             else:
@@ -611,13 +647,13 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
                 print s
             
             s= '\nTs have:'
-            data = dataReaderNEW(filename,2)
+            data = dataReader(filename,2)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
             #N_eff = effectivePointsCalcFunc(data)
             #s=s+ '\nEffective number of points = '+repr(N_eff)
-            CorrLength = CorrLengthCalc2(data)
+            CorrLength = corrLengthCalcVar(data)
             if CorrLength == data.size:
                 s=s+"\nPROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
             else:
@@ -629,13 +665,13 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
                 print s
             
             s= '\nperiods have:'
-            data = dataReaderNEW(filename,3)
+            data = dataReader(filename,3)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
             #N_eff = effectivePointsCalcFunc(data)
             #s=s+ '\nEffective number of points = '+repr(N_eff)
-            CorrLength = CorrLengthCalc2(data)
+            CorrLength = corrLengthCalcVar(data)
             if CorrLength == data.size:
                 s=s+"\nPROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
             else:
@@ -647,13 +683,13 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
                 print s
             
             s= '\ninclinations have:'
-            data= dataReaderNEW(filename,4)
+            data= dataReader(filename,4)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
             #N_eff = effectivePointsCalcFunc(data)
             #s=s+ '\nEffective number of points = '+repr(N_eff)
-            CorrLength = CorrLengthCalc2(data)
+            CorrLength = corrLengthCalcVar(data)
             if CorrLength == data.size:
                 s=s+"\nPROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
             else:
@@ -665,13 +701,13 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
                 print s
             
             s= '\nargPeris have:'
-            data = dataReaderNEW(filename,5)
+            data = dataReader(filename,5)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
             #N_eff = effectivePointsCalcFunc(data)
             #s=s+ '\nEffective number of points = '+repr(N_eff)
-            CorrLength = CorrLengthCalc2(data)
+            CorrLength = corrLengthCalcVar(data)
             if CorrLength == data.size:
                 s=s+"\nPROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
             else:
@@ -683,13 +719,13 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
                 print s
             
             s= "\na_totals have:"
-            data = dataReaderNEW(filename,6)
+            data = dataReader(filename,6)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
             #N_eff = effectivePointsCalcFunc(data)
             #s=s+ '\nEffective number of points = '+repr(N_eff)
-            CorrLength = CorrLengthCalc2(data)
+            CorrLength = corrLengthCalcVar(data)
             if CorrLength == data.size:
                 s=s+"\nPROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
             else:
@@ -701,13 +737,13 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
                 print s
             
             s= "\nKs have:"
-            data = dataReaderNEW(filename,8)
+            data = dataReader(filename,8)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
             #N_eff = effectivePointsCalcFunc(data)
             #s=s+ '\nEffective number of points = '+repr(N_eff)
-            CorrLength = CorrLengthCalc2(data)
+            CorrLength = corrLengthCalcVar(data)
             if CorrLength == data.size:
                 s=s+"\nPROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
             else:
@@ -739,13 +775,13 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
                 numRVdatasets = numDataCols - 10
                 for dataset in range(0,numRVdatasets):
                     s= '\ndataset # '+str(dataset+1)+' RV offsets have:'
-                    data = dataReaderNEW(filename,dataset+9)
+                    data = dataReader(filename,dataset+9)
                     if simAnneal:
                         data = data[startMCMCsample:]
                     s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
                     #N_eff = effectivePointsCalcFunc(data)
                     #s=s+ '\nEffective number of points = '+repr(N_eff)
-                    CorrLength = CorrLengthCalc2(data)
+                    CorrLength = corrLengthCalcVar(data)
                     if CorrLength == data.size:
                         s=s+"\nPROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
                     else:
@@ -964,56 +1000,20 @@ def dataFileCombiner(filenames,outFilename):
     
     print 'Done! '+str(numFiles)+' files combined and written to "'+outFilename+'"'
 
-def dataReaderNEW(filename, column=0):
-    """ filename must be a string of format: 'blahblah.txt'
-        column = which column you want to have the data for, zero indexed.
-        
-        NOTE: This version is meant for the new headings from mcmcOrbSimUniform6
-        longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared  RVoffset0...  timesBeenHere
-        
-        file format must be:
+def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False):
+    """
+    Read in the data for a single column of data and expand it to its full length with the timesBeenHere param.
+    
+    Columns must be:
+        longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+    columnNum must be an int.
+    
+    file format must be:
         
         line1: title
         line2: data headings
         line3: space delimited data
         line4: space delimited data
-        .
-        .
-        .
-    """
-    verbose = False
-    ## instantiate data list
-    data = []
-    
-    if verbose:
-        print "\nWorking on file: "+os.path.basename(filename)
-    f = open(filename, 'r')
-    # strip off the .txt part to make the plot version of the filename
-    plotFileTitle = f.readline()[:-5]
-    headings = f.readline()
-    line = 'asdf'
-    while line!='':
-        line = f.readline()
-        if line!='':
-            dataLineCols = line.split()
-            dataValue = dataLineCols[column]
-            timesBeenHere = int(dataLineCols[-1])
-        
-            # This loop will append the value to the list based on the number of times 
-            # the simulator stayed at that step/orbit
-            for i in range(0,timesBeenHere): 
-                data.append(float(dataValue))
-      
-    if verbose:          
-        print "number of values in data column = "+str(len(data))
-    
-    # convert to numpy array
-    data = np.array(data)
-    
-    return data
-
-def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False):
-    """
     """
     verboseInternal = False
     gotLog=True
@@ -1029,7 +1029,7 @@ def dataReaderNew2(filename, columNum=False, returnData=False, returnChiSquareds
             logFilename = os.path.join(datadir,'processManagerLogFile.txt')
         if os.path.exists(logFilename):
             log = open(logFilename,'a')
-            log.write('\n'+75*'-'+'\n Inside dataReaderNew2 \n'+75*'-'+'\n')
+            log.write('\n'+75*'-'+'\n Inside dataReader \n'+75*'-'+'\n')
         else:
             gotLog=False
             
@@ -1217,8 +1217,8 @@ def outputDatafileToDict(filename):
     CAUTION, this was designed to be used with the outputs of 100ModDataset simulation outputs.
     NOT a good function to load data from a long simulation with lots of output sets.
     
-    NOTE: This version is meant for the new headings from mcmcOrbSimUniform6
-        longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+    Columns must be:
+    longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
         
         file format must be:
         
@@ -1245,23 +1245,23 @@ def outputDatafileToDict(filename):
             print 'There were 9 columns of data found in the datafile, thus no RVoffsets were recorded'
         elif numDataCols>9:
             print 'There were '+str(numDataCols)+' columns of data, thus '+str(numDataCols - 9)+ ' columns must be RV offsets' 
-            outDict["longANs"] = dataReaderNEW(filename, column=0)
-            outDict["es"] = dataReaderNEW(filename, column=1)
-            outDict["Ts"] = dataReaderNEW(filename, column=2)
-            outDict["periods"] = dataReaderNEW(filename, column=3)
-            outDict["inclinations"] = dataReaderNEW(filename, column=4)
-            outDict["argPeris"] = dataReaderNEW(filename, column=5)
-            outDict["a_totals"] = dataReaderNEW(filename, column=6)
-            outDict["chiSquareds"] = dataReaderNEW(filename, column=7)
-            outDict["Ks"]= dataReaderNEW(filename, column=8)
+            outDict["longANs"] = dataReader(filename, column=0)
+            outDict["es"] = dataReader(filename, column=1)
+            outDict["Ts"] = dataReader(filename, column=2)
+            outDict["periods"] = dataReader(filename, column=3)
+            outDict["inclinations"] = dataReader(filename, column=4)
+            outDict["argPeris"] = dataReader(filename, column=5)
+            outDict["a_totals"] = dataReader(filename, column=6)
+            outDict["chiSquareds"] = dataReader(filename, column=7)
+            outDict["Ks"]= dataReader(filename, column=8)
             # last column should be number of times been here
-            outDict["timesBeenHere"] = dataReaderNEW(filename, column=(numDataCols-1))
+            outDict["timesBeenHere"] = dataReader(filename, column=(numDataCols-1))
             
             RVoffsets = []
             numRVdatasets = numDataCols - 9
             for dataset in range(0,numRVdatasets):
                 colnum = int(8+dataset)
-                RVoffsetsCurr = dataReaderNEW(filename, column=colnum)
+                RVoffsetsCurr = dataReader(filename, column=colnum)
                 if numRVdatasets==1:
                     RVoffsets = RVoffsetsCurr
                 else:
@@ -1274,7 +1274,7 @@ def outputDatafileToDict(filename):
         print "outputDatafileToDict: ERROR!!!! file doesn't exist"
         
     
-def dataReadTrimWriteNEW(filename, chiSquareCutOff, verbose=False):
+def dataReadTrimWrite(filename, chiSquareCutOff, verbose=False):
     """
     This function is ideal for the cases where your data sets are too big because of choosing a chiSquareMax that is
     too big when running the simulator, resulting in large data files that are hard to load and plot.  In these cases
@@ -1340,83 +1340,6 @@ def dataReadTrimWriteNEW(filename, chiSquareCutOff, verbose=False):
     if verbose:    
         print '** All data from file trimmed and written to output file **'      
 
-def dataReadTrimWriteNEW2(filename, chiSquareCutOff, verbose=False):
-    """
-    ### Same as dataReadTrimWriteNEW BUT with a inclination trimming feature that isn't really needed anymore ######
-    
-    
-    This function is ideal for the cases where your data sets are too big because of choosing a chiSquareMax that is
-    too big when running the simulator, resulting in large data files that are hard to load and plot.  In these cases
-    you can just find out what the standard range of chiSquareds are, and choose a lower cut-off to trim the volume
-    of data written to disk.  Just open the file and skim over the chiSquared column values to choose a new
-    cut-off.
-    These circumstances really only happen when you have a long 'daisy chain' run with rough settings, so this is 
-    not expected to be a commonly used function.
-    
-    NOTE: output files will have same name with 'chiSquare-cut-off-####' added to 
-          show it is the new trimmed version.
-    
-    :param filename:              filename
-    :type filename:               string
-    :param chiSquareCutOff:       max value of chiSquared for orbits to be written
-    :type chiSquareCutOff:        any number
-    """
-    
-    # check if the passed in value for filenameROOT includes '.txt'
-    if '.dat' not in filename:
-        INSfilename = filename+'.dat'
-    else:
-        INSfilename = filename
-
-    titleMod = '-chiSquare-cut-off-'+str(chiSquareCutOff)
-    # create output version of INS file and write new 
-    # strip off '.txt', add titleMod, then put it back on
-    newFilename = INSfilename[:-4]+titleMod+'.dat'
-    
-    if verbose:
-        print 'Starting to load, trim and write the data'
-    # open INS file and grab title and headings
-    INfile = open(INSfilename, 'r')
-    plotFileTitle = INfile.readline()[:-5]
-    headings = INfile.readline()
-    
-    OUTfile = open(newFilename, 'w')
-    OUTfile.write(plotFileTitle+titleMod+'\n')
-    OUTfile.write(headings)
-    # loop through data lines and only write those that
-    # have chiSquare below cut-off and store all 
-    # chiSquareds in a list
-    chiSquareds = []
-    line='asdf'#just a value that isn't '' to start, will be replaced below
-    totalKept = 0
-    while line!='':
-        line = INfile.readline()
-        if line!='':
-            dataLineCols = line.split()
-            #if len(dataLineCols)==10:
-            chiSquareStr = dataLineCols[8]
-#            elif len(dataLineCols)==9:
-#                chiSquareStr = dataLineCols[7]
-            chiSquared = float(chiSquareStr)
-#            inclination = float(dataLineCols[4])
-#            if chiSquared<chiSquareCutOff:
-#                if inclination<90.0:
-            if chiSquared<chiSquareCutOff:
-                OUTfile.write(line)
-                totalKept = totalKept+1
-    if verbose:
-        print str(totalKept)+' orbits were found to have a chiSquared < '+str(chiSquareCutOff)
-        print 'Done loading, trimming and writing. Output file = '+os.path.basename(INSfilename)
-    INfile.close()
-    OUTfile.close()    
-    
-    print 'Final trimmed data written to: '+newFilename
-    
-    if verbose:    
-        print '** All data from file trimmed and written to output file **'
-        
-    if True:
-        return newFilename
         
 def diffCalc(A, B):
     """
@@ -1435,7 +1358,7 @@ def diffCalc(A, B):
         
     return difference
 
-def confLevelFinderNEWdataVersion(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False,fast=True):
+def confLevelFinder(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False,fast=True):
     """
     A function to find the 68.3 and 95.4% confidence levels in a given output data file's column.
     
@@ -1459,12 +1382,12 @@ def confLevelFinderNEWdataVersion(filename, columNum=False, returnData=False, re
             ignoreConstParam = False
         else:
             ignoreConstParam = True
-        (log,dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReaderNew2(filename, columNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True, ignoreConstParam=ignoreConstParam)
+        (log,dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReader(filename, columNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True, ignoreConstParam=ignoreConstParam)
         
         gotLog=False
         if log:
             gotLot=True
-            log.write('\n'+75*'-'+'\n Inside confLevelFinderNEWdataVersion \n'+75*'-'+'\n')
+            log.write('\n'+75*'-'+'\n Inside confLevelFinder \n'+75*'-'+'\n')
             
         if len(dataAry>0):
             #Convert data array to a numpy array
@@ -1503,13 +1426,13 @@ def confLevelFinderNEWdataVersion(filename, columNum=False, returnData=False, re
             
             if ((len(conf68Vals)==0) or (len(conf95Vals)==0)):
                 if (len(conf68Vals)==0):
-                    s= 'confLevelFinderNEWdataVersion: ERROR!!! No FINE 68.3% confidence levels were found'
+                    s= 'confLevelFinder: ERROR!!! No FINE 68.3% confidence levels were found'
                     if gotLog:
                         log.write(s+'\n')
                     if verboseInternal:
                         print s
                     if (len(conf68ValsRough)==0):
-                        s= 'confLevelFinderNEWdataVersion: ERROR!!! No ROUGH 68% confidence levels were found, so returning [0,0]'
+                        s= 'confLevelFinder: ERROR!!! No ROUGH 68% confidence levels were found, so returning [0,0]'
                         if gotLog:
                             log.write(s+'\n')
                         if verboseInternal:
@@ -1517,20 +1440,20 @@ def confLevelFinderNEWdataVersion(filename, columNum=False, returnData=False, re
                         conf68Vals = [0,0]
                     else:
                         conf68Vals = conf68ValsRough
-                        s= "confLevelFinderNEWdataVersion: Had to use ROUGH 68% [68,69] as no FINE 68.3% was found. So, using range "+repr(conf68Vals)+'\n'
+                        s= "confLevelFinder: Had to use ROUGH 68% [68,69] as no FINE 68.3% was found. So, using range "+repr(conf68Vals)+'\n'
                         if gotLog:
                             log.write(s+'\n')
                         if verboseInternal:
                             print s
                 
                 if (len(conf95Vals)==0):
-                    s= 'confLevelFinderNEWdataVersion: ERROR!!! No FINE 95.4% confidence levels were found'
+                    s= 'confLevelFinder: ERROR!!! No FINE 95.4% confidence levels were found'
                     if gotLog:
                         log.write(s+'\n')
                     if verboseInternal:
                         print s
                     if (len(conf95ValsRough)==0):
-                        s= 'confLevelFinderNEWdataVersion: ERROR!!! No ROUGH 95% confidence levels were found, so returning [0,0]'
+                        s= 'confLevelFinder: ERROR!!! No ROUGH 95% confidence levels were found, so returning [0,0]'
                         if gotLog:
                             log.write(s+'\n')
                         if verboseInternal:
@@ -1538,7 +1461,7 @@ def confLevelFinderNEWdataVersion(filename, columNum=False, returnData=False, re
                         conf95Vals = [0,0]
                     else:
                         conf95Vals = conf95ValsRough
-                        s= "confLevelFinderNEWdataVersion: Had to use ROUGH 95% [95,96] as no FINE 95.4% was found. So, using range "+repr(conf95Vals)+'\n'
+                        s= "confLevelFinder: Had to use ROUGH 95% [95,96] as no FINE 95.4% was found. So, using range "+repr(conf95Vals)+'\n'
                         if gotLog:
                             log.write(s+'\n')
                         if verboseInternal:
@@ -1565,7 +1488,7 @@ def confLevelFinderNEWdataVersion(filename, columNum=False, returnData=False, re
                 s=s+"68.3% error level = "+str(dataMedian-conf68Vals[0])
                 s=s+" =>   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
             
-            s=s+'\n'+75*'-'+'\n Leaving confLevelFinderNEWdataVersion \n'+75*'-'+'\n'
+            s=s+'\n'+75*'-'+'\n Leaving confLevelFinder \n'+75*'-'+'\n'
             log.write(s)
             log.close()
         if verboseInternal:
@@ -1603,19 +1526,19 @@ def confLevelFinderNEWdataVersion(filename, columNum=False, returnData=False, re
         return returnList 
         
     else:
-        s= "confLevelFinderNEWdataVersion: ERROR!!!! file doesn't exist"
+        s= "confLevelFinder: ERROR!!!! file doesn't exist"
         print s
            
         
-def confidenceLevelsFinderNEW(filename, verbose=False):
+def confidenceLevelsFinderLoopedDatasets(filename, verbose=False):
     """
     CAUTION, this was designed to be used with the outputs of 100ModDataset simulation outputs.
     NOT a good function to load data from a long simulation with lots of output sets.
     
     PURPOSE: This is to determine the errors that the mod dataset runs were designed to determine.
     
-    NOTE: This version is meant for the new headings from mcmcOrbSimUniform6
-        longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared  RVoffset0...  timesBeenHere
+    Columns must be:
+        longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
         
         file format must be:
         
@@ -1627,21 +1550,21 @@ def confidenceLevelsFinderNEW(filename, verbose=False):
     """
     if os.path.exists(filename):
         ## find conff levels of data that is always outputed from sims
-        longAN_degsCLevels = confLevelFinderNEWdataVersion(filename,0)
+        longAN_degsCLevels = confLevelFinder(filename,0)
         print '\nlongANs have conf levels: \n68.3% = '+repr(longAN_degsCLevels[0])+'\n95.4% = '+repr(longAN_degsCLevels[1])+'\n'
-        esCLevels = confLevelFinderNEWdataVersion(filename,1)
+        esCLevels = confLevelFinder(filename,1)
         print 'es have conf levels: \n68.3% = '+repr(esCLevels[0])+' \n95.4% = '+repr(esCLevels[1])+'\n'
-        TsCLevels = confLevelFinderNEWdataVersion(filename,2)
+        TsCLevels = confLevelFinder(filename,2)
         print 'Ts have conf levels: \n68.3% = '+repr(TsCLevels[0])+' \n95.4% = '+repr(TsCLevels[1])+'\n'
-        periodsCLevels = confLevelFinderNEWdataVersion(filename,3)
+        periodsCLevels = confLevelFinder(filename,3)
         print 'periods have conf levels: \n68.3% = '+repr(periodsCLevels[0])+' \n95.4% = '+repr(periodsCLevels[1])+'\n'
-        inclination_degsCLevels= confLevelFinderNEWdataVersion(filename,4)
+        inclination_degsCLevels= confLevelFinder(filename,4)
         print 'inclinations have conf levels: \n68.3% = '+repr(inclination_degsCLevels[0])+' \n95.4% = '+repr(inclination_degsCLevels[1])+'\n'
-        argPeri_degsCLevels = confLevelFinderNEWdataVersion(filename,5)
+        argPeri_degsCLevels = confLevelFinder(filename,5)
         print 'argPeris have conf levels: \n68.3% = '+repr(argPeri_degsCLevels[0])+' \n95.4% = '+repr(argPeri_degsCLevels[1])+'\n'
-        asCLevels = confLevelFinderNEWdataVersion(filename,6)
+        asCLevels = confLevelFinder(filename,6)
         print 'a_totals have conf levels: \n68.3% = '+repr(asCLevels[0])+' \n95.4% = '+repr(asCLevels[1])+'\n'
-        KsCLevels = confLevelFinderNEWdataVersion(filename,8)
+        KsCLevels = confLevelFinder(filename,8)
         print 'Ks have conf levels: \n68.3% = '+repr(asCLevels[0])+' \n95.4% = '+repr(asCLevels[1])+'\n'
     
         ## figure out if there is any RV offsets in output file and find their confLevels 
@@ -1658,7 +1581,7 @@ def confidenceLevelsFinderNEW(filename, verbose=False):
             print 'There were '+str(numDataCols)+' columns of data, thus '+str(numDataCols - 9)+ ' columns must be RV offsets' 
             numRVdatasets = numDataCols - 9
             for dataset in range(0,numRVdatasets):
-                offsetsCurrCLevels = confLevelFinderNEWdataVersion(filename,dataset+8)
+                offsetsCurrCLevels = confLevelFinder(filename,dataset+8)
                 print 'dataset # '+str(dataset+1)+' RV offsets have conf levels: \n68.3% = '+repr(offsetsCurrCLevels[0])+' \n95.4% = '+repr(offsetsCurrCLevels[1])+'\n'
     else:
         print "confidenceLevelsFinderNEW: ERROR!!!! file doesn't exist"    
@@ -1953,7 +1876,7 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
 def sysDataToDict(filename):
     """
     Extract needed data of the binary system from the general C++/Python data file 
-    in the 'SimSettings_and_InputData' folder for Duo simulations.
+    in the 'simSettings_and_InputData' folder for Duo simulations.
     """
     
     verbose = False # extra prints for testing
@@ -2220,13 +2143,20 @@ def findNuFromLog(logFilename = ''):
         print printStr
     return [nu,nuRV,nuDI,printStr] 
 
-def findTop20orbitsNEW(filename):
+def findTop20orbits(filename):
     """
-    This function will hunt through a data file in the NEW format and display the top 20
+    This function will hunt through a data file and display the top 20
     orbits in the format that is used in the 'paramSettingsDict'.
     
-    NOTE: format of data file must be:
-    longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared    timesBeenHere
+   Columns must be:
+        longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+        
+        file format must be:
+        
+        line1: title
+        line2: data headings
+        line3: space delimited data
+        line4: space delimited data
     """
 
     # check if the passed in value for filename includes '.txt'
@@ -2286,13 +2216,15 @@ def findTop20orbitsNEW(filename):
             if lineNumber==unSortedAscendingOrder[indicesNumber]:
                 dataLineCols = line.split()
                 curChiSquared = float(dataLineCols[7])
-                saveLine = '['+dataLineCols[0]+', '+dataLineCols[1]+', '+dataLineCols[2]+', '+dataLineCols[3]+\
-                ', '+dataLineCols[4]+', '+dataLineCols[5]+', '+dataLineCols[6]+', '+ dataLineCols[8]+', '+dataLineCols[9] +']'+'    chiSquared = '+dataLineCols[7]
+                saveLine = '['
+                for i in range(0,len(dataLineCols)-1):
+                    if i!=7:
+                        saveLine+=dataLineCols[i]+', '
+                saveLine+=']    chiSquared = '+dataLineCols[7]
                 bestOrbits.append(saveLine)
                 saveLineChiSquareds.append(float(dataLineCols[7]))
                 if indicesNumber<19:
-                    indicesNumber +=1
-                    
+                    indicesNumber +=1    
             # increment line number
             lineNumber +=1
         
@@ -2342,7 +2274,9 @@ def likelihoodsCalc(chiSquareds, nu=1):
 
 def listRandomizer(listIN, listIN2=False):
     """
-    Returns randomized version of a list.  If two lists pas
+    Returns randomized version of a list.  If two lists passed in, both will be randomized 
+    to the same order.  ie. items at the same indices in the inputs, will also be at 
+    matching indices in the outputs, although different from the inputs of course.
     """
     import random as rand
     

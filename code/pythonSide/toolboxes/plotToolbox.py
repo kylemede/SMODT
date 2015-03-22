@@ -472,41 +472,6 @@ def starAndErrorPolys(SAs,SAerrors,PAs,PAerrors,asConversion, transData, telesco
         m2starPolygons.append(star((asConversion/1000.0)*12.0*SAs[0], xCent, yCent, color='red', N=5, thin = 0.5))
         
     return (errorBoxes, m2starPolygons,[xmin,xmax,ymin,ymax])
-
-def starAndErrorPolysOLD(SAs,SAerrors,PAs,PAerrors,asConversion, transData, telescopeView=False):
-    """
-    Creates a rectangle patch for a given secondary star data point location.
-    It will return the patch.
-    
-    SA in arcsec
-    PA in degrees
-    
-    """
-        
-    errorBoxes = []
-    m2starPolygons = []
-    for i in range(0,len(SAs)):
-        
-        h = 2.0*SAerrors[i]*math.cos(math.radians(2.0*PAerrors[i]))*asConversion
-        w = 2.0*SAerrors[i]*math.sin(math.radians(2.0*PAerrors[i]))*asConversion
-        xCent = SAs[i]*math.sin(math.radians(PAs[i]))*asConversion
-        yCent = -SAs[i]*math.cos(math.radians(PAs[i]))*asConversion
-        if telescopeView:
-            xCent = -xCent
-            yCent = -yCent
-        xCorner = xCent-0.5*w
-        yCorner = (yCent+0.5*h)
-        
-        rect = patches.Rectangle((xCorner,yCorner),width=w,height=h,color='red',alpha=0.2)
-        t = pylab.matplotlib.transforms.Affine2D().rotate_deg_around(xCent,yCent,PAs[i]) +transData
-        rect.set_transform(t)
-        errorBoxes.append(rect)
-        
-        # determin x and y locations of the observed PA and SA's for companion star/planet
-        # then make a star polygon for each, same as for M1 but much smaller
-        m2starPolygons.append(star((asConversion/1000.0)*7.0*SAs[0], xCent, yCent, color='red', N=5, thin = 0.8))
-        
-    return (errorBoxes, m2starPolygons)
     
 def makeCleanSummaryPlot(outputDataFilename=''):
     """
@@ -553,7 +518,7 @@ def makeCleanSummaryPlot(outputDataFilename=''):
             print "Setting maxNonReducedChiSquared = "+str(maxNonReducedChiSquared)
         
         ## trim data
-        newDataFilename = genTools.dataReadTrimWriteNEW2(outputDataFilename, maxNonReducedChiSquared, verbose=False)
+        newDataFilename = genTools.dataReadTrimWrite(outputDataFilename, maxNonReducedChiSquared, verbose=False)
         if verbose:
             print '\nTrimmed data file at: '+newDataFilename
         
@@ -664,7 +629,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         paramColNum = 6
         xlabel = 'Argument of Perigie [deg]'
         startTime1 = timeit.default_timer()
-        (CLevels,data,chiSquareds,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,fast=False)
+        (CLevels,data,chiSquareds,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,fast=False)
         endTime1 = timeit.default_timer()
         totalTime = (endTime1-startTime1) # in seconds
         totalTimeString = genTools.timeString(totalTime)
@@ -697,7 +662,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             paramColNum = 5
             xlabel = 'Inclination [deg]'
             startTime1 = timeit.default_timer()
-            (CLevels,data,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+            (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
             endTime1 = timeit.default_timer()
             totalTime = (endTime1-startTime1) # in seconds
             totalTimeString = genTools.timeString(totalTime)
@@ -731,7 +696,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             subPlot = fig.add_subplot(242)
             paramColNum = 0
             xlabel = 'Longitude of Ascending Node [deg]'
-            (CLevels,data,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+            (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
             bestLongAN = bestDataVal
             s=''
             if (bestLongAN==0):
@@ -762,7 +727,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             paramColNum = 1
             xlabel = 'e'
             startTime1 = timeit.default_timer()
-            (CLevels,data,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+            (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
             endTime1 = timeit.default_timer()
             totalTime = (endTime1-startTime1) # in seconds
             totalTimeString = genTools.timeString(totalTime)
@@ -802,7 +767,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         print s
         log.write(s+'\n')
         startTime1 = timeit.default_timer()
-        (CLevels,data,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+        (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
         endTime1 = timeit.default_timer()
         totalTime = (endTime1-startTime1) # in seconds
         totalTimeString = genTools.timeString(totalTime)
@@ -842,7 +807,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             startTime1 = timeit.default_timer()
             print 'Getting data'
             
-            (CLevels,data,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+            (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
             
             endTime1 = timeit.default_timer()
             totalTime = (endTime1-startTime1) # in seconds
@@ -875,7 +840,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             subPlot = fig.add_subplot(242)
             paramColNum = 9
             xlabel = 'K [m/s]'
-            (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+            (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
             subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
             if (type(data)!=float)and(NumSamples==0):
                 NumSamples=data.size
@@ -898,7 +863,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             subPlot = fig.add_subplot(246)
             paramColNum = 4
             xlabel = 'Period [Years]'
-            (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+            (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
             subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
             periodCLevels = CLevels
             periodBest = bestDataVal
@@ -924,7 +889,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 subPlot = fig.add_subplot(247)
                 paramColNum = 7
                 xlabel = 'Semi-Major[AU]'
-                (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+                (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
                 subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
                 if (type(data)!=float)and(NumSamples==0):
                     NumSamples=data.size
@@ -1022,7 +987,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 print s
                 log.write(s+'\n')
                 subPlot = fig.add_subplot(247)
-                (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+                (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
                 subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
                 s= "done plotting Tcs or Ts"
                 # record the time the chain finished and print
@@ -1093,7 +1058,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                     paramColNum = 9+dataset
                     print 'Starting to plot '+'RV offset '+str(dataset)+":"
                     xlabel = 'RV offset '+str(dataset)+' [m/s]'
-                    (CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+                    (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
                     subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
                     if ((dataset==1)or(dataset==4))or(dataset==7):
                         subPlot.axes.set_ylabel('Probability',fontsize=50)
@@ -1166,11 +1131,13 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         log.write('\n'+75*'#'+'\n Leaving summaryPlotter2 \n'+75*'#'+'\n')
         log.close()
         
-def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, logFilename='',TcStepping=False):
+def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=False, logFilename='',TcStepping=False):
     """
+    NOTE: For a single chain's output data.
+    
     This will plot a progress plot for each varying parameters in the file.  
     It is called by mcmcProgressPlotter to plot up the progress for each chain
-    separately and utilizes summaryPlotter2MCMCfunc to do the repetative task 
+    separately and utilizes progessPlotterSingleFileFunc to do the repetative task 
     of producing the plot for each parameter.
     
     These plots will be made for the parameter values vs step, 
@@ -1188,7 +1155,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
     datadir = os.path.dirname(outputDataFilename)
     logFilename = os.path.join(datadir,'log-chain_'+chainNumStr+'.txt')
     log = open(logFilename,'a')
-    log.write('\n'+75*'*'+'\n Inside summaryPlotter2MCMC \n'+75*'*'+'\n')
+    log.write('\n'+75*'*'+'\n Inside progessPlotterSingleFile \n'+75*'*'+'\n')
     
     if os.path.exists(outputDataFilename):   
         s=  '\nCreating summary plot for file:\n'+outputDataFilename
@@ -1215,7 +1182,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             dataLineCols = line.split()
             if (len(line)>11):
                 numRVdatasets = len(dataLineCols) - 11
-        s= "\nNumber of RV datasets found in summaryPlotter2MCMC was "+str(numRVdatasets)+"\n"
+        s= "\nNumber of RV datasets found in progessPlotterSingleFile was "+str(numRVdatasets)+"\n"
         print s
         log.write(s+'\n')
         f.close()
@@ -1274,8 +1241,8 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(512)
         paramColNum = 6
         xlabel = 'Argument of Perigie [deg]'
-        #(CLevels,data,chiSquareds,bestDataVal) = genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,fast=False)
-        (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True, ignoreConstParam=True)
+        #(CLevels,data,chiSquareds,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,fast=False)
+        (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReader(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True, ignoreConstParam=True)
         #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
         xs = np.array(range(0,data.size))
         # Wrap the array into a 2D array of chunks, truncating the last chunk if 
@@ -1320,7 +1287,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(815)
             paramColNum = 5
             xlabel = 'Inclination [deg]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
+            (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             ##################$$$$$$$$$$$$$ This extra garbage collection might not be needed but I want it for now as a code EX. ######
             #del inclination_degsAlls
             #gc.collect()
@@ -1336,7 +1303,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(811)
             paramColNum = 0
             xlabel = 'Longitude of Ascending Node [deg]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
+            (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             #longANMedian = np.median(data)
             s= "done plotting longAN_degsAlls"
             print s
@@ -1349,7 +1316,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(511)
         paramColNum = 1
         xlabel = 'e'
-        (log,subPlot2,data,beste)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
+        (log,subPlot2,data,beste)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
         #eMedian = np.median(esAlls)
         s= "done plotting esAlls"
         print s
@@ -1360,7 +1327,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(814)
             paramColNum = 4
             xlabel = 'Period [Years]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
+            (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             #periodMedian = np.median(periodsAlls)
             s= "done plotting periodsAlls"
             print s
@@ -1372,7 +1339,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig2.add_subplot(817)
             paramColNum = 7
             xlabel = 'Semi-Majors [AU]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
+            (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             semiMajorBest = bestDataVal
             #print "\n\n"+"%"*100+"semiMajorBest = "+str(semiMajorBest)+"%"*100+"\n\n"
             s= "done plotting semi-majors"
@@ -1388,7 +1355,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         if semiMajorBest==0.0:
             paramColNum = 9
             xlabel = 'K [m/s]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
+            (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             s= "done plotting Ks"
             print s
             log.write(s+'\n')
@@ -1407,48 +1374,51 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             else:
                 paramColNum = 2
                 xlabel = 'Time of Last Periapsis [JD]'
-            (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
+            (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             #TMedian = np.median(TsAlls)
             s= "done plotting TsAlls"
             print s
             log.write(s+'\n')
                 
         ## NOTE: this chiSquareds plot is special, so it can't use the function to do the work
-        if not plot4x1:        
-            subPlot2 = fig2.add_subplot(818)
-        else:
-            subPlot2 = fig2.add_subplot(515)
-        paramColNum = 8
-        xlabel = 'ChiSquareds'
-        (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,ignoreConstParam=False)
-        #(CLevels,data) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False)
-        #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
-        yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))
-        yCenters = yChunks.mean(axis=1)
-        subPlot2.fill_between(xCenters, min_env, max_env, color='gray',edgecolor='none', alpha=0.5)
-        minY2 = data[int(data.size*0.69):-2].min()
-        maxY2 = data[int(data.size*0.69):-2].max()
-        subPlot2.axes.set_ylim([minY2,maxY2])
-        subPlot2.plot(xCenters, yCenters)
-        subPlot2.axes.set_ylabel(xlabel)
-        #add reduced chisquared axis labels
-        x1,x2 = subPlot2.get_ylim()
-        ax2 = subPlot2.twinx()
-        ax2.set_ylim(((1.0/nu)*x1),((1.0/nu)*x2))
-        ax2.figure.canvas.draw()
-        ax2.set_ylabel("Reduced chiSquareds")
-        #################################################
-        s= "done plotting ChiSquareds < "+str(maxY2)
-        print s
-        log.write(s+'\n')                   
-        
-        # Save file if requested.
-        if plotFilename!='':
-            plt.savefig(plotFilename, orientation='landscape')
-            s= '\nSummary plot saved to:\n'+plotFilename
+        try:
+            if not plot4x1:        
+                subPlot2 = fig2.add_subplot(818)
+            else:
+                subPlot2 = fig2.add_subplot(515)
+            paramColNum = 8
+            xlabel = 'ChiSquareds'
+            (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReader(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,ignoreConstParam=False)
+            #(CLevels,data) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False)
+            #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
+            yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))
+            yCenters = yChunks.mean(axis=1)
+            subPlot2.fill_between(xCenters, min_env, max_env, color='gray',edgecolor='none', alpha=0.5)
+            minY2 = data[int(data.size*0.69):-2].min()
+            maxY2 = data[int(data.size*0.69):-2].max()
+            subPlot2.axes.set_ylim([minY2,maxY2])
+            subPlot2.plot(xCenters, yCenters)
+            subPlot2.axes.set_ylabel(xlabel)
+            #add reduced chisquared axis labels
+            x1,x2 = subPlot2.get_ylim()
+            ax2 = subPlot2.twinx()
+            ax2.set_ylim(((1.0/nu)*x1),((1.0/nu)*x2))
+            ax2.figure.canvas.draw()
+            ax2.set_ylabel("Reduced chiSquareds")
+            #################################################
+            s= "done plotting ChiSquareds < "+str(maxY2)
             print s
-            log.write(s+'\n')
-        plt.close()
+            log.write(s+'\n')                   
+            
+            # Save file if requested.
+            if plotFilename!='':
+                plt.savefig(plotFilename, orientation='landscape')
+                s= '\nSummary plot saved to:\n'+plotFilename
+                print s
+                log.write(s+'\n')
+            plt.close()
+        except:
+            print "Unable to produce a Chi Squared summary distribution plot for some reason, probably not enough data."
         
         if False:
             ## separate figure for the chiSquareds ##
@@ -1456,8 +1426,8 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
             subPlot2 = fig3.add_subplot(211)
             paramColNum = 8
             xlabel = 'ChiSquareds'
-            (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,ignoreConstParam=True)
-            #(CLevels,data) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False)
+            (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReader(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,ignoreConstParam=True)
+            #(CLevels,data) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False)
             #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
             yChunks = data[:chunkSize*numChunks].reshape((-1,chunkSize))
             max_env = yChunks.max(axis=1)
@@ -1517,7 +1487,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
                 elif numRVdatasets==3:
                     fig2 = plt.figure(2,figsize=(30,20),dpi=200)
                 else:
-                    s= '\nsummaryPlotter2MCMC: WARNING!!! Plotter not set up to handle more than 3 RV datasets and '\
+                    s= '\nprogessPlotterSingleFile: WARNING!!! Plotter not set up to handle more than 3 RV datasets and '\
                     +str(numRVdatasets)+' were found in the output datafile.'
                     print s
                     log.write(s+'\n')
@@ -1533,7 +1503,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
                         subPlot2 = fig2.add_subplot(311)
                     paramColNum = 10
                     xlabel = 'RV offset 1 [m/s]'
-                    (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+                    (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
                     s= "Done plotting RV offsets for dataset 1"
                     print s
                     log.write(s+'\n')
@@ -1546,7 +1516,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
                         subPlot2 = fig2.add_subplot(312)
                     paramColNum = 11
                     xlabel = 'RV offset 2 [m/s]'
-                    (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+                    (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
                     s= "Done plotting RV offsets for dataset 2"
                     print s
                     log.write(s+'\n')
@@ -1556,7 +1526,7 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
                     subPlot2 = fig2.add_subplot(313)
                     paramColNum = 12
                     xlabel = 'RV offset 3 [m/s]'
-                    (log,subPlot2,data,bestDataVal)=summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+                    (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
                     s= "Done plotting RV offsets for dataset 3"
                     print s
                     log.write(s+'\n')
@@ -1590,25 +1560,25 @@ def summaryPlotter2MCMC(outputDataFilename, plotFilename, nu=1, plot4x1=False, l
         endTime = timeit.default_timer()
         totalTime = (endTime-startTime) # in seconds
         totalTimeString = genTools.timeString(totalTime)
-        s= '\n\nsummaryPlotter2MCMC: Plotting took '+totalTimeString+' to complete.\n'
+        s= '\n\nprogessPlotterSingleFile: Plotting took '+totalTimeString+' to complete.\n'
         print s
         log.write(s+'\n')     
-        log.write('\n'+75*'*'+'\n Leaving summaryPlotter2MCMC \n'+75*'*'+'\n')
+        log.write('\n'+75*'*'+'\n Leaving progessPlotterSingleFile \n'+75*'*'+'\n')
         log.close()
     else:
-        s= "\nsummaryPlotter2MCMC: ERROR!!!! file doesn't exist"
+        s= "\nprogessPlotterSingleFile: ERROR!!!! file doesn't exist"
         print s
         log.write(s+'\n')
-        log.write('\n'+75*'*'+'\n Leaving summaryPlotter2MCMC \n'+75*'*'+'\n')
+        log.write('\n'+75*'*'+'\n Leaving progessPlotterSingleFile \n'+75*'*'+'\n')
         log.close()
 
-def summaryPlotter2MCMCfunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize, ignoreConstParam=False):
+def progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize, ignoreConstParam=False):
     """
-    works for summaryPlotter2MCMC to do the plot for each param and reduce code doubling
+    works for progessPlotterSingleFile to do the plot for each param and reduce code doubling
     """
     verboseInternal = False
-    #(CLevels,data,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=True,)
-    (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReaderNew2(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True, ignoreConstParam=ignoreConstParam)
+    #(CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=True,)
+    (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReader(outputDataFilename, paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True, ignoreConstParam=ignoreConstParam)
     #log.write('\nCLevels for '+xlabel+':\n'+repr(CLevels)+'\n')
     if type(data)!=float:
         if len(data)>0:
@@ -1952,8 +1922,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
                 #rOvera = Sep_Dist_AU_OP/a2
                 r = Sep_Dist_AU_OP/sys_dist
                 #aUse = ((a1+a2)/sys_dist)*asConversion
-                x1=r*(math.cos(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) -  math.sin(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
-                y1=r*(math.sin(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) +  math.cos(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
+                x1=r*(math.cos(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) - math.sin(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
+                y1=r*(math.sin(math.radians(longAN_deg[orb]))*math.cos(math.radians(argPeri_deg[orb]+TA_deg)) + math.cos(math.radians(longAN_deg[orb]))*math.sin(math.radians(argPeri_deg[orb]+TA_deg))*math.cos(math.radians(inc[orb])))
                 #(A,B,C,F,G) = diTools.ABCFG_values(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]))
                 # Calc Normalized rectangular coordinates
                 #X = math.cos(math.radians(E_latest_deg))-e[orb]
@@ -1967,8 +1937,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
                 #y_model = B*X+G*Y
                 xCent = SAs[tcount]*math.sin(math.radians(PAs[tcount]))*asConversion
                 yCent = SAs[tcount]*math.cos(math.radians(PAs[tcount]))*asConversion
-                xCent2 = SAs[tcount]*math.cos(math.radians(PAs[tcount]))*asConversion
-                yCent2 = SAs[tcount]*math.sin(math.radians(PAs[tcount]))*asConversion
+                #xCent2 = SAs[tcount]*math.cos(math.radians(PAs[tcount]))*asConversion
+                #yCent2 = SAs[tcount]*math.sin(math.radians(PAs[tcount]))*asConversion
                 ##
                 #x3,y3 = diTools.orbitCalculatorTH_Itoxy(aUse, math.radians(argPeri_deg[orb]), math.radians(longAN_deg[orb]), math.radians(inc[orb]), t, e[orb], To[orb], period[orb])
                 ##
@@ -1980,22 +1950,22 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
                     print "Epoch = "+str(t)
                     print 'a1 = '+str(a1)
                     #print "E_latest_deg = "+str(E_latest_deg)
-                    print 'x CREPP = '+str(x1)+", y CREPP = "+str(y1)
+                    print 'plot axis x CREPP  = '+str(y1)+", plot axis y CREPP = "+str(x1)
                     #print 'x_THI = '+str(x_model)+', y_THI = '+str(y_model)
                     #print "x_THI-new = "+str(x3)+", y_THI-new = "+str(y3)
-                    print "x_data (SA*COS(PA)) = "+str(xCent2)+", y_data  (SA*SIN(PA)) = "+str(yCent2)
-                    print 'x MINE (SA*cos(PA))= '+str(SA*math.cos(math.radians(PA))*asConversion)+", y MINE (SA*sin(PA))= "+str(SA*math.sin(math.radians(PA))*asConversion)
+                    #print "x_data (SA*COS(PA)) = "+str(xCent2)+", y_data  (SA*SIN(PA)) = "+str(yCent2)
+                    #print 'x MINE (SA*cos(PA))= '+str(SA*math.cos(math.radians(PA))*asConversion)+", y MINE (SA*sin(PA))= "+str(SA*math.sin(math.radians(PA))*asConversion)
                     print "x_data (SA*SIN(PA)) = "+str(xCent)+", y_data  (SA*cos(PA)) = "+str(yCent)
                     print 'x MINE (SA*SIN(PA))= '+str(x2)+", y MINE (SA*cos(PA))= "+str(y2)
                     print "\n"
                 
                 #########################$$$$$$$$$$$$$$$$$
-                predictedXs.append(x)
-                predictedYs.append(y)
-                predictedLocPatch = star((asConversion/1000.0)*0.4*a[0], x, y, color=colorsList[orb], N=8, thin = 0.5)
+                predictedXs.append(x2)
+                predictedYs.append(y2)
+                predictedLocPatch = star((asConversion/1000.0)*0.6*a[0], x2, y2, color=colorsList[orb], N=8, thin = 0.5)
                 predictedPatches.append(predictedLocPatch)
                 s=s+ 'Epoch '+str(t)+': x = '+str(x)+' , y = '+str(y)+'\n'
-                s2=s2+str(x)+'    '+str(y)+'\n'
+                s2=s2+str(x2)+'    '+str(y2)+'\n'
                 s3=s3+str(SA)+'     '+str(PA)+'\n'
             s=s+ '@'*50+"\n"
             #s=s+ '\n       *** Excel Format ***\n       x                         y      \n'
@@ -2119,7 +2089,6 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
                     print str(orb)+"color = "+colorsList[int(orb/3.0)]
                 #print repr(ellipseErrorsXs2[orb:orb+2])
     
-        
     # Draw orbits
     for orb in range(0,len(longAN_deg)):
         main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2.5,color=colorsList[orb]) 
@@ -2332,8 +2301,10 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
 
 def mcmcProgressPlotter(filenames,rootPlotFilename,nu=1, plot4x1=False,TcStepping=False):
     """
+    NOTE: For a set of output chain's data files.
+    
     This will produce a time series type view of the paramters in each chain's output
-    data file.  It will utilize summaryPlotter2MCMC to produce these plots and figures.
+    data file.  It will utilize progessPlotterSingleFile to produce these plots and figures.
     
     These plots will be made for the parameter values vs step, 
     to show how it is converging with time.
@@ -2386,7 +2357,7 @@ def mcmcProgressPlotter(filenames,rootPlotFilename,nu=1, plot4x1=False,TcSteppin
         log.write(s+'\n')
         log.close()
         #call plotter for this file
-        summaryPlotter2MCMC(filename, plotFilename, nu=nu, plot4x1=plot4x1,TcStepping=TcStepping)
+        progessPlotterSingleFile(filename, plotFilename, nu=nu, plot4x1=plot4x1,TcStepping=TcStepping)
 
 def diPlotterTester(outputDatafile=''):
     """
@@ -2404,7 +2375,7 @@ def diPlotterTester(outputDatafile=''):
         outputDatafile = "/mnt/Data1/Todai_Work/Data/data_Binary/data_Duo/MCMC-parmVaryCorrected-HR8799-UniEccentPrior-circular-veryOpenParms-1--28-Million-in_Total/outputData-ALL.dat"
     
     print '#'*50
-    bestOrbit = genTools.bestOrbitFinderNEW(outputDatafile, printToScreen=True, saveToFile=False, returnAsList=True)
+    bestOrbit = genTools.bestOrbitFinder(outputDatafile, printToScreen=True, saveToFile=False, returnAsList=True)
     print '#'*50
 #    #Tau Boo planet test params
 #    longAN_deg = 148.620748
@@ -2438,37 +2409,37 @@ def diPlotterTester(outputDatafile=''):
         
         #xlabel = 'Argument of Perigie [deg]'
         paramColNum = 5
-        #(CLevels,data,chiSquareds,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+        #(CLevels,data,chiSquareds,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
         #print 'Argument of Perigie data loaded'
         
         yLabel = 'Inclination [deg]'
         paramColNum = 4
-        (CLevels,yData,chiSquareds,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDatafile,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+        (CLevels,yData,chiSquareds,bestDataVal) =genTools.confLevelFinder(outputDatafile,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
         print 'Inclination data loaded' 
                     
         #xlabel = 'Longitude of Ascending Node [deg]'
         paramColNum = 0
-        #(CLevels,data,chiSquareds,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDatafile,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+        #(CLevels,data,chiSquareds,bestDataVal) =genTools.confLevelFinder(outputDatafile,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
         #print 'Longitude of Ascending Node data loaded'
         
         #xlabel = 'e'
         paramColNum = 1
-        #(CLevels,data,chiSquareds,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDatafile,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+        #(CLevels,data,chiSquareds,bestDataVal) =genTools.confLevelFinder(outputDatafile,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
         #print 'e data loaded'
         
         xLabel = 'Period [Years]'
         paramColNum = 3
-        (CLevels,xData,chiSquareds,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDatafile,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+        (CLevels,xData,chiSquareds,bestDataVal) =genTools.confLevelFinder(outputDatafile,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
         print 'Period data loaded'
         
         #xlabel = 'Time of last Periapsis [JD]'
         paramColNum = 2
-        #(CLevels,data,chiSquareds,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDatafile,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+        #(CLevels,data,chiSquareds,bestDataVal) =genTools.confLevelFinder(outputDatafile,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
         #print 'Time of last Periapsis data loaded'
         
         #xlabel = 'K [m/s]'
         paramColNum = 8
-        #(CLevels,data,chiSquareds,bestDataVal) =genTools.confLevelFinderNEWdataVersion(outputDatafile,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
+        #(CLevels,data,chiSquareds,bestDataVal) =genTools.confLevelFinder(outputDatafile,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True)
         #print 'K data loaded'
         
         histAndContourPlotter(xData, yData, chiSquareds, xLabel='', yLabel='', plotFilename='', xLim=False, yLim=False, show=True, save=False)
@@ -2544,7 +2515,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
         bestOrbit = []  
         try:
             print '#'*50
-            bestOrbit = genTools.bestOrbitFinderNEW(outputDatafile, printToScreen=True, saveToFile=True, returnAsList=True)
+            bestOrbit = genTools.bestOrbitFinder(outputDatafile, printToScreen=True, saveToFile=True, returnAsList=True)
             print '#'*50
             #longAN = bestOrbit[0]
             e = bestOrbit[1]
@@ -2612,7 +2583,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
         fileList = []
         for num in range(1,numChains+1):
             fileList.append(os.path.join(os.path.dirname(outputDatafile),'outputData-chain_'+str(num)+'.txt'))
-        summaryPlotter2MCMC(outputDatafile, summaryPlotFile+"-MCMCprogress", weight=False, confLevels=True, nu=1, SimPlanetStar=paramSettingsDict["simulate_StarPlanet"])
+        progessPlotterSingleFile(outputDatafile, summaryPlotFile+"-MCMCprogress", weight=False, confLevels=True, nu=1, SimPlanetStar=paramSettingsDict["simulate_StarPlanet"])
     if True:
         ## Make the posterior prob histograms.
         summaryPlotter(outputDatafile, summaryPlotFile, weight=False, confLevels=True, nu=1, plot4x1=False)
@@ -4105,66 +4076,7 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
         
     plt.close()
     
-# def singleParamReadAndPlotNEW2(filename, paramColNum, subPlot, numBins, weight=True, confLevels=True, normalize=True, drawLine=False, nu=1):
-#     """
-#     This is the single column/param plotter for the new Master Hist plotter
-#     that will call this in a loop to fill up a summary plot.  This is being
-#     done as there are RAM issues of trying to load all the data for a particular
-#     column and plot it all at once.  Thus, this one will load the data 
-#     only one bin of the hist at a time to be the most efficient with the RAM.
-#     
-#     file format must follow the 'NEW' style, ie:
-#     longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared    timesBeenHere
-#     
-#     All filename checks will occur in the Master function and are thus not needed here.
-#     
-#     All 3D data should have its chiSquared values all ready be reduced.
-#     """
-#     verboseInternal = True
-#     # set y axis title
-#     subPlot.axes.set_ylabel('Probability')
-#     axs = subPlot.axis()
-#     
-#     # get data and conf levels
-#     (data,confLevels) =genTools.confLevelFinderNEWdataVersion(filename,paramColNum,True)
-# 
-#     # done looping through all bins
-#     largestBinVal = np.max(binVals)
-#     #print 'largestBinVal = ',largestBinVal
-#     #print 'colors: '+repr(colors)
-#     #print 'binMins: ',repr(binMins)
-#     #print 'binMaxs: ',repr(binMaxs)
-#     
-#     binVals2 = []
-#     ## convert the bin information into rectangular patches
-#     for bin in range(0,len(binVals)):
-#         x = binMins[bin]
-#         y = 0.0
-#         width = binWidth
-#         if normalize:
-#             try:
-#                 height = float(binVals[bin])/float(largestBinVal)
-#             except:
-#                 #print 'Using default height as largestBinVal=0.'
-#                 height = 1.0
-#         else:
-#             height = binVals[bin]
-#         binVals2.append(height)
-#         rec = patches.Rectangle((x,y), width, height, facecolor=colors[bin], fill=True, edgecolor='k')
-#         #RecPatches.append(rec)
-#         subPlot.add_patch(rec)
-#     
-#     # add a line to plot the top curves of the hist
-#     if drawLine:
-#         subPlot.plot(binMids,binVals2, 'r',linewidth=1)
-#     # add a vertical line at the median value
-#     med = np.median(binMids)
-#     subPlot.plot([med, med],subPlot.axes.get_ylim(),'k')
-#     
-#     # return fully updated sub plot
-#     return subPlot
-    
-def singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight=True, confLevels=True, normalize=True, drawLine=False, nu=1):
+def singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight=True, confLevels=True, normalize=True, drawLine=False, nu=1):
     """
     This is the single column/param plotter for the new Master Hist plotter
     that will call this in a loop to fill up a summary plot.  This is being
@@ -4175,9 +4087,9 @@ def singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight=Tr
     It is assumed that the chiSquareds in the data file are reduced, so the nu value will de-reduce 
     them to calculated proper likelihoods for weighting.
     
-    file format must follow the 'NEW' style, ie:
-    longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared    timesBeenHere
-    
+    data file must have columns must be:
+        longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+        
     All filename checks will occur in the Master function and are thus not needed here.
     
     All 3D data should have its chiSquared values all ready be reduced.
@@ -4419,7 +4331,7 @@ def singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight=Tr
 
 def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, normalize=True, drawLine=False, nu=1, plot4x1=False):
     """
-    Master plotting function for the singleParamReadAndPlotNEW
+    Master plotting function for the singleParamReadAndPlot
     
     file format must follow the 'NEW' style, ie:
     longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared    timesBeenHere
@@ -4473,7 +4385,7 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
     # Call the function to find the best orbit values for reference.
     if verbose:
         print '#'*50
-        genTools.bestOrbitFinderNEW(filename, printToScreen=False, saveToFile=True)
+        genTools.bestOrbitFinder(filename, printToScreen=False, saveToFile=True)
         print '#'*50
     
     s= '\nStarting to create summary plot\n'
@@ -4491,7 +4403,7 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
         subPlot = fig.add_subplot(231)
         paramColNum = 4
         subPlot.axes.set_xlabel('Inclination [deg]')
-        subPlot = singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+        subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
         s= "Done plotting inclination_degsAlls"
         print s
         log.write(s+'\n')
@@ -4501,7 +4413,7 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
         subPlot = fig.add_subplot(232)
         paramColNum = 0
         subPlot.axes.set_xlabel('Longitude of Ascending Node [deg]')
-        subPlot = singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+        subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
         s= "Done plotting longAN_degsAlls"
         print s
         log.write(s+'\n')
@@ -4513,7 +4425,7 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
         subPlot = fig.add_subplot(312)
     paramColNum = 5
     subPlot.axes.set_xlabel('Argument of Perigie [deg]')
-    subPlot = singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+    subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
     s= "Done plotting argPeri_degsAlls"
     print s
     log.write(s+'\n')
@@ -4525,7 +4437,7 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
         subPlot = fig.add_subplot(311)
     paramColNum = 1
     subPlot.axes.set_xlabel('e')
-    subPlot = singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+    subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
     s= "Done plotting esAlls"
     print s
     log.write(s+'\n')
@@ -4535,7 +4447,7 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
         subPlot = fig.add_subplot(235)
         paramColNum = 3
         subPlot.axes.set_xlabel('Period [Years]')
-        subPlot = singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+        subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
         s= "Done plotting periodsAlls"
         print s
         log.write(s+'\n')
@@ -4544,7 +4456,7 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
 #    subPlot = fig.add_subplot(336)
 #    paramColNum = 6
 #    subPlot.axes.set_xlabel('Semi-major Axis [AU]')
-#    subPlot = singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+#    subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
 #    print "Done plotting Semi-major Axis"
     
     # Create sub plot and fill it up for the Time of last Periapsis
@@ -4554,7 +4466,7 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
         subPlot = fig.add_subplot(313)
     paramColNum = 2
     subPlot.axes.set_xlabel('Time of last Periapsis [JD]')
-    subPlot = singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+    subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
     s= "Done plotting TsAlls"
     print s
     log.write(s+'\n')
@@ -4588,7 +4500,7 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
                 subPlot = fig.add_subplot(311)
             paramColNum = 8
             subPlot.axes.set_xlabel('RV offset 1 [m/s]')
-            subPlot = singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+            subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
             s= "Done plotting RV offsets for dataset 1"
             print s
             log.write(s+'\n')
@@ -4600,7 +4512,7 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
                 subPlot = fig.add_subplot(312)
             paramColNum = 9
             subPlot.axes.set_xlabel('RV offset 2 [m/s]')
-            subPlot = singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+            subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
             s= "Done plotting RV offsets for dataset 2"
             print s
             log.write(s+'\n')
@@ -4609,7 +4521,7 @@ def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, no
             subPlot = fig.add_subplot(313)
             paramColNum = 10
             subPlot.axes.set_xlabel('RV offset 3 [m/s]')
-            subPlot = singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+            subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
             s= "Done plotting RV offsets for dataset 3"
             print s
             log.write(s+'\n')  

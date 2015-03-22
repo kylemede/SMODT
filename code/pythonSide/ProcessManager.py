@@ -183,7 +183,7 @@ def multiProcessStarter(paramSettingsDict):
     # Call the function to find the best orbit values for reference.
     ################################################################
     print '#'*50
-    bestOrbit = tools.gen.bestOrbitFinderNEW(dataFinalFilename, printToScreen=True, saveToFile=True, returnAsList=True)
+    bestOrbit = tools.gen.bestOrbitFinder(dataFinalFilename, printToScreen=True, saveToFile=True, returnAsList=True)
     logFilename = os.path.join(paramSettingsDict['outputData_dir'],'log-chain_1.txt')
     [nu,nuRV,nuDI,printStr] = tools.gen.findNuFromLog(logFilename)
     print printStr+'\n'+'#'*50

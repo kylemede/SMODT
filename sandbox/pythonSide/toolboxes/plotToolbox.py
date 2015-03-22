@@ -12,6 +12,101 @@ import RVtoolbox as rvTools
 plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
 
+
+# def singleParamReadAndPlotNEW2(filename, paramColNum, subPlot, numBins, weight=True, confLevels=True, normalize=True, drawLine=False, nu=1):
+#     """
+#     This is the single column/param plotter for the new Master Hist plotter
+#     that will call this in a loop to fill up a summary plot.  This is being
+#     done as there are RAM issues of trying to load all the data for a particular
+#     column and plot it all at once.  Thus, this one will load the data 
+#     only one bin of the hist at a time to be the most efficient with the RAM.
+#     
+#     file format must follow the 'NEW' style, ie:
+#     longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]    chiSquared    timesBeenHere
+#     
+#     All filename checks will occur in the Master function and are thus not needed here.
+#     
+#     All 3D data should have its chiSquared values all ready be reduced.
+#     """
+#     verboseInternal = True
+#     # set y axis title
+#     subPlot.axes.set_ylabel('Probability')
+#     axs = subPlot.axis()
+#     
+#     # get data and conf levels
+#     (data,confLevels) =genTools.confLevelFinder(filename,paramColNum,True)
+# 
+#     # done looping through all bins
+#     largestBinVal = np.max(binVals)
+#     #print 'largestBinVal = ',largestBinVal
+#     #print 'colors: '+repr(colors)
+#     #print 'binMins: ',repr(binMins)
+#     #print 'binMaxs: ',repr(binMaxs)
+#     
+#     binVals2 = []
+#     ## convert the bin information into rectangular patches
+#     for bin in range(0,len(binVals)):
+#         x = binMins[bin]
+#         y = 0.0
+#         width = binWidth
+#         if normalize:
+#             try:
+#                 height = float(binVals[bin])/float(largestBinVal)
+#             except:
+#                 #print 'Using default height as largestBinVal=0.'
+#                 height = 1.0
+#         else:
+#             height = binVals[bin]
+#         binVals2.append(height)
+#         rec = patches.Rectangle((x,y), width, height, facecolor=colors[bin], fill=True, edgecolor='k')
+#         #RecPatches.append(rec)
+#         subPlot.add_patch(rec)
+#     
+#     # add a line to plot the top curves of the hist
+#     if drawLine:
+#         subPlot.plot(binMids,binVals2, 'r',linewidth=1)
+#     # add a vertical line at the median value
+#     med = np.median(binMids)
+#     subPlot.plot([med, med],subPlot.axes.get_ylim(),'k')
+#     
+#     # return fully updated sub plot
+#     return subPlot
+
+def starAndErrorPolysOLD(SAs,SAerrors,PAs,PAerrors,asConversion, transData, telescopeView=False):
+    """
+    Creates a rectangle patch for a given secondary star data point location.
+    It will return the patch.
+    
+    SA in arcsec
+    PA in degrees
+    
+    """
+        
+    errorBoxes = []
+    m2starPolygons = []
+    for i in range(0,len(SAs)):
+        
+        h = 2.0*SAerrors[i]*math.cos(math.radians(2.0*PAerrors[i]))*asConversion
+        w = 2.0*SAerrors[i]*math.sin(math.radians(2.0*PAerrors[i]))*asConversion
+        xCent = SAs[i]*math.sin(math.radians(PAs[i]))*asConversion
+        yCent = -SAs[i]*math.cos(math.radians(PAs[i]))*asConversion
+        if telescopeView:
+            xCent = -xCent
+            yCent = -yCent
+        xCorner = xCent-0.5*w
+        yCorner = (yCent+0.5*h)
+        
+        rect = patches.Rectangle((xCorner,yCorner),width=w,height=h,color='red',alpha=0.2)
+        t = pylab.matplotlib.transforms.Affine2D().rotate_deg_around(xCent,yCent,PAs[i]) +transData
+        rect.set_transform(t)
+        errorBoxes.append(rect)
+        
+        # determin x and y locations of the observed PA and SA's for companion star/planet
+        # then make a star polygon for each, same as for M1 but much smaller
+        m2starPolygons.append(star((asConversion/1000.0)*7.0*SAs[0], xCent, yCent, color='red', N=5, thin = 0.8))
+        
+    return (errorBoxes, m2starPolygons)
+
 def orbElementPlotter(plotFileTitle, longAN_degs, es, Ts, a1s, a2s, periods, inclination_degs, argPeri_degs,\
                   Sep_Dists2, thetas2, Es2, Ms2, ns2, showPlots=False):
     """

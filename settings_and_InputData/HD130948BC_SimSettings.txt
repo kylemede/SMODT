@@ -6,11 +6,11 @@ Duo =true
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 chiSquaredMax =1000.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =2
+numSamples =2000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =1
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing =false
+useMultiProcessing =true
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -40,11 +40,11 @@ simAnneal =False
 # Set to true to perform the 100 mod dataset MCMC loop
 loopedMCMC =False
 # make plot of posterior distributions? [bool]
-makePosteriorsPlot =false
+makePosteriorsPlot =true
 # make plots of RV and DI/AM orbit fits [bool]
 makeOrbitPlots =true
 # Make plots of Simulated Annealing progress plots? [bool]
-makeSimAnnealProgPlots =false
+makeSimAnnealProgPlots =true
 # Simulated Annealing starting temperature [double]
 startTemp =10.0
 # Delete chain files after simulation is complete? [bool]
@@ -64,7 +64,7 @@ calcCorrLengths =false
 # number of samples to draw for simAnneal stage [int] 
 numSamples_SimAnneal =500000
 # Make plots of MCMC progress plots? [bool]
-makeMCMCprogPlots =false
+makeMCMCprogPlots =true
 # Calculate the Gelman-Rubin statistic? [bool]
 CalcGelmanRubin =false
 # How many times do you want the Gelman-Rubin statistic calculated [int]
@@ -83,9 +83,9 @@ simulate_StarPlanet =True
 
 # Ranges for acceptable random number inputs ######
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]#130
-longAN_degMIN = 180
+longAN_degMIN = 305
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]#210
-longAN_degMAX = 360
+longAN_degMAX = 325
 # Minimum allowed value for the Eccentricity [double]# 0.79
 eMIN = 0.12
 # Maximum allowed value for the Eccentricity　[double]#0.875

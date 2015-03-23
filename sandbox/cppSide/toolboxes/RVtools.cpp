@@ -11,10 +11,10 @@
 
 using namespace std;
 
-double VRcalcStarStar::VRcalculator()
+double VRcalcStarStar::VRcalculatorMassType()
 {
 	//Calculate the residual velocity due to a companion star
-	//based on equation (47) in my thesis.
+	//based on the mass based version of equation (72) in my thesis.
 	double tempA = pow((2.0*PI*GravConst*KGperMsun*(Mass1+Mass2_s))/(SecPerYear*period_s),(1.0/3.0));
 	double tempB = Mass2_s/Mass1;
 	double tempC = sin(inclination_deg_s*(PI/180.0))/sqrt(1-e_s*e_s);
@@ -34,10 +34,10 @@ double VRcalcStarStar::VRcalculator()
 }
 double VRcalcStarStar::VRcalculatorSemiMajorType()
 {
-	bool verboseInternal = false;
 	//Calculate the residual velocity due to a companion star
-	//based on equation (49) in my thesis.
+	//based on Semi-Major based version of equation (72) in my thesis.
 
+	bool verboseInternal = false;
 	double Kss;
 	if (fabs(K_s)>1)
 	{
@@ -109,40 +109,18 @@ double VRcalcStarStar::VRcalculatorSemiMajorType()
 	return VRc;
 }
 
-double VRcalcStarStar::VRcalculatorSH()
-{
-	//Calculate the residual velocity due to a companion star
-	//based on equation (47) in my thesis.
-	double tempA = pow((2.0*PI*GravConst)/(SecPerYear*period_s),(1.0/3.0));
-	double tempB = Mass2_s/pow(KGperMsun*(Mass1+Mass2_s),(2.0/3.0));
-	double tempC = sin(inclination_deg_s*(PI/180.0))/sqrt(1-e_s*e_s);
-	// Calculate the Semi-major Amplitude for star-star system
-	double Kss = tempA*tempB*tempC;
-	K_s = Kss;
-	double tempD = cos((TA_deg_s+argPeri_deg_s)*(PI/180.0))+e_s*cos(argPeri_deg_s*(PI/180.0));
-	double VRc = Kss*tempD;
-
-	if (false)
-	{
-		cout<<"Kss = "<<Kss<<endl;
-		cout<<"TA_deg_s = "<<TA_deg_s<<endl;
-	}
-
-	return VRc;
-}
 vector<double> VRcalcStarStar::multiEpochCalc()
 {
+	//To calculate the radial velocity for a set of input epochs
+	//and orbital parameters.  It will use the secondary's semi-major axis (a1) based
+	// calculation of the Semi-Major amplitude (K).  A user can come into this function
+	// and change that to the mass based calculation if desired, but they are equivalent.
+
 	//prep vector for returned VR vals
 	vector<double> ResidualVels_s;
 
 	if (false)
 		argPeri_deg_s = argPeri_deg_s-180.0;
-
-
-//	double temp5 = period_s*period_s*SecPerYear*SecPerYear*GravConst*KGperMsun*(Mass1+Mass2_s);
-//	double temp6 = 4.0*PI*PI;
-//	a_total = pow((temp5/temp6),(1.0/3.0))/MperAU;
-	//cout<<"a_total = "<<a_total<<endl;
 
 	//instantiate and load up constant values for both TA and VR calc inputs
 	TAcalcInputType TACIT;
@@ -170,7 +148,7 @@ vector<double> VRcalcStarStar::multiEpochCalc()
 		if (true)
 			VRs = VRcalculatorSemiMajorType();
 		else
-			VRs = VRcalculator();
+			VRs = VRcalculatorMassType();
 		ResidualVels_s.push_back(VRs);
 		if (false)
 		{
@@ -181,11 +159,12 @@ vector<double> VRcalcStarStar::multiEpochCalc()
 	return ResidualVels_s;
 }
 
-double VRcalcStarPlanet::VRcalculator()
+double VRcalcStarPlanet::VRcalculatorMassType()
 {
-	bool verboseInternal = false;
 	//Calculate the residual velocity due to a companion planet
-	//based on equation (48) in my thesis.
+	//based on the mass based version of equation (73) in my thesis.
+
+	bool verboseInternal = false;
 	double Ksp;
 	if (K_p>0)
 		Ksp = K_p;
@@ -228,9 +207,10 @@ double VRcalcStarPlanet::VRcalculator()
 }
 double VRcalcStarPlanet::VRcalculatorSemiMajorType()
 {
+	//Calculate the residual velocity due to a companion planet
+	//based on Semi-Major based version of equation (72) in my thesis.
+
 	bool verboseInternal = false;
-	//Calculate the residual velocity due to a companion star
-	//based on equation (49) in my thesis.
 
 //	if (verboseInternal)
 //		cout<<"\n # In VRcalculatorSemiMajorType #"<<endl;
@@ -288,11 +268,6 @@ double VRcalcStarPlanet::VRcalculatorSemiMajorType()
 		cout<<"Provided K_p = "<<K_p<<endl;
 		cout<<"Ksp = "<<Ksp<<endl;
 		cout<<"TA_deg_p = "<<TA_deg_p<<endl;
-//		cout<<"argPeri_deg_p = "<<argPeri_deg_p <<endl;
-//		cout<<"cos((TA_deg_p)*(PI/180.0)) = "<<cos((TA_deg_p)*(PI/180.0))<<endl;
-//		cout<<"tempD1 = "<<tempD1<<endl;
-//		cout<<"tempD2 = "<<tempD2 <<endl;
-//		cout<<"tempD = "<<tempD <<endl;
 		cout<<"VRp = "<< VRp<<endl;
 	}
 
@@ -301,6 +276,11 @@ double VRcalcStarPlanet::VRcalculatorSemiMajorType()
 
 double VRcalcStarPlanet::VRcalculatorSemiMajorTypeSH()
 {
+	//To calculate the radial velocity for a set of input epochs
+	//and orbital parameters.  It will use the secondary's semi-major axis (a1) based
+	// calculation of the Semi-Major amplitude (K).  A user can come into this function
+	// and change that to the mass based calculation if desired, but they are equivalent.
+
 	bool verboseInternal = false;
 	//Calculate the residual velocity due to a companion star
 	//based on equation (51a) in my thesis.

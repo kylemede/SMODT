@@ -33,13 +33,13 @@ These are the outlines of the functions that act as the models to calculate the 
 There are both Python and C++ versions of these functions/models.  The bulk of the multi-process and file management,  post analysis and plotting of the results is done in Python while the computational stages of the simulation are done in C++ to take advantage of its speed.  A more detailed description of these issues and the simulator will be in another document to be written later.  All three astrometry models described here have been tested and produce the same resulting values/fit to within approximately 10 significant figures, well past the accuracy limits placed on the parameters by their associated 68\% or 95\% errors.
 
 %-----------------------------------------------------------
-%\citet{batten}
-%\pagebreak
-%\bibliography{SMODT-citations}
-%\clearpage
+\citet{batten}
+\pagebreak
+\bibliography{SMODT-citations}
+\clearpage
 %-----------------------------------------------------------
 \pagebreak
-\subsection{Measured Astrometric Values}
+\subsection{Measured Astrometric Values}\label{sec:MeasAstrometry}
 
 There are multiple ways to visually represent an astrometric system, and thus the measured values must be clearly understood to ensure they are correct before using them as inputs to the SMODT orbital model and plotting routines.
 
@@ -118,9 +118,15 @@ with matching errors:
 \clearpage
 
 %-----------------------------------------------------
-USEFUL FIGURES REFERENCED IN LATER TEXT, PUT THESE IN A LOGICAL INTRODUCTION OR SOMETHING SOON!!
+\subsection{Binary Orbital Elements}\label{sec:BinaryOrbElements}
 
-\begin{figure}[htp]
+When observing a binary system with either the naked eye, or with a telescope, what can be seen is their positions in the plane of the sky, see Figure \ref{fig:4}.  As was discovered by Johannes Kepler in the early 17$^{th}$ century binary systems will move in elliptical orbits around the center of gravity.  In most cases though, the elliptical path seen, commonly referred to as the `apparent ellipse', will be that orbit projected onto the plane of the sky.  This is because most orbital systems do not orbit perfectly in the plane of the sky and instead lie in the system's `orbital plane'.  So, with a sufficient number of observations over a long enough amount of time, the apparent ellipse can be drawn, but not the true orbital path in the orbital plane.  In order to find the exact shape of the true ellipse and its orientation with respect to the plane of the sky, the 6 parameters called the `orbital elements' must be calculated.
+
+The orbital elements that describe the orientation of the orbital plane to the plane of the sky are the inclination, {\it i}, and the longitude of the ascending node, $\Omega$.  As can be seen in Figure \ref{fig:OPvsSky}, {\it i} is the angle between the the two planes centered on the intersection line.  In the case where the position angles measured are increasing with time, the orbital motion is considered direct, or prograde, and {\it i} will lie in the range 0$^{\circ}$-90$^{\circ}$.  On the other hand, if they decrease with time, the motion is retrograde and it will take values of 90$^{\circ}$-180$^{\circ}$, \citep{heintz}.  The intersecting line between the two planes is known as the `line of nodes' with the ascending node being the point on the orbit passes upward through the plane of the sky, and the descending node being on the other side when the orbit passes through moving downwards.  Most commonly measured in the plane of the sky from North to East, $\Omega$ is the angle to the ascending node, shown as `N' in Figure \ref{fig:orbElements}; due to this, $\Omega$ is sometimes referred to as the position angle of the line of nodes, \citep{binnendijk}.  Unfortunately, just by looking at the system there is no way to tell if the body is truly moving upward at a the ascending node due to the apparent orbit being a projection onto the sky.  To handle the problem temporarily, a convention of $\Omega$ being between 0$^{\circ}$-180$^{\circ}$ is commonly used.  This 180$^{\circ}$ discrepancy can be removed when radial velocity data also exists for the system.  If the orbital motion of the object is directed away from the Earth, shown by positive velocities, that node is confirmed to be the ascending node and the convention holds.  Else, the node is actually the descending node and the location of the ascending node would be within 180$^{\circ}$-360$^{\circ}$, \citep{heintz}.
+ 
+\pagebreak
+
+\begin{figure}[h]
 \begin{center}
 \includegraphics[scale=0.575]{Figures/BattenPG8Fig.jpeg}
 \caption[Orbital Plane vs Plane of Sky]{ Orbital plane and the tangent plane to the sky  From \citet{batten}. }
@@ -128,7 +134,7 @@ USEFUL FIGURES REFERENCED IN LATER TEXT, PUT THESE IN A LOGICAL INTRODUCTION OR 
 \end{center}
 \end{figure}
 
-\begin{figure}[htp]
+\begin{figure}[h]
 \begin{center}
 \includegraphics[scale=0.5]{Figures/HilditchPG41Fig.jpeg}
 \caption[Orbital Elements]{ The relative orbit of a  binary located in three dimensions to show the orbital elements of its orbit.  From \citet{hilditch}. }
@@ -136,11 +142,47 @@ USEFUL FIGURES REFERENCED IN LATER TEXT, PUT THESE IN A LOGICAL INTRODUCTION OR 
 \end{center}
 \end{figure}
 
-\pagebreak
+
+The two orbital elements that define the shape of the true orbital ellipse are the eccentricity, {\it e}, and the semi-major axis, {\it a}.  Looking at Figure \ref{fig:orbEllipse}, the semi-major axis half the length of the line between the two most distant points on an ellipse.  The two focus points along this line are represented by F and F' with the distance from the center of the ellipse to either of these being simply a{\it e}.  The value of the eccentricity for an ellipse take values of [0,1.0], with the value 0 making it a circle and 1.0 a parabola.  For a binary system, both of the bodies are actually moving with respect to a common center of gravity, see Figure \ref{fig:ellipseComparison}.  A standard convention to simplify this is to put the larger body at a focal point and consider the apparent path of the other body as the combined elliptical orbit.  By doing the math, one can check that this is a valid convention choice assuming {\it a}={\it a1}+{\it a2}.  
 
 
-%----------------------------------------------------------------------------------------------------------------
-\section{Simulator Settings}
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.81]{Figures/Ellipse-Modified2.jpeg}
+\caption[Orbital Ellipse]{ The ellipse of an orbit in the orbital plane. }
+\label{fig:orbEllipse}
+\end{center}
+\end{figure}
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=0.22]{Figures/Ellipse-ModifiedNEW2.jpeg}
+\caption[Single vs Dual Orbital Ellipses]{ A comparison of a single combined ellipse to the original individual ellipses for a binary system.}
+\label{fig:ellipseComparison}
+\end{center}
+\end{figure}
+
+The last two orbital elements needed to fully describe an orbit in three dimensional space are the mean anomaly, {\it M}, and the argument of periapsis, $\omega$.  The point of periapsis is where the two bodies are the closest to each other, shown as $\Pi$ in Figures \ref{fig:orbElements} and \ref{fig:orbEllipse}.  $\omega$ is then just the angle between the ascending node and $\Pi$ measured in the orbital plane, \citep{heintz}; sometimes this angle is referred to as the longitude of periapsis to match the naming of the longitude of the ascending node, \citep{hilditch}.  The mean anomaly, {\it M} defines the position of the secondary body through its orbit, but not as a directly measurable value, other parameters are commonly chosen to replace it in the orbital elements.  {\it M} is calculated following equations (\ref{eq:nAndMa} \& \ref{eq:nAndMb}), where {\it n} is the mean motion, {\it t} is the time the system is being observed and {\it T} is the time the second body was at the periapsis point, usually called the time of last periapsis.  The other parameters more commonly used are the period of the orbit and {\it T}.  By using these parameters the semi-major axis is not strictly required if the mass of the two bodies is known, as Kepler's third law of motion can be used to calculated it, shown in Equation (\ref{eq:KepThird}), where $M_1$ and $M_2$ are the masses of the two bodies.
+
+
+\begin{subequations}
+\begin{align}\label{eq:nAndMa}
+n &= \frac{2\pi}{P} \\
+\label{eq:nAndMb}
+M &= n \bigg( \frac{(t-T)}{365.25} \bigg)
+\end{align}
+\end{subequations}
+
+\begin{equation}\label{eq:KepThird}
+P^2 = \bigg[\frac{4\pi^2a^3}{G(M_1+M_2)} \bigg]
+\end{equation}
+
+Therefore, either [{\it i}, $\Omega$, {\it e}, {\it a}, $\omega$, {\it M}] or [{\it i}, $\Omega$, {\it e}, $\omega$, {\it P}, {\it T}] can be used to fully describe any binary orbit in space.  Later in Section \ref{sec:models} some of the orbital models for converting between the observed apparent ellipse and the true ellipse will be described. 
+
+\clearpage
+%----------------------------------------------------------------------------------------------------------
+
+\section{Simulator Settings}\label{sec:simSettings}
 
 Here we will go over the large array of settings in the settings file and the possible modes to run the simulator in.
 
@@ -356,14 +398,14 @@ where, $\chi^2$ is the chi squared fit to the data given by (\ref{eq:chiSquared}
 
 %\clearpage
 
-\pagebreak
+%\pagebreak
 
 %----------------------------------------------------------------------------------------------------------------------------------
 
-\section{Models}
+\section{Models}\label{sec:models}
 
 \subsection{True Anomaly Calculator}\label{sec:TAcalc}
-The True Anomaly Calculator is used for both models as it is more general.
+The True Anomaly Calculator is used for both models.
 %\subsubsection{Inputs}
 
 \begin{table}[h]
@@ -567,6 +609,8 @@ One must be careful to take this into account when doing 3D simulations, to ensu
 
 \subsection{Direct Imaging (Astrometry) Model: Using the Thiele-Innes Method}\label{sec:TH_I} 
 
+The measurement of the astrometry values in the data, and the matching ones from the Thiele-Innes method applied here, are discussed in section \ref{sec:MeasAstrometry}.
+
 The Thiele-Innes method to solve for the orbital elements of binary systems was first described in \citet{Thiele}, and later advanced with the inclusion of the Innes constants formulated in \citet{Van}.  This approach has been mainstream ever since, and the equations to find the ephemeris are given below can be found in many text books, such as \citet{aitken}, \citet{binnendijk} and \citet{heintz}.
 
 \begin{subequations}
@@ -681,21 +725,41 @@ The most common form of the radial velocity equation is:
 \begin{equation}\label{eq:rvStandard}
 vr =  K[\cos(\theta+\omega_2)+e \cos(\omega_2)]
 \end{equation}
-where {\it K} is the semi-major amplitude of the radial velocity curve, as can be seen in Figure \ref{fig:RVplot}.
+where {\it K} is the semi-major amplitude of the radial velocity curve.
 
-The different formulations for calculating {\it K} are related to each other by Kepler's third law, given in Equation (\ref{eq:28}).
+The different formulations for calculating {\it K} are related to each other by Kepler's third law, given in Equation (\ref{eq:KepThird}).
 
 To find the radial velocity of the primary star due to companion's orbital motion: %(version used in VRcalcStarStar:VRcalculator):
-\begin{equation}\label{eq:30}
-K_s = \bigg[\frac{2\pi G}{P}\bigg]^{1/3}\frac{M_2}{(M_1+M_2)^{2/3}}\frac{\sin(i)}{\sqrt{1-e^2}} = \frac{2\pi a_1\sin(i)}{P\sqrt{1-e^2}}
-\end{equation}
+\begin{subequations}\label{eq:30}
+\begin{align}\label{eq:K_general}
+K_s &= \bigg[\frac{2\pi G}{P}\bigg]^{1/3}\frac{M_2}{M_1}(M_1+M_2)^{1/3}\frac{\sin(i)}{\sqrt{1-e^2}}\\
+\label{eq:K_MassGeneral}
+&=\bigg[\frac{2\pi G(M_1+M_2)}{P}\bigg]^{1/3}\frac{M_2}{M_1}\frac{\sin(i)}{\sqrt{1-e^2}} \\
+\label{eq:K_semiMajor}
+&= \frac{2\pi a_1\sin(i)}{P\sqrt{1-e^2}}
+\end{align}
+\end{subequations}
 
 When the companion is a planet, it can commonly be assumed that Mass$_{planet} \ll$ Mass$_{star}$, so $M_1+M_2 \approx M_1$.  This simplifies the equation for {\it K} to:
-\begin{equation}\label{eq:31}
+\begin{equation}\label{eq:K_planetMass}
 K_s = \bigg[\frac{2\pi G}{P}\bigg]^{1/3}\frac{M_2}{M_1^{2/3}}\frac{\sin(i)}{\sqrt{1-e^2}}
 \end{equation}
 
-As the mass of each object is needed to calculate the semi-major axis of the primary, a$_1$, using the second form in (\ref{eq:30}) keeps things simple.
+As the mass of each object is needed to calculate the semi-major axis of the primary, a$_1$, using  (\ref{eq:K_semiMajor}) keeps things simple making this the favored form.
+
+Overall, this leads to 3 different ways to calculate the radial velocity of the primary due to a companion:
+
+\begin{subequations}\label{eq:vr_finals}
+\begin{align}\label{eq:vr_semiMajor}
+vr_c \text{ or } vr_{p} &= \frac{2\pi a_1\sin(i)}{P\sqrt{1-e^2}}[\cos(\theta+\omega_2)+e \cos(\omega_2)]\\
+\label{eq:vr_starMass}
+vr_c&=\bigg[\frac{2\pi G(M_1+M_2)}{P}\bigg]^{1/3}\frac{M_2}{M_1}\frac{\sin(i)}{\sqrt{1-e^2}}[\cos(\theta+\omega_2)+e \cos(\omega_2)]\\
+\label{eq:vr_planetMass}
+vr_{p} &= \bigg[\frac{2\pi G}{P}\bigg]^{1/3}\frac{M_2}{M_1^{2/3}}\frac{\sin(i)}{\sqrt{1-e^2}}[\cos(\theta+\omega_2)+e \cos(\omega_2)]
+\end{align}
+\end{subequations}
+
+where $vr_c$ would be the radial velocity of the primary star due to a companion star, and $vr_p$ due to a companion planet around the same primary.  In the SMODT code, that of (\ref{eq:vr_semiMajor}) is referred to as ``vrCalculatorSemiMajorType", (\ref{eq:vr_starMass}) as ``vrCalculatorMassType", and (\ref{eq:vr_planetMass}) as ``vrCalculatorPlanetMassType", with the default in all cases being (\ref{eq:vr_semiMajor}).
 
 %Velocity residual due to planet around primary star (version used in VRcalcStarPlanet: VRcalculatorsemi-majorType):
 %\begin{equation}\label{eq:29}
@@ -707,12 +771,12 @@ As the mass of each object is needed to calculate the semi-major axis of the pri
 %vr_p = \bigg[\frac{2\pi G}{P}\bigg]^{1/3}\frac{M_2\sin(i)}{M_1^{2/3}}\frac{1}{\sqrt{1-e^2}}[\cos(\theta+\omega)+e \cos(\omega)] = K_p[\cos(\theta+\omega)+e \cos(\omega)]
 %\end{equation}
 
-In \citet{Shulze-Hartung} an alternative formulation for the radial velocity equation is used that inputs the Eccentric Anomaly, E, instead of the True Anomaly, $\theta$.  The difference between these is is just a choice of parameters and they are both mathematically equivalent.
+%In \citet{Shulze-Hartung} an alternative formulation for the radial velocity equation is used that inputs the Eccentric Anomaly, E, instead of the True Anomaly, $\theta$.  The difference between these is is just a choice of parameters and they are both mathematically equivalent.
 
-Velocity residual due to companion star, or planet, used in \citet{Shulze-Hartung}:
-\begin{equation}\label{eq:32}
-vr = \frac{2\pi a_1 \sin(i)}{P(1-e\cos(E))}[\sin(E)\sin(\omega)-\sqrt{1-e^2}\cos(E)\cos(\omega)]
-\end{equation}
+%Velocity residual due to companion star, or planet, used in \citet{Shulze-Hartung}:
+%\begin{equation}\label{eq:32}
+%vr = \frac{2\pi a_1 \sin(i)}{P(1-e\cos(E))}[\sin(E)\sin(\omega)-\sqrt{1-e^2}\cos(E)\cos(\omega)]
+%\end{equation}
 
 %\begin{subequations}\label{eq:32.2}
 %\begin{align}
@@ -721,14 +785,14 @@ vr = \frac{2\pi a_1 \sin(i)}{P(1-e\cos(E))}[\sin(E)\sin(\omega)-\sqrt{1-e^2}\cos
 %\end{align}
 %\end{subequations}
 
-Although, whether $\omega$ is equal to $\omega_1$ or $\omega_2$ is not properly described in the paper.  Through personal communications with the author, it was clarified to be $\omega_2$ in all cases.  %Following their convention, we set $\omega_1 = \omega_2+\pi$, as it is arbitrary as long as it the convention is mentioned in any resulting research papers.
+%Although, whether $\omega$ is equal to $\omega_1$ or $\omega_2$ is not properly described in the paper.  Through personal communications with the author, it was clarified to be $\omega_2$ in all cases.  %Following their convention, we set $\omega_1 = \omega_2+\pi$, as it is arbitrary as long as it the convention is mentioned in any resulting research papers.
 
 Finally the ${\chi}^{2} $ is calculated following:
 \begin{equation}\label{eq:33}
 {\chi}^{2} \equiv  \sum_{i=1}^{i=E} \frac{(model_i - observed_i)^{2}}{\sigma^{2}_i} = \sum_{i=1}^{i=E} \frac{[(vr_c+vr_p) - (RV_{data}-\gamma)]^{2}}{\sigma^{2}_i}
 \end{equation}
 
-where $\gamma $ is the velocity offset of that instrument.  In the case that the velocity of the system's center of mass WRT the Earth has not been removed, the observed component in (\ref{eq:33}) becomes ($RV_{data}-\gamma_{Instrument}-\gamma_{COM}$) (\citet{Paddock} \& \citet{Shulze-Hartung}).
+where $\gamma $ is the velocity offset of that instrument.  In the case that the velocity of the system's center of mass WRT the Earth has not been removed, the observed component in (\ref{eq:33}) becomes ($RV_{data}-\gamma_{Instrument}-\gamma_{COM}$) (\citet{Paddock} \& \citet{Shulze-Hartung}).  When only investigating the radial velocity fit of a single companion, the other would naturally be zero in the above equation.
 
 %----------------------------------------------------------------------------------------------------
 \pagebreak

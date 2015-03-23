@@ -1719,11 +1719,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
 #    print 'ang corr = '+str(longAN_deg+argPeri_corr_deg+90.0)
 #    print 'inclination = '+str(inc)
 
-    # angle for ellipse plotter
-    ang = longAN_deg[0]+argPeri_deg[0]+90.0
-    ang_corr = longAN_deg[0]+argPeri_corr_deg+90.0
-
-     # semi-major in orbital plane
+    # semi-major in orbital plane
     a_op = a[0]
     
     # semi-minor in orbital plane
@@ -1752,8 +1748,15 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     # Calculate distance of center-foci assuming center is at (0,0)
     c_foci = a_rp-((a_rp*(1.0-e[0]*e[0]))/(1.0-e[0]))
     # Calculate loction of foci where star would lie
-    yStar = c_foci*np.sin(np.radians(ang_corr))*(asConversion/sys_dist)
-    xStar = c_foci*np.cos(np.radians(ang_corr))*(asConversion/sys_dist)
+    # angle for ellipse plotter
+    #ang = longAN_deg[0]+argPeri_deg[0]+90.0
+    if True:
+        centerAngMod = 0.0
+    ang_corr = longAN_deg[0]+argPeri_corr_deg+centerAngMod
+    #yStar = c_foci*np.sin(np.radians(ang_corr))*(asConversion/sys_dist)
+    #xStar = c_foci*np.cos(np.radians(ang_corr))*(asConversion/sys_dist)
+    xStar = c_foci*np.sin(np.radians(ang_corr))*(asConversion/sys_dist)
+    yStar = c_foci*np.cos(np.radians(ang_corr))*(asConversion/sys_dist)
     
     if telescopeView:
         yStar = -yStar
@@ -1880,7 +1883,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     PredictedLocationString=''
     predictedPatches = []
     if makePredictions:
-        if False:
+        if "HR7672" in plotFilename:
             ts = [2452144.000000,
                   2452254.000000,
                   2452473.0,
@@ -1980,11 +1983,6 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     ##************************************************************************************
     ##************************************************************************************
     ##************************************************************************************
-    
-    
-    ## Get the locations of 500 points on an ellipse representing the orbit # this isn't working right... thus orbit method above is used now.
-    #X,Y = ellipse(a_rp, b_rp, ang_corr, -xStar, -yStar, Nb=500)
-    #X,Y = ellipse(a_rp, b_rp, ang, 0, 0, Nb=500)
     
     (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SAstart, PAstart, x, y, a1, a2) =\
             diTools.orbitCalculatorTH_I(0.0, sys_dist, inc[0], longAN_deg[0], e[0], 0.0, period[0], argPeri_deg[0], a[0],\
@@ -2618,10 +2616,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     planet's mass in the system data file/ provided dict, to calculate the residual vel.  If the value
     in the dictionary/file is actually, please set inc=0 to tell this func to ignore it and use the file's value.
     """
-    verbose = True
+    verbose = False
     
     ## make string with input values for possible printing
-    s= '\nInputs to rvPlotterDuo were:'+'\n'
+    s= '\nInputs to rvPlotter were:'+'\n'
     s=s+ 'e = '+repr(e)+'\n'
     s=s+ 'To = '+repr(T)+'\n'
     s=s+ 'Tc = '+repr(Tc)+'\n'
@@ -2738,7 +2736,6 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     log.write(s+'\n')
         
     # data for planet's orbit that are needed to calculate proper chiSquare for RV fit
-    # all below values for the planet orbit and RV data are from Butler2006.
     planet_K = sysDataDict["planet_K"] #[m/s]
     if planet_K==0:
         planet_K=False
@@ -2801,11 +2798,6 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         planet_incs = inc
         # load up adjusted mass of planet taking inc into account if needed
         for orb in range(0,len(e)):
-#            planet_Tc = sysDataDict['planet_Tc']
-#            if planet_Tc==0:
-#                (To,Tc) = eccArgPeri2ToTcCalc(planet_e, planet_P, planet_argPeri, planet_T, Tc=0)
-#                planet_Tc = Tc
-#            planet_Tcs.append(planet_Tc)
             if inc[orb]==0:
                 planet_MsinIs.append(planet_MsinI)
             else:
@@ -2844,14 +2836,6 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         star_Ks = K
         K_use = K[0]
         Mass2 = star_Mass2
-#         for orb in range(0,len(e)):
-#             star_es.append(star_e)
-#             star_Ts.append(star_T)
-#             star_Tcs.append(star_Tc)
-#             star_Ps.append(star_P)
-#             star_argPeris.append(star_argPeri)
-#             star_Ks.append(star_K)
-#             star_incs.append(star_inc)
     else:
         for orb in range(0,len(e)):
             star_es.append(star_e)
@@ -2921,7 +2905,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                 if (star_Ps[orb]==0):
                     (v_r_c,K_s)=(0,0)
                 else:
-                    (v_r_c,K_s) = rvTools.vrCalculatorStar2(epochs[epoch],star_es[orb],T[orb],star_Ps[orb],star_argPeris[orb],a1_s,T_center=star_Tcs[orb],i=star_incs[orb], K=star_Ks[orb], verbose=False)
+                    (v_r_c,K_s) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],star_es[orb],T[orb],star_Ps[orb],star_argPeris[orb],a1_s,T_center=star_Tcs[orb],i=star_incs[orb], K=star_Ks[orb], verbose=False)
                 # calculate the velocity residual due to the planet around primary
                 if (planet_Ps[orb]==0):
                     (v_r_p,K_p)=(0,0)
@@ -2932,7 +2916,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                     if False:
                         print s
                         
-                    (v_r_p,K_p) = rvTools.vrCalculatorStar2(epochs[epoch],planet_es[orb],planet_Ts[orb],planet_Ps[orb], planet_argPeris[orb],a1_p,T_center=planet_Tcs[orb],i=planet_incs[orb], K=planet_Ks[orb], verbose=False)
+                    (v_r_p,K_p) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],planet_es[orb],planet_Ts[orb],planet_Ps[orb], planet_argPeris[orb],a1_p,T_center=planet_Tcs[orb],i=planet_incs[orb], K=planet_Ks[orb], verbose=False)
                     #print 'K_p being used is = ',planet_Ks[orb]
                     #print "v_r_p = ",v_r_p
                 RV =rvs[epoch]- (v_r_c+v_r_p)
@@ -3029,7 +3013,6 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         if verbose:
             print s
         
-        
     # convert to a reduced chiSquared
     chi_squared_RV_reduced = (1.0/nuRV)*chiSquaredTot2
     s='\nOriginal ChiSquared = '+str(chiSquaredTot2)
@@ -3058,7 +3041,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             t = t + periodIncrement
             times.append(t)
             # calculate the velocity residual due to the companion 
-            (v_r_c,K) = rvTools.vrCalculatorStar2(t,e[orb],T[orb],period[orb],argPeri_deg[orb],a1,T_center=Tc[orb],i=inc[orb], K=K_use, verbose=False)
+            (v_r_c,K) = rvTools.vrCalculatorSemiMajorType(t,e[orb],T[orb],period[orb],argPeri_deg[orb],a1,T_center=Tc[orb],i=inc[orb], K=K_use, verbose=False)
             orbitVRs.append(v_r_c)
         #print 'times were '+repr(times)
         s= 'Orbit '+str(orb)+" had a K = "+str(K)
@@ -3092,7 +3075,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             
             s= '\n\n*** RMS of residuals '+str(dataset)+'= '+str(np.sqrt(np.mean(np.array(residuals3[orb][dataset])**2)))+' ***\n\n'
             log.write(s+'\n')
-            print s
+            if verbose:
+                print s
             #plot error bars
             for epoch in range(0,len(phases3[orb][dataset])):
                 xs = [phases3[orb][dataset][epoch],phases3[orb][dataset][epoch]]
@@ -3521,12 +3505,12 @@ def rvModDatasetMaker(e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, R
                 if (star_Ps[orb]==0):
                     (v_r_c,K_s)=(0,0)
                 else:
-                    (v_r_c,K_s) = rvTools.vrCalculatorStar2(epochs[epoch],star_es[orb],T[orb],star_Ps[orb],star_argPeris[orb],a1_s,T_center=T_center,i=star_incs[orb], K=False, verbose=False)
+                    (v_r_c,K_s) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],star_es[orb],T[orb],star_Ps[orb],star_argPeris[orb],a1_s,T_center=T_center,i=star_incs[orb], K=False, verbose=False)
                 # calculate the velocity residual due to the planet around primary
                 if (planet_Ps[orb]==0):
                     (v_r_p,K_p)=(0,0)
                 else:
-                    (v_r_p,K_p) = rvTools.vrCalculatorStar2(epochs[epoch],planet_es[orb],planet_Ts[orb],planet_Ps[orb], planet_argPeris[orb],a1_p,T_center=planet_Tcs[orb],i=planet_incs[orb], K=planet_Ks[orb], verbose=False)
+                    (v_r_p,K_p) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],planet_es[orb],planet_Ts[orb],planet_Ps[orb], planet_argPeris[orb],a1_p,T_center=planet_Tcs[orb],i=planet_incs[orb], K=planet_Ks[orb], verbose=False)
                     #print 'K_p being used is = ',planet_Ks[orb]
                     #print "v_r_p = ",v_r_p
                 RV =rvs[epoch]- (v_r_c+v_r_p)
@@ -3689,7 +3673,7 @@ def rvModDatasetMaker(e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, R
             t = t + periodIncrement
             times.append(t)
             # calculate the velocity residual due to the companion 
-            (v_r_c,K) = rvTools.vrCalculatorStar2(t,e[orb],T[orb],period[orb],argPeri_deg[orb],a1,T_center=T_center,i=inc[orb], K=planet_K, verbose=False)
+            (v_r_c,K) = rvTools.vrCalculatorSemiMajorType(t,e[orb],T[orb],period[orb],argPeri_deg[orb],a1,T_center=T_center,i=inc[orb], K=planet_K, verbose=False)
             orbitVRs.append(v_r_c)
         #print 'times were '+repr(times)
         print 'Orbit '+str(orb)+" had a K = "+str(K)
@@ -3906,7 +3890,7 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
                 if False:
                     print '\nWorking on epoch ',(epoch+1)
                 # calculate the velocity residual due to the companion star
-                (v_r_c,K) = rvTools.vrCalculatorStar2(epochs[epoch],e[orb],T[orb],period[orb],argPeri_deg[orb],a1,T_center=T_center, i=inc[orb], K=False, verbose=False)               
+                (v_r_c,K) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],e[orb],T[orb],period[orb],argPeri_deg[orb],a1,T_center=T_center, i=inc[orb], K=False, verbose=False)               
                 RV = rvs[epoch]-v_r_c
                 residuals.append(RV)
                 chiSquaredCurr = genTools.chiSquaredCalc(rvs[epoch], errors[epoch], v_r_c)
@@ -3946,7 +3930,7 @@ def rvFitPlotter1Body(e, T_lastPeri, period, inc, argPeri_deg, a=0.0, T_transitC
             t = t + periodIncrement
             times.append(t)
             # calculate the velocity residual due to the companion 
-            (v_r_c,K) = rvTools.vrCalculatorStar2(t,e[orb],T[orb],period[orb],argPeri_deg[orb],a1,T_center=T_center,i=inc[orb], K=False, verbose=False)
+            (v_r_c,K) = rvTools.vrCalculatorSemiMajorType(t,e[orb],T[orb],period[orb],argPeri_deg[orb],a1,T_center=T_center,i=inc[orb], K=False, verbose=False)
             orbitVRs.append(v_r_c)
         #print 'times were '+repr(times)
         print 'Orbit '+str(orb)+" had a K = "+str(K)

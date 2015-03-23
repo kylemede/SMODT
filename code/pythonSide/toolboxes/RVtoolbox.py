@@ -163,7 +163,7 @@ def subtractPlanetRV(rvDataFilename,e_p,p_p,K_p,argPeri_p,T_p):
     This function will subtract the RV due to a companion planet leaving only the residual
     that could be caused by a secondary star or another planet.  If the system you are 
     investigating has a long period companion star, then this is useful to subtract 
-    the RV due to the circum primary star with known orbital elements and focus the simulation
+    the RV due to the circum-primary star with known orbital elements and focus the simulation
     on solving only for the companion star.  Calculating both for each proposed set of 
     elements of the companion star during the simulation is un-necesarily CPU taxing.
     """
@@ -176,190 +176,18 @@ def subtractPlanetRV(rvDataFilename,e_p,p_p,K_p,argPeri_p,T_p):
     for RVdataSet in range(0,len(RVs)):
         print '\nworking on RVdataSet ',RVdataSet
         for epoch in range(0,len(RV_epochs[RVdataSet])):
-            v_r_p = vrCalculatorPlanet(RV_epochs[RVdataSet][epoch], e_p, T_p, p_p, argPeri_p, M1=0, M2SineI=False, K=K_p, verbose=False)
+            v_r_p = vrCalculatorPlanetMassType(RV_epochs[RVdataSet][epoch], e_p, T_p, p_p, argPeri_p, M1=0, M2SineI=False, K=K_p, verbose=False)
             RVprimary = RVs[RVdataSet][epoch]
             rvWithoutPlanetResidual = RVprimary - v_r_p
             rvWithoutPlanetResiduals.append(rvWithoutPlanetResidual)
             print "Raw RV = "+str(RVprimary)+", planet RV = "+str(v_r_p)
             print "Raw-planet => residual = "+str(rvWithoutPlanetResidual)
     return rvWithoutPlanetResiduals
- 
-def rv1bodyCalculator(RV_epochs, RVs, RVerrors, sigma_jitter, i, p, e, T, argPeri, a, verbose=False):
-    """
-    This is for calculating the RV and resulting chiSquared due to a planet ONLY, thus no companion star.
-    Naturally this system would have a planet with mass<< primary star mass.
-    
-    
-    sigma_jitter must be the un-squared version and in units of [m/s]
-    i in degrees
-    argPeri in degrees
-    a in AU
-    T in JD
-    t in JD
-    e unitless
-    period in years
-    """
-    
-    chiSquaredTotal = 0.0
-    
-    if verbose:
-        print '\n## Using the semi-major to calculate K for the primary star due to companion star ##'
-    
-    for epoch in range(0,len(RVs)):
-        if verbose:
-            print '\n******************* RV values for epoch '+str(epoch+1)+' *****************'
-        # calculate the velocity residual due to the companion 
-        (v_r_c, K_c) = vrCalculatorStar2(RV_epochs[epoch],e, T, p, argPeri, a, i=i, K=False, verbose=False)
-        
-        # calculate chiSquared for this epoch
-        chiSquaredCurr =genTools.chiSquaredCalc(RVs[epoch], (RVerrors[epoch]+sigma_jitter), (v_r_c))
-        
-        chiSquaredTotal = chiSquaredTotal + chiSquaredCurr
-        
-        if verbose:
-            print 'RV = (calculated)-measured = ('+str(v_r_c)+') - '+str(RVs[epoch])+' = '+str((v_r_c)-RVs[epoch]) 
-            print '(RVerrors[epoch]+sigma_jitter) = '+str((RVerrors[epoch]+sigma_jitter))
-            print 'chiSquaredCurr = ',chiSquaredCurr
-    
-    if verbose:
-            print '\nK of companion = ',K_c
-            
-    return chiSquaredTotal
 
-def rv1bodyCalculator2(RV_epochs, RVs, RVerrors, sigma_jitter, p, e, T, argPeri, M1,M2SineI, verbose=False):
+def vrCalculatorPlanetMassType(t,e,T,period,argPeri,M1,T_center=0,M2SineI=False, K=False, verbose=False):
     """
-    This is for calculating the RV and resulting chiSquared due to a planet ONLY, thus no companion star.
-    Naturally this system would have a planet with mass<< primary star mass.
+    NOTE: Specific version for a companion planet, general version is vrCalculatorMassType.
     
-    
-    sigma_jitter must be the unsquared version and in units of [m/s]
-    i in degrees
-    argPeri in degrees
-    a in AU
-    T in JD
-    t in JD
-    e unitless
-    period in years
-    """
-    
-    chiSquaredTotal = 0.0
-    
-    if verbose:
-        print '\n## Using the semi-major to calculate K for the primary star due to companion star ##'
-    
-    for epoch in range(0,len(RVs)):
-        if verbose:
-            print '\n*** RV values for epoch '+str(epoch+1)+' ***'
-        # calculate the velocity residual due to the companion 
-        (v_r_c, K_c) = vrCalculatorPlanet(RV_epochs[epoch],e, T, p, argPeri,M1,M2SineI=M2SineI, K=False, verbose=False)
-        # calculate chiSquared for this epoch
-        chiSquaredCurr =genTools.chiSquaredCalc(RVs[epoch], (RVerrors[epoch]+sigma_jitter), (v_r_c))
-        
-        chiSquaredTotal = chiSquaredTotal + chiSquaredCurr
-        
-        if verbose:
-            print 'RV = (calculated)-measured = ('+str(v_r_c)+') - '+str(RVs[epoch])+' = '+str((v_r_c)-RVs[epoch]) 
-            print '(RVerrors[epoch]+sigma_jitter) = '+str((RVerrors[epoch]+sigma_jitter))
-            print 'chiSquaredCurr = ',chiSquaredCurr
-    
-    if verbose:
-            print '\nK of companion = ',K_c
-            
-    return chiSquaredTotal 
-        
-def rv2bodyCalculator3(RV_epochs, RVs, RVerrors, sigma_jitter, M1, M2_c, i_c, p_c, e_c, T_c, argPeri_c, \
-                                                                    K_p, p_p, e_p, argPeri_p, T_p, verbose=False):
-    """
-    NOTE: This version uses the K equation with each objects mass.  
-        Use rv2bodyCalculator4 to use the semi-major axis instead.
-    
-    This will calclulate the radial velocity residue based chiSquared considering RV data for the primary star, orbital elements 
-    for the companion star (indicated with '_c' parameters), and some of the parameters for the planet around the primary
-    star's orbital elements (indicated with the '_p' parameters).
-    
-    sigma_jitter must be the unsquared version and in units of [m/s]
-    M2SineI_c and M1 in kg
-    i in degrees
-    argPeri in degrees
-    a in AU
-    T in JD
-    t in JD
-    e unitless
-    period in years
-    """
-    
-    chiSquaredTotal = 0.0
-    
-    if verbose:
-        print '\n## Using the masses to calculate K for the primary star due to companion star ##'
-    for epoch in range(0,len(RVs)):
-        if verbose:
-            print '\n*** RV values for epoch '+str(epoch+1)+' ***'
-        # calculate the velocity residual due to the companion star
-        (v_r_c, K_c) = vrCalculatorStar(RV_epochs[epoch],e_c, T_c, p_c, argPeri_c, M1, M2=M2_c, i=i_c, K=False, verbose=False)
-        # calculate the velocity residual due to the planet around primary
-        (v_r_p, K_p) = vrCalculatorPlanet(RV_epochs[epoch], e_p, T_p, p_p, argPeri_p, M1, M2SineI=False, K=K_p, verbose=False)
-
-        # calculate chiSquared for this epoch
-        chiSquaredCurr =genTools.chiSquaredCalc(RVs[epoch], (RVerrors[epoch]+sigma_jitter), (v_r_c+v_r_p))
-        
-        chiSquaredTotal = chiSquaredTotal + chiSquaredCurr
-        
-        if verbose:
-            print 'RV = ('+str(v_r_c)+' + '+str(v_r_p)+') - '+str(RVs[epoch])+' = '+str((v_r_c+v_r_p)-RVs[epoch]) 
-            print '(RVerrors[epoch]+sigma_jitter) = '+str((RVerrors[epoch]+sigma_jitter))
-            print 'chiSquaredCurr = ',chiSquaredCurr
-            
-    return chiSquaredTotal
-
-def rv2bodyCalculator4(RV_epochs, RVs, RVerrors, sigma_jitter, M1, a1, i_c, p_c, e_c, T_c, argPeri_c, \
-                                                                    K_p, p_p, e_p, argPeri_p, T_p, verbose=False):
-    """
-    NOTE: This version uses the K equation with the semi-major axis instead of each objects masses.
-          Use rv2bodyCalculator3 to use the objects masses instead.
-    
-    This will calclulate the radial velocity residue based chiSquared considering RV data for the primary star, orbital elements 
-    for the companion star (indicated with '_c' parameters), and some of the parameters for the planet around the primary
-    star's orbital elements (indicated with the '_p' parameters).
-    
-    sigma_jitter must be the unsquared version and in units of [m/s]
-    M2SineI_c and M1 in kg
-    i in degrees
-    argPeri in degrees
-    a in AU
-    T in JD
-    t in JD
-    e unitless
-    period in years
-    """
-    
-    chiSquaredTotal = 0.0
-    
-    if verbose:
-        print '\n## Using the semi-major to calculate K for the primary star due to companion star ##'
-    
-    for epoch in range(0,len(RVs)):
-        if verbose:
-            print '\n*** RV values for epoch '+str(epoch+1)+' ***'
-        # calculate the velocity residual due to the companion star
-        (v_r_c, K_c) = vrCalculatorStar2(RV_epochs[epoch],e_c, T_c, p_c, argPeri_c, a1, i=i_c, K=False, verbose=False)
-        # calculate the velocity residual due to the planet around primary
-        (v_r_p, K_p) = vrCalculatorPlanet(RV_epochs[epoch], e_p, T_p, p_p, argPeri_p, M1, M2SineI=False, K=K_p, verbose=False)
-        
-        # calculate chiSquared for this epoch
-        chiSquaredCurr =genTools.chiSquaredCalc(RVs[epoch], (RVerrors[epoch]+sigma_jitter), (v_r_c+v_r_p))
-        
-        chiSquaredTotal = chiSquaredTotal + chiSquaredCurr
-        
-        if verbose:
-            print 'RV = ('+str(v_r_c)+' + '+str(v_r_p)+') - '+str(RVs[epoch])+' = '+str((v_r_c+v_r_p)-RVs[epoch]) 
-            print '(RVerrors[epoch]+sigma_jitter) = '+str((RVerrors[epoch]+sigma_jitter))
-            print 'chiSquaredCurr = ',chiSquaredCurr
-            
-    return chiSquaredTotal
-
-def vrCalculatorPlanet(t,e,T,period,argPeri,M1,T_center=0,M2SineI=False, K=False, verbose=False):
-    """
     Version for when the companion is a planet.  Thus it calculates the residual velocity 
     assuming this and the consequence that (M1+M2~=M1).  Returns residual velocity 
     of the primary star!! due to the planet, not the the vel of the planet.
@@ -383,7 +211,7 @@ def vrCalculatorPlanet(t,e,T,period,argPeri,M1,T_center=0,M2SineI=False, K=False
     """
         
     if (K==False) and (M2SineI==False):
-        print 'vrCalcPlanet1225: The value of M2SineI and K cannot both be False, one MUST be defined'
+        print 'vrCalcPlanet: The value of M2SineI and K cannot both be False, one MUST be defined'
     if (K==False) and (M2SineI!=False):
         if period==0:
             K=0
@@ -416,10 +244,11 @@ def vrCalculatorPlanet(t,e,T,period,argPeri,M1,T_center=0,M2SineI=False, K=False
 
     return (v_r, K)
 
-def vrCalculatorStar(t,e,T,period,argPeri,M1,M2,T_center=0,i=False, K=False, verbose=False):
+def vrCalculatorMassType(t,e,T,period,argPeri,M1,M2,T_center=0,i=False, K=False, verbose=False):
     """
-    NOTE: This version is the one that uses the objects masses to calculate K.
-          To use the one that calculates it using the semi-major axis, use vrCalculatorStar2.
+    NOTE: This version is the one that uses the objects masses to calculate K. 
+          It will work for a companion star or planet.
+          To use the one that calculates it using the semi-major axis, use vrCalculatorSemiMajorType.
     
     M1 and M2 in Msun
     argPeri in degrees
@@ -431,7 +260,7 @@ def vrCalculatorStar(t,e,T,period,argPeri,M1,M2,T_center=0,i=False, K=False, ver
     
     K=False implies that the provided values will be used to 
     calculate it from scratch, else the provided value will
-    be used to calculate the radial velocity residule.  Thus,
+    be used to calculate the radial velocity residual.  Thus,
     this param must be either False or a float in units of 
     m/s.
     
@@ -439,10 +268,11 @@ def vrCalculatorStar(t,e,T,period,argPeri,M1,M2,T_center=0,i=False, K=False, ver
     """
         
     if (K==False) and (i==False):
-        print 'vrCalcStar601: The value of i and K cannot both be False, one MUST be defined'
+        print 'vrCalculatorMassType: The value of i and K cannot both be False, one MUST be defined'
     if (K==False) and (i!=False):
         if period==0:
             K=0
+            print "vrCalculatorStarMassType: Both K and period = zero, thus cannot calculate RV!!"
         else:
             # convert units of years to seconds
             period_seconds = period*31557600.0
@@ -452,13 +282,13 @@ def vrCalculatorStar(t,e,T,period,argPeri,M1,M2,T_center=0,i=False, K=False, ver
             
             # Calc K in parts to see equation better
             A = ((2.0*pi*G*(M1_kg+M2_kg))/period_seconds)**(1.0/3.0)
-            B = M2_kg/(M1_kg+M2_kg)
+            B = M2_kg/(M1_kg)
             C = math.sin(math.radians(i))/math.sqrt(1.0-e**2.0)
             # put it all together
             K = A*B*C
 
     if verbose:
-        print 'K_Star = ',K
+        print 'K = ',K
         
     if K==0:
         v_r = 0
@@ -470,10 +300,11 @@ def vrCalculatorStar(t,e,T,period,argPeri,M1,M2,T_center=0,i=False, K=False, ver
 
     return (v_r, K)
 
-def vrCalculatorStar2(t,e,T,period,argPeri,a1,T_center=0,i=False, K=False, verbose=False):
+def vrCalculatorSemiMajorType(t,e,T,period,argPeri,a1,T_center=0,i=False, K=False, verbose=False):
     """
     NOTE: this is the version which uses the K equation with the semi-major axis of primary's orbit.
-          To use the masses instead, use vrCalculatorStar.
+          This version will work for both a companion star or planet.
+          To use the masses instead, use vrCalculatorStarMassType or vrCalculatorPlanetMassType.
     
     argPeri in degrees
     i in degrees

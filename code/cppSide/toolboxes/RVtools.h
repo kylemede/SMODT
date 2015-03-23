@@ -32,9 +32,8 @@ public:
 	double TA_deg_s;
 	bool verbose;
 	//define public functions
-	double VRcalculator();
+	double VRcalculatorMassType();
 	double VRcalculatorSemiMajorType();
-	double VRcalculatorSH();
 	vector<double> multiEpochCalc();
 };
 
@@ -63,8 +62,7 @@ public:
 	double E_deg_p;
 	bool verbose;
 	//define public functions
-	double VRcalculator();
+	double VRcalculatorMassType();
 	double VRcalculatorSemiMajorType();
-	double VRcalculatorSemiMajorTypeSH();
 	vector<double> multiEpochCalc();
 };

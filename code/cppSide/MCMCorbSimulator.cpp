@@ -187,7 +187,7 @@ int main(int argc ,char *argv[])
 	SAOFO.SSO = SSO;
 	SAOFO.SSO.verbose = false;
 	SAOFO.SSO.silent = true;
-	SAOFO.SSO.numSamplePrints = 1;
+	SAOFO.SSO.numSamplePrints = SSO.numSamplePrints;
 	SAOFO.SSO.chiSquaredMax = SSO.chiSquaredMax;//10000;
 	SAOFO.DIt = DIt;
 	SAOFO.DIdo = DIdo;

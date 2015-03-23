@@ -83,7 +83,7 @@ def eccArgPeri2ToTcCalc(e, period, argPeri_deg, To, Tc=0):
     :returns:(To, Tc)
     :rtype: list of floats
     """
-    verbose = True
+    verbose = False
     backHalf = False
     
     if (verbose):

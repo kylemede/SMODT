@@ -11,7 +11,7 @@
 
 using namespace std;
 /*! \file */
-double VRcalcStarStar::VRcalculator()
+double VRcalcStarStar::VRcalculatorMassType()
 {
 	/**
 	Calculate the residual velocity due to a companion star
@@ -114,29 +114,6 @@ double VRcalcStarStar::VRcalculatorSemiMajorType()
 	return VRc;
 }
 
-double VRcalcStarStar::VRcalculatorSH()
-{
-	/**
-	Calculate the residual velocity due to a companion star
-	based on equation (47) in my thesis.
-	*/
-	double tempA = pow((2.0*PI*GravConst)/(SecPerYear*period_s),(1.0/3.0));
-	double tempB = Mass2_s/pow(KGperMsun*(Mass1+Mass2_s),(2.0/3.0));
-	double tempC = sin(inclination_deg_s*(PI/180.0))/sqrt(1-e_s*e_s);
-	// Calculate the Semi-major Amplitude for star-star system
-	double Kss = tempA*tempB*tempC;
-	K_s = Kss;
-	double tempD = cos((TA_deg_s+argPeri_deg_s)*(PI/180.0))+e_s*cos(argPeri_deg_s*(PI/180.0));
-	double VRc = Kss*tempD;
-
-	if (false)
-	{
-		cout<<"Kss = "<<Kss<<endl;
-		cout<<"TA_deg_s = "<<TA_deg_s<<endl;
-	}
-
-	return VRc;
-}
 vector<double> VRcalcStarStar::multiEpochCalc()
 {
 	/**
@@ -183,7 +160,7 @@ vector<double> VRcalcStarStar::multiEpochCalc()
 		if (true)
 			VRs = VRcalculatorSemiMajorType();
 		else
-			VRs = VRcalculator();
+			VRs = VRcalculatorMassType();
 		ResidualVels_s.push_back(VRs);
 		if (false)
 		{
@@ -194,7 +171,7 @@ vector<double> VRcalcStarStar::multiEpochCalc()
 	return ResidualVels_s;
 }
 
-double VRcalcStarPlanet::VRcalculator()
+double VRcalcStarPlanet::VRcalculatorMassType()
 {
 	/**
 
@@ -318,61 +295,6 @@ double VRcalcStarPlanet::VRcalculatorSemiMajorType()
 	return VRp;
 }
 
-double VRcalcStarPlanet::VRcalculatorSemiMajorTypeSH()
-{
-	/**
-	Calculate the residual velocity due to a companion star
-	based on equation (51a) in my thesis.
-	*/
-	bool verboseInternal = false;
-
-	double Ksp;
-	double tempA;
-	double tempC;
-	if (K_p>0)
-		Ksp = K_p;
-	else
-	{
-		tempA = (2.0*PI*a1*MperAU)/(SecPerYear*period_p);
-		tempC = sin(inclination_deg_p*(PI/180.0));
-		// Calculate the Semi-major Amplitude for star-star system
-		Ksp = (tempA*tempC)/sqrt(1-e_p*e_p);
-	}
-	if (K_p==0)
-		K_p = Ksp;
-	//double tempD = cos((TA_deg_p+argPeri_deg_p)*(PI/180.0))+e_p*cos(argPeri_deg_p*(PI/180.0));
-	double tempD1 = sin(E_deg_p*(PI/180.0))*sin(argPeri_deg_p*(PI/180.0));
-	double tempD2 = sqrt(1-e_p*e_p)*cos(E_deg_p*(PI/180.0))*cos(argPeri_deg_p*(PI/180.0));
-	double tempD3 = 1.0-e_p*cos(E_deg_p*(PI/180.0));
-	double tempD = (tempD1-tempD2)/tempD3;
-	double VRp = tempA*tempC*tempD;
-
-	if (verboseInternal)
-	{
-		cout<<"\n # In VRcalculatorSemiMajorTypeSH #"<<endl;
-		//cout<<"\nPI = "<<PI <<endl;
-		//cout<<"GravConst = "<< GravConst<<endl;
-		//cout<<"SecPerYear = "<< SecPerYear<<endl;
-		//cout<<"period_p = "<< period_p<<endl;
-		cout<<"a1 = "<<a1<<endl;
-		//cout<<"Mass2sinI_p = "<<Mass2sinI_p <<endl;
-		cout<<"inclination_deg_p = "<< inclination_deg_p<<endl;
-		//cout<<"Mass1 = "<< KGperMsun<<endl;
-		cout<<"e_p = "<< e_p<<endl;
-		cout<<"Ksp = "<<Ksp<<endl;
-		cout<<"E_deg_p = "<<E_deg_p<<endl;
-		cout<<"TA_deg_p = "<<TA_deg_p<<endl;
-		cout<<"argPeri_deg_p = "<<argPeri_deg_p <<endl;
-		cout<<"cos((TA_deg_p)*(PI/180.0)) = "<<cos((TA_deg_p)*(PI/180.0))<<endl;
-		//cout<<"cos((TA_deg_p+argPeri_deg_p)*(PI/180.0)) = "<<cos((TA_deg_p+argPeri_deg_p)*(PI/180.0))<<endl;
-		//cout<<"cos(argPeri_deg_p*(PI/180.0)) = "<<cos(argPeri_deg_p*(PI/180.0)) <<endl;
-		cout<<"tempD = "<<tempD <<endl;
-		cout<<"VRp = "<< VRp<<endl;
-	}
-
-	return VRp;
-}
-
 vector<double> VRcalcStarPlanet::multiEpochCalc()
 {
 	/**
@@ -413,11 +335,11 @@ vector<double> VRcalcStarPlanet::multiEpochCalc()
 		TA_deg_p = TACRT.TA_deg;
 		E_deg_p = TACRT.E_deg;
 
-
-
-		//double VRp = VRcalculator();
-		double VRp = VRcalculatorSemiMajorType();
-		//double VRp = VRcalculatorSemiMajorTypeSH();
+		double VRp;
+		if (true)
+			VRp = VRcalculatorSemiMajorType();
+		else
+			VRp = VRcalculatorMassType();
 		ResidualVels_p.push_back(VRp);
 		//cout<<"#####################################################"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		if (false)

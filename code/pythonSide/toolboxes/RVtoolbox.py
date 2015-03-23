@@ -8,162 +8,7 @@ from math import pi
 from DItoolbox import *
 import generalToolbox as genTools
 
-def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
-    """
-    
-    $$$ Copy of exact function from orbitToolboxDuo as something odd was hapening $$$$
-    
-    This is the same as TAcalculator but with some updates to the Newton's method loop
-    solving the Kepler's equation found in Double Stars by Heintz.
-    $$$$$$$$$$$$ Later testing of the two versions will prove which is better. $$$$$$$$$$$$$
-    """
-    
-    ## calculate the Mean Motion
-    n = (2*pi)/period
-    if verbose:
-        print '#'*50
-        print 'Mean Motion [rad/yr]= '+str(n)
-    
-    ## calculate Mean Anomaly
-    period_days = period*365.242
-    timeDiff_days = (t- T)-int((t-T)/period_days)*period_days 
-    if timeDiff_days<0.0:
-        timeDiff_days = timeDiff_days+period_days
-    phase = 0.0
-    if T_center!=0.0:
-        phaseDiff_days = (T_center-T)-int((T_center -T)/period_days)*period_days 
-        if T>T_center:
-            phaseDiff_days = phaseDiff_days+period_days
-        phase = phaseDiff_days/period_days
-    if verbose:
-        print "Unitless phase calculated to be "+str(phase)+", using T_center = "+str(T_center)+" and To = "+str(T)
-        print 'timeDiff_days = '+str(timeDiff_days)+', phaseDiff_days = '+str(phaseDiff_days)+', period_days = '+str(period_days)
-    
-    M = n*(((timeDiff_days)/365.242)+phase)#+(phase*2.0*pi)
-    ## Push M value into 0-2pi range ######
-    numCirclesBiggerD = abs(M/(2.0*pi))
-    numCirclesBiggerI = int(numCirclesBiggerD)
-    if numCirclesBiggerI<1:
-        numCirclesBiggerI = 1
-    if (M<0.0):
-        M_out = (numCirclesBiggerI+1)*2.0*pi + M
-        if verbose:
-            print "M updated from, "+str(M)+" to "+str(M_out)+", numCirclesBiggerI = "+str(numCirclesBiggerI)+", numCirclesBiggerD = "+str(numCirclesBiggerD)
-        
-    elif M>(2.0*pi):
-        M_out = M-numCirclesBiggerI*2.0*pi
-        if verbose:
-            print "M updated from, "+str(M)+" to "+str(M_out)+", numCirclesBiggerI = "+str(numCirclesBiggerI)+", numCirclesBiggerD = "+str(numCirclesBiggerD)
-    else:
-        M_out = M
-    M = M_out
-    
-    M_deg = math.degrees(M) # convert resulting M to degrees
-    if verbose:
-        print 'Mean Anomaly [deg]= ',M_deg
 
-    ### Performing Newton's Method to get the Eccentric Anomaly value ###
-    if verbose:
-        print '-'*50
-    # initial guess (E_last), will be updated in loop.  
-    # Anything works, just takes longer if further from real value. => pi
-    E_last = 2*pi
-    # stored initial value to be updated in loop
-    # this value is always very close to the true value and will minimize the number of loops
-    # the inital guess used here is from Argyle "Observing and Measuring Visual Double Stars"
-    try:
-        E_latest = M+e*math.sin(M)+((e**2.0)/(2.0*M))*math.sin(2.0*M)
-    except:
-        # not sure why, but there were cases of division by zero
-        # thus, for these cases, I will resort to my old predicted start value that doesn't suffer from this.
-        E_latest = M+e*math.sin(M)
-    M_last = M
-    # show input value to 
-    if debug:
-        print "Inputs to Newton's Method are : \nM [rad]= "+str(M)+"\nE_last [rad]= "+\
-        str(E_last)+"\nE_latest [rad] = "+str(E_latest)+"\ne = "+str(e)
-        
-        print "\nStarting to run Newton's while loop."
-    
-    count = 0 # a counter to stop inf loops in Newton's method below
-    while (abs(E_last-E_latest) > (1.0e-10))and(count<50):
-        if debug:
-            print 'current E [rad]= ', E_latest
-        E_last = E_latest
-        M_last = E_last - e*math.sin(E_last)
-        E_latest = E_last - ((M_last-M)/(1.0-e*math.cos(E_last)))
-        count = count+1
-
-    E_latest_deg = math.degrees(E_latest) # convert resulting E to degrees
-    if verbose:
-        print "The resultant E value is [deg] = ", E_latest_deg
-    # check if the resultant value solves the original equation.
-    Mnewton = math.degrees(E_latest-e*math.sin(E_latest))
-    if abs(M_deg-Mnewton)>(1.0e-5):
-        if verbose:
-            print "PROBLEM: This resultant E does not satisfy the original equation, Newton's method FAILED !!!"
-            print 'M from this E Equals = '+str(Mnewton)
-            print 'M original = '+str(M_deg)
-            print 'E initial = '+str(math.degrees(M+e*math.sin(M) ))
-            print 'e = '+str(e)
-    else:
-        if debug:
-            print "This resultant E solves the original equation, Newton's Method worked :-)"
-            print '-'*50
-    ### Newton's loop finished! ###
-    
-    ## calculate True Anomaly from Eccentric Anomaly
-    top = (math.cos(E_latest)-e)
-    btm = (1.0-e*math.cos(E_latest))
-    TA_rad  = math.acos(top/btm) 
-    
-        
-#    if E_latest<0.0:
-#        #print 'top is negative'
-#        TA_rad = -1.0*TA_rad
-#    if False:
-#        print "\nTA_rad calc failed!"
-#        print "E_latest = ",E_latest
-#        print "e = ",e
-#    
-#    if E_latest>(2.0*pi):
-#        # convert E to be inside one orbit (ie. under 2*PI)
-#        numCirclesD = E_latest/(2.0*pi)
-#        numCirclesI = int(numCirclesD)
-#        E_latest_oneCircle  = E_latest-numCirclesI*2.0*pi
-#        if verbose: 
-#            print "E_latest found to be "+str(numCirclesI)+" times over 2pi, so made E_latest_circle = "+str(math.degrees(E_latest_oneCircle))
-#    else:
-#        E_latest_oneCircle  = E_latest
-
-    if (E_latest>pi) or (E_latest<0):
-        # this is to take care of the silly fact that after E=180deg,
-        # the equation above produces TAs that go down from 180, rather than up.
-        ## This has been found to be due to the equation eliminating negative
-        ## values because of the cosine, thus the new update of E_latest<0.0:
-        ## should fix this problem, but the solutions will not go 0->360
-        ## but rather 0->180, -180->-0.
-        TA_rad_orig = TA_rad
-        TA_rad = 2.0*pi - TA_rad
-        if verbose:
-            print "E_latest found to be over PI, so changed TA from "+str(math.degrees(TA_rad_orig))+" to "+str(math.degrees(TA_rad))
-        
-    #TA_deg = math.degrees(TA_rad)#$$$$$$$$$$$$$$$$
-    #print 'epoch = '+str(t)+', T = '+str(T)+', timeDiff_days = '+str(timeDiff_days)+', numPeriodDiff = '+str(int((t-T)/period_days))+', TA_deg = '+str(TA_deg)#$$$$$$$$$$$$$$$$$$$$$$$$
-#    ## Calculate TA in another way    
-#    x = ((1.0-e**2.0)**(1.0/2.0))*math.cos(E_latest/2.0)
-#    y = ((1.0+e**2.0)**(1.0/2.0))*math.sin(E_latest/2.0)
-#    TA_rad2 = 2.0*math.atan2(y, x)
-#    #print 'TA_2 = '+str(math.degrees(TA_rad2))
-#    
-#    print 'TA = ',math.degrees(TA_rad)
-#    print 'TA2 = ',math.degrees(TA_rad2)
-    
-#    if True:
-#        if t<2452381:
-#            print "epoch = "+str(t)+", To = "+str(T)+", Tc = "+str(T_center)+", e = "+str(e)+", period = "+str(period)+ ", E = "+str(math.degrees(E_latest))+", TA = "+str(math.degrees(TA_rad))
-    
-    return (n, M_deg, E_latest_deg,TA_rad)
 
 def RVdataToDict(filename):
     """ 
@@ -313,37 +158,31 @@ def RVdataToDict(filename):
     else:
         print "filename '"+filename+"' does not exist!!!"
    
-def rvResidualWithoutPlanetResidual():
+def subtractPlanetRV(rvDataFilename,e_p,p_p,K_p,argPeri_p,T_p):
     """
-    A totally temporary function to calculate the residual velocity of the primary star
-    WITHOUT the residual from the planet.  Thus only having the velocity that could be 
-    caused by the secondary star/companion.
+    This function will subtract the RV due to a companion planet leaving only the residual
+    that could be caused by a secondary star or another planet.  If the system you are 
+    investigating has a long period companion star, then this is useful to subtract 
+    the RV due to the circum primary star with known orbital elements and focus the simulation
+    on solving only for the companion star.  Calculating both for each proposed set of 
+    elements of the companion star during the simulation is un-necesarily CPU taxing.
     """
-
-    from paramSettingsDict import paramSettingsDict
-    RV_epochs = paramSettingsDict['Data']['RV_epochs']
+    rvDataDict = RVdataToDict(rvDataFilename)
+    RV_epochs = rvDataDict['RV_epochs']
     #RVerrors = paramSettingsDict['Data']['RVerrors']
-    RVs = paramSettingsDict['Data']['RVs']
-    M1 = paramSettingsDict['Data']['M1']
-    # data for planet's orbit that are needed to calculate proper chiSquare for RV fit
-    # all below values for the planet orbit and RV data are from Butler2006.
-    K_p = 461.1 #[m/s]
-    p_p = 3.31246   #[days]
-    #planet_p_years = planet_p/365.25
-    e_p = 0.023    
-    argPeri_p = 188.0   #[deg]
-    T_p = 2446957.8   #[JD]
-    sigma_jitter = 15.0    #[m/s]
+    RVs = rvDataDict['RVs']
     
     rvWithoutPlanetResiduals = []
     for RVdataSet in range(0,len(RVs)):
         print '\nworking on RVdataSet ',RVdataSet
         for epoch in range(0,len(RV_epochs[RVdataSet])):
-            v_r_p = vrCalculatorPlanet(RV_epochs[RVdataSet][epoch], e_p, T_p, p_p, argPeri_p, M1, M2SineI=False, K=K_p, verbose=False)
+            v_r_p = vrCalculatorPlanet(RV_epochs[RVdataSet][epoch], e_p, T_p, p_p, argPeri_p, M1=0, M2SineI=False, K=K_p, verbose=False)
             RVprimary = RVs[RVdataSet][epoch]
             rvWithoutPlanetResidual = RVprimary - v_r_p
             rvWithoutPlanetResiduals.append(rvWithoutPlanetResidual)
-            print v_r_p
+            print "Raw RV = "+str(RVprimary)+", planet RV = "+str(v_r_p)
+            print "Raw-planet => residual = "+str(rvWithoutPlanetResidual)
+    return rvWithoutPlanetResiduals
  
 def rv1bodyCalculator(RV_epochs, RVs, RVerrors, sigma_jitter, i, p, e, T, argPeri, a, verbose=False):
     """
@@ -351,7 +190,7 @@ def rv1bodyCalculator(RV_epochs, RVs, RVerrors, sigma_jitter, i, p, e, T, argPer
     Naturally this system would have a planet with mass<< primary star mass.
     
     
-    sigma_jitter must be the unsquared version and in units of [m/s]
+    sigma_jitter must be the un-squared version and in units of [m/s]
     i in degrees
     argPeri in degrees
     a in AU
@@ -570,8 +409,8 @@ def vrCalculatorPlanet(t,e,T,period,argPeri,M1,T_center=0,M2SineI=False, K=False
     else:
         period_years = period/365.25
         
-        ## get the TAcalculator to find the TA in radians
-        (n, M_deg, E_latest_deg,TA_rad) = TAcalculator(t,e, T, period_years, T_center=T_center, verbose=False, debug=False)
+        ## get the genTools.TAcalculator to find the TA in radians
+        (n, M_deg, E_latest_deg,TA_rad) = genTools.TAcalculator(t,e, T, period_years, T_center=T_center, verbose=False, debug=False)
         
         v_r = K*(math.cos(math.radians(argPeri)+TA_rad)+e*math.cos(math.radians(argPeri)))
 
@@ -624,8 +463,8 @@ def vrCalculatorStar(t,e,T,period,argPeri,M1,M2,T_center=0,i=False, K=False, ver
     if K==0:
         v_r = 0
     else:
-        ## get the TAcalculator to find the TA in radians
-        (n, M_deg, E_latest_deg,TA_rad) = TAcalculator(t,e, T, period, T_center=T_center, verbose=False, debug=False)
+        ## get the genTools.TAcalculator to find the TA in radians
+        (n, M_deg, E_latest_deg,TA_rad) = genTools.TAcalculator(t,e, T, period, T_center=T_center, verbose=False, debug=False)
         
         v_r = K*(math.cos(math.radians(argPeri)+TA_rad)+e*math.cos(math.radians(argPeri)))
 
@@ -685,8 +524,8 @@ def vrCalculatorStar2(t,e,T,period,argPeri,a1,T_center=0,i=False, K=False, verbo
         print 'i = ',i
         print 'K_Star = ',K
         
-    ## get the TAcalculator to find the TA in radians
-    (n, M_deg, E_latest_deg,TA_rad) = TAcalculator(t,e, T, period, T_center=T_center, verbose=False, debug=False)
+    ## get the genTools.TAcalculator to find the TA in radians
+    (n, M_deg, E_latest_deg,TA_rad) = genTools.TAcalculator(t,e, T, period, T_center=T_center, verbose=False, debug=False)
     if verbose:
         #print '#######################################################'
         print 'TA = '+str(math.degrees(TA_rad))  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

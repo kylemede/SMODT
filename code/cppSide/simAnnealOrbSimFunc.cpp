@@ -1353,7 +1353,6 @@ void simAnealOrbFuncObj::simulator()
 			//*****************************************************************************
 			// Calculate Direct Imaging fit if requested
 			//*****************************************************************************
-
 			if (SSO.RVonly==false)
 			{
 				multiEpochOrbCalcReturnType MEOCRT;
@@ -1429,7 +1428,7 @@ void simAnealOrbFuncObj::simulator()
 						RVdo.planet_K = K_proposed;
 					RVdo.planet_argPeri  = argPeri_deg_proposed ;
 					RVdo.planet_inc = DIt.inclination_deg ;
-					RVdo.planet_MsinI = DIt.Mass2 ;
+					RVdo.planet_MsinI = DIt.Mass2;
 				}
 				if (SSO.simulate_StarStar==true)
 				{
@@ -1448,6 +1447,7 @@ void simAnealOrbFuncObj::simulator()
 				// get RVs velocities for companion planet if needed
 				if (RVdo.planet_P!=0 )
 				{
+					//cout<<"Ln1450"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$
 					if ( SSO.silent==false )
 						cout<<"Starting to calculate RVs for star-planet"<<endl;
 					// instantiate S-P calc object and load up its params

@@ -673,7 +673,7 @@ VRcalcStarPlanet generalTools::VRcalcStarPlanetLoadUp(RVdataObj RVdo)
 		if (VRCsp.a_total>1e4)
 			VRCsp.a_total=0.0;
 	}
-
+	//cout<<"finished VRcalcStarPlanetLoadUp"<<endl;
 	return VRCsp;
 }
 

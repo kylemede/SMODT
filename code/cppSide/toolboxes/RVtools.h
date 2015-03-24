@@ -8,6 +8,16 @@ class RVtools
 public:
 	double Mass1; //in Msun
 	double a1; //primary star's semi-major axis in AU
+	double a_total;//Primary's semi-major PLUS secondary's semi-major [AU]
+	bool verbose;
+	double K;
+	double period;
+	double inclination_deg;
+	double e;
+	double TA_deg;
+	double argPeri_deg;
+	//define public functions
+	double VRcalculatorSemiMajorType();
 };
 
 class VRcalcStarStar : public RVtools
@@ -21,8 +31,6 @@ public:
 	vector<double> epochs_s;
 	double K_s;
 	double e_s;
-	double a1;
-	double a_total;
 	double T_s;
 	double Tc_s;
 	double period_s; //in [yrs]
@@ -30,10 +38,8 @@ public:
 	double argPeri_deg_s;
 	double inclination_deg_s;
 	double TA_deg_s;
-	bool verbose;
 	//define public functions
 	double VRcalculatorMassType();
-	double VRcalculatorSemiMajorType();
 	vector<double> multiEpochCalc();
 };
 
@@ -50,8 +56,6 @@ public:
 	double K_p;
 	double K_p_error;
 	double e_p;
-	double a1;
-	double a_total;
 	double T_p;
 	double Tc_p;
 	double period_p; //in [yrs]
@@ -60,9 +64,7 @@ public:
 	double inclination_deg_p;
 	double TA_deg_p;
 	double E_deg_p;
-	bool verbose;
 	//define public functions
 	double VRcalculatorMassType();
-	double VRcalculatorSemiMajorType();
 	vector<double> multiEpochCalc();
 };

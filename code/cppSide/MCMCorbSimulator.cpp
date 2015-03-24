@@ -185,8 +185,8 @@ int main(int argc ,char *argv[])
 
 	simAnealOrbFuncObj SAOFO;
 	SAOFO.SSO = SSO;
-	SAOFO.SSO.verbose = false;
-	SAOFO.SSO.silent = true;
+	SAOFO.SSO.verbose = SSO.verbose;
+	SAOFO.SSO.silent = SSO.silent;
 	SAOFO.SSO.numSamplePrints = SSO.numSamplePrints;
 	SAOFO.SSO.chiSquaredMax = SSO.chiSquaredMax;//10000;
 	SAOFO.DIt = DIt;
@@ -436,8 +436,8 @@ int main(int argc ,char *argv[])
 
 
     MCMCOFO.SSO = SSO;
-    //MCMCOFO.SSO.silent=false;
-    //MCMCOFO.SSO.verbose=true;
+    MCMCOFO.SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$
+    MCMCOFO.SSO.verbose=true;//$$$$$$$$$$$$$$$$$$$$$$$$$
     MCMCOFO.DIt = DIt;
     MCMCOFO.DIdo = DIdo;
     MCMCOFO.RVdo = RVdo;

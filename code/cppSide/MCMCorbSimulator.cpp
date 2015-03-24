@@ -436,8 +436,8 @@ int main(int argc ,char *argv[])
 
 
     MCMCOFO.SSO = SSO;
-    MCMCOFO.SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$
-    MCMCOFO.SSO.verbose=true;//$$$$$$$$$$$$$$$$$$$$$$$$$
+    //MCMCOFO.SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$
+    //MCMCOFO.SSO.verbose=true;//$$$$$$$$$$$$$$$$$$$$$$$$$
     MCMCOFO.DIt = DIt;
     MCMCOFO.DIdo = DIdo;
     MCMCOFO.RVdo = RVdo;

@@ -2589,7 +2589,7 @@ def makeArtificialData(longAN_deg, e, T, Tc, period, inc, argPeri_deg, a_total, 
     
     (a_total, a1IN, a2, p_s) = semiMajorConverter(Mass1, Mass2, a_total,a1=0.0,a2=0.0, period=period,verbose=False)
     for epoch in range(0,numDataPoints):
-        (v_r,K) = RVtools.vrCalculatorStar2(epochs[epoch],e,T,period,argPeri_deg,a1IN,T_center=Tc,i=inc, K=False, verbose=False)
+        (v_r,K) = RVtools.vrCalculatorSemiMajorType(epochs[epoch],e,T,period,argPeri_deg,a1IN,T_center=Tc,i=inc, K=False, verbose=False)
         
         (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, x, y, a1, a2) = \
         DItools.orbitCalculatorTH_I(epochs[epoch], sys_dist, inc, longAN_deg, e, T, period, argPeri_deg, a_total, Mass1, Mass2, verbose=False)

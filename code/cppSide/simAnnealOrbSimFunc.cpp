@@ -1379,7 +1379,7 @@ void simAnealOrbFuncObj::simulator()
 				//SSO.silent=false;//$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$
 				if ( SSO.silent==false )
 				{
-					cout<<"line # 1314"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					//cout<<"line # 1314"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 					cout<<"DI_chiSquared = "<<DI_chiSquared<<endl;
 					cout<<"one_over_nu_DI = "<<one_over_nu_DI<<endl;
 					cout<<"DI_chiSquared_reduced = "<<DI_chiSquared*one_over_nu_DI<<endl;
@@ -1571,7 +1571,7 @@ void simAnealOrbFuncObj::simulator()
 						if (RVdo.star_P!=0)
 						{
 							companionStarVR = VRs_vector2[dataset][epoch];
-							cout<<"companionStarVR for epoch "<<epoch <<" is "<<companionStarVR <<endl;//$$$$$$$$$$ DEBUGGING $$$$$$$$$
+							//cout<<"companionStarVR for epoch "<<epoch <<" is "<<companionStarVR <<endl;//$$$$$$$$$$ DEBUGGING $$$$$$$$$
 						}
 
 						//double updatedRV_inv_var = RVdo.RV_inv_var[dataset][epoch];

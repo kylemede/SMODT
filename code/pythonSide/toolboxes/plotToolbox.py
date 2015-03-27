@@ -1705,65 +1705,65 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     if type(To)!=list:
         To = [To]
        
-    # First convert the given angles to radians
-    i_rad = np.radians(inc[0])
-    longAN_rad = np.radians(longAN_deg[0])
-    argPeri_rad = np.radians(argPeri_deg[0])
-    
-    # must correct argPeri for the inclination
-    argPeri_corr = np.arctan((np.sin(argPeri_rad)*np.cos(i_rad))/np.cos(argPeri_rad))
-    argPeri_corr_deg = np.degrees(argPeri_corr)
-#    print 'argPeri_deg = '+str(argPeri_deg)
-#    print 'argPeri_corr_deg = '+str(argPeri_corr_deg)
-#    print 'ang orig = '+str(longAN_deg+argPeri_deg+90.0)
-#    print 'ang corr = '+str(longAN_deg+argPeri_corr_deg+90.0)
-#    print 'inclination = '+str(inc)
-
-    # semi-major in orbital plane
-    a_op = a[0]
-    
-    # semi-minor in orbital plane
-#    b_op = a[0]*(np.sqrt(1-(e[0]*e[0])))
-    
-    # semi-major in reference plane
-    a_rp_y = a_op*np.sin(argPeri_rad)*np.cos(i_rad)
-    a_rp_x = a_op*np.cos(argPeri_rad)
-    a_rp = np.sqrt(np.power(a_rp_x, 2)+np.power(a_rp_y, 2))
-    
-#    print 'a_rp_x = '+str(a_rp_x)
-#    print 'a_rp_y = '+str(a_rp_y)
-#    print 'a_rp = '+str(a_rp)
-#    
-    # semi-minor in reference plane 
-    # Note: semi-minor and semi-major are at 90deg to each other.
-#    b_rp_y = b_op*np.sin((pi/2.0)-argPeri_rad)*np.cos(i_rad)
-#    b_rp_x = b_op*np.cos((pi/2.0)-argPeri_rad)
-#    b_rp = np.sqrt(np.power(b_rp_x, 2)+np.power(b_rp_y, 2))
-    
-#    print 'b_op = '+str(b_op)
-#    print 'b_rp_x = '+str(b_rp_x)
-#    print 'b_rp_y = '+str(b_rp_y)
-#    print 'b_rp = '+str(b_rp)
-
-    # Calculate distance of center-foci assuming center is at (0,0)
-    c_foci = a_rp-((a_rp*(1.0-e[0]*e[0]))/(1.0-e[0]))
-    # Calculate loction of foci where star would lie
-    # angle for ellipse plotter
-    #ang = longAN_deg[0]+argPeri_deg[0]+90.0
-    if True:
-        centerAngMod = 0.0
-    ang_corr = longAN_deg[0]+argPeri_corr_deg+centerAngMod
-    #yStar = c_foci*np.sin(np.radians(ang_corr))*(asConversion/sys_dist)
-    #xStar = c_foci*np.cos(np.radians(ang_corr))*(asConversion/sys_dist)
-    xStar = c_foci*np.sin(np.radians(ang_corr))*(asConversion/sys_dist)
-    yStar = c_foci*np.cos(np.radians(ang_corr))*(asConversion/sys_dist)
-    
-    if telescopeView:
-        yStar = -yStar
-        xStar = -xStar
-#    print 'c_foci = '+str(c_foci)
-#    print 'yStar = '+str(yStar)
-#    print 'xStar = '+str(xStar) 
+#     # First convert the given angles to radians
+#     i_rad = np.radians(inc[0])
+#     longAN_rad = np.radians(longAN_deg[0])
+#     argPeri_rad = np.radians(argPeri_deg[0])
+#     
+#     # must correct argPeri for the inclination
+#     argPeri_corr = np.arctan((np.sin(argPeri_rad)*np.cos(i_rad))/np.cos(argPeri_rad))
+#     argPeri_corr_deg = np.degrees(argPeri_corr)
+# #    print 'argPeri_deg = '+str(argPeri_deg)
+# #    print 'argPeri_corr_deg = '+str(argPeri_corr_deg)
+# #    print 'ang orig = '+str(longAN_deg+argPeri_deg+90.0)
+# #    print 'ang corr = '+str(longAN_deg+argPeri_corr_deg+90.0)
+# #    print 'inclination = '+str(inc)
+# 
+#     # semi-major in orbital plane
+#     a_op = a[0]
+#     
+#     # semi-minor in orbital plane
+# #    b_op = a[0]*(np.sqrt(1-(e[0]*e[0])))
+#     
+#     # semi-major in reference plane
+#     a_rp_y = a_op*np.sin(argPeri_rad)*np.cos(i_rad)
+#     a_rp_x = a_op*np.cos(argPeri_rad)
+#     a_rp = np.sqrt(np.power(a_rp_x, 2)+np.power(a_rp_y, 2))
+#     
+# #    print 'a_rp_x = '+str(a_rp_x)
+# #    print 'a_rp_y = '+str(a_rp_y)
+# #    print 'a_rp = '+str(a_rp)
+# #    
+#     # semi-minor in reference plane 
+#     # Note: semi-minor and semi-major are at 90deg to each other.
+# #    b_rp_y = b_op*np.sin((pi/2.0)-argPeri_rad)*np.cos(i_rad)
+# #    b_rp_x = b_op*np.cos((pi/2.0)-argPeri_rad)
+# #    b_rp = np.sqrt(np.power(b_rp_x, 2)+np.power(b_rp_y, 2))
+#     
+# #    print 'b_op = '+str(b_op)
+# #    print 'b_rp_x = '+str(b_rp_x)
+# #    print 'b_rp_y = '+str(b_rp_y)
+# #    print 'b_rp = '+str(b_rp)
+# 
+#     # Calculate distance of center-foci assuming primary star foci is at (0,0)
+# #     c_foci = a_rp-((a_rp*(1.0-e[0]*e[0]))/(1.0-e[0]))
+# #     # Calculate loction of foci where star would lie
+# #     # angle for ellipse plotter
+# #     #ang = longAN_deg[0]+argPeri_deg[0]+90.0
+# #     if True:
+# #         centerAngMod = 0.0
+# #     ang_corr = longAN_deg[0]+argPeri_corr_deg+centerAngMod
+# #     #yStar = c_foci*np.sin(np.radians(ang_corr))*(asConversion/sys_dist)
+# #     #xStar = c_foci*np.cos(np.radians(ang_corr))*(asConversion/sys_dist)
+# #     xStar = c_foci*np.sin(np.radians(ang_corr))*(asConversion/sys_dist)
+# #     yStar = c_foci*np.cos(np.radians(ang_corr))*(asConversion/sys_dist)
+#     
+#     if telescopeView:
+#         yStar = -yStar
+#         xStar = -xStar
+# #    print 'c_foci = '+str(c_foci)
+# #    print 'yStar = '+str(yStar)
+# #    print 'xStar = '+str(xStar) 
         
     # create a primary star polygon
     starPolygon = star((asConversion/1000.0)*2.0*a[0], 0, 0, color='black', N=10, thin = 0.4)
@@ -1877,7 +1877,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     ##************************************************************************************
     ##****************** Calculate the predicted location and fixed JDs ******************
     ##************************************************************************************
-    makePredictions = True
+    makePredictions = False
     predictedXs = []
     predictedYs = []
     PredictedLocationString=''
@@ -2096,11 +2096,17 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     #draw semi-major
     main.plot([Xstart,Xhalf],[Ystart,Yhalf],'g-',linewidth=1)
     
-    #draw semi-minor 
-    #main.plot(X_b_rp_corr,Y_b_rp_corr,'b-')
+    xStar = (Xhalf-Xstart)/2.0
+    yStar = (Yhalf-Ystart)/2.0
     
+    if True:
+        print "xStar = "+str(xStar)
+        print "yStart = "+str(yStar)
+    if telescopeView:
+        yStar = -yStar
+        xStar = -xStar
     #draw 'x' for center of ellipse
-    main.plot(-xStar,yStar,'rx',linewidth=1)
+    main.plot(xStar,yStar,'rx',linewidth=1)
     
     # draw lines along diagonals to mare out 45 degree locations from origin ### Useless now
     #main.plot( [xLim[0],xLim[1]], [yLim[0],yLim[1]])

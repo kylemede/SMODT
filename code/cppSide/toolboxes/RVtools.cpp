@@ -93,8 +93,8 @@ vector<double> VRcalcStarStar::multiEpochCalc()
 	vector<double> ResidualVels_s;
 	generalTools GT;
 
-	if (false)
-		argPeri_deg_s = argPeri_deg_s-180.0;
+	if (true)
+		argPeri_deg_s = argPeri_deg_s+180.0;
 
 	//instantiate and load up constant values for both TA and VR calc inputs
 	TAcalcInputType TACIT;
@@ -143,6 +143,8 @@ vector<double> VRcalcStarStar::multiEpochCalc()
 			cout<<"VRc = "<<VRc<<endl;
 		}
 	}
+	// Load value output by VRcalculator into K_s.  Will be the same if K_s was not zero, else will be the updated calculated version
+	K_s = K;
 	return ResidualVels_s;
 }
 
@@ -268,5 +270,7 @@ vector<double> VRcalcStarPlanet::multiEpochCalc()
 			cout<<"VRp = "<<VRp<<endl;
 		}
 	}
+	// Load value output by VRcalculator into K_p.  Will be the same if K_p was not zero, else will be the updated calculated version
+	K_p = K;
 	return ResidualVels_p;
 }

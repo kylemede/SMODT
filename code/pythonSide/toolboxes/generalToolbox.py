@@ -174,9 +174,12 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
     rvOffsetsBest=[]
     
     list = []
-    bestOrbitFilename = os.path.join(os.path.basename(filename),'bestOrbit.txt')
+    s= '\nBest orbit found:'
+    bestOrbitFilename = os.path.join(os.path.dirname(filename),'bestOrbit.txt')
     if os.path.exists(bestOrbitFilename):
+        print "Just loading values already found and stored in file: "+bestOrbitFilename
         list = bestOrbitFileToList(bestOrbitFilename)
+        s+= "\n"+repr(list)
     else:
         # strip off the .txt part to make the plot version of the filename
         print "\nWorking on file: "+os.path.basename(filename)
@@ -207,7 +210,6 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
                             rvOffsetsBest.append(float(dataLineCols[10+dataset]))
                 
         # print the values for the best orbit
-        s= '\nBest orbit found:'
         s=s+ "\nLongAN = "+str(longANBest)
         s=s+ "\ne = "+str(eBest)
         s=s+ "\nTo = "+str(TBest)
@@ -232,7 +234,7 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
     if saveToFile:
         outFilename = os.path.dirname(filename)+'/bestOrbit.txt'
         if os.path.exists(outFilename):
-            print '\nbestOrbFinderNEW68: Warning: '+outFilename+' all ready exists, so not overwriting.'
+            print '\nbestOrbFinder: Warning: '+outFilename+' all ready exists, so not overwriting.'
         else:
             f = open(outFilename, 'w')
             f.write(s)

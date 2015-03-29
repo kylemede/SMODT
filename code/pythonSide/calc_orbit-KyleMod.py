@@ -72,6 +72,16 @@ def calc_orbit():
     pos_B = pos_B[1:-1]
 
     t = t[1:-1]
+    
+    print "before:"
+    print "pos_A[0] = "+repr(pos_A[0])
+    print "pos_B[0] = "+repr(pos_B[0])
+    print "vel_A[0] = "+repr(vel_A[0])
+    print "vel_B[0] = "+repr(vel_B[0])
+    print "pos_A[50] = "+repr(pos_A[50])
+    print "pos_B[50] = "+repr(pos_B[50])
+    print "vel_A[50] = "+repr(vel_A[50])
+    print "vel_B[50] = "+repr(vel_B[50])
 
     # Construct rotation matrix (from wikipedia)
 
@@ -95,6 +105,16 @@ def calc_orbit():
     vel_A = np.dot(vel_A, rotmat)
     pos_B = np.dot(pos_B, rotmat)
     vel_B = np.dot(vel_B, rotmat)
+    
+    print "After:"
+    print "pos_A[0] = "+repr(pos_A[0])
+    print "pos_B[0] = "+repr(pos_B[0])
+    print "vel_A[0] = "+repr(vel_A[0])
+    print "vel_B[0] = "+repr(vel_B[0])
+    print "pos_A[50] = "+repr(pos_A[50])
+    print "pos_B[50] = "+repr(pos_B[50])
+    print "vel_A[50] = "+repr(vel_A[50])
+    print "vel_B[50] = "+repr(vel_B[50])
 
     km_to_arcsec = 1/1.49598e8/distance # convert km to arcsecond
 
@@ -112,7 +132,7 @@ def calc_orbit():
     data2[:,0] = data[:, 1]*365.25+2457000.0 #JD 
     data2[:,1] = pos_A[:, 1]*km_to_arcsec - pos_B[:, 1]*km_to_arcsec #Ythi=Xplot=RA  separation between two bodies based on primary being at 0,0 ["]
     data2[:,2] = pos_A[:, 0]*km_to_arcsec - pos_B[:, 0]*km_to_arcsec #Xthi=Yplot=Dec  separation between two bodies based on primary being at 0,0 ["]
-    data2[:,3] = -vel_B[:, 2]*1000.0 # RV of primary compared to center of mass origin[ m/s]
+    data2[:,3] = vel_B[:, 2]*1000.0 # RV of primary compared to center of mass origin[ m/s]
     
     data3 = np.zeros((pos_A.shape[0],7))
     data3[:,0] = data2[:, 0]

@@ -4321,6 +4321,489 @@ def singleParamReadAndPlotNEW(filename, paramColNum, subPlot, numBins, weight=Tr
     else:
         print 'Filename: '+filename+'\n Does NOT exist!!!'
 
+def singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight=True, confLevels=True, normalize=True, drawLine=False, nu=1):
+    """
+    This is the single column/param plotter for the new Master Hist plotter
+    that will call this in a loop to fill up a summary plot.  This is being
+    done as there are RAM issues of trying to load all the data for a particular
+    column and plot it all at once.  Thus, this one will load the data 
+    only one bin of the hist at a time to be the most efficient with the RAM.
+    
+    It is assumed that the chiSquareds in the data file are reduced, so the nu value will de-reduce 
+    them to calculated proper likelihoods for weighting.
+    
+    data file must have columns must be:
+        longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+        
+    All filename checks will occur in the Master function and are thus not needed here.
+    
+    All 3D data should have its chiSquared values all ready be reduced.
+    """
+    verboseInternal = False
+    # set y axis title
+    subPlot.axes.set_ylabel('Probability')
+    axs = subPlot.axis()
+    
+    ## First get ranges of param and ChiSquared values
+    if os.path.exists(filename):
+        print 'Opening and finding ranges for data in column # '+str(paramColNum)
+        
+        f = open(filename,'r')
+        plotFileTitle = f.readline()[:-5]
+        headings = f.readline()
+        dataMax = 0.1
+        dataMin = 10000000.0
+        chiSquaredMin = 1000000.0
+        bestDataVal = 0
+        line = 'asdf'
+        totalAccepted = 0
+        while line!='':
+            line = f.readline()
+            if line!='':
+                totalAccepted+=1
+                dataLineCols = line.split()
+                dataValue = float(dataLineCols[paramColNum])
+                chiSquared = float(dataLineCols[7])
+                if dataValue>dataMax:
+                    dataMax = dataValue
+                if dataValue<dataMin:
+                    dataMin = dataValue
+                if chiSquared<chiSquaredMin:
+                    chiSquaredMin = chiSquared
+                    bestDataVal = dataValue
+        f.close()
+        
+        ## set up axis of plot to match data
+        xAxisWidth = dataMax-dataMin
+        if verboseInternal:
+            print '\nOriginal values:'
+            print 'dataMin = ',dataMin
+            print 'dataMax = ',dataMax
+            print 'xAxisWidth = ',xAxisWidth
+        ##########################################
+        # special stuff for To plot
+        xSubtractValueString = ''
+        xSubtractValue = 0
+        if dataMin>2e6:
+            # assume the data is for time of periapsis
+            Divisor=1e9
+            if xAxisWidth>10:
+                Divisor = 10
+            if xAxisWidth>100:
+                Divisor = 100
+            if xAxisWidth>1000:
+                Divisor = 1000
+            if xAxisWidth>5000:
+                Divisor = 5000
+            if xAxisWidth>10000:
+                Divisor = 10000        
+            xSubtractValue = int(int(dataMin/Divisor)*Divisor)
+            xSubtractValueString = " + "+str(xSubtractValue)
+            xLabelStr = subPlot.axes.get_xlabel()
+            subPlot.axes.set_xlabel(xLabelStr+xSubtractValueString)
+            dataMin = dataMin-xSubtractValue
+            dataMax = dataMax-xSubtractValue
+            xAxisWidth = dataMax-dataMin
+            if verboseInternal:
+                print 'xLabelStr = ',xLabelStr
+                print '\nUpdated values:'
+                print 'Divisor = ',Divisor
+                print 'dataMin = ',dataMin
+                print 'dataMax = ',dataMax
+                print 'xAxisWidth = ',xAxisWidth
+                print 'xLabelStr+xSubtractValueString = ',xLabelStr+xSubtractValueString            
+        ###########################################
+        axisXmin = dataMin-(0.05*xAxisWidth)
+        axisXmax = dataMax+(0.05*xAxisWidth)
+        axisYmin = 0.0
+        axisYmax = 1.1
+        subPlot.axis([axisXmin, axisXmax, axisYmin, axisYmax])
+        
+        #print 'chiSquaredMin = ',chiSquaredMin
+        
+        ## set up data range using a small buffer
+        dataRange = (dataMax-dataMin)*1.05
+        dataMin2 = dataMin-(dataRange*0.025)
+        dataMax2 = dataMax+(dataRange*0.025)
+        binWidth = dataRange/numBins
+        if verboseInternal:
+            print 'binWidth = ',binWidth
+            print 'dataMin2 = ',dataMin2
+            print 'dataMax2 = ',dataMax2
+            
+        nextBinMin = dataMin2
+        nextBinMax = dataMin2+binWidth
+        binMins = []
+        binMaxs = []
+        binVals = []
+        binMids = []
+        binMidsALL = []
+        colors = []
+        RecPatches = []
+        
+        for bin in range(1,numBins+1):
+            if (totalAccepted>1e6):
+                print "Looping through to load up bin # "+str(bin)
+            # update bin min and maxs
+            binMins.append(nextBinMin)
+            binMaxs.append(nextBinMax)
+            binMids.append((nextBinMax+nextBinMin)/2.0)
+            #print 'currBinMin = ',currBinMin
+            #print 'currBinMax = ',currBinMax
+            binVal = 0
+            f = open(filename,'r')
+            plotFileTitle = f.readline()[:-5]
+            headings = f.readline()
+            #curBinChiSquaredMAX = 0.0
+            curBinChiSquaredMIN = 10000.0
+            line = 'asdf'
+            while line!='':
+                line = f.readline()
+                if line!='':
+                    dataLineCols = line.split()
+                    dataValue = float(dataLineCols[paramColNum])-xSubtractValue
+                    chiSquared = float(dataLineCols[7])
+                    timesBeenHere = float(dataLineCols[-1])
+                    
+                    #print 'chiSquared ',chiSquared #$$$$$$$$$$$
+                    likelihood = 0
+                    # see if value is inside bin, not including max
+                    if bin==(numBins):
+                        # take care of last bin including it's max value
+                        if (dataValue>=binMins[-1]) and (dataValue<=binMaxs[-1]):
+                            if weight:
+                                likelihood = math.exp(-nu*chiSquared/2.0)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                            else:
+                                likelihood = 1
+                            #if chiSquared>curBinChiSquaredMAX:
+                                #print 'updating chiSquaredMAX to ',chiSquared
+                                #curBinChiSquaredMAX = chiSquared 
+                            if chiSquared<curBinChiSquaredMIN:
+                                #print 'updating chiSquaredMIN to ',chiSquared
+                                curBinChiSquaredMIN = chiSquared 
+                    else:
+                        # still not last bin, so don't include max value
+                        if (dataValue>=binMins[-1]) and (dataValue<binMaxs[-1]):
+                            if weight:
+                                likelihood = math.exp(-nu*chiSquared/2.0)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                            else:
+                                likelihood = 1
+                            #if chiSquared>curBinChiSquaredMAX:
+                                #print 'updating chiSquaredMax to ',chiSquared
+                                #curBinChiSquaredMAX = chiSquared 
+                            if chiSquared<curBinChiSquaredMIN:
+                                #print 'updating chiSquaredMIN to ',chiSquared
+                                curBinChiSquaredMIN = chiSquared 
+                    # update bin value with which ever case was satisfied
+                    binVal = binVal + (likelihood*timesBeenHere)
+                    
+                    # add bin mid value to total list to find median later
+                    if likelihood>0.0:
+                        binMidsALL.append(binMids[-1])  ###$$$$$$$$$$$$$$ could be dangerous for long data sets!!!!!!!!!!!!!!!!!!!!!!
+            f.close()
+            
+            if confLevels:
+                #print 'curBinChiSquaredMax', curBinChiSquaredMax #$$$$$$$$$$$$$$$$$$
+                #print 'chiSquaredMin',chiSquaredMin  #$$$$$$$$$$$$$$$$$$
+                # is there anything in the bin?
+                if binVal>0.0:
+                    c = 'w'
+                    ## set color of bin depending on what conf level the data is in
+                    # Check if the data is in the 2sigma conf level
+                    if (chiSquaredMin+4.0)>curBinChiSquaredMIN:
+                        c = '0.8'
+                    # Check if the data is in 1sigma conf level
+                    if (chiSquaredMin+1.0)>curBinChiSquaredMIN:
+                        c = '0.5'
+                        
+                # nothing in bin, so make it white
+                else:
+                    c = 'w'
+            # don't do confLevels, so make them all blue
+            else:
+                c = 'b'     
+            
+            colors.append(c)
+            #print 'colors = '+repr(colors)#$$$$$$$$$$$$$$$$
+            binVals.append(binVal)
+            
+            nextBinMin = nextBinMax
+            nextBinMax = nextBinMax+binWidth
+            #print 'curr binVal = ',binVal
+            
+            #done looping through the data
+            #print 'final binVal = ',binVal
+            #print 'curBinChiSquaredMax = ',curBinChiSquaredMax
+        
+        # done looping through all bins
+        largestBinVal = np.max(binVals)
+        #print 'largestBinVal = ',largestBinVal
+        #print 'colors: '+repr(colors)
+        #print 'binMins: ',repr(binMins)
+        #print 'binMaxs: ',repr(binMaxs)
+        
+        binVals2 = []
+        ## convert the bin information into rectangular patches
+        for bin in range(0,len(binVals)):
+            x = binMins[bin]
+            y = 0.0
+            width = binWidth
+            if normalize:
+                try:
+                    height = float(binVals[bin])/float(largestBinVal)
+                except:
+                    #print 'Using default height as largestBinVal=0.'
+                    height = 1.0
+            else:
+                height = binVals[bin]
+            binVals2.append(height)
+            rec = patches.Rectangle((x,y), width, height, facecolor=colors[bin], fill=True, edgecolor='k')
+            #RecPatches.append(rec)
+            subPlot.add_patch(rec)
+        
+        # add a line to plot the top curves of the hist
+        if drawLine:
+            subPlot.plot(binMids,binVals2, 'r',linewidth=1)
+        # add a vertical line at the median value
+        med = np.median(binMidsALL)
+        subPlot.plot([med, med],subPlot.axes.get_ylim(),'k')
+        subPlot.plot([bestDataVal,bestDataVal],subPlot.axes.get_ylim(),'g')
+        # return fully updated sub plot
+        return subPlot
+    
+    else:
+        print 'Filename: '+filename+'\n Does NOT exist!!!'
+
+def dataReadAndPlot(filename, plotFilename, weight=True, confLevels=True, normalize=True, drawLine=False, nu=1, plot4x1=False):
+    """
+    Master plotting function for the singleParamReadAndPlot
+    
+    columns must be:
+     longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+        
+        file format must be:
+        
+        line1: title
+        line2: data headings
+        line3: space delimited data
+        line4: space delimited data
+        .
+        .
+        .
+    
+    All 3D data should have its chiSquared values all ready be reduced.
+    """
+    verbose = False
+    
+    numBins = 50
+    # record the time the chain started
+    startTime = timeit.default_timer()
+    
+    # check if the passed in value for filename includes '.txt'
+    if (filename[-4:]!='.txt' and filename[-4:]!='.dat'):
+        filename = filename+'.dat'
+        print ".dat was added to the end of the filename as it wasn't found to be in the original version"
+    
+    datadir = os.path.dirname(filename)
+    logFilename = os.path.join(datadir,'processManagerLogFile.txt')
+    log = open(logFilename,'a')
+    log.write('\n'+75*'#'+'\n Inside dataReadAndPlotNEW3 \n'+75*'#'+'\n')
+    
+    ## find number of RV datasets
+    if os.path.exists(filename):
+        f = open(filename,'r')
+        plotFileTitle = f.readline()[:-5]
+        headings = f.readline()
+        line = f.readline()
+        dataLineCols = line.split()
+        if len(line)>7:
+            numRVdatasets = len(dataLineCols) - 9
+        else:
+            line = f.readline()
+            dataLineCols = line.split()
+            if len(line)>7:
+                numRVdatasets = len(dataLineCols) - 9
+        s= "\nNumber of RV datasets found in dataReaderAndPlotNEW3 was "+str(numRVdatasets)+"\n"
+        print s
+        log.write(s+'\n')
+        f.close()
+        
+    # check if the passed in value for plotFilename includes '.png'
+    if '.png' not in plotFilename:
+        plotFilename = plotFilename+'.png'
+    
+    ## make an advanced title for plot from folder and filename
+    titleTop = os.path.dirname(plotFilename).split('/')[-1]
+    titleBtm = os.path.basename(plotFilename).split('.')[0]+" Best Fit Plot"
+    plotFileTitle = titleTop+'\n'+titleBtm
+
+    # Call the function to find the best orbit values for reference.
+    if verbose:
+        print '#'*50
+        genTools.bestOrbitFinder(filename, printToScreen=False, saveToFile=True)
+        print '#'*50
+    
+    s= '\nStarting to create summary plot\n'
+    print s
+    log.write(s+'\n')
+    
+    # Create empty figure to be filled up with plots
+    if not plot4x1:
+        fig = plt.figure(1, figsize=(25,10) ,dpi=300) 
+    else:
+        fig = plt.figure(1, figsize=(15,20) ,dpi=300)
+        
+    # Create sub plot and fill it up for the Inclinations
+    if not plot4x1:
+        subPlot = fig.add_subplot(231)
+        paramColNum = 4
+        subPlot.axes.set_xlabel('Inclination [deg]')
+        subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+        s= "Done plotting inclination_degsAlls"
+        print s
+        log.write(s+'\n')
+        
+    # Create sub plot and fill it up for the Longitude of Ascending Node
+    if not plot4x1:
+        subPlot = fig.add_subplot(232)
+        paramColNum = 0
+        subPlot.axes.set_xlabel('Longitude of Ascending Node [deg]')
+        subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+        s= "Done plotting longAN_degsAlls"
+        print s
+        log.write(s+'\n')
+        
+    # Create sub plot and fill it up for the Argument of Perigie
+    if not plot4x1:
+        subPlot = fig.add_subplot(233)
+    else:
+        subPlot = fig.add_subplot(312)
+    paramColNum = 5
+    subPlot.axes.set_xlabel('Argument of Perigie [deg]')
+    subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+    s= "Done plotting argPeri_degsAlls"
+    print s
+    log.write(s+'\n')
+    
+    # Create sub plot and fill it up for the e
+    if not plot4x1:
+        subPlot = fig.add_subplot(234)
+    else:
+        subPlot = fig.add_subplot(311)
+    paramColNum = 1
+    subPlot.axes.set_xlabel('e')
+    subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+    s= "Done plotting esAlls"
+    print s
+    log.write(s+'\n')
+    
+    # Create sub plot and fill it up for the Period
+    if not plot4x1:
+        subPlot = fig.add_subplot(235)
+        paramColNum = 3
+        subPlot.axes.set_xlabel('Period [Years]')
+        subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+        s= "Done plotting periodsAlls"
+        print s
+        log.write(s+'\n')
+        
+#    # Create sub plot and fill it up for the Semi-major
+#    subPlot = fig.add_subplot(336)
+#    paramColNum = 6
+#    subPlot.axes.set_xlabel('Semi-major Axis [AU]')
+#    subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+#    print "Done plotting Semi-major Axis"
+    
+    # Create sub plot and fill it up for the Time of last Periapsis
+    if not plot4x1:
+        subPlot = fig.add_subplot(236)
+    else:
+        subPlot = fig.add_subplot(313)
+    paramColNum = 2
+    subPlot.axes.set_xlabel('Time of last Periapsis [JD]')
+    subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+    s= "Done plotting TsAlls"
+    print s
+    log.write(s+'\n')
+        
+    # Save file 
+    plt.savefig(plotFilename, dpi=300, orientation='landscape')
+    s= 'Summary figure saved to '+plotFilename
+    print s
+    log.write(s+'\n') 
+    plt.close()
+    
+    ## Create a second figure of RV offsets. ####
+    try:
+        # Create empty figure to be filled up with plots
+        # Create sub plot and fill it up for the Semi-major
+        if numRVdatasets==1:
+            fig = plt.figure(2, figsize=(35,15) ,dpi=250)
+        elif numRVdatasets==2:
+            fig = plt.figure(2, figsize=(35,22) ,dpi=250)
+        elif numRVdatasets==3:
+            fig = plt.figure(2, figsize=(35,30) ,dpi=250)
+        
+        
+        if numRVdatasets>=1:
+            # Create sub plot and fill it up for the Semi-major
+            if numRVdatasets==1:
+                subPlot = fig.add_subplot(111)
+            elif numRVdatasets==2:
+                subPlot = fig.add_subplot(211)
+            elif numRVdatasets==3:
+                subPlot = fig.add_subplot(311)
+            paramColNum = 8
+            subPlot.axes.set_xlabel('RV offset 1 [m/s]')
+            subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+            s= "Done plotting RV offsets for dataset 1"
+            print s
+            log.write(s+'\n')
+        if numRVdatasets>=2:
+            # Create sub plot and fill it up for the Semi-major
+            if numRVdatasets==2:
+                subPlot = fig.add_subplot(212)
+            elif numRVdatasets==3:
+                subPlot = fig.add_subplot(312)
+            paramColNum = 9
+            subPlot.axes.set_xlabel('RV offset 2 [m/s]')
+            subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+            s= "Done plotting RV offsets for dataset 2"
+            print s
+            log.write(s+'\n')
+        if numRVdatasets==3:
+            # Create sub plot and fill it up for the Semi-major
+            subPlot = fig.add_subplot(313)
+            paramColNum = 10
+            subPlot.axes.set_xlabel('RV offset 3 [m/s]')
+            subPlot = singleParamReadAndPlot(filename, paramColNum, subPlot, numBins, weight, confLevels, normalize, drawLine, nu)
+            s= "Done plotting RV offsets for dataset 3"
+            print s
+            log.write(s+'\n')  
+        # Save file 
+        plotFilename2 = plotFilename[0:-4]+'-RVoffsets.png'
+        plt.savefig(plotFilename2, dpi=300, orientation='landscape')
+        s= 'RV offsets summary figure saved to '+plotFilename2
+        print s
+        log.write(s+'\n') 
+        plt.close()
+    except:
+        plt.close()
+        s= 'No RV offsets to plot'
+        print s
+        log.write(s+'\n')
+        
+    # record the time the chain finished and print
+    endTime = timeit.default_timer()
+    totalTime = (endTime-startTime) # in seconds
+    totalTimeString = genTools.timeString(totalTime)
+    s= '\n\ndataReadAndPlotNEW3: Plotting took '+totalTimeString+' to complete.\n'
+    print s
+    log.write(s+'\n')
+    log.write('\n'+75*'#'+'\n Leaving dataReadAndPlotNEW3 \n'+75*'#'+'\n')
+    log.close()
+
+
 def dataReadAndPlotNEW3(filename, plotFilename, weight=True, confLevels=True, normalize=True, drawLine=False, nu=1, plot4x1=False):
     """
     Master plotting function for the singleParamReadAndPlotNEW

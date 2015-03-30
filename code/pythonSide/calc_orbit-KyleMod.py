@@ -32,7 +32,7 @@ def calc_orbit():
     Omega = 70*np.pi/180 # Longitude of ascending node
     omega = 50*np.pi/180 # Argument of periastron
     i = 40*np.pi/180 # Inclination
-    Npts = 1000
+    Npts = 10000
 
     G = 6.673e-8 #cgs
     mu = G*M_primary*1.989e33*(1 + 1./massratio) #gravitational parameter
@@ -92,23 +92,26 @@ def calc_orbit():
     if True:
         print "\n"+"*"*75+"\nbefore rotation:"
         print "t[o] = "+str(t[0])
-        print "pos_A[0:10] = "+repr(pos_A[0:10])
-        #print "pos_B[0] = "+repr(pos_B[0])
-        print "vel_A[0:10] = "+repr(vel_A[0:10])
-        #print "vel_B[0] = "+repr(vel_B[0])
-        #print "\npos_A[1] = "+repr(pos_A[1])
-        #print "pos_B[1] = "+repr(pos_B[1])
-        #print "vel_A[1] = "+repr(vel_A[1])
-        #print "vel_B[1] = "+repr(vel_B[1])
-        #print "\npos_A[50] = "+repr(pos_A[50])
-        #print "pos_B[50] = "+repr(pos_B[50])
-        #print "vel_A[50] = "+repr(vel_A[50])
-        #print "vel_B[50] = "+repr(vel_B[50])
-        #print "\npos_A[-1] = "+repr(pos_A[-1])
-        #print "pos_B[-1] = "+repr(pos_B[-1])
-        #print "vel_A[-1] = "+repr(vel_A[-1])
-        #print "vel_B[-1] = "+repr(vel_B[-1])+"\n"+"*"*75
-
+        if True:
+            print "pos_A[0:10] = "+repr(pos_A[0:10])
+            print "vel_A[0:10] = "+repr(vel_A[0:10])
+        else:
+            print "pos_A[0] = "+repr(pos_A[0])
+            print "pos_B[0] = "+repr(pos_B[0])
+            print "vel_A[0] = "+repr(vel_A[0])
+            print "vel_B[0] = "+repr(vel_B[0])
+            print "\npos_A[1] = "+repr(pos_A[1])
+            print "pos_B[1] = "+repr(pos_B[1])
+            print "vel_A[1] = "+repr(vel_A[1])
+            print "vel_B[1] = "+repr(vel_B[1])
+            print "\npos_A[50] = "+repr(pos_A[50])
+            print "pos_B[50] = "+repr(pos_B[50])
+            print "vel_A[50] = "+repr(vel_A[50])
+            print "vel_B[50] = "+repr(vel_B[50])
+            print "\npos_A[-1] = "+repr(pos_A[-1])
+            print "pos_B[-1] = "+repr(pos_B[-1])
+            print "vel_A[-1] = "+repr(vel_A[-1])
+            print "vel_B[-1] = "+repr(vel_B[-1])+"\n"+"*"*75
     # Construct rotation matrix (from wikipedia)
 
     x1 = np.cos(Omega)*np.cos(omega) - np.sin(Omega)*np.cos(i)*np.sin(omega)
@@ -134,11 +137,10 @@ def calc_orbit():
     if True:
         print "\n"+"*"*75+"\nAfter rotation:"
         print "t[o] = "+str(t[0])
-        print "pos_A[0:10] = "+repr(pos_A[0:10])
-        #print "pos_B[0] = "+repr(pos_B[0])
-        print "vel_A[0:10] = "+repr(vel_A[0:10])
-        print "t[7]*365.24 = "+str(t[7]*365.24)
-        if False:
+        if True:
+            print "pos_A[0:10] = "+repr(pos_A[0:10])
+            print "vel_A[0:10] = "+repr(vel_A[0:10])
+        else:
             print "pos_A[0] = "+repr(pos_A[0])
             print "pos_B[0] = "+repr(pos_B[0])
             print "vel_A[0] = "+repr(vel_A[0])

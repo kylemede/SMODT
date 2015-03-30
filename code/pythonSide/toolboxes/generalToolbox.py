@@ -84,7 +84,7 @@ def eccArgPeri2ToTcCalc(e, period, argPeri_deg, To, Tc=0):
     :rtype: list of floats
     """
     verbose = False
-    backHalf = False
+    backHalf = True
     
     if (verbose):
         print "\nInputs to eccArgPeri2ToTcCalc:"

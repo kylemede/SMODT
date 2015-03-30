@@ -93,7 +93,7 @@ vector<double> VRcalcStarStar::multiEpochCalc()
 	vector<double> ResidualVels_s;
 	generalTools GT;
 
-	if (true)
+	if (false)
 		argPeri_deg_s = argPeri_deg_s+180.0;
 
 	//instantiate and load up constant values for both TA and VR calc inputs

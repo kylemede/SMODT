@@ -75,7 +75,7 @@ eccArgPeri2ToTcType generalTools::eccArgPeri2ToTcCalc(eccArgPeri2ToTcType EATT)
 	 * Center transit and Time of Last Periapsis.
 	 */
 	bool verbose = false;
-	bool backHalf = false;
+	bool backHalf = true;
 
 	if (EATT.e==0.0)
 	{

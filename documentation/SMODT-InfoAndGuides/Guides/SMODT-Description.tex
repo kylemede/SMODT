@@ -33,10 +33,10 @@ These are the outlines of the functions that act as the models to calculate the 
 There are both Python and C++ versions of these functions/models.  The bulk of the multi-process and file management,  post analysis and plotting of the results is done in Python while the computational stages of the simulation are done in C++ to take advantage of its speed.  A more detailed description of these issues and the simulator will be in another document to be written later.  All three astrometry models described here have been tested and produce the same resulting values/fit to within approximately 10 significant figures, well past the accuracy limits placed on the parameters by their associated 68\% or 95\% errors.
 
 %-----------------------------------------------------------
-\citet{batten}
-\pagebreak
-\bibliography{SMODT-citations}
-\clearpage
+%\citet{batten}
+%\pagebreak
+%\bibliography{SMODT-citations}
+%\clearpage
 %-----------------------------------------------------------
 \pagebreak
 \subsection{Measured Astrometric Values}\label{sec:MeasAstrometry}
@@ -560,7 +560,7 @@ T_o &= T_{ij}-\Delta t
 
 Knowing the primary object is just 180$^{\circ}$ out of phase with the companion, these equations can be used for the primary replacing $\theta_p$ for $\theta_s$ in Equation (\ref{eq:one}):
 \begin{equation}
-\theta_p = \frac{\pi}{2.0}-\omega+\pi
+\theta_p = 90^{\circ}-\omega+180^{\circ}
 \end{equation}
 
 
@@ -580,10 +580,10 @@ To take into account that $T_{ij}$ can occur before or after $T_{o}$ in a given 
 
 these simplify to:
 \begin{equation}\label{eq:ToTcCorrections1b}
-\Delta t = \left\{ \begin{array}{l l} \Delta t-P& \quad \text{ $\omega$ $>$ 90$^{\circ}$, (T$_o$ $>$ T$_{ij}$)}\\  \Delta t& \quad \text{ otherwise , (T$_o$ $<$ T$_{ij}$)} \end{array} \right.
+\Delta t = \left\{ \begin{array}{l l} \Delta t-P& \quad \text{ $\omega$ $>$ 90$^{\circ}$, (T$_o$ $>$ T$_{ij}$)}\\  \Delta t& \quad \text{ otherwise, (T$_o$ $<$ T$_{ij}$)} \end{array} \right.
 \end{equation}
 
-When considering the values for the primary object, these conditionals become:
+When considering the values for the primary object (triggered with the `backhalf' boolean inside the function), these conditionals become:
 
 \begin{equation}\label{eq:ToTcCorrections2a}
 \Delta t = \left\{ \begin{array}{l l} \Delta t-P& \quad \text{ $\omega$ in [-180$^{\circ}$,270$^{\circ}$], (T$_o$ $>$ T$_{ij}$)}\\  \Delta t& \quad \text{ $\omega$ in [ 270$^{\circ}$,360$^{\circ}$], (T$_o$ $<$ T$_{ij}$)} \end{array} \right.
@@ -591,13 +591,16 @@ When considering the values for the primary object, these conditionals become:
 
 simplifying to:
 \begin{equation}\label{eq:ToTcCorrections2b}
-\Delta t = \left\{ \begin{array}{l l} \Delta t-P& \quad \text{ $\omega$ $>$ 270$^{\circ}$, (T$_o$ $>$ T$_{ij}$)}\\  \Delta t& \quad \text{ otherwise , (T$_o$ $<$ T$_{ij}$)} \end{array} \right.
+\Delta t = \left\{ \begin{array}{l l} \Delta t-P& \quad \text{ $\omega$ $>$ 270$^{\circ}$, (T$_o$ $>$ T$_{ij}$)}\\  \Delta t& \quad \text{ otherwise, (T$_o$ $<$ T$_{ij}$)} \end{array} \right.
 \end{equation}
 
-Therefore, with these equations, one only needs to step through the parameter space along one of them and calculate the other from it along with {\it e}, P and $\omega$.
+Therefore, with these equations, one only needs to step through the parameter space along one of them and calculate the other from it, along with {\it e}, P and $\omega$.
+
 
 %-------------------------------------------------------------------------------------------------------------
 \subsection{Differences Between Investigating Stellar or Planetary Companion}\label{sec:omegaIssues}
+
+NOTE: my recent investigations have found below to be essentially backwards!!! ie. put omega into DI and omega+180 into RV equations, using standard omega to calculate Tc !!!
 
 The key difference when investigating a planetary compared to that of a stellar companion is the values of {\it a} and $\omega$ used in the astrometry model.  As discussed in \citet{Shulze-Hartung} and \citet{wright2009}, when the companion is a planet, the values of for the star are used, ie $a_1$ and $\omega_1$.  This is because the method was originally developed to find the orbit of the primary about the system's center of mass as the secondary was not seen.  More recently though, in most cases the companion is seen and the astrometric values are for the location of the secondary relative to the primary instead of the center of mass.  In these cases the apparent orbit is for the combined system and the values input into the astrometric model are $a_1+a_2$ and $\omega_2+\pi$, using the convention $\omega_1$ = $\omega_2+\pi$.
 

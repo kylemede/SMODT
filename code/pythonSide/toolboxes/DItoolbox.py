@@ -459,15 +459,9 @@ def ENtoPASA(E, E_error, N, N_error):
     PA and error will be in [deg], with SA and error in ["]
     :returns: (PA,PA_error,SA,SA_error)
     """
-    PA = math.degrees(np.arctan2(np.array(E),np.array(N)))
-#     # correction factors for flaws of atan
-#     #NOTE: this issue could be cured with proper use of np.arctan2(x1,x2), where it would normally be atan(x1/x2).
-#     if (RA<0.0)and(DEC>0.0):
-#         PA = 360.0+PA
-#     elif DEC<0.0:
-#         PA = 180.0+PA
-
-    # arctan2 allows negative output angles, so make PA a positive angle if not one   
+    PA = math.degrees(math.atan2(E,N))
+    #NOTE: both math.atan2 and np.arctan2 tried with same results, both produce negatives rather than continuous 0-360 
+    #thus, must correct for negative outputs
     if PA<0:
         PA = PA+360.0
     

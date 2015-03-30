@@ -51,7 +51,7 @@ def calc_orbit():
     print "inclination = "+str(i*180.0/np.pi)
     print "Mass 1 = "+str(M_primary)
     print "Mass 2 = "+str(M_primary/massratio)
-    print "distance in PC = "+str(distance)
+    print "distance in PC = "+str(distance)+"\n"
     
     # Positions of both components in km relative to center of mass
 
@@ -65,23 +65,49 @@ def calc_orbit():
 
     vel_A = pos_A.copy()
     vel_A = (pos_A[2:] - pos_A[:-2])/(t[2] - t[0])/(86400*365.24)
+    if False:
+        vel_A2 = pos_A.copy()
+        vel_A2 = (pos_A[1:] - pos_A[:-1])/(t[1] - t[0])/(86400*365.24)
+        print "pos_A = "+repr(pos_A[0:10])+"\n"+repr(pos_A[-10:])+"\n"
+        print "Vel_A before = "+repr(vel_A[0:10])+"\n"+repr(vel_A[-10:])+"\n"
+        print "Vel_A after = "+repr(vel_A2[0:10])+"\n"+repr(vel_A2[-10:])+"\n"
+        print "pos_A[2]-pos_A[0] = "+str(pos_A[2]-pos_A[0])+", t[2] - t[0] = "+str(t[2] - t[0])
+        print "(pos_A[2]-pos_A[0])/(t[2] - t[0])/(86400*365.24) = "+str((pos_A[2]-pos_A[0])/(t[2] - t[0])/(86400*365.24))
+        print "\npos_A[1]-pos_A[0] = "+str(pos_A[1]-pos_A[0])+", t[1] - t[0] = "+str(t[1] - t[0])
+        print "(pos_A[1]-pos_A[0])/(t[1] - t[0])/(86400*365.24) = "+str((pos_A[1]-pos_A[0])/(t[1] - t[0])/(86400*365.24))
+    print "(t[2] - t[0])*365.24 = "+str((t[2] - t[0])*365.24)
+    print "(t[1] - t[0])*365.24 = "+str((t[1] - t[0])*365.24)
     pos_A = pos_A[1:-1]
 
     vel_B = pos_B.copy()
     vel_B = (pos_B[2:] - pos_B[:-2])/(t[2] - t[0])/(86400*365.24)
     pos_B = pos_B[1:-1]
-
-    t = t[1:-1]
     
-    print "before:"
-    print "pos_A[0] = "+repr(pos_A[0])
-    print "pos_B[0] = "+repr(pos_B[0])
-    print "vel_A[0] = "+repr(vel_A[0])
-    print "vel_B[0] = "+repr(vel_B[0])
-    print "pos_A[50] = "+repr(pos_A[50])
-    print "pos_B[50] = "+repr(pos_B[50])
-    print "vel_A[50] = "+repr(vel_A[50])
-    print "vel_B[50] = "+repr(vel_B[50])
+    if False:
+        print repr(t[0:10])+"\n"+repr(t[-10:])
+    t = t[1:-1]
+    if False:
+        print "\n"+repr(t[0:10])+"\n"+repr(t[-10:])
+    
+    if True:
+        print "\n"+"*"*75+"\nbefore rotation:"
+        print "t[o] = "+str(t[0])
+        print "pos_A[0:10] = "+repr(pos_A[0:10])
+        #print "pos_B[0] = "+repr(pos_B[0])
+        print "vel_A[0:10] = "+repr(vel_A[0:10])
+        #print "vel_B[0] = "+repr(vel_B[0])
+        #print "\npos_A[1] = "+repr(pos_A[1])
+        #print "pos_B[1] = "+repr(pos_B[1])
+        #print "vel_A[1] = "+repr(vel_A[1])
+        #print "vel_B[1] = "+repr(vel_B[1])
+        #print "\npos_A[50] = "+repr(pos_A[50])
+        #print "pos_B[50] = "+repr(pos_B[50])
+        #print "vel_A[50] = "+repr(vel_A[50])
+        #print "vel_B[50] = "+repr(vel_B[50])
+        #print "\npos_A[-1] = "+repr(pos_A[-1])
+        #print "pos_B[-1] = "+repr(pos_B[-1])
+        #print "vel_A[-1] = "+repr(vel_A[-1])
+        #print "vel_B[-1] = "+repr(vel_B[-1])+"\n"+"*"*75
 
     # Construct rotation matrix (from wikipedia)
 
@@ -100,21 +126,35 @@ def calc_orbit():
     rotmat = np.asarray([[x1, x2, x3], [y1, y2, y3], [z1, z2, z3]])
 
     # Rotate positions, velocities
-
     pos_A = np.dot(pos_A, rotmat)
     vel_A = np.dot(vel_A, rotmat)
     pos_B = np.dot(pos_B, rotmat)
     vel_B = np.dot(vel_B, rotmat)
     
-    print "After:"
-    print "pos_A[0] = "+repr(pos_A[0])
-    print "pos_B[0] = "+repr(pos_B[0])
-    print "vel_A[0] = "+repr(vel_A[0])
-    print "vel_B[0] = "+repr(vel_B[0])
-    print "pos_A[50] = "+repr(pos_A[50])
-    print "pos_B[50] = "+repr(pos_B[50])
-    print "vel_A[50] = "+repr(vel_A[50])
-    print "vel_B[50] = "+repr(vel_B[50])
+    if True:
+        print "\n"+"*"*75+"\nAfter rotation:"
+        print "t[o] = "+str(t[0])
+        print "pos_A[0:10] = "+repr(pos_A[0:10])
+        #print "pos_B[0] = "+repr(pos_B[0])
+        print "vel_A[0:10] = "+repr(vel_A[0:10])
+        print "t[7]*365.24 = "+str(t[7]*365.24)
+        if False:
+            print "pos_A[0] = "+repr(pos_A[0])
+            print "pos_B[0] = "+repr(pos_B[0])
+            print "vel_A[0] = "+repr(vel_A[0])
+            print "vel_B[0] = "+repr(vel_B[0])
+            print "\npos_A[1] = "+repr(pos_A[1])
+            print "pos_B[1] = "+repr(pos_B[1])
+            print "vel_A[1] = "+repr(vel_A[1])
+            print "vel_B[1] = "+repr(vel_B[1])
+            print "\npos_A[50] = "+repr(pos_A[50])
+            print "pos_B[50] = "+repr(pos_B[50])
+            print "vel_A[50] = "+repr(vel_A[50])
+            print "vel_B[50] = "+repr(vel_B[50])
+            print "\npos_A[-1] = "+repr(pos_A[-1])
+            print "pos_B[-1] = "+repr(pos_B[-1])
+            print "vel_A[-1] = "+repr(vel_A[-1])
+            print "vel_B[-1] = "+repr(vel_B[-1])+"\n"+"*"*75
 
     km_to_arcsec = 1/1.49598e8/distance # convert km to arcsecond
 
@@ -129,7 +169,7 @@ def calc_orbit():
     data[:, 7] = vel_B[:, 2] #8. radial velocity of primary (km/s)
     
     data2 = np.zeros((pos_A.shape[0],4))
-    data2[:,0] = data[:, 1]*365.25+2457000.0 #JD 
+    data2[:,0] = data[:, 1]*365.24+2457000.0 #JD 
     data2[:,1] = pos_A[:, 1]*km_to_arcsec - pos_B[:, 1]*km_to_arcsec #Ythi=Xplot=RA  separation between two bodies based on primary being at 0,0 ["]
     data2[:,2] = pos_A[:, 0]*km_to_arcsec - pos_B[:, 0]*km_to_arcsec #Xthi=Yplot=Dec  separation between two bodies based on primary being at 0,0 ["]
     data2[:,3] = vel_B[:, 2]*1000.0 # RV of primary compared to center of mass origin[ m/s]
@@ -137,10 +177,11 @@ def calc_orbit():
     data3 = np.zeros((pos_A.shape[0],7))
     data3[:,0] = data2[:, 0]
     for i in range(0,pos_A.shape[0]):
+        # convert x,y to SA and PA with fake errors
         (data3[i,1],data3[i,2],data3[i,3],data3[i,4]) = diTools.ENtoPASA(data2[i,1], data2[i,1]*0.05, data2[i,2], data2[i,2]*0.05)
         
     data3[:,5] = data2[:,3]
-    data3[:,6] = data2[:,3]*0.05
+    data3[:,6] = data2[:,3]*0.05 #adding in a fake error
     
     #output data3 has format
     #1. JD

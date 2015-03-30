@@ -110,6 +110,10 @@ def eccArgPeri2ToTcCalc(e, period, argPeri_deg, To, Tc=0):
         top = np.sqrt(1.0-e)*np.sin(TA_s_rad/2.0)   
         btm = np.sqrt(1.0+e)*np.cos(TA_s_rad/2.0) 
         ATAN_rad = math.atan2(top, btm)
+        #NOTE: both math.atan2 and np.arctan2 tried with same results, both produce negatives rather than continuous 0-360 
+        #thus, must correct for negative outputs
+        if ATAN_rad<0:
+            ATAN_rad = ATAN_rad+(2.0*np.pi)
         E_s_rad = ATAN_rad*2.0
         M_s_rad = E_s_rad-e*np.sin(E_s_rad)
         delta_t = (M_s_rad*period*365.242)/(2.0*pi)
@@ -2432,25 +2436,6 @@ def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
     top = (math.cos(E_latest)-e)
     btm = (1.0-e*math.cos(E_latest))
     TA_rad  = math.acos(top/btm) 
-    
-        
-#    if E_latest<0.0:
-#        #print 'top is negative'
-#        TA_rad = -1.0*TA_rad
-#    if False:
-#        print "\nTA_rad calc failed!"
-#        print "E_latest = ",E_latest
-#        print "e = ",e
-#    
-#    if E_latest>(2.0*pi):
-#        # convert E to be inside one orbit (ie. under 2*PI)
-#        numCirclesD = E_latest/(2.0*pi)
-#        numCirclesI = int(numCirclesD)
-#        E_latest_oneCircle  = E_latest-numCirclesI*2.0*pi
-#        if verbose: 
-#            print "E_latest found to be "+str(numCirclesI)+" times over 2pi, so made E_latest_circle = "+str(math.degrees(E_latest_oneCircle))
-#    else:
-#        E_latest_oneCircle  = E_latest
 
     if (E_latest>pi) or (E_latest<0):
         # this is to take care of the silly fact that after E=180deg,
@@ -2464,21 +2449,6 @@ def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
         if verbose:
             print "E_latest found to be over PI, so changed TA from "+str(math.degrees(TA_rad_orig))+" to "+str(math.degrees(TA_rad))
         
-    #TA_deg = math.degrees(TA_rad)#$$$$$$$$$$$$$$$$
-    #print 'epoch = '+str(t)+', T = '+str(T)+', timeDiff_days = '+str(timeDiff_days)+', numPeriodDiff = '+str(int((t-T)/period_days))+', TA_deg = '+str(TA_deg)#$$$$$$$$$$$$$$$$$$$$$$$$
-#    ## Calculate TA in another way    
-#    x = ((1.0-e**2.0)**(1.0/2.0))*math.cos(E_latest/2.0)
-#    y = ((1.0+e**2.0)**(1.0/2.0))*math.sin(E_latest/2.0)
-#    TA_rad2 = 2.0*math.atan2(y, x)
-#    #print 'TA_2 = '+str(math.degrees(TA_rad2))
-#    
-#    print 'TA = ',math.degrees(TA_rad)
-#    print 'TA2 = ',math.degrees(TA_rad2)
-    
-#    if True:
-#        if t<2452381:
-#            print "epoch = "+str(t)+", To = "+str(T)+", Tc = "+str(T_center)+", e = "+str(e)+", period = "+str(period)+ ", E = "+str(math.degrees(E_latest))+", TA = "+str(math.degrees(TA_rad))
-    
     return (n, M_deg, E_latest_deg,TA_rad)
 
 def timeString(duration):

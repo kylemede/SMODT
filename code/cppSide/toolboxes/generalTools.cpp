@@ -166,6 +166,8 @@ eccArgPeri2ToTcType generalTools::eccArgPeri2ToTcCalc(eccArgPeri2ToTcType EATT)
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		ATAN_rad = atan2(top,btm);
+		if (ATAN_rad<0)
+			ATAN_rad +=2.0*PI;
 		double E_s_rad = ATAN_rad*2.0;
 		double M_s_rad = E_s_rad-EATT.e*sin(E_s_rad);
 		double delta_t = (M_s_rad*EATT.period*365.242)/(2.0*PI);

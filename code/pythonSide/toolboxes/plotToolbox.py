@@ -2363,10 +2363,13 @@ def mcmcProgressPlotter(filenames,rootPlotFilename,nu=1, plot4x1=False,TcSteppin
         #call plotter for this file
         progessPlotterSingleFile(filename, plotFilename, nu=nu, plot4x1=plot4x1,TcStepping=TcStepping)
 
-def diPlotterTester(outputDatafile=''):
+def variousPlotTester(outputDatafile=''):
     """
+    NOTE: not a standard function.  A manual/custom function used at times.  
+    
     A function to allow custom inputs to orbitEllipsePlotter for testing or 
     producing one off plots for a particular set of orbital Elements.
+    There is also some code here for producing a scatter plot of 2 variables.
     """
     
     sysDatafilename = os.path.join("/mnt/Data1/Todai_Work/Dropbox/workspace/Binary-project/SimSettings_and_InputData",'SystemData.txt')
@@ -2462,7 +2465,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     prepend = ""
     if outputDatafile=='':
         #baseDir = "/mnt/Data1/Todai_Work/Dropbox/EclipseWorkspace/SMODT/settings_and_InputData"
-        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-RVonly-VeryTight-PrimaryRVs-test--2-Thousand-in_Total/outputData-ALL.dat" 
+        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-RVonly-Tight-PrimaryRVs-argPeriPlus180--70-Million-in_Total/outputData-ALL.dat" 
         baseDir = os.path.dirname(outputDatafile)
         prepend = "FakeData_"
     elif outputDatafile!="":
@@ -2531,8 +2534,8 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
             inc = bestOrbit[5]
             argPeri_deg = bestOrbit[6]+180.0
             a = bestOrbit[7]
-            T = bestOrbit[2]
-            Tc = bestOrbit[3]
+            T = 2457000#bestOrbit[2]
+            Tc = 0#bestOrbit[3]
             K = bestOrbit[8]
             if paramSettingsDict["DIonly"]==False:                
                 RVoffsets=bestOrbit[9]
@@ -2656,9 +2659,20 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         T = [T]
     if type(Tc)!=list:
         Tc = [Tc]
+    # correct Tc if somehow still zero
+    TcUse = []
+    for i in range(0,len(Tc)):
+        if Tc[i]==0:
+            (To,Tcent) = genTools.eccArgPeri2ToTcCalc(e[i], period[i], argPeri_deg[i], T[i], Tc=0)    
+            TcUse.append(Tcent)
+        else:
+            TcUse.append(Tc[i])
+    print "Tc = "+repr(Tc)
+    print "TcUse = "+repr(TcUse)
+    Tc = TcUse
+    
     if type(K)!=list:
         K = [K]
-    
     if type(RVoffsets)!=list:
         RVoffsets = [RVoffsets]
     
@@ -2673,18 +2687,12 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     if type(RVs[0])!=list:
         RVs = [RVs]
         
+        
     Mass1 = sysDataDict['Mass1'] 
     simulate_StarStar = paramSettingsDict["simulate_StarStar"]
     simulate_StarPlanet = paramSettingsDict["simulate_StarPlanet"]
     if (simulate_StarStar is True) and(simulate_StarPlanet is True):
         print "Error: simulate_StarStar and simulate_StarPlanet can NOT BOTH be True!"
-#    if simulate_StarPlanet:            
-#        T_center = sysDataDict['planet_Tc']
-#        if T_center==0:
-#            (To,Tc) = eccArgPeri2ToTcCalc(e[0], period[0], argPeri_deg[0], T[0], Tc=0)
-#            T_center = Tc
-#    else:
-#        T_center = T[0]
 
     if plotFilename!='':
         datadir = os.path.dirname(plotFilename)
@@ -2721,6 +2729,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         phases2 = epochsToPhases(RV_epochsIN2,Tc[orb],period[orb], verbose=False, halfOrbit=True) 
         #phases2 = epochsToPhases(RV_epochsIN2,T[orb],period[orb], verbose=False, halfOrbit=True)         
         phases3.append(phases2)   
+    #print "phases3 = "+repr(phases3)
     
     RVsIN = RVs
     RVsOUT = []
@@ -2943,7 +2952,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                 #print 'epoch = ',epochs[epoch]
                 s=s+ '\nchiSquaredCurr = '+str(chiSquaredCurr)
                 s=s+ ', chiSquaredTot = '+str(chiSquaredTot)
-                log.write(s+'\n')
+                if False:
+                    log.write(s+'\n')
                 if False:
                     print s
             nuRV_cur = nuRV*(float(len(rvs))/float(numEpochsTotal))
@@ -3006,7 +3016,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                     if planetVRs3[orb][dataset][epoch]!=0:
                         s = s+str(planetVRs3[orb][dataset][epoch])+'\n'
         s =s+ '\n'+'*'*50
-        log.write(s+'\n')
+        if False:
+            log.write(s+'\n')
         if verbose:
             print s
         
@@ -3018,7 +3029,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                 for epoch in range(0,len(RVsOUT[dataset])): 
                     if starVRs3[orb][dataset][epoch]!=0:
                         s = s+str(starVRs3[orb][dataset][epoch])+'\n'
-        log.write(s+'\n')
+        if False:
+            log.write(s+'\n')
         if verbose:
             print s
         

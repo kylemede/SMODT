@@ -454,8 +454,9 @@ n = \frac{2\pi}{period}
 
 Use the Mean Motion (n), time of current epoch (t) and time of last periapsis (T) to get the Mean Anomaly (M):
 \begin{equation}\label{eq:4.1.2}
-M = n \bigg( \frac{(t-T)}{365.25} \bigg)
+M = n \bigg( \frac{(t-T)}{365.25} + phase\bigg)
 \end{equation}
+where $phase$ is the unit less phase offset, $(Tc-T)/365.25$, required when calculating the True Anomaly for Radial Velocity fitting to take into account that the velocity is zero at Tc, not T.  The phase is set to zero for Astrometry fitting.
 
 The relation between the Eccentric Anomaly (E) and the Mean Anomaly is given by Kepler's equation, and is a transcendental equation that must be solved using numerical methods.
 \begin{equation}\label{eq:4.1.3}

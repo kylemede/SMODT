@@ -1044,7 +1044,7 @@ void simAnealOrbFuncObj::simulator()
 			if (argPeri_deg_proposed==-90.0)
 				argPeri_deg_proposed = 90.0;
 		}
-		if (SSO.DIonly==false)
+		if (false)//(SSO.DIonly==false)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$BAD HACK, FIX ME!!!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		{
 			if (TMAX!=0)
 			{

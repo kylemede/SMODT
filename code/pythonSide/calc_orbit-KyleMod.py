@@ -33,7 +33,8 @@ def calc_orbit():
     omega = 50*np.pi/180 # Argument of periastron
     i = 40*np.pi/180 # Inclination
     Npts = 10000
-
+    storePrimaryRVs = True
+    
     G = 6.673e-8 #cgs
     mu = G*M_primary*1.989e33*(1 + 1./massratio) #gravitational parameter
     a = (mu*(period*86400*365.24)**2/4/np.pi**2)**(1./3) #in cm
@@ -170,28 +171,40 @@ def calc_orbit():
     data[:, 6] = pos_B[:, 1]*km_to_arcsec #7. y position of primary (arcsec)
     data[:, 7] = vel_B[:, 2] #8. radial velocity of primary (km/s)
     
-    data2 = np.zeros((pos_A.shape[0],4))
+    data2 = np.zeros((pos_A.shape[0],5))
     data2[:,0] = data[:, 1]*365.24+2457000.0 #JD 
     data2[:,1] = pos_A[:, 1]*km_to_arcsec - pos_B[:, 1]*km_to_arcsec #Ythi=Xplot=RA  separation between two bodies based on primary being at 0,0 ["]
     data2[:,2] = pos_A[:, 0]*km_to_arcsec - pos_B[:, 0]*km_to_arcsec #Xthi=Yplot=Dec  separation between two bodies based on primary being at 0,0 ["]
     data2[:,3] = vel_B[:, 2]*1000.0 # RV of primary compared to center of mass origin[ m/s]
+    data2[:,4] = vel_A[:, 2]*1000.0 # RV of secondary compared to center of mass origin[ m/s]
     
-    data3 = np.zeros((pos_A.shape[0],7))
+    #calculate error
+    errorRA = np.median(np.abs(data2[:1]))*0.05
+    errorDec = np.median(np.abs(data2[:2]))*0.05
+    errorRVprimary = np.median(np.abs(data2[:3]))*0.05
+    errorRVsecondary = np.median(np.abs(data2[:4]))*0.05
+    
+    data3 = np.empty((pos_A.shape[0],7))
     data3[:,0] = data2[:, 0]
     for i in range(0,pos_A.shape[0]):
         # convert x,y to SA and PA with fake errors
-        (data3[i,1],data3[i,2],data3[i,3],data3[i,4]) = diTools.ENtoPASA(data2[i,1], data2[i,1]*0.05, data2[i,2], data2[i,2]*0.05)
+        (data3[i,1],data3[i,2],data3[i,3],data3[i,4]) = diTools.ENtoPASA(data2[i,1], errorRA, data2[i,2], errorDec)
+       
+     
+    if storePrimaryRVs:
+        data3[:,5] = data2[:,3]
+        data3[:,6] = errorRVprimary
+    else:
+        data3[:,5] = data2[:,4]
+        data3[:,6] = errorRVsecondary
         
-    data3[:,5] = data2[:,3]
-    data3[:,6] = data2[:,3]*0.05 #adding in a fake error
-    
     #output data3 has format
     #1. JD
     #2. Position Angle [deg]
     #3. Position Angle ERROR [deg]
     #4. Separation Angle ["]
     #5. Separation Angle ERROR ["]
-    #6. RV of primary rel to CofM [m/s]
+    #6. RV of primary (or secondary) rel to CofM [m/s]
     #7. RV ERROR [m/s]
 
     np.savetxt('mockdata.dat', data, fmt="%.10g")

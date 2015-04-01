@@ -91,4 +91,35 @@ star_inc = 0
 # Star's inclination error [degrees][double]
 star_inc_error = 0
 
+# Orbital parameters for a known and well studies companion star in a 3 body system. 
+# Use when investigating planet's orbit, else leave all = zero.
+# Star's Eccentricity [double]
+star_e = 0
+# Star's Eccentricity error [double]
+star_e_error = 0
+# Star's time of last pariapsis [JD][double]
+star_T = 0
+# Star's time of last pariapsis error [JD][double]
+star_T_error = 0
+# Star's time of last center of transit [JD][double]
+star_Tc = 0
+# Star's time of last center of transit error [JD][double]
+star_Tc_error = 0
+# Star's period [years][double]
+star_P = 0
+# Star's period error [years][double]
+star_P_error = 0
+# Star's Mass [Msun][double]
+star_Mass2 = 0
+# Star's Mass error [Msun][double]
+star_Mass2_error = 0
+# Star's argument of pariapsis [degrees][double]
+star_argPeri = 90
+# Star's argument of pariapsis error [degrees][double]
+star_argPeri_error = 0
+# Star's inclination [degrees][double]
+star_inc = 0 
+# Star's inclination error [degrees][double]
+star_inc_error = 0
+
 # ---- END OF SystemData.txt ----

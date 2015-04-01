@@ -22,20 +22,25 @@ def calc_orbit():
     I just computed a Kepler orbit's positions and velocities and rotated them.
     "
     """
+    #model settings
+    Npts = 1000
+    storePrimaryRVs = True
 
-    e = 0.5
-    period = 5. # years
+    #System settings
     massratio = 2.0
     M_primary = 1.0 #Solar masses
     distance = 5.0 #parsecs
-
+    km_to_arcsec = 1/1.49598e8/distance # convert km to arcsecond
+    
+    G = 6.673e-8 #cgs
+    
+    #Orbital Elements
+    e = 0.5
+    period = 5. # years
     Omega = 70*np.pi/180 # Longitude of ascending node
     omega = 50*np.pi/180 # Argument of periastron
     i = 40*np.pi/180 # Inclination
-    Npts = 10000
-    storePrimaryRVs = True
-    
-    G = 6.673e-8 #cgs
+ 
     mu = G*M_primary*1.989e33*(1 + 1./massratio) #gravitational parameter
     a = (mu*(period*86400*365.24)**2/4/np.pi**2)**(1./3) #in cm
     a_km = a/1e5 #to km
@@ -44,15 +49,15 @@ def calc_orbit():
     a1 = a_km - a2 # Semimajor axis of the low-mass component (in km)
     
     # print input orbital elements
-    print "e = "+str(e)
-    print "period = "+str(period)
-    print "LongAN = "+str(Omega*180.0/np.pi)
-    print "ArgPeri = "+str(omega*180.0/np.pi)
-    print "a_total = "+str(a_AU)
-    print "inclination = "+str(i*180.0/np.pi)
-    print "Mass 1 = "+str(M_primary)
-    print "Mass 2 = "+str(M_primary/massratio)
-    print "distance in PC = "+str(distance)+"\n"
+    print "\n\nOrbital Elements Used:\ne = "+str(e)
+    print "period = "+str(period)+" Years"
+    print "LongAN = "+str(Omega*180.0/np.pi)+" deg"
+    print "ArgPeri = "+str(omega*180.0/np.pi)+" deg"
+    print "a_total = "+str(a_AU)+" AU"
+    print "inclination = "+str(i*180.0/np.pi)+" deg"
+    print "Mass 1 = "+str(M_primary)+" Msun"
+    print "Mass 2 = "+str(M_primary/massratio)+" Msun"
+    print "System distance = "+str(distance)+" PC \n"
     
     # Positions of both components in km relative to center of mass
 
@@ -113,8 +118,8 @@ def calc_orbit():
             print "pos_B[-1] = "+repr(pos_B[-1])
             print "vel_A[-1] = "+repr(vel_A[-1])
             print "vel_B[-1] = "+repr(vel_B[-1])+"\n"+"*"*75
-    # Construct rotation matrix (from wikipedia)
 
+    # Construct rotation matrix (from wikipedia [http://en.wikipedia.org/wiki/Orbital_elements#Euler_angle_transformations])
     x1 = np.cos(Omega)*np.cos(omega) - np.sin(Omega)*np.cos(i)*np.sin(omega)
     x2 = np.sin(Omega)*np.cos(omega) + np.cos(Omega)*np.cos(i)*np.sin(omega)
     x3 = np.sin(i)*np.sin(omega)
@@ -159,8 +164,6 @@ def calc_orbit():
             print "vel_A[-1] = "+repr(vel_A[-1])
             print "vel_B[-1] = "+repr(vel_B[-1])+"\n"+"*"*75
 
-    km_to_arcsec = 1/1.49598e8/distance # convert km to arcsecond
-
     data = np.zeros((pos_A.shape[0], 8))
     data[:, 0] = t*2*np.pi/period #1. phase
     data[:, 1] = t # 2. time (years)
@@ -179,16 +182,19 @@ def calc_orbit():
     data2[:,4] = vel_A[:, 2]*1000.0 # RV of secondary compared to center of mass origin[ m/s]
     
     #calculate error
-    errorRA = np.median(np.abs(data2[:1]))*0.05
-    errorDec = np.median(np.abs(data2[:2]))*0.05
-    errorRVprimary = np.median(np.abs(data2[:3]))*0.05
-    errorRVsecondary = np.median(np.abs(data2[:4]))*0.05
+    errorRA = np.median(np.abs(data2[:,1]))*0.05
+    errorDec = np.median(np.abs(data2[:,2]))*0.05
+    errorRVprimary = np.median(np.abs(data2[:,3]))*0.05
+    errorRVsecondary = np.median(np.abs(data2[:,4]))*0.05
     
     data3 = np.empty((pos_A.shape[0],7))
     data3[:,0] = data2[:, 0]
     for i in range(0,pos_A.shape[0]):
         # convert x,y to SA and PA with fake errors
         (data3[i,1],data3[i,2],data3[i,3],data3[i,4]) = diTools.ENtoPASA(data2[i,1], errorRA, data2[i,2], errorDec)
+        if False:
+            print repr((data2[i,1], errorRA, data2[i,2], errorDec))
+            (u1,u2,u3,u4)=diTools.PASAtoEN(data3[i,1],data3[i,2],data3[i,3],data3[i,4])
        
      
     if storePrimaryRVs:

@@ -459,6 +459,7 @@ def ENtoPASA(E, E_error, N, N_error):
     PA and error will be in [deg], with SA and error in ["]
     :returns: (PA,PA_error,SA,SA_error)
     """
+    verbose = False
     PA = math.degrees(math.atan2(E,N))
     #NOTE: both math.atan2 and np.arctan2 tried with same results, both produce negatives rather than continuous 0-360 
     #thus, must correct for negative outputs
@@ -472,14 +473,15 @@ def ENtoPASA(E, E_error, N, N_error):
         if False:
             print "either the E or N error value was zero, so setting the PA and SA return errors to zero!!"
     else:
-        top = (E/N)*math.sqrt((E_error/E)**2.0 + (N_error/N)**2.0)
+        top = abs(E/N)*math.sqrt((E_error/E)**2.0 + (N_error/N)**2.0)
         btm = 1.0+(E/N)**2.0
         PA_error = abs(math.degrees(top/btm))
 
         top = SA*(abs(E*E_error)+abs(N*N_error))
         btm = E**2.0+N**2.0
         SA_error = abs(top/btm)
-    
+    if verbose:
+        print repr((E, E_error, N, N_error))+" -> "+repr((PA,PA_error,SA,SA_error))    
     return (PA,PA_error,SA,SA_error)
 
 def PASAtoEN(PA,PA_error,SA,SA_error):
@@ -495,16 +497,17 @@ def PASAtoEN(PA,PA_error,SA,SA_error):
     
     :returns: (E, E_error, N, N_error)
     """
+    verbose = False
     N = SA*math.cos(math.radians(PA))
     E = SA*math.sin(math.radians(PA))
     
     E_error=N_error=0
     if (SA_error==0)or(PA_error==0):
-        if False:
+        if verbose:
             print "either the PA and SA error value was zero, so setting the E or N return errors to zero!!"
     else:
         tempA = (SA_error/SA)**2.0
-        tempB = ((math.cos(math.radians(PA+PA_error))-math.cos(math.radians(PA)))/math.cos(math.radians(PA)))**2.0
+        tempB = ((math.cos(math.radians(PA+PA_error))-math.cos(math.radians(PA))) / math.cos(math.radians(PA)))**2.0
         N_error = abs(N*math.sqrt(tempA+tempB))
         
         # Another way to calculate the error, but the one above is belived to be more currect 
@@ -513,7 +516,7 @@ def PASAtoEN(PA,PA_error,SA,SA_error):
         N_error2 = math.sqrt(tempA2+tempB2)
         
         tempC = (SA_error/SA)**2.0
-        tempD = ((math.sin(math.radians(PA+PA_error))-math.sin(math.radians(PA)))/math.sin(math.radians(PA)))**2.0
+        tempD = ((math.sin(math.radians(PA+PA_error))-math.sin(math.radians(PA))) / math.sin(math.radians(PA)))**2.0
         E_error = abs(E*math.sqrt(tempC+tempD))
         
         # Another way to calculate the error, but the one above is belived to be more currect 
@@ -521,11 +524,11 @@ def PASAtoEN(PA,PA_error,SA,SA_error):
         tempD2 = (SA*math.cos(math.radians(PA))*math.radians(PA_error))**2.0
         E_error2 = math.sqrt(tempC2+tempD2)
         
-        if False:
+        if verbose:
             print 'N_error2-N_error = '+str(N_error2-N_error)
             print 'E_error2-E_error = '+str(E_error2-E_error)
             print 'E_error2 = '+str(E_error2)+', E_error = '+str(E_error)
-            print 'N_error2 = '+str(N_error2)+', N_error = '+str(N_error)
+            print 'N_error2 = '+str(N_error2)+', N_error = '+str(N_error)+"\n"
     
     return (E, E_error, N, N_error)
 

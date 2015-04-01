@@ -75,7 +75,7 @@ eccArgPeri2ToTcType generalTools::eccArgPeri2ToTcCalc(eccArgPeri2ToTcType EATT)
 	 * Center transit and Time of Last Periapsis.
 	 */
 	bool verbose = false;
-	bool backHalf = true;
+	bool backHalf = false;
 
 	if (EATT.e==0.0)
 	{
@@ -340,14 +340,14 @@ TAcalcReturnType generalTools::TAcalculator(TAcalcInputType TACIT)
 		timeDiff_days = timeDiff_days + period_days;
 	//Set phase to zero and update if Tc is provided
 	double phase = 0.0;
-	if (TACIT.Tc!=0)
+	if ((TACIT.Tc!=0)&&(TACIT.Tc!=TACIT.T))
 	{
-		double phaseDiff_days = (TACIT.Tc-TACIT.T)-int((TACIT.Tc-TACIT.T)/period_days)*period_days;
-		if (TACIT.verbose==true)
-			cout<<"(TACIT.Tc-TACIT.T) = "<<(TACIT.Tc-TACIT.T) <<", int((TACIT.t-TACIT.T)/period_days)*period_days = "<< (int((TACIT.Tc-TACIT.T)/period_days)*period_days)<<endl;
-		if (TACIT.T>TACIT.Tc)
-			phaseDiff_days = phaseDiff_days + period_days;
-		phase = phaseDiff_days/period_days;
+			double phaseDiff_days = (TACIT.Tc-TACIT.T)-int((TACIT.Tc-TACIT.T)/period_days)*period_days;
+			if (TACIT.verbose==true)
+				cout<<"(TACIT.Tc-TACIT.T) = "<<(TACIT.Tc-TACIT.T) <<", int((TACIT.t-TACIT.T)/period_days)*period_days = "<< (int((TACIT.Tc-TACIT.T)/period_days)*period_days)<<endl;
+			if (TACIT.T>TACIT.Tc)
+				phaseDiff_days = phaseDiff_days + period_days;
+			phase = phaseDiff_days/period_days;
 	}
 	if (TACIT.verbose==true)
 	{

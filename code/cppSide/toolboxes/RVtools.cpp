@@ -18,24 +18,34 @@ double RVtools::VRcalculatorSemiMajorType()
 	based on equation (49) in my thesis.
 	 */
 	bool verboseInternal = false;
+	bool primaryRVs = true;
 
-	double Kinternal;
+	//check if modeling secondary RVs or the primary star's
+	double aUse = a1;
+	double argPeri_deg_use= argPeri_deg+180;
+	if (primaryRVs==false)
+	{
+		aUse = a_total-a1;
+		argPeri_deg_use=argPeri_deg;
+	}
+	//Got K yet?
+	double Kuse;
 	if (fabs(K)>1)
 	{
-		Kinternal = K;
+		Kuse = K;
 	}
 	else
 	{
-		double tempA = (2.0*PI*a1*MperAU)/(SecPerYear*period);
+
+		double tempA = (2.0*PI*aUse*MperAU)/(SecPerYear*period);
 		double tempC = sin(inclination_deg*(PI/180.0))/sqrt(1-e*e);
 		// Calculate the Semi-major Amplitude for star-star system
-		Kinternal = tempA*tempC;
-		K = Kinternal;
+		Kuse = tempA*tempC;
+		K = Kuse;
 		if (verboseInternal)
-			cout<<"Just calculated Kinternal and loaded into K, Kinternal = "<<Kinternal<<endl;
+			cout<<"Just calculated Kuse and loaded into K, Kuse = "<<Kuse<<endl;
 	}
-	double argPeri_deg_internal = argPeri_deg;//extra that isn't needed anymore I think
-	double tempD = cos((TA_deg+argPeri_deg_internal)*(PI/180.0))+e*cos(argPeri_deg_internal*(PI/180.0));
+	double tempD = cos((TA_deg+argPeri_deg_use)*(PI/180.0))+e*cos(argPeri_deg_use*(PI/180.0));
 	double VR = K*tempD;
 
 	if (verboseInternal)
@@ -43,10 +53,10 @@ double RVtools::VRcalculatorSemiMajorType()
 		cout<<"\n # In VRcalculatorSemiMajorType #"<<endl;
 		//cout<<"period = "<< period<<endl;
 		cout<<"inclination_deg = "<<inclination_deg<<endl;
-		//cout<<"a1 = "<<a1<<endl;
+		//cout<<"aUse = "<<aUse<<endl;
 		//cout<<"e = "<< e<<endl;
 		cout<<"Provided K = "<<K<<endl;
-		cout<<"Kinternal = "<<Kinternal<<endl;
+		cout<<"Kuse = "<<Kuse<<endl;
 		cout<<"TA_deg = "<<TA_deg<<endl;
 		cout<<"VR = "<< VR<<endl;
 	}
@@ -92,9 +102,6 @@ vector<double> VRcalcStarStar::multiEpochCalc()
 	//prep vector for returned VR vals
 	vector<double> ResidualVels_s;
 	generalTools GT;
-
-	if (true)
-		argPeri_deg_s = argPeri_deg_s+180.0;
 
 	//instantiate and load up constant values for both TA and VR calc inputs
 	TAcalcInputType TACIT;

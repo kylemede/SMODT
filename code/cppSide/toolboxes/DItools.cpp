@@ -38,8 +38,7 @@ orbitCalcReturnType DItools::orbitCalculator()
 	double Y = sqrt(1.0-e*e)*sin(E_rad);
 
 	// Calculate the predicted x&y in ["]
-	double hackNeg = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$
-	OCRT.x_model = hackNeg*(A*X +F*Y);
+	OCRT.x_model = A*X +F*Y;
 	OCRT.y_model = B*X +G*Y;
 
 	if (verboseInternal)
@@ -97,6 +96,7 @@ multiEpochOrbCalcReturnType DItools::multiEpochOrbCalc()
 		argPeri_deg = argPeri_deg-360.0;
 
 	// convert the semi-major axis from the period using K3 and the provided masses
+	// This is mostly just a back-up thing.  The all OrbSimFuncs will handle this and pass in a_total.
 	if (a_total==0)
 	{
 		double temp5 = period*period*SecPerYear*SecPerYear*GravConst*KGperMsun*(Mass1+Mass2);
@@ -109,33 +109,6 @@ multiEpochOrbCalcReturnType DItools::multiEpochOrbCalc()
 		MEOCRT.a_total=0;
 
 	a_use = a_total;
-//	// NOTE: the a1&a2 values are not being saved, kill it?? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//	// use the mass ratio to convert the a_total into
-//	// its a1 and a2 components if the masses are provided
-//	if ( (Mass1!=1)&&(Mass2!=1))
-//	{
-//		// this means these two parameters are non-default values and
-//		// the system must then be a binary star system, thus calculate the
-//		// a1 and a2 values of the system.
-//		// NOTE: Mass2 MUST < Mass1, ie. primary is bigger.
-//		semiMajorType SMT_in;
-//		semiMajorType SMT_out;
-//		SMT_in.a1 = 0;
-//		SMT_in.a2 = 0;
-//		SMT_in.a_total = MEOCRT.a_total;
-//		SMT_in.period = period;
-//		SMT_in.Mass1 = Mass1;
-//		SMT_in.Mass2 = Mass2;
-//		SMT_out = GT.semiMajorConverter(SMT_in);
-//		if (Mass2>0.0124054547)
-//			a_use = SMT_out.a_total;
-//		else
-//			a_use = SMT_out.a1;
-//		//cout<<"a_use = "<<a_use<<endl;
-//		//cout<<"Mass2 = "<<Mass2<<endl;
-//	}
-//	else
-//		cout<<"ERROR! no values for the two object masses were provided!!!"<<endl;
 
 	// prepare TA calculator input structure
 	// only epoch/t will be updated in the loop
@@ -198,18 +171,42 @@ multiEpochOrbCalcReturnType DItools::multiEpochOrbCalc()
 		}
 
 		// convert SA & PA errors into x&y errors
-		double tempAa = SA_mean_error*cos(PA_deg_measured_REAL*(PI/180.0));
-		double tempA = tempAa*tempAa;
-		double tempBa = SA_arcsec_measured_REAL*sin(PA_deg_measured_REAL*(PI/180.0))*PA_mean_error*(PI/180.0);
-		double tempB = tempBa*tempBa;
-		double x_data_error = sqrt(tempA+tempB);
-		double x_data_inv_var = 1.0/(x_data_error*x_data_error);
+		// There are two sets of equations to do this and which is right has yet to be solidly determined. $$$ FIGURE THIS OUT!!!!!$$$$$$
+		double x_data_error;
+		double y_data_error;
+		if (false)
+		{
+			double tempAa = SA_mean_error*cos(PA_deg_measured_REAL*(PI/180.0));
+			double tempA = tempAa*tempAa;
+			double tempBa = SA_arcsec_measured_REAL*sin(PA_deg_measured_REAL*(PI/180.0))*PA_mean_error*(PI/180.0);
+			double tempB = tempBa*tempBa;
+			x_data_error = sqrt(tempA+tempB);
 
-		double tempCa =SA_mean_error*sin(PA_deg_measured_REAL*(PI/180.0));
-		double tempC = tempCa*tempCa;
-		double tempDa = SA_arcsec_measured_REAL*cos(PA_deg_measured_REAL*(PI/180.0))*PA_mean_error*(PI/180.0);
-		double tempD = tempDa*tempDa;
-		double y_data_error = sqrt(tempC+tempD);
+			double tempCa =SA_mean_error*sin(PA_deg_measured_REAL*(PI/180.0));
+			double tempC = tempCa*tempCa;
+			double tempDa = SA_arcsec_measured_REAL*cos(PA_deg_measured_REAL*(PI/180.0))*PA_mean_error*(PI/180.0);
+			double tempD = tempDa*tempDa;
+			y_data_error = sqrt(tempC+tempD);
+		}
+		if (true)
+		{
+			double tempAa2 = SA_mean_error/SA_arcsec_measured_REAL;
+			double tempA2 = tempAa2*tempAa2;
+			double tempBa2 = cos((PA_deg_measured_REAL+PA_mean_error)*(PI/180.0))-cos(PA_deg_measured_REAL*(PI/180.0));
+			double tempBb2 = cos(PA_deg_measured_REAL*(PI/180.0));
+			double tempBc2 = tempBa2/tempBb2;
+			double tempB2 = tempBc2*tempBc2;
+			x_data_error = fabs(x_data*sqrt(tempA2+tempB2));
+
+			double tempAa3 = SA_mean_error/SA_arcsec_measured_REAL;
+			double tempA3 = tempAa3*tempAa3;
+			double tempBa3 = sin((PA_deg_measured_REAL+PA_mean_error)*(PI/180.0))-sin(PA_deg_measured_REAL*(PI/180.0));
+			double tempBb3 = sin(PA_deg_measured_REAL*(PI/180.0));
+			double tempBc3 = tempBa3/tempBb3;
+			double tempB3 = tempBc3*tempBc3;
+			y_data_error = fabs(y_data*sqrt(tempA3+tempB3));
+		}
+		double x_data_inv_var = 1.0/(x_data_error*x_data_error);
 		double y_data_inv_var = 1.0/(y_data_error*y_data_error);
 
 		// calculated associated chiSquared values for each

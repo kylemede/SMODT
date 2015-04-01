@@ -523,10 +523,7 @@ void MCMCorbFuncObj::simulator()
 			timesNONEpassed = 0;
 			DIt.inclination_deg = inclination_deg_proposed;
 			DIt.longAN_deg = longAN_deg_proposed;
-//			if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$
-//				DIt.argPeri_deg = argPeri_deg_proposed+180.0;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//			else//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$
-			DIt.argPeri_deg = argPeri_deg_proposed;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			DIt.argPeri_deg = argPeri_deg_proposed;
 			DIt.e = e_proposed;
 			DIt.period = period_proposed; //  [yrs]
 			DIt.a_total = a_total_proposed;//[AU]

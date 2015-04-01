@@ -2348,7 +2348,7 @@ def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
     phase = 0.0
     phaseDiff_days = 0.0
     #updated phaseDiff for Tc!=0 case.
-    if T_center!=0.0:
+    if (T_center!=0.0)and(T_center!=T):
         phaseDiff_days = (T_center-T)-int((T_center -T)/period_days)*period_days 
         if T>T_center:
             phaseDiff_days = phaseDiff_days+period_days

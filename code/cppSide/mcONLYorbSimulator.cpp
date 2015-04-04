@@ -502,7 +502,7 @@ int main(int argc ,char *argv[])
         else
         	T_proposed = RanGen.UniformRandom(Tmin, TMAX); // thus between a full period before first observation and the time of first observation
         //Calculate the T from Tc or vice versa
-        if (SSO.DIonly==false)
+        if ((SSO.TcEqualT==false)&&(SSO.DIonly==false))
 		{
 			if (TMAX!=0)
 			{
@@ -545,7 +545,7 @@ int main(int argc ,char *argv[])
 				// calculate the To value from proposed values (omega, e, P & Tc)
 				eccArgPeri2ToTcType EATT;
 				EATT.period = period_proposed;
-				EATT.argPeri_deg = argPeri_deg_proposed;
+				EATT.argPeri_deg = argPeri_deg_proposed+SSO.argPeriOffsetDI;
 				EATT.e = e_proposed;
 				EATT.To = T_proposed;
 				EATT.Tc= Tc_proposed;
@@ -555,8 +555,13 @@ int main(int argc ,char *argv[])
 				Tc_proposed = EATT.Tc;
 			}
 		}
-		else
-			Tc_proposed = T_proposed;
+    	else
+		{
+			if (SSO.TcStepping)
+				T_proposed = Tc_proposed;
+			else
+				Tc_proposed = T_proposed;
+		}
         DIt.T = T_proposed;
         //cout<<"mcONLYorbSimulator.cpp, line# "<<454<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         //reset RVoffsets_proposed vector and get current param vals for K and offsets.
@@ -583,18 +588,7 @@ int main(int argc ,char *argv[])
         	}
 		}
         //cout<<"mcONLYorbSimulator.cpp, line# "<<469<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        //DIt.inclination_deg = 1;
-		//DIt.longAN_deg =  1;
-		//DIt.argPeri_deg = 162.204772;
-		//DIt.e = 0.016822;
-		//DIt.T = 2455652.42247;
-		//		DIt.period = 0.058088 ;
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//        //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//        DIt.period = (21.2165298/365.242);
-//        DIt.T = 2454777.94761;
-//        //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
         if ( SSO.silent==false )
         	cout<<"ALL random numbers loaded"<<endl;
 
@@ -731,7 +725,7 @@ int main(int argc ,char *argv[])
         		if (vary_K)
         			RVdo.planet_K = K_proposed;
         		RVdo.planet_MsinI  = DIt.Mass2 ;
-        		RVdo.planet_argPeri  = DIt.argPeri_deg ;
+        		RVdo.planet_argPeri  = argPeri_deg_proposed+SSO.argPeriOffsetRV ;
         		RVdo.planet_inc = DIt.inclination_deg ;
 			}
         	if (SSO.simulate_StarStar==true)
@@ -744,7 +738,7 @@ int main(int argc ,char *argv[])
         		if (vary_K)
         		  	RVdo.star_K = K_proposed;
         		RVdo.star_Mass2  = DIt.Mass2 ;
-        		RVdo.star_argPeri  = DIt.argPeri_deg ;
+        		RVdo.star_argPeri  = argPeri_deg_proposed+SSO.argPeriOffsetRV ;
         		RVdo.star_inc  = DIt.inclination_deg ;
         	}
         	// get residual velocities for companion planet if needed
@@ -753,7 +747,11 @@ int main(int argc ,char *argv[])
         		if ( SSO.silent==false )
         			cout<<"Starting to calculate residual vel for star-planet"<<endl;
         		// instantiate S-P calc object and load up its params
-        		VRcalcStarPlanet VRCsp;
+        		VRcalcStarPlanet VRCsp
+        		if (SSO.simulate_StarPlanet==true)
+					VRCsp.primaryStarRVs = SSO.primaryStarRVs;
+				else
+					VRCsp.primaryStarRVs = false;
         		VRCsp = GT.VRcalcStarPlanetLoadUp(RVdo);
         		//K_p_errorPercent = VRCsp.K_p_error/VRCsp.K_p;
         		//cout<<"K_p_errorPercent = "<<K_p_errorPercent <<endl;
@@ -784,6 +782,10 @@ int main(int argc ,char *argv[])
         			cout<<"Starting to calculate residual vel for star-star"<<endl;
         		// instantiate S-S calc object and load up its params
         		VRcalcStarStar VRCss;
+        		if (SSO.simulate_StarStar==true)
+        			VRCss.primaryStarRVs = SSO.primaryStarRVs;
+        		else
+        			VRCss.primaryStarRVs = false;
         		VRCss = GT.VRcalcStarStarLoadUp(RVdo);
         		VRCss.verbose = false;
         		// run through all RV data sets and calc residuals for it

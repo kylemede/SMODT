@@ -89,6 +89,15 @@ void simAnealOrbFuncObj::simulator()
 	//*****************************************************************************
 	// set up starting values for input params
 	//*****************************************************************************
+	if (SSO.simulate_StarPlanet==true)
+		VRCsp.primaryStarRVs = SSO.primaryStarRVs;
+	else
+		VRCsp.primaryStarRVs = false;
+	if (SSO.simulate_StarStar==true)
+		VRCss.primaryStarRVs = SSO.primaryStarRVs;
+	else
+		VRCss.primaryStarRVs = false;
+
 	sigmaPercent_latest = sigmaPercent;
 	string startParamsGenStr;
 	// Determine if K will be a varied parameter
@@ -934,101 +943,6 @@ void simAnealOrbFuncObj::simulator()
 			}
 		}
 		//cout<<"line # 907"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//		if (true)
-//		{
-//			cout<<"\n\n Ecc ArgPeri Testing \n"<<endl;
-//			double e_TEST = 0.5;
-//			double Tc_TEST = 2455652.1;
-//			vector<double> argPeris_TEST;
-//			argPeris_TEST.push_back(1);
-//			argPeris_TEST.push_back(89);
-//			argPeris_TEST.push_back(91);
-//			argPeris_TEST.push_back(179);
-//			argPeris_TEST.push_back(181);
-//			argPeris_TEST.push_back(269);
-//			argPeris_TEST.push_back(271);
-//			argPeris_TEST.push_back(359);
-//			argPeris_TEST.push_back(361);
-//			argPeris_TEST.push_back(449);
-//			argPeris_TEST.push_back(451);
-//			argPeris_TEST.push_back(539);
-//			argPeris_TEST.push_back(541);
-//			argPeris_TEST.push_back(-1);
-//			argPeris_TEST.push_back(-89);
-//			argPeris_TEST.push_back(-91);
-//			argPeris_TEST.push_back(-179);
-//			argPeris_TEST.push_back(-181);
-//			argPeris_TEST.push_back(-269);
-//			argPeris_TEST.push_back(-271);
-//			argPeris_TEST.push_back(-359);
-//			argPeris_TEST.push_back(-361);
-//			argPeris_TEST.push_back(-449);
-//			argPeris_TEST.push_back(-451);
-//			argPeris_TEST.push_back(-539);
-//			argPeris_TEST.push_back(-541);
-//			double sqrtESinomega_TEST;
-//			double sqrtECosomega_TEST;
-//			double e_proposed_TEST1;
-//			double argPeri_deg_proposed_TEST1;
-//			double e_proposed_TEST2;
-//			double argPeri_deg_proposed_TEST2;
-//			double T_proposed_TEST2;
-//			for (int testInt=0;testInt<argPeris_TEST.size();++testInt)
-//			{
-//				sqrtESinomega_TEST = sqrt(e_TEST)*sin((PI/180.0)*argPeris_TEST[testInt]);
-//				sqrtECosomega_TEST = sqrt(e_TEST)*cos((PI/180.0)*argPeris_TEST[testInt]);
-//				// Convert proposed values to eccentricity and argPeri
-//				eccArgPeriCalcType EACT;
-//				EACT.sqrtEsinArgPeri = sqrtESinomega_TEST;
-//				EACT.sqrtEcosArgPeri = sqrtECosomega_TEST;
-//				EACT = GT.eccArgPeriCalc(EACT);
-//				e_proposed_TEST1 = EACT.e;
-//				argPeri_deg_proposed_TEST1 = EACT.argPeri_deg;
-//
-//				e_proposed_TEST2 = sqrtESinomega_TEST*sqrtESinomega_TEST+sqrtECosomega_TEST*sqrtECosomega_TEST;
-//				argPeri_deg_proposed_TEST2 = (180.0/PI)*atan2(sqrtESinomega_TEST,sqrtECosomega_TEST);
-//				if (SSO.argPeri_degMAX>180)
-//				{
-//					if (argPeri_deg_proposed_TEST2<0)
-//						argPeri_deg_proposed_TEST2 = argPeri_deg_proposed_TEST2+360.0;
-//				}
-//
-//				cout<<"\n***************************  "<<testInt<<"  *****************************"<<endl;
-//				eccArgPeri2ToTcType EATT;
-//				EATT.period = period_proposed;
-//				EATT.argPeri_deg = argPeri_deg_proposed_TEST2;
-//				EATT.Tc = Tc_TEST;
-//				EATT.e = e_proposed_TEST2;
-//				EATT = GT.eccArgPeri2ToTcCalc(EATT);
-//				T_proposed_TEST2 = EATT.To;
-//				if (true)
-//				{
-//				cout<<"e_TEST = "<<e_TEST <<endl;
-//				cout<<"argPeris_TEST[testInt] = "<<argPeris_TEST[testInt] <<endl;
-//				cout<<"sqrtESinomega_TEST = "<<sqrtESinomega_TEST <<endl;
-//				cout<<"sqrtECosomega_TEST = "<< sqrtECosomega_TEST<<endl;
-//				cout<<"e_proposed_TEST1 = "<<e_proposed_TEST1 <<endl;
-//				cout<<"argPeri_deg_proposed_TEST1 = "<<argPeri_deg_proposed_TEST1 <<endl;
-//				cout<<"e_proposed_TEST2 = "<< e_proposed_TEST2<<endl;
-//				cout<<"argPeri_deg_proposed_TEST2 = "<< argPeri_deg_proposed_TEST2<<endl;
-//				cout<<"e_proposed_TEST2-e_proposed_TEST1 = "<< e_proposed_TEST2-e_proposed_TEST1<<endl;
-//				cout<<"argPeri_deg_proposed_TEST2-argPeri_deg_proposed_TEST1 = "<<argPeri_deg_proposed_TEST2-argPeri_deg_proposed_TEST1 <<endl;
-//				cout<<"Tc_proposed = "<<Tc_proposed <<endl;
-//				cout<<"T_proposed_TEST2 = "<<T_proposed_TEST2 <<endl;
-//				}
-//			}
-//			break;
-//
-//		}
-//		break;
-
-		// Convert proposed values to eccentricity and argPeri
-		//eccArgPeriCalcType EACT;
-		//EACT.sqrtEsinArgPeri = sqrtESinomega_proposed;
-		//EACT.sqrtEcosArgPeri = sqrtECosomega_proposed;
-		//EACT = GT.eccArgPeriCalc(EACT);
-		//e_proposed = EACT.e;
-		//argPeri_deg_proposed = EACT.argPeri_deg;
 
 		//Convert proposed sqrt(e)cos(omega) and ..sin(omega) into useful e and omega
 		if ((SSO.eMAX<0.3)&&(SSO.eMAX!=0))
@@ -1044,7 +958,7 @@ void simAnealOrbFuncObj::simulator()
 			if (argPeri_deg_proposed==-90.0)
 				argPeri_deg_proposed = 90.0;
 		}
-		if (false)//(SSO.DIonly==false)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$BAD HACK, FIX ME!!!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		if ((SSO.TcEqualT==false)&&(SSO.DIonly==false))
 		{
 			if (TMAX!=0)
 			{
@@ -1098,29 +1012,13 @@ void simAnealOrbFuncObj::simulator()
 			}
 		}
 		else
-			Tc_proposed = T_proposed;
+		{
+			if (SSO.TcStepping)
+				T_proposed = Tc_proposed;
+			else
+				Tc_proposed = T_proposed;
+		}
 		//cout<<"line # 1066"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//		inclination_deg_proposed =  87.89;
-//		longAN_deg_proposed =  142.156752;
-//		argPeri_deg_proposed = 121.9;
-//		e_proposed = 0.6819;
-//		period_proposed = 56.1016336126;
-		//Tc_proposed = 2454757.00787;//2453738.33274;
-		//Tc_proposed = 2454756.73134;
-//		Tc_proposed = 0;
-//		//T_proposed=2453738.46731;
-//		EATT.period = period_proposed;
-//		EATT.argPeri_deg = argPeri_deg_proposed;
-//		EATT.Tc = Tc_proposed;
-//		EATT.e = e_proposed;
-//		EATT.To=T_proposed;
-//		EATT = GT.eccArgPeri2ToTcCalc(EATT);
-//		T_proposed = EATT.To;
-//		Tc_proposed = EATT.Tc;
-		//T_proposed = 2454778.6475;
-//		K_proposed = 279.8;
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 		//*****************************************************************************
 		// Generate Gaussian values for the sys dist and masses
@@ -1305,10 +1203,8 @@ void simAnealOrbFuncObj::simulator()
 			timesNONEpassed = 0;
 			DIt.inclination_deg = inclination_deg_proposed;
 			DIt.longAN_deg = longAN_deg_proposed;
-//			if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//				DIt.argPeri_deg = argPeri_deg_proposed+180.0;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//			else//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$
-			DIt.argPeri_deg = argPeri_deg_proposed;//$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+			DIt.argPeri_deg = argPeri_deg_proposed+SSO.argPeriOffsetDI;
 			DIt.e = e_proposed;
 			DIt.period = period_proposed; //  [yrs]
 			DIt.T = T_proposed;
@@ -1319,7 +1215,7 @@ void simAnealOrbFuncObj::simulator()
 			if (SSO.simulate_StarStar==true)
 				DIt.Mass2 =  star_Mass2_proposed;
 			else
-				DIt.Mass2 = planet_MsinI_proposed;
+				DIt.Mass2 = planet_MsinI_proposed/sin(DIt.inclination_deg*(PI/180.0));
 
 			if ( SSO.silent==false )
 				cout<<"ALL DI random numbers loaded"<<endl;
@@ -1355,7 +1251,6 @@ void simAnealOrbFuncObj::simulator()
 			//*****************************************************************************
 			if (SSO.RVonly==false)
 			{
-				multiEpochOrbCalcReturnType MEOCRT;
 				//SSO.silent=false;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
 				//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$
 				// #### DO STUFF FOR DI ORBIT CALCNS #####
@@ -1426,7 +1321,7 @@ void simAnealOrbFuncObj::simulator()
 					RVdo.planet_P  = DIt.period ;
 					if (vary_K)
 						RVdo.planet_K = K_proposed;
-					RVdo.planet_argPeri  = argPeri_deg_proposed ;
+					RVdo.planet_argPeri  = argPeri_deg_proposed+SSO.argPeriOffsetRV ;
 					RVdo.planet_inc = DIt.inclination_deg ;
 					RVdo.planet_MsinI = DIt.Mass2;
 				}
@@ -1440,7 +1335,7 @@ void simAnealOrbFuncObj::simulator()
 					RVdo.star_P  = DIt.period ;
 					if (vary_K)
 						RVdo.star_K = K_proposed;
-					RVdo.star_argPeri  = argPeri_deg_proposed ;
+					RVdo.star_argPeri  = argPeri_deg_proposed+SSO.argPeriOffsetRV ;
 					RVdo.star_inc  = DIt.inclination_deg ;
 					RVdo.star_Mass2 =  DIt.Mass2;
 				}
@@ -1450,8 +1345,6 @@ void simAnealOrbFuncObj::simulator()
 					//cout<<"Ln1450"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$
 					if ( SSO.silent==false )
 						cout<<"Starting to calculate RVs for star-planet"<<endl;
-					// instantiate S-P calc object and load up its params
-					VRcalcStarPlanet VRCsp;
 					//generate latest params for planet VR calcs from Gaussians $$$$ Make this a boolean in settings files $$$$
 					if (false)
 					{
@@ -1506,8 +1399,6 @@ void simAnealOrbFuncObj::simulator()
 				{
 					if ( SSO.silent==false )
 						cout<<"Starting to calculate RVs for star-star"<<endl;
-					// instantiate S-S calc object and load up its params
-					VRcalcStarStar VRCss;
 					//generate latest params for planet VR calcs from Gaussians  $$$$ Make this a boolean in settings files $$$$
 					if (false)
 					{

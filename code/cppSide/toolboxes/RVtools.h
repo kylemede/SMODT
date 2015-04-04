@@ -16,6 +16,7 @@ public:
 	double e;
 	double TA_deg;
 	double argPeri_deg;
+	bool primaryStarRVs;
 	//define public functions
 	double VRcalculatorSemiMajorType();
 };
@@ -39,7 +40,6 @@ public:
 	double inclination_deg_s;
 	double TA_deg_s;
 	//define public functions
-	double VRcalculatorMassType();
 	vector<double> multiEpochCalc();
 };
 
@@ -65,6 +65,5 @@ public:
 	double TA_deg_p;
 	double E_deg_p;
 	//define public functions
-	double VRcalculatorMassType();
 	vector<double> multiEpochCalc();
 };

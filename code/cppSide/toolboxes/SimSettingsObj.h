@@ -37,6 +37,8 @@ public:
 	bool TcEqualT;
 	bool argPeriPlusPiRV;
 	bool argPeriPlusPiDI;
+	double argPeriOffsetDI;
+	double argPeriOffsetRV;
 
 
 	// Ranges for acceptable random number inputs ######
@@ -61,6 +63,7 @@ public:
 
 	// define funcs for obj
 	void settingsLoadUp(const char* filename);
+	void findArgPeriOffsets();
 };
 
 vector<double> rvOffsetsParser(string strIn);

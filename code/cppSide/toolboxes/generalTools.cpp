@@ -3,6 +3,8 @@
 #include <limits>
 #include <stdio.h>
 #include <stdlib.h>
+#include "sys/types.h"
+#include "sys/sysinfo.h"
 #include <vector>
 #include <math.h>
 #include <sstream>

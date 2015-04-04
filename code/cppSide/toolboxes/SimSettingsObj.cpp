@@ -487,7 +487,28 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 	}//reached end of file, close it and end func
 	if (verboseInternal)
 		cout<<"############################# DONE loading up settings file #################"<<endl;
+	//figure out the offsets for the argument of periapsis for both the DI and RV models
+	findArgPeriOffsets();
 	infile.close();
+}
+void SimSettingsObj::findArgPeriOffsets()
+{
+	argPeriOffsetDI = 0.0;
+	argPeriOffsetRV = 0.0;
+	//first using RV special bools
+	if ((primaryStarRVs)&&(simulate_PrimaryOrbitRV))
+	{
+		argPeriOffsetDI=-180.0;
+	}
+	else if ((primaryStarRVs)&&(simulate_PrimaryOrbitRV==false))
+	{
+		argPeriOffsetRV=180.0;
+	}
+	//now update due to forced bools
+	if (argPeriPlusPiRV)
+		argPeriOffsetRV+=180.0;
+	if (argPeriPlusPiDI)
+		argPeriOffsetDI+=180.0;
 }
 
 vector<double> rvOffsetsParser(string strIn)

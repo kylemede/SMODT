@@ -95,7 +95,14 @@ void MCMCorbFuncObj::simulator()
 
 	double Kp_calculated=0;
 	double Ks_calculated=0;
-
+	if (SSO.simulate_StarPlanet==true)
+		VRCsp.primaryStarRVs = SSO.primaryStarRVs;
+	else
+		VRCsp.primaryStarRVs = false;
+	if (SSO.simulate_StarStar==true)
+		VRCss.primaryStarRVs = SSO.primaryStarRVs;
+	else
+		VRCss.primaryStarRVs = false;
 	//*****************************************************************************
 	// set up starting values for input params
 	//*****************************************************************************
@@ -353,7 +360,7 @@ void MCMCorbFuncObj::simulator()
 			if (argPeri_deg_proposed==-90.0)
 				argPeri_deg_proposed = 90.0;
 		}
-		if (false)//(SSO.DIonly==false)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$BAD HACK, FIX ME!!!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		if ((SSO.TcEqualT==false)&&(SSO.DIonly==false))
 		{
 			if (TMAX!=0)
 			{
@@ -407,28 +414,12 @@ void MCMCorbFuncObj::simulator()
 			}
 		}
 		else
-			Tc_proposed = T_proposed;
-
-		// calculate the To value from proposed values (omega, e & Tc)
-//		eccArgPeri2ToTcType EATT;
-//		EATT.period = period_proposed;
-//		EATT.argPeri_deg = argPeri_deg_proposed;
-//		EATT.Tc = Tc_proposed;
-//		EATT.e = e_proposed;
-//		EATT = GT.eccArgPeri2ToTcCalc(EATT);
-//		T_proposed = EATT.To;
-
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//		inclination_deg_proposed =  92.548065;
-//		longAN_deg_proposed =  0;
-//		argPeri_deg_proposed = 121.613235;
-//		T_proposed = 2454757.00787
-		//Tc_proposed = 2454756.73134;
-//		e_proposed = 0.679959;
-////		period_proposed = 164.072068;
-		//Tc_proposed = 2455651.491942;
-		//K_proposed = 465.0347;
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		{
+			if (SSO.TcStepping)
+				T_proposed = Tc_proposed;
+			else
+				Tc_proposed = T_proposed;
+		}
 
 		//*****************************************************************************
 		// Generate Gaussian values for the sys dist and masses
@@ -523,7 +514,7 @@ void MCMCorbFuncObj::simulator()
 			timesNONEpassed = 0;
 			DIt.inclination_deg = inclination_deg_proposed;
 			DIt.longAN_deg = longAN_deg_proposed;
-			DIt.argPeri_deg = argPeri_deg_proposed;
+			DIt.argPeri_deg = argPeri_deg_proposed+SSO.argPeriOffsetDI;
 			DIt.e = e_proposed;
 			DIt.period = period_proposed; //  [yrs]
 			DIt.a_total = a_total_proposed;//[AU]
@@ -534,7 +525,7 @@ void MCMCorbFuncObj::simulator()
 			if (SSO.simulate_StarStar==true)
 				DIt.Mass2 =  star_Mass2_proposed;
 			else
-				DIt.Mass2 = planet_MsinI_proposed;
+				DIt.Mass2 = planet_MsinI_proposed/sin(DIt.inclination_deg*(PI/180.0));
 
 			if ( SSO.silent==false )
 				cout<<"ALL random numbers loaded"<<endl;
@@ -559,7 +550,6 @@ void MCMCorbFuncObj::simulator()
 			//*****************************************************************************
 			if (SSO.RVonly==false)
 			{
-				multiEpochOrbCalcReturnType MEOCRT;
 				//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				// #### DO STUFF FOR DI ORBIT CALCNS #####
 				if ( SSO.silent==false )
@@ -615,7 +605,7 @@ void MCMCorbFuncObj::simulator()
 					//RVdo.planet_MsinI  = DIt.Mass2 ;
 					if (vary_K)
 						RVdo.planet_K = K_proposed;
-					RVdo.planet_argPeri = argPeri_deg_proposed ;
+					RVdo.planet_argPeri = argPeri_deg_proposed+SSO.argPeriOffsetRV;
 					RVdo.planet_inc = DIt.inclination_deg ;
 					RVdo.planet_MsinI = DIt.Mass2 ;
 				}
@@ -630,7 +620,7 @@ void MCMCorbFuncObj::simulator()
 					//RVdo.star_Mass2 = DIt.Mass2 ;
 					if (vary_K)
 						RVdo.star_K = K_proposed;
-					RVdo.star_argPeri = argPeri_deg_proposed ;
+					RVdo.star_argPeri = argPeri_deg_proposed+SSO.argPeriOffsetRV;
 					RVdo.star_inc = DIt.inclination_deg ;
 					RVdo.star_Mass2 =  DIt.Mass2;
 				}
@@ -639,8 +629,6 @@ void MCMCorbFuncObj::simulator()
 				{
 					if ( SSO.silent==false )
 						cout<<"Starting to calculate residual vel for star-planet"<<endl;
-					// instantiate S-P calc object and load up its params
-					//VRcalcStarPlanet VRCsp;
 					//generate latest params for planet VR calcs from Gaussians  $$$$ Make this a boolean in settings files $$$$
 					if (false)
 					{
@@ -693,9 +681,6 @@ void MCMCorbFuncObj::simulator()
 				{
 					if ( SSO.silent==false )
 						cout<<"Starting to calculate residual vel for star-star"<<endl;
-					// instantiate S-S calc object and load up its params
-					//VRcalcStarStar VRCss;
-
 					//generate latest params for planet VR calcs from Gaussians  $$$$ Make this a boolean in settings files $$$$
 					if (false)
 					{

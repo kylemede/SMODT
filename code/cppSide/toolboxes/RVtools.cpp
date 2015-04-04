@@ -18,16 +18,12 @@ double RVtools::VRcalculatorSemiMajorType()
 	based on equation (49) in my thesis.
 	 */
 	bool verboseInternal = false;
-	bool primaryRVs = true;
 
 	//check if modeling secondary RVs or the primary star's
 	double aUse = a1;
-	double argPeri_deg_use= argPeri_deg+180;
-	if (primaryRVs==false)
-	{
+	double argPeri_deg_use= argPeri_deg;
+	if (primaryStarRVs==false)
 		aUse = a_total-a1;
-		argPeri_deg_use=argPeri_deg;
-	}
 	//Got K yet?
 	double Kuse;
 	if (fabs(K)>1)
@@ -61,34 +57,6 @@ double RVtools::VRcalculatorSemiMajorType()
 		cout<<"VR = "<< VR<<endl;
 	}
 	return VR;
-}
-double VRcalcStarStar::VRcalculatorMassType()
-{
-	/**
-	Calculate the residual velocity due to a companion star
-	based on equation (47) in my thesis.
-	 */
-	double Kinternal;
-	if (fabs(K_s)>0)
-		Kinternal = K_s;
-	else
-	{
-		double tempA = pow((2.0*PI*GravConst*KGperMsun*(Mass1+Mass2_s))/(SecPerYear*period_s),(1.0/3.0));
-		double tempB = Mass2_s/Mass1;
-		double tempC = sin(inclination_deg_s*(PI/180.0))/sqrt(1-e_s*e_s);
-		// Calculate the Semi-major Amplitude for star-star system
-		Kinternal = tempA*tempB*tempC;
-		K_s = Kinternal;
-	}
-	double tempD = cos((TA_deg_s+argPeri_deg_s)*(PI/180.0))+e_s*cos(argPeri_deg_s*(PI/180.0));
-	double VRc = Kinternal*tempD;
-
-	if (false)
-	{
-		cout<<"Kinternal = "<<Kinternal<<endl;
-		cout<<"TA_deg_s = "<<TA_deg_s<<endl;
-	}
-	return VRc;
 }
 
 vector<double> VRcalcStarStar::multiEpochCalc()
@@ -136,13 +104,8 @@ vector<double> VRcalcStarStar::multiEpochCalc()
 		TA_deg_s = TACRT.TA_deg;
 
 		double VRc;
-		if (true)
-		{
-			TA_deg = TA_deg_s;
-			VRc = VRcalculatorSemiMajorType();
-		}
-		else
-			VRc = VRcalculatorMassType();
+		TA_deg = TA_deg_s;
+		VRc = VRcalculatorSemiMajorType();
 		ResidualVels_s.push_back(VRc);
 		if (verboseInternal)
 		{
@@ -155,55 +118,6 @@ vector<double> VRcalcStarStar::multiEpochCalc()
 	return ResidualVels_s;
 }
 
-double VRcalcStarPlanet::VRcalculatorMassType()
-{
-	/**
-
-	Calculate the residual velocity due to a companion planet
-	based on equation (48) in my thesis.
-	*/
-	bool verboseInternal = false;
-
-	double Ksp;
-	if (K_p>0)
-		Ksp = K_p;
-	else
-	{
-		double tempA = pow((2.0*PI*GravConst)/(SecPerYear*period_p),(1.0/3.0));
-		double tempB = (Mass2sinI_p*KGperMsun)/pow(Mass1*KGperMsun,(2.0/3.0));
-		double tempC = 1.0/sqrt(1-e_p*e_p);
-		// Calculate the Semi-major Amplitude for star-planet system
-		Ksp = tempA*tempB*tempC;
-	}
-	if (K_p==0)
-		K_p = Ksp;
-	double tempD = cos((TA_deg_p+argPeri_deg_p)*(PI/180.0))+e_p*cos(argPeri_deg_p*(PI/180.0));
-	double VRp = Ksp*tempD;
-
-	if (verboseInternal)
-	{
-		cout<<"\n # In VRcalculator #"<<endl;
-		//cout<<"\nPI = "<<PI <<endl;
-		//cout<<"GravConst = "<< GravConst<<endl;
-		//cout<<"SecPerYear = "<< SecPerYear<<endl;
-		//cout<<"period_p = "<< period_p<<endl;
-		//cout<<"Mass2sinI_p = "<<Mass2sinI_p <<endl;
-		//cout<<"KGperMsun = "<< KGperMjupiter<<endl;
-		//cout<<"Mass1 = "<< KGperMsun<<endl;
-		//cout<<"e_p = "<< e_p<<endl;
-		cout<<"Provided K_p = "<<K_p<<endl;
-		cout<<"Ksp = "<<Ksp<<endl;
-		cout<<"TA_deg_p = "<<TA_deg_p<<endl;
-		cout<<"argPeri_deg_p = "<<argPeri_deg_p <<endl;
-		cout<<"cos((TA_deg_p)*(PI/180.0)) = "<<cos((TA_deg_p)*(PI/180.0))<<endl;
-		cout<<"cos((TA_deg_p+argPeri_deg_p)*(PI/180.0)) = "<<cos((TA_deg_p+argPeri_deg_p)*(PI/180.0))<<endl;
-		cout<<"cos(argPeri_deg_p*(PI/180.0)) = "<<cos(argPeri_deg_p*(PI/180.0)) <<endl;
-		cout<<"tempD = "<<tempD <<endl;
-		cout<<"VRp = "<< VRp<<endl;
-	}
-
-	return VRp;
-}
 
 vector<double> VRcalcStarPlanet::multiEpochCalc()
 {
@@ -218,9 +132,6 @@ vector<double> VRcalcStarPlanet::multiEpochCalc()
 	//prep vector for returned VR vals
 	vector<double> ResidualVels_p;
 	generalTools GT;
-
-	if (false)
-		argPeri_deg_p = argPeri_deg_p-180.0;
 
 	//instantiate and load up constant values for both TA and VR calc inputs
 	TAcalcInputType TACIT;
@@ -261,15 +172,10 @@ vector<double> VRcalcStarPlanet::multiEpochCalc()
 		E_deg_p = TACRT.E_deg;
 
 		double VRp;
-		if (true)
-		{
-			if (verboseInternal)
-				cout<<"sending in inc = "<<inclination_deg<<endl;
-			TA_deg = TA_deg_p;
-			VRp = VRcalculatorSemiMajorType();
-		}
-		else
-			VRp = VRcalculatorMassType();
+		if (verboseInternal)
+			cout<<"sending in inc = "<<inclination_deg<<endl;
+		TA_deg = TA_deg_p;
+		VRp = VRcalculatorSemiMajorType();
 		ResidualVels_p.push_back(VRp);
 		if (verboseInternal)
 		{

@@ -14,6 +14,9 @@ public:
 	DIdataObj DIdo;
 	RVdataObj RVdo;
 	DataObj SYSdo;
+	multiEpochOrbCalcReturnType MEOCRT;
+	VRcalcStarPlanet VRCsp;
+	VRcalcStarStar VRCss;
 	double chiSquaredMin;
 	double one_over_nu_RV;
 	double one_over_nu_DI;

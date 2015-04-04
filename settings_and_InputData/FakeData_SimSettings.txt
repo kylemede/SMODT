@@ -81,11 +81,11 @@ loopedMCMC =False
 simulate_StarStar =True
 simulate_StarPlanet =false 
 # fit to the primary's RV orbit [bool]
-simulate_PrimaryOrbitRV = true
+simulate_PrimaryOrbitRV = false
 # Are the RVs in the RVdata.dat for the Primary star? [bool]
 primaryStarRVs = true
 # take the time of center transit (inferior conjunction) into account? [bool]
-TcEqualT = true
+TcEqualT = false
 # force 180deg to be added to RV orbit fit [bool]
 argPeriPlusPiRV = false
 ##################################################

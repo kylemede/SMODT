@@ -184,7 +184,7 @@ def main():
         cppFiles.append('MCMCorbSimFunc.h') 
         cppFiles.append('simAnnealOrbSimulator.cpp') 
         cppFiles.append('simAnnealOrbSimFunc.cpp') 
-        cppFiles.append('simAnnealOrbSimFunc.h') 
+        cppFiles.append('simAnnealOrbSimFunc.h')    
     
     # add directories and add all complete filenames to overall list
     allFiles = []

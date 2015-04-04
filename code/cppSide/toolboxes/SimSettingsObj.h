@@ -8,7 +8,6 @@ class SimSettingsObj
 public:
 	// define params for obj
 	// General simulation settings
-	bool Duo; // just in case there are any special things to do in C++ if it is in Duo mode
 	double chiSquaredMax;
 	int numSamples;
 	int numSamples_SimAnneal;
@@ -29,11 +28,15 @@ public:
 	// advanced RV settings
 	bool simulate_StarStar;
 	bool simulate_StarPlanet;
-	bool fixed_planet_period;
+	bool simulate_PrimaryOrbitRV;
 	bool calcCorrLengths;
 	bool CalcGelmanRubin;
 	int numTimesCalcGR;
 	bool TcStepping;
+	bool primaryStarRVs;
+	bool TcEqualT;
+	bool argPeriPlusPiRV;
+	bool argPeriPlusPiDI;
 
 
 	// Ranges for acceptable random number inputs ######

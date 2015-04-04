@@ -10,6 +10,7 @@ import shutil
 import RVtoolbox as RVtools
 import DItoolbox as DItools
 from math import pi
+plt = pylab.matplotlib.pyplot
 
 """
 This toolbox is a collection of the calculator type functions that were used in multiple 
@@ -1801,6 +1802,21 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                             print 'CalcGelmanRubin found to be = '+str(returnDict['CalcGelmanRubin'])
                             if VAL!=VAL_orig:
                                 print 'useMultiProcessing==False, so CalcGelmanRubin changed from '+repr(VAL_orig)+" to "+repr(VAL)
+                    elif 'numTimesCalcGR'in key:
+                        try:
+                            valUse = int(val)
+                        except:
+                            print "Value found in settings file for numSamples, '"+val+"', was invalid."
+                            print "Using default value of 1e6."
+                            valUse = 100
+                        if (valUse<=0)or(valUse>10000): 
+                            print 'Value found in settings file for numTimesCalcGR, '+val+\
+                                ', was out of range [1,'+str(10000)+'].'
+                            print "Using default value of 100."  
+                            valUse = 100
+                        returnDict['numTimesCalcGR'] = valUse
+                        if verbose:
+                            print 'numTimesCalcGR found to be = '+str(returnDict['numTimesCalcGR'])
                     elif 'makeOrbitPlots'in key:
                         returnDict['makeOrbitPlots'] = strToBool(val,True)
                         if verbose:
@@ -1837,6 +1853,28 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                         valUse=returnDict['simulate_StarPlanet'] = strToBool(val,False)
                         if verbose:
                             print 'simulate_StarPlanet found to be = '+str(returnDict['simulate_StarPlanet'])
+                            
+                    elif 'simulate_PrimaryOrbitRV'in key:
+                        valUse=returnDict['simulate_PrimaryOrbitRV'] = strToBool(val,False)
+                        if verbose:
+                            print 'simulate_PrimaryOrbitRV found to be = '+str(returnDict['simulate_PrimaryOrbitRV'])
+                    elif 'primaryStarRVs'in key:
+                        valUse=returnDict['primaryStarRVs'] = strToBool(val,True)
+                        if verbose:
+                            print 'primaryStarRVs found to be = '+str(returnDict['primaryStarRVs'])
+                    elif 'TcEqualT'in key:
+                        valUse=returnDict['TcEqualT'] = strToBool(val,True)
+                        if verbose:
+                            print 'TcEqualT found to be = '+str(returnDict['TcEqualT'])
+                    elif 'argPeriPlusPiRV'in key:
+                        valUse=returnDict['argPeriPlusPiRV'] = strToBool(val,False)
+                        if verbose:
+                            print 'argPeriPlusPiRV found to be = '+str(returnDict['argPeriPlusPiRV'])
+                    elif 'argPeriPlusPiDI'in key:
+                        valUse=returnDict['argPeriPlusPiDI'] = strToBool(val,False)
+                        if verbose:
+                            print 'argPeriPlusPiDI found to be = '+str(returnDict['argPeriPlusPiDI'])
+                            
                     elif 'inclination_degMAX'in key:
                         valUse=returnDict['inclination_degMAX'] = float(val)
                         if verbose:
@@ -2583,6 +2621,40 @@ def makeArtificialData(longAN_deg, e, T, Tc, period, inc, argPeri_deg, a_total, 
         for epoch in range(0,numDataPoints):
             print str(epochs[epoch])+'    '+str(VRs[epoch])+"    "+str(VR_errors[epoch])
          
-       
-        
+def memUsageLogCleaner(filename = ''):
+    """
+    A function I whiped together to clean up a RAM usage log produced with a super simple bash script.
+    """ 
+    if filename=="":
+        filename = "/mnt/Data1/Todai_Work/Data/data_SMODT/RAMusage.log"
+    print 'Input RAMusage log file: '+filename
+    f = open(filename,'readonly')
+    fnamOut = os.path.abspath(filename)[:-4]+"_clean.log"
+    fOut = open(fnamOut,'w')
+    lines = f.readlines()
+    f.close()
+    fOut.write("total[MB]   Used[%] \n")
+    mem = []
+    for line in lines:
+        if line[0]=="M":
+            #print line
+            l = line.split()[1:3]
+            #print repr(l)
+            usedPercent = int((float(l[1])/float(l[0]))*100.)
+            lineOut = "  "+str(l[0])+"        "+str(usedPercent)+"\n"
+            fOut.write(lineOut)
+            mem.append(usedPercent)
+            #print repr(lineOut)
+    fOut.close()
+    print "cleaned RAMusage log file written to: "+fnamOut
+    if True:
+        times = np.arange(len(mem))*(1.0/6.0)
+        fig = plt.figure(1, figsize=(15,10),dpi=200)
+        subPlot = fig.add_subplot(111)
+        subPlot.plot(times,mem)
+        subPlot.axes.set_ylabel("Percent RAM usage")
+        subPlot.axes.set_xlabel("time [hrs]")
+        plotname = os.path.abspath(filename)[:-4]+"_clean.png"
+        plt.savefig(plotname, orientation='landscape')
+    print "RAMusage plot written to: "+plotname
         

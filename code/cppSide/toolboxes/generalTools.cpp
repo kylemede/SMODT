@@ -762,7 +762,7 @@ double generalTools::earliestEpochFinder(DIdataObj DIdo, RVdataObj RVdo)
 	 *  the RV and DI data must be found, as done by this function.  The JD
 	 *  value of the earliest epoch is returned as a double.
 	 */
-	bool verbose = true;
+	bool verbose = false;
 	double earliestDIepoch = 1e9;
 	double earliestRVepoch = 1e9;
 	double earliestEpoch;

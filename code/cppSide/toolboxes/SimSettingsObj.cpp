@@ -25,7 +25,6 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 
 	// Setting to fully open values by default
 	// defaults replaced later in this func.
-	Duo = false;
 	chiSquaredMax=1e6;
 	numSamples=1e6;
 	startTemp = 100.0;
@@ -45,11 +44,15 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 	simAnneal = false;
 	simulate_StarStar = false;
 	simulate_StarPlanet = false;
-	fixed_planet_period = true;
+	simulate_PrimaryOrbitRV = false;
 	calcCorrLengths=false;
 	CalcGelmanRubin=true;
 	numTimesCalcGR=1000;
 	TcStepping = true;
+	primaryStarRVs=true;
+	TcEqualT=true;
+	argPeriPlusPiRV=false;
+	argPeriPlusPiDI=false;
 
 	// Ranges for acceptable random number inputs ######
 	longAN_degMIN = 0.0; // [deg]
@@ -68,10 +71,6 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 	T_Max=0; //[JD]
 	K_MIN=0;// [m/s]
 	K_MAX=0;// [m/s]
-
-
-	//RVoffsetMAXs; //vector<double> [m/s]
-	//RVoffsetMINs; //vector<double> [m/s]
 
 
 	std::ifstream infile(filename);
@@ -114,13 +113,7 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 
 				//Run through all current possible input keys
 				// First: check if it is a general setting
-				if (key.compare("Duo")==0)
-				{
-					Duo = boolParser(val);
-					if (verboseInternal)
-						cout<<"Duo: "<<GT.boolToStr(Duo)<<endl;
-				}
-				else if (key.compare("chiSquaredMax")==0)
+				if (key.compare("chiSquaredMax")==0)
 				{
 					ss<<val;
 					ss>>chiSquaredMax;
@@ -300,12 +293,37 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 					if (verboseInternal)
 						cout<<"simulate_StarPlanet: "<<GT.boolToStr(simulate_StarPlanet)<<endl;
 				}
-				else if (key.compare("fixed_planet_period")==0)
+				else if (key.compare("simulate_PrimaryOrbitRV")==0)
 				{
-					fixed_planet_period = boolParser(val);
+					simulate_PrimaryOrbitRV = boolParser(val);
 					if (verboseInternal)
-						cout<<"fixed_planet_period: "<<GT.boolToStr(fixed_planet_period)<<endl;
+						cout<<"simulate_PrimaryOrbitRV: "<<GT.boolToStr(simulate_PrimaryOrbitRV)<<endl;
 				}
+				else if (key.compare("primaryStarRVs")==0)
+				{
+					primaryStarRVs = boolParser(val);
+					if (verboseInternal)
+						cout<<"primaryStarRVs: "<<GT.boolToStr(primaryStarRVs)<<endl;
+				}
+				else if (key.compare("TcEqualT")==0)
+				{
+					TcEqualT = boolParser(val);
+					if (verboseInternal)
+						cout<<"TcEqualT: "<<GT.boolToStr(TcEqualT)<<endl;
+				}
+				else if (key.compare("argPeriPlusPiRV")==0)
+				{
+					argPeriPlusPiRV = boolParser(val);
+					if (verboseInternal)
+						cout<<"argPeriPlusPiRV: "<<GT.boolToStr(argPeriPlusPiRV)<<endl;
+				}
+				else if (key.compare("argPeriPlusPiDI")==0)
+				{
+					argPeriPlusPiDI = boolParser(val);
+					if (verboseInternal)
+						cout<<"argPeriPlusPiDI: "<<GT.boolToStr(argPeriPlusPiDI)<<endl;
+				}
+
 
 				// Next: check if it is a min/max setting
 				else if (key.compare("longAN_degMIN")==0)

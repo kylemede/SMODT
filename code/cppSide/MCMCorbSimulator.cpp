@@ -160,7 +160,7 @@ int main(int argc ,char *argv[])
 //		}
 //
 //		ofstream file;
-//		string data_filename = "/run/media/Kyle/Data1/Todai_Work/Data/data_Binary/data_Duo/TestCplusplusTrucNormal.dat";
+//		string data_filename = "/mnt/Data1/Todai_Work/Data/data_SMODT/TestCplusplusTrucNormal.dat";
 //		//cout<<"\n***************************************************************"<<endl;
 //		//cout<<"Writing file to: "<<data_filename<<endl;
 //		//cout<<"***************************************************************\n"<<endl;

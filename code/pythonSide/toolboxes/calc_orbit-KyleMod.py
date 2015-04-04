@@ -1,6 +1,6 @@
 import numpy as np
 from PyAstronomy import pyasl
-from toolboxes import DItoolbox as diTools
+import DItoolbox as diTools
 
 def calc_orbit():
     """
@@ -213,8 +213,8 @@ def calc_orbit():
     #6. RV of primary (or secondary) rel to CofM [m/s]
     #7. RV ERROR [m/s]
 
-    np.savetxt('mockdata.dat', data, fmt="%.10g")
-    np.savetxt('mockdata-SMODTformat.dat', data3, fmt="%.10g")
+    np.savetxt('/mnt/Data1/Todai_Work/Data/data_SMODT/mockdata.dat', data, fmt="%.10g")
+    np.savetxt('/mnt/Data1/Todai_Work/Data/data_SMODT/mockdata-SMODTformat.dat', data3, fmt="%.10g")
 
 
 if __name__ == "__main__":

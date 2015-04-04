@@ -85,11 +85,6 @@ multiEpochOrbCalcReturnType DItools::multiEpochOrbCalc()
 	double chi_squared_total = 0.0;
 	double chi_squared_total2 = 0.0;
 
-	// add pi to the value of the argument of periapsis to convert it to the
-	// value for the star instead of the value input which is for the companion.
-	//NOTE: This is not fully implemented into the settings files, so left as false for now.
-	if (false)
-		argPeri_deg = argPeri_deg+180.0;
 	//This next step is to put it inside one circle, but not really needed as it
 	//should be handled properly either way.  So, just for safe keeping I guess.
 	if (argPeri_deg>360.0)

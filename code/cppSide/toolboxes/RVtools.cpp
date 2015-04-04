@@ -21,7 +21,8 @@ double RVtools::VRcalculatorSemiMajorType()
 
 	//check if modeling secondary RVs or the primary star's
 	double aUse = a1;
-	double argPeri_deg_use= argPeri_deg;
+	//cout<<"argPeri_deg = "<<argPeri_deg<<endl;
+	//cout<<"primaryStarRVs = "<<primaryStarRVs<<endl;
 	if (primaryStarRVs==false)
 		aUse = a_total-a1;
 	//Got K yet?
@@ -41,7 +42,7 @@ double RVtools::VRcalculatorSemiMajorType()
 		if (verboseInternal)
 			cout<<"Just calculated Kuse and loaded into K, Kuse = "<<Kuse<<endl;
 	}
-	double tempD = cos((TA_deg+argPeri_deg_use)*(PI/180.0))+e*cos(argPeri_deg_use*(PI/180.0));
+	double tempD = cos((TA_deg+argPeri_deg)*(PI/180.0))+e*cos(argPeri_deg*(PI/180.0));
 	double VR = K*tempD;
 
 	if (verboseInternal)

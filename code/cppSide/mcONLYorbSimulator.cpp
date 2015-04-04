@@ -74,6 +74,19 @@ int main(int argc ,char *argv[])
 	RVdataObj RVdo;
 	DataObj SYSdo;
 
+	// instantiate S-P calc object and load up its params
+	VRcalcStarPlanet VRCsp;
+	if (SSO.simulate_StarPlanet==true)
+		VRCsp.primaryStarRVs = SSO.primaryStarRVs;
+	else
+		VRCsp.primaryStarRVs = false;
+	// instantiate S-S calc object and load up its params
+	VRcalcStarStar VRCss;
+	if (SSO.simulate_StarStar==true)
+		VRCss.primaryStarRVs = SSO.primaryStarRVs;
+	else
+		VRCss.primaryStarRVs = false;
+
 	// log and maybe print all inputs to C++ call
 	string inputsStr;
 	inputsStr = ss.str();
@@ -746,12 +759,6 @@ int main(int argc ,char *argv[])
         	{
         		if ( SSO.silent==false )
         			cout<<"Starting to calculate residual vel for star-planet"<<endl;
-        		// instantiate S-P calc object and load up its params
-        		VRcalcStarPlanet VRCsp
-        		if (SSO.simulate_StarPlanet==true)
-					VRCsp.primaryStarRVs = SSO.primaryStarRVs;
-				else
-					VRCsp.primaryStarRVs = false;
         		VRCsp = GT.VRcalcStarPlanetLoadUp(RVdo);
         		//K_p_errorPercent = VRCsp.K_p_error/VRCsp.K_p;
         		//cout<<"K_p_errorPercent = "<<K_p_errorPercent <<endl;
@@ -780,12 +787,6 @@ int main(int argc ,char *argv[])
         	{
         		if ( SSO.silent==false )
         			cout<<"Starting to calculate residual vel for star-star"<<endl;
-        		// instantiate S-S calc object and load up its params
-        		VRcalcStarStar VRCss;
-        		if (SSO.simulate_StarStar==true)
-        			VRCss.primaryStarRVs = SSO.primaryStarRVs;
-        		else
-        			VRCss.primaryStarRVs = false;
         		VRCss = GT.VRcalcStarStarLoadUp(RVdo);
         		VRCss.verbose = false;
         		// run through all RV data sets and calc residuals for it

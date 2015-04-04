@@ -4,7 +4,7 @@
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 chiSquaredMax =5.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =5000000
+numSamples =1000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
@@ -25,16 +25,16 @@ RVdataFilename =RVdata.dat
 outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-outputData_filenameRoot = FakeData-DIonly-VeryTight-PrimaryRVs-ToEQUALTc-UpdatedErrors-FINALsdf
+outputData_filenameRoot = FakeData-3D-VeryTight-PrimaryRVs-ToEQUALTc-UpdatedErrors-FINALsdf
 #*************************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-RVonly =false
+RVonly =true
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-DIonly =true
+DIonly =false
 # Set to true to perform standard Monte Carlo only, else MCMC will be used [bool]
-mcONLY =False
+mcONLY =false
 # Set to true to perform SimulateAnnealing, else MCMC will be used [bool]
-simAnneal =false
+simAnneal =true
 # Simulated Annealing starting temperature [double]
 startTemp =100.0
 # make plot of posterior distributions? [bool]
@@ -56,7 +56,7 @@ CalcBurnIn =False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths =false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal =3000000
+numSamples_SimAnneal =30
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots =false
 # Make plots of Simulated Annealing progress plots? [bool]
@@ -85,7 +85,7 @@ simulate_PrimaryOrbitRV = false
 # Are the RVs in the RVdata.dat for the Primary star? [bool]
 primaryStarRVs = true
 # take the time of center transit (inferior conjunction) into account? [bool]
-TcEqualT = false
+TcEqualT = true
 # force 180deg to be added to RV orbit fit [bool]
 argPeriPlusPiRV = false
 ##################################################

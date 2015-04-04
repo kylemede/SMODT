@@ -97,7 +97,8 @@ void simAnealOrbFuncObj::simulator()
 		VRCss.primaryStarRVs = SSO.primaryStarRVs;
 	else
 		VRCss.primaryStarRVs = false;
-
+	cout<<"VRCss.primaryStarRVs = "<<VRCss.primaryStarRVs <<endl;
+	cout<<"VRCsp.primaryStarRVs = "<<VRCsp.primaryStarRVs <<endl;
 	sigmaPercent_latest = sigmaPercent;
 	string startParamsGenStr;
 	// Determine if K will be a varied parameter

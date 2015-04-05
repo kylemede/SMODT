@@ -509,13 +509,9 @@ void SimSettingsObj::findArgPeriOffsets()
 	argPeriOffsetRV = 0.0;
 	//first using RV special bools
 	if ((primaryStarRVs)&&(simulate_PrimaryOrbitRV))
-	{
 		argPeriOffsetDI=-180.0;
-	}
 	else if ((primaryStarRVs)&&(simulate_PrimaryOrbitRV==false))
-	{
 		argPeriOffsetRV=180.0;
-	}
 	//now update due to fixed argPeriPlus values
 	argPeriOffsetRV+=argPeriPlusRV;
 	argPeriOffsetDI+=argPeriPlusDI;

@@ -217,14 +217,8 @@ def multiProcessStarter(paramSettingsDict):
         PMlogFile.write(s)
         DIdataDict = tools.di.DIdataToDict(DIdatafilename)
         orbitEllipsePlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'orbitEllipsePlot')
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #$$$$$$$$$$$$  NOTE: We were not sure if there was a 180deg shift  $$$$$$$$$$$$
-        #$$$$$$$$$$$$        in argPeri between DI and RV models...        $$$$$$$$$$$$
-        if False:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            argPeriUse = bestOrbit[6]+180.0#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        else:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            argPeriUse = bestOrbit[6]#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #update argPeri value to take offset into account
+        argPeriUse = bestOrbit[6]+paramSettingsDict['argPeriOffsetDI']
         tools.plot.orbitEllipsePlotter(bestOrbit[0],bestOrbit[1],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7],\
                              sysDataDict,DIdataDict,plotFilename=orbitEllipsePlotFilename,show=False,To=bestOrbit[2], nuDI=nuDI)          
         s = '\n**** Back from making a DI orbit plot ***\n'
@@ -244,16 +238,10 @@ def multiProcessStarter(paramSettingsDict):
         print s
         PMlogFile.write(s)
         RVdataDict = tools.rv.RVdataToDict(RVdatafilename)
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #$$$$$$$$$$$$  NOTE: We were not sure if there was a 180deg shift  $$$$$$$$$$$$
-        #$$$$$$$$$$$$        in argPeri between DI and RV models...        $$$$$$$$$$$$
-        if True:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            argPeriUse = bestOrbit[6]+180.0#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        else:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            argPeriUse = bestOrbit[6]#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         rvPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'orbitRVplot')
         if paramSettingsDict['loopedMCMC']==False:
+            #update argPeri value to take offset into account
+            argPeriUse = bestOrbit[6]+paramSettingsDict['argPeriOffsetRV']
             # full orbit
             tools.plot.rvPlotter(bestOrbit[1],bestOrbit[2],bestOrbit[3],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7], \
                   sysDataDict,RVdataDict,paramSettingsDict,K=bestOrbit[8],RVoffsets=bestOrbit[9],\
@@ -368,7 +356,7 @@ def multiProcessStarter(paramSettingsDict):
                 print 'Deleting file: '+os.path.basename(filename)
                 os.remove(filename)
     ## delete GR chain files if requested
-    if paramSettingsDict['delGRchainFiles']:
+    if (paramSettingsDict['delGRchainFiles'] and (len(dataFiles)>1)):
         print '\n\nDeleting final output GR chain value files\n'+"-"*40
         for chainNum in range(1,len(dataFiles)+1):
             filename = os.path.join(paramSettingsDict['outputData_dir'],"gelmanRubin-chain_"+str(chainNum)+".txt")

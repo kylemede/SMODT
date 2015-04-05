@@ -1922,16 +1922,34 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                     print 'failed line had length:'+str(len(line))
     else:
         print 'ERROR: Settings file, '+inputSettingsFile+', does NOT exist!'
-        
+      
+    #######################################################
+    ## determine argPeriOffsetRV and argPeriOffsetDI values
+    #######################################################
+    returnDict['argPeriPlusRV']  
+    argPeriOffsetDI = 0
+    argPeriOffsetRV = 0
+    #first using RV special bools
+    if (returnDict['primaryStarRVs'] and returnDict['simulate_PrimaryOrbitRV']):
+        argPeriOffsetDI=-180.0
+    elif (returnDict['primaryStarRVs'] and(returnDict['simulate_PrimaryOrbitRV']==False)):
+        argPeriOffsetRV=180.0
+    #now update due to fixed argPeriPlus values
+    argPeriOffsetRV+=returnDict['argPeriPlusRV']
+    argPeriOffsetDI+=returnDict['argPeriPlusDI']
+    returnDict['argPeriOffsetRV'] = argPeriOffsetRV
+    returnDict['argPeriOffsetDI'] = argPeriOffsetDI
+      
+    ############################################################
+    ## Output a version of the file with updated values to disk?
+    ############################################################
     if outputSettingsFile!="":
         # write output version of lines to an output settings file
         fOut = open(outputSettingsFile,'w')
         fOut.writelines(outLines)
         fOut.close()
-        
         if silentInternal==False:
             print 'Output settings file written to: '+outputSettingsFile
-        
         # Replace input file with output one with new default values and such
         if (os.path.exists(inputSettingsFile) and os.path.exists(outputSettingsFile) and replaceInputFile):
             # both are on disk, so kill input one and rename output one to that name

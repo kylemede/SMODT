@@ -2,13 +2,13 @@
 # Fake data using Tim's model
 
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
-chiSquaredMax =5.0
+chiSquaredMax =500.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =10000
+numSamples =700000
 # The number of times to print status updates to the screen/terminal during the run [int]
-numSamplePrints =2
+numSamplePrints =10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing =false
+useMultiProcessing =true
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -25,18 +25,19 @@ RVdataFilename =RVdata.dat
 outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-outputData_filenameRoot = FakeData-RVonly-VeryTight-PrimaryRVs-ToEQUALTc-UpdatedErrors-DEBUGGING
+outputData_filenameRoot = FakeData-DIonly-openParams-PrimaryRVs-ToEQUALTc-FINAL
 #*************************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-RVonly =true
+RVonly =false
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
-DIonly =false
-# Set to true to perform standard Monte Carlo only, else MCMC will be used [bool]
+DIonly =true
+## if both mcONLY and simAnneal are set to false, then MCMC will be used!
+# Set to true to perform standard Monte Carlo only[bool]
 mcONLY =false
-# Set to true to perform SimulateAnnealing, else MCMC will be used [bool]
-simAnneal =true
+# Set to true to perform SimulateAnnealing[bool]
+simAnneal =false
 # Simulated Annealing starting temperature [double]
-startTemp =100.0
+startTemp =500.0
 # make plot of posterior distributions? [bool]
 makePosteriorsPlot =true
 # make plots of RV and DI/AM orbit fits [bool]
@@ -56,7 +57,7 @@ CalcBurnIn =False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths =false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal =30
+numSamples_SimAnneal =5000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots =false
 # Make plots of Simulated Annealing progress plots? [bool]
@@ -65,6 +66,8 @@ makeSimAnnealProgPlots =false
 CalcGelmanRubin =true
 # How many times do you want the Gelman-Rubin statistic calculated [int]
 numTimesCalcGR =100
+# Delete Gelman Rubin chain files after?  Still keeps resulting single 'GRvalues.txt' file though. [bool]
+delGRchainFiles = true
 # Set to true to perform the 100 mod dataset MCMC loop $$ NOTE, this might not work as I haven't checked it still works... [bool]
 loopedMCMC =False
 
@@ -99,35 +102,35 @@ argPeriPlusDI = 0.0
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]#130
-longAN_degMIN =67
+longAN_degMIN =10
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]#210
-longAN_degMAX =72.0
+longAN_degMAX =180
 # Minimum allowed value for the Eccentricity [double]
-eMIN =0.48
+eMIN =0.2
 # Maximum allowed value for the Eccentricity　[double]
-eMAX =0.52
+eMAX =0.7
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMIN =3.25
+a_totalMIN =2
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMAX =3.43
+a_totalMAX =5
 # Minimum allowed value for the Period [double][yrs]#0.05
-periodMIN =4.90
+periodMIN =3
 # Maximum allowed value for the Period [double][yrs]#0.064
-periodMAX =5.05
+periodMAX =7
 # Minimum allowed value for the Inclination [double][deg]#86
-inclination_degMIN =38
+inclination_degMIN =10
 # Maximum allowed value for the Inclination [double][deg]#88.5
-inclination_degMAX =42
+inclination_degMAX =80
 # Minimum allowed value for the Argument of Perigee [double][deg]#250
-argPeri_degMIN =48
+argPeri_degMIN =10
 # Maximum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMAX =52
+argPeri_degMAX =180
 # Minimuim value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(0 indicates to use value in SystemData.txt always, -1 indicates to use [earliestsEpoch-period,earliestEpoch])
-T_Min =2456996
+T_Min =2456800
 # Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(0 indicates to use value in SystemData.txt always, -1 indicates to use [earliestsEpoch-period,earliestEpoch])
-T_Max =2457003
+T_Max =2457900
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
 K_MIN =0
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]

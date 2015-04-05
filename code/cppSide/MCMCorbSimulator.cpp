@@ -649,13 +649,8 @@ int main(int argc ,char *argv[])
 		//NOTE: this function clears the memory of the vector, so it
 		//      must be performed AFTER all other functions that need
 		//	    those vectors.
-		if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		{//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			if (SSO.CalcGelmanRubin==true)
-			{
-				GT.gelmanRubinStage1(MCMCOFO.ODT,SSO.numTimesCalcGR);
-			}
-		}//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		if ((SSO.useMultiProcessing)&&(SSO.CalcGelmanRubin))
+			GT.gelmanRubinStage1(MCMCOFO.ODT,SSO.numTimesCalcGR);
     }
 
 	return EXIT_SUCCESS;

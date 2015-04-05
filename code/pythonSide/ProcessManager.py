@@ -367,6 +367,13 @@ def multiProcessStarter(paramSettingsDict):
             for filename in dataFiles:
                 print 'Deleting file: '+os.path.basename(filename)
                 os.remove(filename)
+    ## delete GR chain files if requested
+    if paramSettingsDict['delGRchainFiles']:
+        print '\n\nDeleting final output GR chain value files\n'+"-"*40
+        for chainNum in range(1,len(dataFiles)+1):
+            filename = os.path.join(paramSettingsDict['outputData_dir'],"gelmanRubin-chain_"+str(chainNum)+".txt")
+            print 'Deleting file: '+os.path.basename(filename)
+            os.remove(filename)
     ## delete combined data files if requested
     if paramSettingsDict['delCombinedDataAfter']:
         print '\nDeleting combined data files\n'+"-"*40
@@ -374,8 +381,8 @@ def multiProcessStarter(paramSettingsDict):
         os.remove(dataFinalFilename)
         if cleanDataFilename!='':
             print 'Deleting file: '+cleanDataFilename
-            os.remove(cleanDataFilename)    
-    
+            os.remove(cleanDataFilename)
+                
     s= '\n**** EVERYTHING FINISHED ****\n'
     print s
     PMlogFile.write(s)

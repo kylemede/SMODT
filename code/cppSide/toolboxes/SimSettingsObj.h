@@ -11,6 +11,7 @@ public:
 	double chiSquaredMax;
 	int numSamples;
 	int numSamples_SimAnneal;
+	bool useMultiProcessing;
 	int startTemp;
 	int numSamplePrints;
 	bool silent;
@@ -25,7 +26,7 @@ public:
 	bool DIonly;
 	bool mcONLY;
 	bool simAnneal;
-	// advanced RV settings
+	// advanced RV and DI settings
 	bool simulate_StarStar;
 	bool simulate_StarPlanet;
 	bool simulate_PrimaryOrbitRV;

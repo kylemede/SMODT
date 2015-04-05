@@ -395,7 +395,7 @@ void simAnealOrbFuncObj::simulator()
 
 	// temp and sigma tunning params
 	int numSamplesSimAnneal = int(double(numSamples_SA)*(percentSimAnneal/100.0));
-	int numSamplesMCMC = numSamples_SA-numSamplesSimAnneal;
+	int numSamplesSigmaTune = numSamples_SA-numSamplesSimAnneal;
 	int dropTempTime = numParams*int((1.0/double(numParams))*(tempStepSizePercent/100.0)*double(numSamplesSimAnneal));;
 	int switchToMCMCsample = int(double(numSamples_SA)*(percentSimAnneal/100.0));
 	int numTempSteps = int(100.0/tempStepSizePercent);
@@ -409,8 +409,8 @@ void simAnealOrbFuncObj::simulator()
 	bool latestParamsSaved;
 	double acceptedCounter = 0;
 	double samplesTillAcceptRateCalc = 0;
-	double acceptCalcTime = int(double(numSamplesMCMC)/1000.0);
-	if (numSamplesMCMC>100000)
+	double acceptCalcTime = int(double(numSamplesSigmaTune)/1000.0);
+	if (numSamplesSigmaTune>100000)
 	{
 		if (acceptCalcTime<500)
 			acceptCalcTime=500;
@@ -428,11 +428,11 @@ void simAnealOrbFuncObj::simulator()
 	// Printing block for loop/starting params
 	string startParms;
 	ss<<"\n**************************************************************"<<endl;
-	ss<<"\nConducting simAnneal on "<<int(percentSimAnneal)<<"% of samples, last "<<int(100.0-percentSimAnneal)<<"% will be MCMC!\n"<<endl;
+	ss<<"\nConducting simAnneal on "<<int(percentSimAnneal)<<"% of samples, last "<<int(100.0-percentSimAnneal)<<"% will be Sigma Tuning MCMC!\n"<<endl;
 	ss<<"Important loop counters and params:"<<endl;
 	ss<<"numSamples_SA = "<<numSamples_SA <<endl;
 	ss<<"numSamplesSimAnneal = "<<numSamplesSimAnneal<<endl;
-	ss<<"numSamplesMCMC = "<<numSamplesMCMC<<endl;
+	ss<<"numSamplesSigmaTune = "<<numSamplesSigmaTune<<endl;
 	ss<<"tempStepSizePercent = "<<tempStepSizePercent<<endl;
 	ss<<"sigmaPercent_min = "<<sigmaPercent_min <<endl;
 	ss<<"sigmaPercent_min_mcmc = "<< sigmaPercent_min_mcmc<<endl;

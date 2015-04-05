@@ -1807,7 +1807,7 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                             valUse = int(val)
                         except:
                             print "Value found in settings file for numTimesCalcGR, '"+val+"', was invalid."
-                            print "Using default value of 1e6."
+                            print "Using default value of 100."
                             valUse = 100
                         if (valUse<=0)or(valUse>10000): 
                             print 'Value found in settings file for numTimesCalcGR, '+val+\
@@ -1817,6 +1817,10 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                         returnDict['numTimesCalcGR'] = valUse
                         if verbose:
                             print 'numTimesCalcGR found to be = '+str(returnDict['numTimesCalcGR'])
+                    elif 'delGRchainFiles'in key:
+                        returnDict['delGRchainFiles'] = strToBool(val,False)
+                        if verbose:
+                            print 'delGRchainFiles found to be = '+str(returnDict['delGRchainFiles'])
                     elif 'makeOrbitPlots'in key:
                         returnDict['makeOrbitPlots'] = strToBool(val,True)
                         if verbose:

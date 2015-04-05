@@ -27,6 +27,7 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 	// defaults replaced later in this func.
 	chiSquaredMax=1e6;
 	numSamples=1e6;
+	useMultiProcessing = true;
 	startTemp = 100.0;
 	numSamples_SimAnneal = 1e6;
 	numSamplePrints=10;
@@ -166,6 +167,12 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 					ss.str(std::string());
 					if (verboseInternal)
 						cout<<"numSamplePrints: "<<numSamplePrints<<endl;
+				}
+				else if (key.compare("useMultiProcessing")==0)
+				{
+					useMultiProcessing = boolParser(val);
+					if (verboseInternal)
+						cout<<"useMultiProcessing: "<<GT.boolToStr(useMultiProcessing)<<endl;
 				}
 				else if (key.compare("silent")==0)
 				{

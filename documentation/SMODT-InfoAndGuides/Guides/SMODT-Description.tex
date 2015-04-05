@@ -350,6 +350,9 @@ The Gelman Rubin statistic (R) gives an indication on the simulations convergenc
 {\bf numTimesCalcGR}\\
 How often should the R values be calculate?  This calculation is very heavy, so a smaller number is good, but remember you also want to know how the simulation is progressing as well.  A happy middle would be $\sim$ 100.
 
+{\bf delGRchainFiles}\\
+Delete the output Gelman Rubin value files for each chain after the simulation is complete?  This should basically always be `true' as only the resulting `GRvalues.txt' is useful after simulation is complete, the individual chain versions are just used to calculate it. 
+
 {\bf simulate\_StarStar }\\
 Simulate a Star-Star system?  ie. a binary.
 

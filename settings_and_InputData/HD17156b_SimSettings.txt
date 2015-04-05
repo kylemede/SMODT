@@ -1,4 +1,5 @@
 #These are all the general settings for the simulation
+# Narita2009 system to compare to for HD17156b
 
 # Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
 Duo =true
@@ -24,38 +25,35 @@ DIdataFilename =DIdata.dat
 RVdataFilename =RVdata.dat
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
-# General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]#
-#########################################################################################################################
-outputData_filenameRoot = HD17156b-ToNOTequalTc-calcT0Withomega
-#########################################################################################################################
+# General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
+#*************************************************************************************************************************
+outputData_filenameRoot = HD17156b-ToNOTequalTc-calcT0Withomega-test
+#*************************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =true
 # Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 DIonly =false
-# Set to true to perform standard Monte Carlo only, else advanced MCMC will be used
-mcONLY =False
-# Set to true to perform SimulateAnnealing, else MCMC will be used !!! TEMP!!!!!!!
+## if both mcONLY and simAnneal are set to false, then MCMC will be used!
+# Set to true to perform standard Monte Carlo only[bool]
+mcONLY =false
+# Set to true to perform SimulateAnnealing[bool]
 simAnneal =false
-# Set to true to perform the 100 mod dataset MCMC loop
-loopedMCMC =False
+# Simulated Annealing starting temperature [double]
+startTemp =500.0
 # make plot of posterior distributions? [bool]
 makePosteriorsPlot =true
 # make plots of RV and DI/AM orbit fits [bool]
 makeOrbitPlots =true
-# Make plots of Simulated Annealing progress plots? [bool]
-makeSimAnnealProgPlots =false
-# Simulated Annealing starting temperature [double]
-startTemp =500.0
 # Delete chain files after simulation is complete? [bool]
 delChainsAfter =true
 # Delete combined data files after simulation is complete? [bool]
 delCombinedDataAfter =true
-# Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
-TcStepping =false
 # Copy output non-data files to a Dropbox folder? [bool]
 CopyToDrobox =false
 
-# Settings for MCMC mode (triggered by setting mcONLY=simAnneal=false):
+############################
+# Settings for MCMC mode ###
+############################
 # Calculate the length of the burn in for each chain? [bool] 
 CalcBurnIn =False
 # Calculate the Correlation lengths of each chain? [bool]
@@ -64,12 +62,21 @@ calcCorrLengths =false
 numSamples_SimAnneal =1000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots =false
+# Make plots of Simulated Annealing progress plots? [bool]
+makeSimAnnealProgPlots =false
 # Calculate the Gelman-Rubin statistic? [bool]
 CalcGelmanRubin =true
 # How many times do you want the Gelman-Rubin statistic calculated [int]
 numTimesCalcGR =100
+# Delete Gelman Rubin chain files after?  Still keeps resulting single 'GRvalues.txt' file though. [bool]
+delGRchainFiles = true
+# Set to true to perform the 100 mod dataset MCMC loop $$ NOTE, this might not work as I haven't checked it still works... [bool]
+loopedMCMC =False
 
-# Settings for possible RV cases:
+#####################################
+# Special settings for the models ###
+#####################################
+## Settings for possible RV cases:
 # If RV data is of a companion star, set simulate_StarStar=true
 # If RV data is of a companion planet, set simulate_StarPlanet=true
 # Both of these can NOT be true, one MUST be false at least.
@@ -77,9 +84,25 @@ numTimesCalcGR =100
 # be set in the 'SystemData.txt' file to ensure it is included in 
 # residual velocity calculations.
 simulate_StarStar =false
-simulate_StarPlanet =true
+simulate_StarPlanet =true 
+# fit to the primary's RV orbit [bool]
+simulate_PrimaryOrbitRV = true
+# Are the RVs in the RVdata.dat for the Primary star? [bool]
+primaryStarRVs = true
+# take the time of center transit (inferior conjunction) into account? [bool]
+TcEqualT = false
+# force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
+argPeriPlusRV = 0.0
+##################################################
+## Special settings DI model:
+# Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
+TcStepping = false
+# force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
+argPeriPlusDI = 0.0
 
+###################################################
 # Ranges for acceptable random number inputs ######
+###################################################
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]
 longAN_degMIN = 0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]

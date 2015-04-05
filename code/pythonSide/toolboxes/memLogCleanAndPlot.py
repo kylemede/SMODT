@@ -1,14 +1,30 @@
 import pylab
 import os
 import numpy as np
+from subprocess import Popen
 plt = pylab.matplotlib.pyplot
 
-def memUsageLogCleaner(filename = ''):
+def starter(paramSettingsDict,sleep=6):
+    FNULL=open(os.devnull,'w')
+    toolDir = os.path.join(paramSettingsDict['pythonCodeDir'],'toolboxes')
+    shScriptPath = os.path.join(toolDir,'ramLogger.sh')
+    memLogFilename = os.path.join(paramSettingsDict['outputData_dir'],"RAMusage.log")
+    memTracProc = Popen([shScriptPath,memLogFilename,str(sleep)],stdout=FNULL)
+    return (memTracProc,memLogFilename)
+
+def wrapUp(proc,memLogFilename):
+    proc.terminate()
+    maxUse = memUsageLogCleaner(memLogFilename)
+    return maxUse
+    
+def memUsageLogCleaner(filename = '',sleep=6,delOrigLog=True):
     """
-    A function I whiped together to clean up a RAM usage log produced with a super simple bash script.
+    A function I whipped together to clean up a RAM usage log produced with a super simple bash script.
     """ 
     if filename=="":
         filename = "/mnt/Data1/Todai_Work/Data/data_SMODT/RAMusage.log"
+    
+    print "\n\nRunning RAM usage log clean up and plotter\n"
     print 'Input RAMusage log file: '+filename
     f = open(filename,'readonly')
     fnamOut = os.path.abspath(filename)[:-4]+"_clean.log"
@@ -16,6 +32,7 @@ def memUsageLogCleaner(filename = ''):
     lines = f.readlines()
     f.close()
     fOut.write("total[MB]   Used[%] \n")
+    used = []
     mem = []
     for line in lines:
         if line[0]=="M":
@@ -24,13 +41,16 @@ def memUsageLogCleaner(filename = ''):
             #print repr(l)
             usedPercent = int((float(l[1])/float(l[0]))*100.)
             lineOut = "  "+str(l[0])+"        "+str(usedPercent)+"\n"
+            used.append(float(l[1]))
             fOut.write(lineOut)
             mem.append(usedPercent)
             #print repr(lineOut)
     fOut.close()
     print "cleaned RAMusage log file written to: "+fnamOut
+    os.remove(filename)
+    print "Original RAMusage log deleted"
     if True:
-        times = np.arange(len(mem))*(1.0/6.0)
+        times = np.arange(len(mem))*(sleep/3600.0)
         fig = plt.figure(1, figsize=(15,10),dpi=200)
         subPlot = fig.add_subplot(111)
         subPlot.plot(times,mem)
@@ -39,6 +59,11 @@ def memUsageLogCleaner(filename = ''):
         plotname = os.path.abspath(filename)[:-4]+"_clean.png"
         plt.savefig(plotname, orientation='landscape')
     print "RAMusage plot written to: "+plotname
+    used=np.array(used)
+    maxUse = used.max()-used.min()
+    print "Max RAM used during simulation was "+str(maxUse)+" MB"
+    return maxUse
     
+        
 if __name__ == '__main__':
     memUsageLogCleaner() 

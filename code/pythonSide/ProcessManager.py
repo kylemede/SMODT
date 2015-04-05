@@ -35,7 +35,6 @@ class singleProcessStarter(Process):
         self.process(simSettingsFilename=self.simSettingsFilename, 
                      filename=self.filename, cppCodeDir=self.cppCodeDir, 
                      simAnneal=self.simAnneal, mcONLY=self.mcONLY ,loopedMCMC=self.loopedMCMC)
-        
     
     def process(self, simSettingsFilename, filename, cppCodeDir, simAnneal, mcONLY, loopedMCMC):
     
@@ -57,7 +56,7 @@ class singleProcessStarter(Process):
         os.system(CplusplusCodeCALL)
         if False:
             print 'call completed'
-        
+                   
 def multiProcessStarter(paramSettingsDict):
     """
     This is the master function to start a multiprocess SMODT simulator run.
@@ -72,9 +71,12 @@ def multiProcessStarter(paramSettingsDict):
         cFileToSimSettingsDict function that converts the SimSettings.txt into
         a Python dictionary.
     """
-    #set up Python log file name and open file
+    ##set up Python log file name and open file
     logFilename = os.path.join(paramSettingsDict['outputData_dir'],"processManagerLogFile.txt")
     PMlogFile = open(logFilename,'a')
+    
+    ##Start a process that tracks the memory usage in the background
+    (memTracProc,memLogFilename) = tools.memTracker.starter(paramSettingsDict)
     
     ###############################################################
     # make call to 'make' to build the C++ code for this simulation
@@ -333,7 +335,7 @@ def multiProcessStarter(paramSettingsDict):
     ############################################################
     # finish the Gelman-Rubin statistic calculations if requested
     ############################################################
-    if paramSettingsDict['CalcGelmanRubin']and(paramSettingsDict['simAnneal']==False):
+    if paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing']:
         tools.gen.gelmanRubinStage2(dataFiles)    
     
     ############################################################
@@ -450,8 +452,13 @@ def multiProcessStarter(paramSettingsDict):
         for fileNum in range(0,len(origFiles)):
             if os.path.exists(origFiles[fileNum]):
                 shutil.copy(origFiles[fileNum],copyFiles[fileNum])
-            
-        
+    
+    ####################################################################################################
+    ## perform final wrap up functions, ie finish tracking RAM use and recored simulations total results
+    ####################################################################################################    
+    ##wrap up background process tacking RAM use and plot results
+    maxRAMuse = tools.memTracker.wrapUp(memTracProc,memLogFilename)
+    tools.gen.recordResults(paramSettingsDict,maxRAMuse)
    
 ##############################################################
 ## end

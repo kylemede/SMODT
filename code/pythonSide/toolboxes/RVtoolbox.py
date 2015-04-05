@@ -186,9 +186,9 @@ def subtractPlanetRV(rvDataFilename,e_p,p_p,K_p,argPeri_p,T_p):
 
 def vrCalculatorPlanetMassType(t,e,T,period,argPeri,M1,T_center=0,M2SineI=False, K=False, verbose=False):
     """
-    NOTE: Specific version for a companion planet, general version is vrCalculatorMassType.
+    NOTE: Specific version ONLY for a companion planet, general version is vrCalculatorMassType.
     
-    Version for when the companion is a planet.  Thus it calculates the residual velocity 
+    Version ONLY for when the companion is a planet.  Thus it calculates the residual velocity 
     assuming this and the consequence that (M1+M2~=M1).  Returns residual velocity 
     of the primary star!! due to the planet, not the the vel of the planet.
     
@@ -329,17 +329,8 @@ def vrCalculatorSemiMajorType(t,e,T,period,argPeri,a1,T_center=0,i=False, K=Fals
         # convert units of years to seconds
         seconds_per_yr = 31557600.0
         period_seconds = period*seconds_per_yr
-        #M1_kg = M1*1.98892e30
-        #M2_kg = M2*1.98892e30
         meters_per_AU = 149598000000.0
         a1_meters = a1*meters_per_AU
-        
-#        # Calc K in parts to see equation better
-#        A = ((2.0*pi*6.67e-11*(M1_kg+M2_kg))/period_seconds)**(1.0/3.0)
-#        B = M2_kg/M1_kg
-#        C = math.sin(math.radians(i))/math.sqrt(1.0-e**2)
-#        # put it all together
-#        K = A*B*C
         
         # Calc K in parts to see equation better
         A = (2.0*pi)/period_seconds

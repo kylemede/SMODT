@@ -17,6 +17,43 @@ This toolbox is a collection of the calculator type functions that were used in 
 places throughout the code to conduct various types of binary star system simulations.
 """   
 
+def recordResults(paramSettingsDict,maxRAMuse):
+    """
+    A function to clean up the results and make a single text file 
+    summarizing them.
+    """
+    datadir = paramSettingsDict['outputData_dir']
+    resultsFile = open(os.path.join(datadir,"RESULTS.txt"),'w')
+    
+    resultsFile.write("Max RAM occupied during simulation was "+str(maxRAMuse)+" MB\n")
+    
+    if paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing']:
+        header = "Lc  longAN  e  To  Tc  period  inclination  argPeri  a_total  K"
+        headings = header.split()
+        
+        #first find resulting GR values
+        GRfilename = os.path.join(datadir,'GRvalues.txt')
+        grf = open(GRfilename)
+        lns = grf.readlines()
+        grResults = lns[-1].split()
+        resultsFile.write(header+'\n')
+        resultsFile.write(lns[-1]+'\n')
+        wrstInt = 0
+        wrstVal = 0.0
+        for i in range(1,len(headings)):
+            if float(grResults[i])>wrstVal:
+                wrstVal=float(grResults[i])
+                wrstInt=i
+        resultsFile.write("Least converged value was that of "+headings[wrstInt]+" = "+str(wrstVal)+'\n')
+    
+    
+    
+    
+    
+    
+    resultsFile.close()
+    print "*"*60+"\n"+"Final results file written to: "+os.path.join(datadir,"RESULTS.txt")+"\n"+"*"*60
+
 def bestOrbitFileToList(filename=''):
     """
     This will pull out the best fit values in the 'bestOrbit.txt' file produced with the 

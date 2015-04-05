@@ -95,14 +95,6 @@ void MCMCorbFuncObj::simulator()
 
 	double Kp_calculated=0;
 	double Ks_calculated=0;
-	if (SSO.simulate_StarPlanet==true)
-		VRCsp.primaryStarRVs = SSO.primaryStarRVs;
-	else
-		VRCsp.primaryStarRVs = false;
-	if (SSO.simulate_StarStar==true)
-		VRCss.primaryStarRVs = SSO.primaryStarRVs;
-	else
-		VRCss.primaryStarRVs = false;
 	//*****************************************************************************
 	// set up starting values for input params
 	//*****************************************************************************
@@ -654,6 +646,11 @@ void MCMCorbFuncObj::simulator()
 					//cout<<"Back from VRcalcStarPlanetLoadUp"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$
 					//cout<<"there were "<<RVdo.epochs_RV.size()<<" datasets found in the RVdata file"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$
 					VRCsp.verbose = false;
+					//Set value for primaryStarRVs boolean
+					if (SSO.simulate_StarPlanet==true)
+						VRCsp.primaryStarRVs = SSO.primaryStarRVs;
+					else
+						VRCsp.primaryStarRVs = false;
 					// run through all RV data sets and calc residuals for it
 					for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
 					{
@@ -699,6 +696,10 @@ void MCMCorbFuncObj::simulator()
 					else
 						VRCss = GT.VRcalcStarStarLoadUp(RVdo);
 					VRCss.verbose = false;
+					if (SSO.simulate_StarStar==true)
+						VRCss.primaryStarRVs = SSO.primaryStarRVs;
+					else
+						VRCss.primaryStarRVs = false;
 					// run through all RV data sets and calc residuals for it
 					for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
 					{

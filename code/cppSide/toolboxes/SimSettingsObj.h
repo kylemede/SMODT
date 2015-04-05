@@ -35,8 +35,8 @@ public:
 	bool TcStepping;
 	bool primaryStarRVs;
 	bool TcEqualT;
-	bool argPeriPlusPiRV;
-	bool argPeriPlusPiDI;
+	double argPeriPlusRV;
+	double argPeriPlusDI;
 	double argPeriOffsetDI;
 	double argPeriOffsetRV;
 

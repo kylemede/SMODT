@@ -189,8 +189,8 @@ There are 3 main modes that SMODT can be ran in (Astrometry only, Radial Velocit
 %When astrometry measurments were first used to fit the orbits of companion planets or stars, the companion was commonly not seen and only the movement of the primary with respect to the background stars was measured.  As was discussed in section (\ref{sec:BinaryOrbElements}), it is possible to fit to the the orbits of the primary, secondary or the combined orbit.  Recently, the measured astrometry is for the secondary with respect to the primary, and therefore it is the combined orbit that is of interest.  In the combined orbit, all the orbital elements are the same, except the semi-major axis ($a$) and the argument of periapsis ($\omega$).  To allow the user to fit to whateever orbit they like, a number of special settings are provided.
 Most of the key differences for fitting choices are in the Radial Velocity model.  In some cases there is a need to add a fixed 180$^{\circ}$ to the $\omega$ value used in the Astrometry model.  Thus, the following parameter is available to do that:
 
-{\bf argPeriPlusPiDI}\\
-This is a forcing boolean to add a fixed 180$^{\circ}$ to the value of the $\omega$ used in the astrometry model.
+{\bf argPeriPlusDI}\\
+This is a fixed value in degrees to be added to the value of the $\omega$ used in the DI model. ie. $\omega_{DImodel}=\omega+argPeriPlusRV$.
 %----------------------
 \subsection{Radial Velocity only (RVonly)}
 The key reason for needing to fit to different Radial Velocity orbits, is the occasional lack of clarification of what the provided RV data is of and which orbit is being fit.  In all cases it is only the values of $a$ and $\omega$ that differ.  Please keep in mind that instead of calculating the semi-major amplitude ($K$) from $a$, $i$, $P$ and $e$, one can set the max and min values allowed for the Inclination to zero and thus vary $K$ directly.  Also, the value of $\omega$ for the primary and secondary are offset from eachother by +/-180$^{\circ}$, with the sign being irrelivant as they both cause the resulting velocities to be of the opposite sign (ie. if primary velocity is positive for a particular epoch, then the secondary's would be negative, and vice-versa).  Although there is no difference, we shall follow the same convention as \citet{Shulze-Hartung}; $\omega_{primary} = \omega_{secondary} +180^{\circ}$
@@ -226,11 +226,11 @@ These all reduce down to those shown in table (\ref{tbl:3Dvals})
 {\bf TcEqualT}\\
 In cases where the inclination is within +/-15$^{\circ}$ of 90, the value of the time of center transit ($T\_c$) needs to also be taken into account to ensure the phase shift is correct.  As this phase is not always needed at inclination values outside this range, this is a parameter that the user can flag on and off to see how it affects the RV fit.  Note, that $T_c$ plays no role in the astrometry fitting, only RV.
 
-{\bf argPeriPlusPiRV}\\
-This is a forcing boolean to add a fixed 180$^{\circ}$ to the value of the $\omega$ used in the RV model.
+{\bf argPeriPlusRV}\\
+This is a fixed value in degrees to be added to the value of the $\omega$ used in the RV model. ie. $\omega_{RVmodel}=\omega+argPeriPlusRV$.
 %----------------------
 \subsection{3D}
-The settings specific to the Astrometry and Radial Velocity models are discussed above.  When fitting to both simultaneously the key thing to keep in mind is which value for $\omega$ is being varied and then the possibly modified version being input into the two different models.  To keep things clear, lets use a table to display the different cases.  Keep in mind that the user can use the `argPeriPlusPiRV' or `argPeriPlusPiDI' booleans to modify these defaults.
+The settings specific to the Astrometry and Radial Velocity models are discussed above.  When fitting to both simultaneously the key thing to keep in mind is which value for $\omega$ is being varied and then the possibly modified version being input into the two different models.  To keep things clear, lets use a table to display the different cases.  Keep in mind that the user can use the `argPeriPlusRV' or `argPeriPlusDI' settings to modify these defaults meet the user's needs.
 
 \begin{table}[h]
 \begin{center}

@@ -21,16 +21,13 @@ double RVtools::VRcalculatorSemiMajorType()
 
 	//check if modeling secondary RVs or the primary star's
 	double aUse = a1;
-	//cout<<"argPeri_deg = "<<argPeri_deg<<endl;
-	//cout<<"primaryStarRVs = "<<primaryStarRVs<<endl;
+	//if modeling secondary, then use a2 instead of a1 to calculate K
 	if (primaryStarRVs==false)
 		aUse = a_total-a1;
 	//Got K yet?
 	double Kuse;
 	if (fabs(K)>1)
-	{
 		Kuse = K;
-	}
 	else
 	{
 

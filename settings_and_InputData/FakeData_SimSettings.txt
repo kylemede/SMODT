@@ -4,9 +4,9 @@
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 chiSquaredMax =5.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =1000000
+numSamples =10000
 # The number of times to print status updates to the screen/terminal during the run [int]
-numSamplePrints =10
+numSamplePrints =2
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
 useMultiProcessing =false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
@@ -25,7 +25,7 @@ RVdataFilename =RVdata.dat
 outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-outputData_filenameRoot = FakeData-3D-VeryTight-PrimaryRVs-ToEQUALTc-UpdatedErrors-FINALsdf
+outputData_filenameRoot = FakeData-RVonly-VeryTight-PrimaryRVs-ToEQUALTc-UpdatedErrors-DEBUGGING
 #*************************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =true
@@ -86,14 +86,14 @@ simulate_PrimaryOrbitRV = false
 primaryStarRVs = true
 # take the time of center transit (inferior conjunction) into account? [bool]
 TcEqualT = true
-# force 180deg to be added to RV orbit fit [bool]
-argPeriPlusPiRV = false
+# force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
+argPeriPlusRV = 0.0
 ##################################################
 ## Special settings DI model:
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 TcStepping = false
-# force 180deg to be added to DI orbit fit [bool]
-argPeriPlusPiDI = false
+# force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
+argPeriPlusDI = 0.0
 
 ###################################################
 # Ranges for acceptable random number inputs ######

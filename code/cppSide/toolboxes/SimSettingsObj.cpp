@@ -51,8 +51,8 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 	TcStepping = true;
 	primaryStarRVs=true;
 	TcEqualT=true;
-	argPeriPlusPiRV=false;
-	argPeriPlusPiDI=false;
+	argPeriPlusRV=false;
+	argPeriPlusDI=false;
 
 	// Ranges for acceptable random number inputs ######
 	longAN_degMIN = 0.0; // [deg]
@@ -311,19 +311,24 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 					if (verboseInternal)
 						cout<<"TcEqualT: "<<GT.boolToStr(TcEqualT)<<endl;
 				}
-				else if (key.compare("argPeriPlusPiRV")==0)
+				else if (key.compare("argPeriPlusRV")==0)
 				{
-					argPeriPlusPiRV = boolParser(val);
+					ss<<val;
+					ss>>argPeriPlusRV;
+					ss.clear();
+					ss.str(std::string());
 					if (verboseInternal)
-						cout<<"argPeriPlusPiRV: "<<GT.boolToStr(argPeriPlusPiRV)<<endl;
+						cout<<"argPeriPlusRV: "<<argPeriPlusRV<<endl;
 				}
-				else if (key.compare("argPeriPlusPiDI")==0)
+				else if (key.compare("argPeriPlusDI")==0)
 				{
-					argPeriPlusPiDI = boolParser(val);
+					ss<<val;
+					ss>>argPeriPlusDI;
+					ss.clear();
+					ss.str(std::string());
 					if (verboseInternal)
-						cout<<"argPeriPlusPiDI: "<<GT.boolToStr(argPeriPlusPiDI)<<endl;
+						cout<<"argPeriPlusDI: "<<argPeriPlusDI<<endl;
 				}
-
 
 				// Next: check if it is a min/max setting
 				else if (key.compare("longAN_degMIN")==0)
@@ -504,11 +509,9 @@ void SimSettingsObj::findArgPeriOffsets()
 	{
 		argPeriOffsetRV=180.0;
 	}
-	//now update due to forced bools
-	if (argPeriPlusPiRV)
-		argPeriOffsetRV+=180.0;
-	if (argPeriPlusPiDI)
-		argPeriOffsetDI+=180.0;
+	//now update due to fixed argPeriPlus values
+	argPeriOffsetRV+=argPeriPlusRV;
+	argPeriOffsetDI+=argPeriPlusDI;
 }
 
 vector<double> rvOffsetsParser(string strIn)

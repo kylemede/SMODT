@@ -1806,7 +1806,7 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                         try:
                             valUse = int(val)
                         except:
-                            print "Value found in settings file for numSamples, '"+val+"', was invalid."
+                            print "Value found in settings file for numTimesCalcGR, '"+val+"', was invalid."
                             print "Using default value of 1e6."
                             valUse = 100
                         if (valUse<=0)or(valUse>10000): 
@@ -1865,15 +1865,37 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                     elif 'TcEqualT'in key:
                         valUse=returnDict['TcEqualT'] = strToBool(val,True)
                         if verbose:
-                            print 'TcEqualT found to be = '+str(returnDict['TcEqualT'])
-                    elif 'argPeriPlusPiRV'in key:
-                        valUse=returnDict['argPeriPlusPiRV'] = strToBool(val,False)
+                            print 'TcEqualT found to be = '+str(returnDict['TcEqualT'])                            
+                    elif 'argPeriPlusRV'in key:
+                        try:
+                            valUse = float(val)
+                        except:
+                            print "Value found in settings file for argPeriPlusRV, '"+val+"', was invalid."
+                            print "Using default value of 0.0."
+                            valUse = 0.0
+                        if (valUse<=-360.0)or(valUse>360.0): 
+                            print 'Value found in settings file for argPeriPlusRV, '+val+\
+                                ', was out of range [-360,'+str(360)+'].'
+                            print "Using default value of 0."  
+                            valUse = 0
+                        returnDict['argPeriPlusRV'] = valUse
                         if verbose:
-                            print 'argPeriPlusPiRV found to be = '+str(returnDict['argPeriPlusPiRV'])
-                    elif 'argPeriPlusPiDI'in key:
-                        valUse=returnDict['argPeriPlusPiDI'] = strToBool(val,False)
+                            print 'argPeriPlusRV found to be = '+str(returnDict['argPeriPlusRV'])   
+                    elif 'argPeriPlusDI'in key:
+                        try:
+                            valUse = float(val)
+                        except:
+                            print "Value found in settings file for argPeriPlusDI, '"+val+"', was invalid."
+                            print "Using default value of 0.0."
+                            valUse = 0.0
+                        if (valUse<=-360.0)or(valUse>360.0): 
+                            print 'Value found in settings file for argPeriPlusDI, '+val+\
+                                ', was out of range [-360,'+str(360)+'].'
+                            print "Using default value of 0."  
+                            valUse = 0
+                        returnDict['argPeriPlusDI'] = valUse
                         if verbose:
-                            print 'argPeriPlusPiDI found to be = '+str(returnDict['argPeriPlusPiDI'])
+                            print 'argPeriPlusDI found to be = '+str(returnDict['argPeriPlusDI'])   
                             
                     elif 'inclination_degMAX'in key:
                         valUse=returnDict['inclination_degMAX'] = float(val)

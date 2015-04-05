@@ -89,16 +89,6 @@ void simAnealOrbFuncObj::simulator()
 	//*****************************************************************************
 	// set up starting values for input params
 	//*****************************************************************************
-	if (SSO.simulate_StarPlanet==true)
-		VRCsp.primaryStarRVs = SSO.primaryStarRVs;
-	else
-		VRCsp.primaryStarRVs = false;
-	if (SSO.simulate_StarStar==true)
-		VRCss.primaryStarRVs = SSO.primaryStarRVs;
-	else
-		VRCss.primaryStarRVs = false;
-	cout<<"VRCss.primaryStarRVs = "<<VRCss.primaryStarRVs <<endl;
-	cout<<"VRCsp.primaryStarRVs = "<<VRCsp.primaryStarRVs <<endl;
 	sigmaPercent_latest = sigmaPercent;
 	string startParamsGenStr;
 	// Determine if K will be a varied parameter
@@ -329,7 +319,7 @@ void simAnealOrbFuncObj::simulator()
 			ss<<"Setting Tc to the constant value in system Data file = "<< Tc_latest<<endl;
 	}
 	//update non-updated T if it was 0 in the dictionary
-	if ((T_latest==0)||(Tc_latest==0))
+	if (((T_latest==0)||(Tc_latest==0))&&((SSO.TcEqualT==false)&&(SSO.DIonly==false)))
 	{
 		ss<<"To or Tc value being updated as it was originally zero."<<endl;
 		ss<<"Initial values were: To = "<<T_latest<<", Tc = "<<Tc_latest<<endl;
@@ -346,8 +336,13 @@ void simAnealOrbFuncObj::simulator()
 		ss<<"Updated values are: To = "<<T_latest<<", Tc = "<<Tc_latest<<endl;
 
 	}
-	if (SSO.DIonly==true)
-		Tc_latest = T_latest;
+	else
+	{
+		if (SSO.TcStepping)
+			T_latest = Tc_latest;
+		else
+			Tc_latest = T_latest;
+	}
 
 	startParamsGenStr = ss.str();
 	ss.clear();
@@ -1372,6 +1367,11 @@ void simAnealOrbFuncObj::simulator()
 					//cout<<"Back from VRcalcStarPlanetLoadUp"<<endl;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$
 					//cout<<"there were "<<RVdo.epochs_RV.size()<<" datasets found in the RVdata file"<<endl;//$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
 					VRCsp.verbose = false;
+					//Set value for primaryStarRVs boolean
+					if (SSO.simulate_StarPlanet==true)
+						VRCsp.primaryStarRVs = SSO.primaryStarRVs;
+					else
+						VRCsp.primaryStarRVs = false;
 					// run through all RV data sets and calc RVs for it
 					for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
 					{
@@ -1418,6 +1418,11 @@ void simAnealOrbFuncObj::simulator()
 					else
 						VRCss = GT.VRcalcStarStarLoadUp(RVdo);
 					VRCss.verbose = false;
+					//Set value for primaryStarRVs boolean
+					if (SSO.simulate_StarStar==true)
+						VRCss.primaryStarRVs = SSO.primaryStarRVs;
+					else
+						VRCss.primaryStarRVs = false;
 					// run through all RV data sets and calc RVs for it
 					for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
 					{

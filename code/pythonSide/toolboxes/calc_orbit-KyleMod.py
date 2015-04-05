@@ -23,7 +23,7 @@ def calc_orbit():
     "
     """
     #model settings
-    Npts = 1000
+    Npts = 50
     storePrimaryRVs = True
 
     #System settings
@@ -32,6 +32,7 @@ def calc_orbit():
     distance = 5.0 #parsecs
     km_to_arcsec = 1/1.49598e8/distance # convert km to arcsecond
     
+    #constants
     G = 6.673e-8 #cgs
     
     #Orbital Elements
@@ -57,8 +58,11 @@ def calc_orbit():
     print "inclination = "+str(i*180.0/np.pi)+" deg"
     print "Mass 1 = "+str(M_primary)+" Msun"
     print "Mass 2 = "+str(M_primary/massratio)+" Msun"
-    print "System distance = "+str(distance)+" PC \n"
-    
+    print "System distance = "+str(distance)+" PC "
+    if storePrimaryRVs:
+        print "saving RVs of primary star relative to Center of Mass\n"
+    else:
+        print "saving RVs of companion relative to Center of Mass\n"
     # Positions of both components in km relative to center of mass
 
     ke = pyasl.KeplerEllipse(a1, period, e=e, Omega=0.)
@@ -81,8 +85,8 @@ def calc_orbit():
         print "(pos_A[2]-pos_A[0])/(t[2] - t[0])/(86400*365.24) = "+str((pos_A[2]-pos_A[0])/(t[2] - t[0])/(86400*365.24))
         print "\npos_A[1]-pos_A[0] = "+str(pos_A[1]-pos_A[0])+", t[1] - t[0] = "+str(t[1] - t[0])
         print "(pos_A[1]-pos_A[0])/(t[1] - t[0])/(86400*365.24) = "+str((pos_A[1]-pos_A[0])/(t[1] - t[0])/(86400*365.24))
-    print "(t[2] - t[0])*365.24 = "+str((t[2] - t[0])*365.24)
-    print "(t[1] - t[0])*365.24 = "+str((t[1] - t[0])*365.24)
+        print "(t[2] - t[0])*365.24 = "+str((t[2] - t[0])*365.24)
+        print "(t[1] - t[0])*365.24 = "+str((t[1] - t[0])*365.24)
     pos_A = pos_A[1:-1]
 
     vel_B = pos_B.copy()
@@ -95,7 +99,7 @@ def calc_orbit():
     if False:
         print "\n"+repr(t[0:10])+"\n"+repr(t[-10:])
     
-    if True:
+    if False:
         print "\n"+"*"*75+"\nbefore rotation:"
         print "t[o] = "+str(t[0])
         if True:
@@ -140,7 +144,7 @@ def calc_orbit():
     pos_B = np.dot(pos_B, rotmat)
     vel_B = np.dot(vel_B, rotmat)
     
-    if True:
+    if False:
         print "\n"+"*"*75+"\nAfter rotation:"
         print "t[o] = "+str(t[0])
         if True:

@@ -36,15 +36,14 @@ def recordResults(paramSettingsDict,maxRAMuse):
         grf = open(GRfilename)
         lns = grf.readlines()
         grResults = lns[-1].split()
-        resultsFile.write(header+'\n')
-        resultsFile.write(lns[-1]+'\n')
+        resultsFile.write("\nFinal Gelman-Rubin statistic values were:\n"+header+'\n'+lns[-1])
         wrstInt = 0
         wrstVal = 0.0
         for i in range(1,len(headings)):
             if float(grResults[i])>wrstVal:
                 wrstVal=float(grResults[i])
                 wrstInt=i
-        resultsFile.write("Least converged value was that of "+headings[wrstInt]+" = "+str(wrstVal)+'\n')
+        resultsFile.write("The least converged value was that of "+headings[wrstInt]+" = "+str(wrstVal)+'\n')
     
     
     

@@ -50,12 +50,17 @@ def memUsageLogCleaner(filename = '',sleep=6,delOrigLog=True):
     os.remove(filename)
     print "Original RAMusage log deleted"
     if True:
-        times = np.arange(len(mem))*(sleep/3600.0)
+        multmod=sleep/3600
+        strmod= "[hrs]"
+        if ((sleep*len(mem))/3600.0)<1.0:
+            multmod=sleep/60
+            strmod="[minutes]"
+        times = np.arange(len(mem))*multmod
         fig = plt.figure(1, figsize=(15,10),dpi=200)
         subPlot = fig.add_subplot(111)
         subPlot.plot(times,mem)
         subPlot.axes.set_ylabel("Percent RAM usage")
-        subPlot.axes.set_xlabel("time [hrs]")
+        subPlot.axes.set_xlabel("Time from simulation start in "+strmod)
         plotname = os.path.abspath(filename)[:-4]+"_clean.png"
         plt.savefig(plotname, orientation='landscape')
     print "RAMusage plot written to: "+plotname

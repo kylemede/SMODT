@@ -17,6 +17,17 @@ This toolbox is a collection of the calculator type functions that were used in 
 places throughout the code to conduct various types of binary star system simulations.
 """   
 
+def totalSamplesStr(numSamplesTOTAL):
+    if numSamplesTOTAL>=int(1e9):
+        numSamplesString = str(int(numSamplesTOTAL/int(1e9)))+'-Billion-in_Total'
+    elif numSamplesTOTAL>=int(1e6):
+        numSamplesString = str(int(numSamplesTOTAL/int(1e6)))+'-Million-in_Total'
+    elif numSamplesTOTAL>=int(1e3):
+        numSamplesString = str(int(numSamplesTOTAL/int(1e3)))+'-Thousand-in_Total'
+    else:
+        numSamplesString = str(int(numSamplesTOTAL))+'-in_Total'
+    return numSamplesString
+
 def recordResults(paramSettingsDict,maxRAMuse):
     """
     A function to clean up the results and make a single text file 
@@ -25,8 +36,36 @@ def recordResults(paramSettingsDict,maxRAMuse):
     datadir = paramSettingsDict['outputData_dir']
     resultsFile = open(os.path.join(datadir,"RESULTS.txt"),'w')
     
+    resultsFile.write("Basic Information about simulation:\n"+"-"*60)
+    resultsFile.write("All files for this simulation written to the directory:\n"+paramSettingsDict['outputData_dir'])
+    resultsFile.write("Number of processes ran: "+str(paramSettingsDict['numProcesses']))
+    if paramSettingsDict['mcONLY']:
+        resultsFile.write("Each was a simple Monte Carlo run of length: "+str(paramSettingsDict["numSamples"]))
+        resultsFile.write("For a total number of samples = "+totalSamplesStr(paramSettingsDict["numSamples"]*paramSettingsDict['numProcesses']))
+    else:
+        resultsFile.write("Each started with a Simulated Annealing run of length: "+str(paramSettingsDict["numSamples_SimAnneal"]*0.70))
+        resultsFile.write("Followed by Sigma Tuning for: "+str(paramSettingsDict["numSamples_SimAnneal"]*0.30))
+        if not paramSettingsDict['simAnneal']:
+            resultsFile.write("The last of these samples was used to start a full MCMC of length: "+str(paramSettingsDict["numSamples"]))
     resultsFile.write("Max RAM occupied during simulation was "+str(maxRAMuse)+" MB\n")
+    mode = "3D"
+    if paramSettingsDict["RVonly"]:
+        mode = "RVonly"
+    if paramSettingsDict["DIonly"]:
+        mode = "DIonly"
+    resultsFile.write("the simulator was ran in "+mode+" mode.")
+    if (mode=="3D")or(mode=="DIonly"):
+        if paramSettingsDict["primaryStarRVs"]:
+            resultsFile.write("The primary star's radial velocity values were used in the RV model plotting.")
+        else:
+            resultsFile.write("The secondary/companion's radial velocity values were used in the RV model and plotting.")
+        resultsFile.write("To the varied value of the Argument of Periapsis, in the DI mode a constant value of "+str(paramSettingsDict['argPeriOffsetDI'])+" was added.")
+    elif (mode=="3D")or(mode=="RVonly"):
+        resultsFile.write("To the varied value of the Argument of Periapsis, in the RV mode a constant value of "+str(paramSettingsDict['argPeriOffsetRV'])+" was added.")
     
+    
+    resultsFile.write("\nResulting Statistics:\n")
+    ## GR values
     if paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing']:
         header = "Lc  longAN  e  To  Tc  period  inclination  argPeri  a_total  K"
         headings = header.split()
@@ -44,7 +83,7 @@ def recordResults(paramSettingsDict,maxRAMuse):
                 wrstVal=float(grResults[i])
                 wrstInt=i
         resultsFile.write("The least converged value was that of "+headings[wrstInt]+" = "+str(wrstVal)+'\n')
-    
+    ## confidence levels for each param
     
     
     

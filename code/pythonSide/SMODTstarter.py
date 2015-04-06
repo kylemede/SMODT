@@ -95,14 +95,7 @@ def main():
     
     # convert number of samples into easy to read string for file naming
     numSamplesTOTAL = numSamples*numProcesses
-    if numSamplesTOTAL>=int(1e9):
-        numSamplesString = str(int(numSamplesTOTAL/int(1e9)))+'-Billion-in_Total'
-    elif numSamplesTOTAL>=int(1e6):
-        numSamplesString = str(int(numSamplesTOTAL/int(1e6)))+'-Million-in_Total'
-    elif numSamplesTOTAL>=int(1e3):
-        numSamplesString = str(int(numSamplesTOTAL/int(1e3)))+'-Thousand-in_Total'
-    else:
-        numSamplesString = str(int(numSamplesTOTAL))+'-in_Total'
+    numSamplesString = tools.gen.totalSamplesStr(numSamplesTOTAL)
     
     # add num sample string to filename
     if (filenameRoot[-1]!='-')and(filenameRoot[-1]!='_'):

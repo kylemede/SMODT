@@ -34,37 +34,82 @@ def recordResults(paramSettingsDict,maxRAMuse):
     summarizing them.
     """
     datadir = paramSettingsDict['outputData_dir']
+    outputDataFilename = os.path.join(datadir,'outputData-ALL.dat') 
     resultsFile = open(os.path.join(datadir,"RESULTS.txt"),'w')
     
-    resultsFile.write("Basic Information about simulation:\n"+"-"*60)
-    resultsFile.write("All files for this simulation written to the directory:\n"+paramSettingsDict['outputData_dir'])
-    resultsFile.write("Number of processes ran: "+str(paramSettingsDict['numProcesses']))
+    resultsFile.write("Basic Information about simulation:\n"+"-"*60+"\n")
+    resultsFile.write("All files for this simulation written to the directory:\n"+paramSettingsDict['outputData_dir']+"\n")
+    resultsFile.write("\nNumber of processes ran: "+str(paramSettingsDict['numProcesses'])+"\n")
     if paramSettingsDict['mcONLY']:
-        resultsFile.write("Each was a simple Monte Carlo run of length: "+str(paramSettingsDict["numSamples"]))
-        resultsFile.write("For a total number of samples = "+totalSamplesStr(paramSettingsDict["numSamples"]*paramSettingsDict['numProcesses']))
+        resultsFile.write("Each was a simple Monte Carlo run of length: "+str(paramSettingsDict["numSamples"])+"\n")
+        resultsFile.write("For a total number of samples = "+totalSamplesStr(paramSettingsDict["numSamples"]*paramSettingsDict['numProcesses'])+"\n")
     else:
-        resultsFile.write("Each started with a Simulated Annealing run of length: "+str(paramSettingsDict["numSamples_SimAnneal"]*0.70))
-        resultsFile.write("Followed by Sigma Tuning for: "+str(paramSettingsDict["numSamples_SimAnneal"]*0.30))
+        resultsFile.write("Each started with a Simulated Annealing run of length: "+str(paramSettingsDict["numSamples_SimAnneal"]*0.70)+"\n")
+        resultsFile.write("Followed by Sigma Tuning for: "+str(paramSettingsDict["numSamples_SimAnneal"]*0.30)+"\n")
         if not paramSettingsDict['simAnneal']:
-            resultsFile.write("The last of these samples was used to start a full MCMC of length: "+str(paramSettingsDict["numSamples"]))
+            resultsFile.write("The last of these samples was used to start a full MCMC of length: "+str(paramSettingsDict["numSamples"])+"\n")
     resultsFile.write("Max RAM occupied during simulation was "+str(maxRAMuse)+" MB\n")
     mode = "3D"
     if paramSettingsDict["RVonly"]:
         mode = "RVonly"
     if paramSettingsDict["DIonly"]:
         mode = "DIonly"
-    resultsFile.write("the simulator was ran in "+mode+" mode.")
+    resultsFile.write("the simulator was ran in "+mode+" mode."+"\n")
     if (mode=="3D")or(mode=="DIonly"):
         if paramSettingsDict["primaryStarRVs"]:
             resultsFile.write("The primary star's radial velocity values were used in the RV model plotting.")
         else:
             resultsFile.write("The secondary/companion's radial velocity values were used in the RV model and plotting.")
-        resultsFile.write("To the varied value of the Argument of Periapsis, in the DI mode a constant value of "+str(paramSettingsDict['argPeriOffsetDI'])+" was added.")
+        resultsFile.write("To the varied value of the Argument of Periapsis, in the DI mode a constant value of "+str(paramSettingsDict['argPeriOffsetDI'])+" was added."+"\n")
     elif (mode=="3D")or(mode=="RVonly"):
-        resultsFile.write("To the varied value of the Argument of Periapsis, in the RV mode a constant value of "+str(paramSettingsDict['argPeriOffsetRV'])+" was added.")
+        resultsFile.write("To the varied value of the Argument of Periapsis, in the RV mode a constant value of "+str(paramSettingsDict['argPeriOffsetRV'])+" was added."+"\n")
     
+    ##############################################
+    ## Record output statistical values of use.
+    ##############################################
+    resultsFile.write("\nResulting Statistics:\n"+"-"*60)
+    ## find number of RV datasets
+    f = open(outputDataFilename,'r')
+    temp = f.readline()[:-5]
+    headings = f.readline()
+    line = f.readline()
+    dataLineCols = line.split()
+    numRVdatasets=0
+    if (len(line)>11):
+        numRVdatasets = len(dataLineCols) - 11
+    else:
+        line = f.readline()
+        dataLineCols = line.split()
+        if (len(line)>11):
+            numRVdatasets = len(dataLineCols) - 11    
+    ## Best fit values and their confidence levels
+    resultsFile.write("\nBest values and their confidence levels:"+"\n")
+    resultsFile.write("Parameter name =  Best fit value, [68% confidence range], [98% confidence range]"+"\n\n")
+    ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,6, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
+    resultsFile.write('Argument of Perigie [deg] =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
+    ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,5, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
+    resultsFile.write('Inclination [deg] =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
+    ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,0, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
+    resultsFile.write('Longitude of Ascending Node [deg] =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
+    ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,1, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
+    resultsFile.write('e =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
+    if paramSettingsDict["TcStepping"] or paramSettingsDict["TcEqualT"]:
+        ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,3, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
+        resultsFile.write('Time of Center Transit [JD] =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
+    elif (paramSettingsDict["TcStepping"]==False) or paramSettingsDict["TcEqualT"]:
+        ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,2, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
+        resultsFile.write('Time of last Periapsis [JD] =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
+    ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,9, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
+    resultsFile.write('K [m/s] =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
+    ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,4, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
+    resultsFile.write('Period [Years] =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
+    ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,7, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
+    resultsFile.write('Combined Semi-Major axis (a1+a2) [AU] =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
+    if numRVdatasets>0:
+        for dataset in range(1,numRVdatasets+1):
+            ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,9+dataset, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
+            resultsFile.write('RV offset '+str(dataset)+' [m/s] =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
     
-    resultsFile.write("\nResulting Statistics:\n")
     ## GR values
     if paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing']:
         header = "Lc  longAN  e  To  Tc  period  inclination  argPeri  a_total  K"
@@ -1600,6 +1645,10 @@ def confLevelFinder(filename, columNum=False, returnData=False, returnChiSquared
             if verboseInternal:
                 print 'returning chiSquareds and bestval'
             returnList =   ([conf68Vals,conf95Vals], chiSquareds, bestDataVal)
+        elif ((returnData==False)and(returnChiSquareds==False) and returnBestDataVal):
+            if verboseInternal:
+                print 'returning CLevels and bestval'
+            returnList = ([conf68Vals,conf95Vals], bestDataVal)
         elif ((returnData==False)and(returnChiSquareds==False) and (returnBestDataVal==False)):
             if verboseInternal:
                 print 'returning only CLevels'
@@ -2739,41 +2788,3 @@ def makeArtificialData(longAN_deg, e, T, Tc, period, inc, argPeri_deg, a_total, 
         print '\n\nRV data output:\n'
         for epoch in range(0,numDataPoints):
             print str(epochs[epoch])+'    '+str(VRs[epoch])+"    "+str(VR_errors[epoch])
-         
-def memUsageLogCleaner(filename = ''):
-    """
-    A function I whiped together to clean up a RAM usage log produced with a super simple bash script.
-    """ 
-    if filename=="":
-        filename = "/mnt/Data1/Todai_Work/Data/data_SMODT/RAMusage.log"
-    print 'Input RAMusage log file: '+filename
-    f = open(filename,'readonly')
-    fnamOut = os.path.abspath(filename)[:-4]+"_clean.log"
-    fOut = open(fnamOut,'w')
-    lines = f.readlines()
-    f.close()
-    fOut.write("total[MB]   Used[%] \n")
-    mem = []
-    for line in lines:
-        if line[0]=="M":
-            #print line
-            l = line.split()[1:3]
-            #print repr(l)
-            usedPercent = int((float(l[1])/float(l[0]))*100.)
-            lineOut = "  "+str(l[0])+"        "+str(usedPercent)+"\n"
-            fOut.write(lineOut)
-            mem.append(usedPercent)
-            #print repr(lineOut)
-    fOut.close()
-    print "cleaned RAMusage log file written to: "+fnamOut
-    if True:
-        times = np.arange(len(mem))*(1.0/6.0)
-        fig = plt.figure(1, figsize=(15,10),dpi=200)
-        subPlot = fig.add_subplot(111)
-        subPlot.plot(times,mem)
-        subPlot.axes.set_ylabel("Percent RAM usage")
-        subPlot.axes.set_xlabel("time [hrs]")
-        plotname = os.path.abspath(filename)[:-4]+"_clean.png"
-        plt.savefig(plotname, orientation='landscape')
-    print "RAMusage plot written to: "+plotname
-        

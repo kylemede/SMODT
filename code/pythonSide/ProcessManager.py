@@ -339,55 +339,6 @@ def multiProcessStarter(paramSettingsDict):
         tools.gen.gelmanRubinStage2(dataFiles)    
     
     ############################################################
-    ## Delete chain and/or combined data files?
-    ############################################################
-    ## check if the user wanted the individual chain data files deleted
-    if paramSettingsDict['delChainsAfter']:
-        if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict["mcONLY"]==False):
-                print '\n\nDeleting Simulated Annealing chain data files\n'+"-"*40
-                for filename in simAnnealDataFiles:
-                    print 'Deleting file: '+os.path.basename(filename)
-                    os.remove(filename)
-                print '\nDeleting MCMC chain data files\n'+"-"*40
-                for filename in dataFiles:
-                    print 'Deleting file: '+os.path.basename(filename)
-                    os.remove(filename)
-        else:
-            print '\n\nDeleting final output chain data files\n'+"-"*40
-            for filename in dataFiles:
-                print 'Deleting file: '+os.path.basename(filename)
-                os.remove(filename)
-    ## delete GR chain files if requested
-    if (paramSettingsDict['delGRchainFiles'] and (len(dataFiles)>1)):
-        print '\n\nDeleting final output GR chain value files\n'+"-"*40
-        for chainNum in range(1,len(dataFiles)+1):
-            filename = os.path.join(paramSettingsDict['outputData_dir'],"gelmanRubin-chain_"+str(chainNum)+".txt")
-            print 'Deleting file: '+os.path.basename(filename)
-            os.remove(filename)
-    ## delete combined data files if requested
-    if paramSettingsDict['delCombinedDataAfter']:
-        print '\nDeleting combined data files\n'+"-"*40
-        print 'Deleting file: '+dataFinalFilename
-        os.remove(dataFinalFilename)
-        if cleanDataFilename!='':
-            print 'Deleting file: '+cleanDataFilename
-            os.remove(cleanDataFilename)
-                
-    s= '\n**** EVERYTHING FINISHED ****\n'
-    print s
-    PMlogFile.write(s)
-    
-    ############################################################
-    # write total elapsed time to screen and log.
-    ############################################################
-    toc=timeit.default_timer()
-    totalTimeString2 = tools.gen.timeString(toc - tic)
-    s= '\n\nMultiprocess:  Total simulation + post processing took '+totalTimeString2+' to complete.\n'
-    print s
-    PMlogFile.write(s+'\n\nCLOSING PM LOG NOW!!\n\n')
-    PMlogFile.close()
-    
-    ############################################################
     ## COPY OUTPUT PLOTS TO DROPBOX FOLDER?
     ############################################################
     if paramSettingsDict['CopyToDrobox']:
@@ -459,6 +410,56 @@ def multiProcessStarter(paramSettingsDict):
     ##wrap up background process tacking RAM use and plot results
     maxRAMuse = tools.memTracker.wrapUp(memTracProc,memLogFilename)
     tools.gen.recordResults(paramSettingsDict,maxRAMuse)
+    
+    ############################################################
+    ## Delete chain and/or combined data files?
+    ############################################################
+    ## check if the user wanted the individual chain data files deleted
+    if paramSettingsDict['delChainsAfter']:
+        if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict["mcONLY"]==False):
+                print '\n\nDeleting Simulated Annealing chain data files\n'+"-"*40
+                for filename in simAnnealDataFiles:
+                    print 'Deleting file: '+os.path.basename(filename)
+                    os.remove(filename)
+                print '\nDeleting MCMC chain data files\n'+"-"*40
+                for filename in dataFiles:
+                    print 'Deleting file: '+os.path.basename(filename)
+                    os.remove(filename)
+        else:
+            print '\n\nDeleting final output chain data files\n'+"-"*40
+            for filename in dataFiles:
+                print 'Deleting file: '+os.path.basename(filename)
+                os.remove(filename)
+    ## delete GR chain files if requested
+    if (paramSettingsDict['delGRchainFiles'] and (len(dataFiles)>1)):
+        print '\n\nDeleting final output GR chain value files\n'+"-"*40
+        for chainNum in range(1,len(dataFiles)+1):
+            filename = os.path.join(paramSettingsDict['outputData_dir'],"gelmanRubin-chain_"+str(chainNum)+".txt")
+            print 'Deleting file: '+os.path.basename(filename)
+            os.remove(filename) 
+    ## delete combined data files if requested
+    if paramSettingsDict['delCombinedDataAfter']:
+        print '\nDeleting combined data files\n'+"-"*40
+        print 'Deleting file: '+dataFinalFilename
+        os.remove(dataFinalFilename)
+        if cleanDataFilename!='':
+            print 'Deleting file: '+cleanDataFilename
+            os.remove(cleanDataFilename)
+                
+    s= '\n**** EVERYTHING FINISHED ****\n'
+    print s
+    PMlogFile.write(s)
+    
+    ############################################################
+    # write total elapsed time to screen and log.
+    ############################################################
+    toc=timeit.default_timer()
+    totalTimeString2 = tools.gen.timeString(toc - tic)
+    s= '\n\nMultiprocess:  Total simulation + post processing took '+totalTimeString2+' to complete.\n'
+    print s
+    PMlogFile.write(s+'\n\nCLOSING PM LOG NOW!!\n\n')
+    PMlogFile.close()
+    
    
 ##############################################################
 ## end

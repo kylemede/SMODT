@@ -583,7 +583,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             dataLineCols = line.split()
             if (len(line)>11):
                 numRVdatasets = len(dataLineCols) - 11
-        s= "\nNumber of RV datasets found in summaryPlotter2 was "+str(numRVdatasets)+"\n"
+        s= "\nNumber of RV datasets found in summaryPlotter was "+str(numRVdatasets)+"\n"
         if TcStepping==True:
             s=s+"\nTcStepping passed in was True, so plotting Tc instead of To"
         else:
@@ -888,7 +888,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 log.write(s+'\n')
                 subPlot = fig.add_subplot(247)
                 paramColNum = 7
-                xlabel = 'Semi-Major[AU]'
+                xlabel = 'Combined Semi-Major axis (a1+a2) [AU]'
                 (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
                 subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
                 if (type(data)!=float)and(NumSamples==0):

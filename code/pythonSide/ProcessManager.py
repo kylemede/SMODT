@@ -302,6 +302,8 @@ def multiProcessStarter(paramSettingsDict):
     s= '\n**** Now starting to make a parameter progress summary plots for each chain (if requested) ****'
     print s
     PMlogFile.write(s)
+    effectivePointsStr = ''
+    burnInStr = ''
     # set up files and make plots for simAnneal data as well if MCMC is being ran
     if paramSettingsDict['mcONLY']==False:
         if paramSettingsDict['simAnneal']==False:
@@ -319,16 +321,47 @@ def multiProcessStarter(paramSettingsDict):
                 tools.plot.mcmcProgressPlotter(dataFiles,MCMCsummaryRootPlotFilename, nu=nu, plot4x1=plot4x1,TcStepping=paramSettingsDict['TcStepping'])
             #check burn-in lengths of MCMC part of simAnneal and proper MCMC chains
             if paramSettingsDict['CalcBurnIn']:
-                print '\nFor The Simulated Annealing files, the burn in values are:'
-                tools.gen.burnInCalcMultiFile(simAnnealDataFiles,simAnneal=True)
+                if False:
+                    print '\nFor The Simulated Annealing files, the burn in values are:'
+                    (s,burnInLengths) = tools.gen.burnInCalcMultiFile(simAnnealDataFiles,simAnneal=True)
+                    burnInStr+=s 
                 print '\nFor The MCMC files, the burn in values are:'
-                tools.gen.burnInCalcMultiFile(dataFiles,simAnneal=False)
+                (s,burnInLengths) = tools.gen.burnInCalcMultiFile(dataFiles,simAnneal=False)
+                burnInStr+=s 
             # calculate the correlation lengths of the MCMC part of the simAnneal and proper MCMC chains
-            if paramSettingsDict['calcCorrLengths']and False:
-                print '\nCalculating the number of effective points for the MCMC part of simAnneal chains\n'
-                tools.gen.MCMCeffectivePointsCalc(simAnnealDataFiles,simAnneal=True)
+            if paramSettingsDict['calcCorrLengths']:
+                if False: 
+                    print '\nCalculating the number of effective points for the MCMC part of simAnneal chains\n'
+                    effectivePointsStr+= tools.gen.mcmcEffectivePointsCalc(simAnnealDataFiles,simAnneal=True)
                 print '\nCalculating the number of effective points for the MCMC chains\n'
-                tools.gen.MCMCeffectivePointsCalc(dataFiles,simAnneal=False)
+                effectivePointsStr+= tools.gen.mcmcEffectivePointsCalc(dataFiles,simAnneal=False)
+            if paramSettingsDict['removeBurnIn']:
+                #########################################################################
+                ## make general parameter result summary figures AFTER BURN-IN STRIPPED!!
+                #########################################################################
+                ## strip burn ins and combine into new final file
+                strippedNames = []
+                for i in range(0,dataFiles):
+                    strippedName = dataFiles[i][:-3]+"_burnInStripped.dat"
+                    tools.gen.burnInStripper(dataFiles[i], burnInLengths[i], strippedName)
+                    strippedNames.append(strippedName)
+                dataFinalFilename2 = os.path.join(paramSettingsDict['outputData_dir'],'outputData-ALL-burnInRemoved.dat') 
+                tools.gen.dataFileCombiner(strippedNames, dataFinalFilename2)
+                summaryPlotFile2 = os.path.join(paramSettingsDict['outputData_dir'],'summaryPlot-burnInRemoved')
+                s= '\n**** Now starting to make a non-weighted, conf Levels summary plots of data in final file AFTER BURN-IN REMOVED if requested  ****'
+                print s
+                PMlogFile.write(s)
+                cleanDataFilename=''
+                if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
+                    if True:
+                        tools.plot.summaryPlotter(dataFinalFilename2, summaryPlotFile2, weight=False, confLevels=True, nu=nu, plot4x1=plot4x1, TcStepping=paramSettingsDict['TcStepping'] )         
+                    if False:
+                        print "\n\n"+"!"*75+'\nNOTE: Making Posteriors plot with the makeCleanSummaryPlot function instead of standard summaryPlotter\n'+"!"*75+"\n\n"
+                        cleanDataFilename = tools.plot.makeCleanSummaryPlot(dataFinalFilename2)
+                s = '\n**** Back from making summary plot AFTER BURN-IN REMOVED if requested ***\n'
+                print s
+                PMlogFile.write(s)
+        
         else:
             if paramSettingsDict['makeSimAnnealProgPlots']:
                 MCMCsummaryRootPlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'simAnnealProgressSummary')
@@ -339,6 +372,14 @@ def multiProcessStarter(paramSettingsDict):
     ############################################################
     if paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing']:
         tools.gen.gelmanRubinStage2(dataFiles)    
+    
+    ####################################################################################################
+    ## perform final wrap up functions, ie finish tracking RAM use and recored simulations total results
+    ####################################################################################################    
+    ##wrap up background process tacking RAM use and plot results
+    maxRAMuse = tools.memTracker.wrapUp(memTracProc,memLogFilename,sleep=sleepUse)
+    ## recordResults MUST be done before deleting all the extra files!!!!
+    tools.gen.recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV,effectivePointsStr,burnInStr)
     
     ############################################################
     ## COPY OUTPUT PLOTS TO DROPBOX FOLDER?
@@ -405,15 +446,7 @@ def multiProcessStarter(paramSettingsDict):
         for fileNum in range(0,len(origFiles)):
             if os.path.exists(origFiles[fileNum]):
                 shutil.copy(origFiles[fileNum],copyFiles[fileNum])
-    
-    ####################################################################################################
-    ## perform final wrap up functions, ie finish tracking RAM use and recored simulations total results
-    ####################################################################################################    
-    ##wrap up background process tacking RAM use and plot results
-    maxRAMuse = tools.memTracker.wrapUp(memTracProc,memLogFilename,sleep=sleepUse)
-    ## recordResults MUST be done before deleting all the extra files!!!!
-    tools.gen.recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV)
-    
+            
     ############################################################
     ## Delete chain and/or combined data files?
     ############################################################

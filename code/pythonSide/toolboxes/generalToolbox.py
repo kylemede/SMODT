@@ -28,7 +28,7 @@ def totalSamplesStr(numSamplesTOTAL):
         numSamplesString = str(int(numSamplesTOTAL))+'-in_Total'
     return numSamplesString
 
-def recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV):
+def recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV,effectivePointsStr,burnInStr):
     """
     A function to clean up the results and make a single text file 
     summarizing them.
@@ -159,10 +159,12 @@ def recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV):
                 wrstVal=float(grResults[i])
                 wrstInt=i
         resultsFile.write("The least converged value was that of "+headings[wrstInt]+" = "+str(wrstVal)+'\n')
-    
-    
-    
-    
+    ## Burn-in value
+    if paramSettingsDict['CalcBurnIn']:
+        resultsFile.write('\n'+"-"*60+"\nBurn-In Values:\n"+"-"*60+'\n'+burnInStr)
+    ## Effective Points and Correlation Length values
+    if paramSettingsDict['calcCorrLengths']:
+        resultsFile.write('\n'+"-"*60+"\nCorrelation Lengths and number of Effective Points Values:\n"+"-"*60+'\n'+effectivePointsStr)
     
     resultsFile.close()
     print "*"*60+"\n"+"Final results file written to: "+os.path.join(datadir,"RESULTS.txt")+"\n"+"*"*60
@@ -399,7 +401,76 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
     if returnAsList:
         return list 
     
-def burnInCalc(chiSquareds, medianALLchains,jumpy=True):
+def burnInCalcMultiFile(dataFilenames,simAnneal=True):
+    """
+    Calculate the burn in for a set of MCMC chains following the formulation of Tegmark.
+    """
+    verbose=False
+    
+    # push dataFilenames in to a list if not one already
+    if type(dataFilenames)!=list:
+        dataFilenames = [dataFilenames]
+    
+    chiSquaredsALL = np.array([])
+    startMCMCsample=0
+    
+    if simAnneal:
+        for filename in dataFilenames:
+            if os.path.exists(filename):
+                (log,dataAry,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=False, returnData=False, returnChiSquareds=True)
+                if startMCMCsample==0:
+                    startMCMCsample = int(0.75*len(chiSquaredsChain))
+                    if verbose:
+                        print 'startMCMCsample found to be = '+str(startMCMCsample)
+                chiSquaredsChain = chiSquaredsChain[startMCMCsample:]
+                chiSquaredsALL=np.concatenate((chiSquaredsALL,chiSquaredsChain),axis=0)
+    else:
+        ALLfilename = os.path.join(os.path.dirname(dataFilenames[0]),'outputData-ALL.dat')
+        (log,dataAry,chiSquaredsALL,bestsAry) = dataReader(ALLfilename, columNum=False, returnData=False, returnChiSquareds=True)
+        
+    # calculate median of 'all' array
+    if type(chiSquaredsALL)!=np.ndarray:
+        chiSquaredsALL = np.array(chiSquaredsALL)
+    medainALL = np.median(chiSquaredsALL,axis=0)         
+    
+    if verbose:
+        print "medainALL = "+str(medainALL)
+    
+    burnInLengths = []
+    s=''
+    for filename in dataFilenames:
+        if os.path.exists(filename):
+            #find chain number and update logFilename with path and number
+            s = filename
+            chainNumStr = s[s.find('chain_')+6:s.find('chain_')+6+1]
+            datadir = os.path.dirname(filename)
+            logFilename = os.path.join(datadir,'log-chain_'+chainNumStr+'.txt')
+            log = open(logFilename,'a')
+            log.write('\n'+75*'+'+'\n Inside burnInCalc \n'+75*'+'+'\n')
+            if simAnneal:
+                log.write('Calculating the burn-in for the last 25% of the Simulated Annealing run:\n')
+            else:
+                log.write("Calculating the burn-in for MCMC run:\n")
+            
+            (log,dataAry,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=False, returnData=False, returnChiSquareds=True)
+            if simAnneal:
+                chiSquaredsChain = chiSquaredsChain[startMCMCsample:-1]
+            #medianChain = np.median(chiSquaredsChain)
+            burnInLength = burnInCalcFunc(chiSquaredsChain, medainALL,jumpy=False)
+            burnInLengths.append(burnInLength)
+            
+            s += 'median value for all chains = '+str(medainALL)
+            s += "\nTotal number of points in the chain = "+str(len(chiSquaredsChain))+"\n"
+            s += "Burn-in length = "+str(burnInLength)+"\n\n"
+            log.write(s+"\n\n")
+            if verbose:
+                print 'For chain # '+chainNumStr+s
+            
+    log.close()
+    return (s,burnInLengths)
+    
+    
+def burnInCalcFunc(chiSquareds, medianALLchains,jumpy=True):
     """
     This function will calculate the burn in length and return its value.
     This can only truly be done for a proper MCMC that was started
@@ -551,69 +622,7 @@ def corrLengthCalcVar(paramIN):
     
     return CorrLength
 
-def burnInCalcMultiFile(dataFilenames,simAnneal=True):
-    """
-    """
-    verbose=False
-    
-    # push dataFilenames in to a list if not one already
-    if type(dataFilenames)!=list:
-        dataFilenames = [dataFilenames]
-    
-    chiSquaredsALL = np.array([])
-    startMCMCsample=0
-    
-    if simAnneal:
-        for filename in dataFilenames:
-            if os.path.exists(filename):
-                chiSquaredsChain = dataReader(filename,7)
-                if startMCMCsample==0:
-                    startMCMCsample = int(0.75*len(chiSquaredsChain))
-                    if verbose:
-                        print 'startMCMCsample found to be = '+str(startMCMCsample)
-                chiSquaredsChain = chiSquaredsChain[startMCMCsample:]
-                chiSquaredsALL=np.concatenate((chiSquaredsALL,chiSquaredsChain),axis=0)
-    else:
-        ALLfilename = os.path.join(os.path.dirname(dataFilenames[0]),'outputData-ALL.dat')
-        chiSquaredsALL = dataReader(ALLfilename,7)
-        
-    # calculate median of 'all' array
-    if type(chiSquaredsALL)!=np.ndarray:
-        chiSquaredsALL = np.array(chiSquaredsALL)
-        print 'chiSquaredsALL.shape = '+repr(chiSquaredsALL.shape)
-    medainALL = np.median(chiSquaredsALL,axis=0)         
-    
-    if verbose:
-        print "medainALL = "+str(medainALL)
-    
-    for filename in dataFilenames:
-        if os.path.exists(filename):
-            #find chain number and update logFilename with path and number
-            s = filename
-            chainNumStr = s[s.find('chain_')+6:s.find('chain_')+6+1]
-            datadir = os.path.dirname(filename)
-            logFilename = os.path.join(datadir,'log-chain_'+chainNumStr+'.txt')
-            log = open(logFilename,'a')
-            log.write('\n'+75*'+'+'\n Inside burnInCalc \n'+75*'+'+'\n')
-            if simAnneal:
-                log.write('Calculating the burn-in for the last 25% of the Simulated Annealing run:\n')
-            else:
-                log.write("Calculating the burn-in for MCMC run:\n")
-            
-            chiSquaredsChain = dataReader(filename,7)
-            if simAnneal:
-                chiSquaredsChain = chiSquaredsChain[startMCMCsample:-1]
-            #medianChain = np.median(chiSquaredsChain)
-            burnInLength = burnInCalc(chiSquaredsChain, medainALL,jumpy=False)
-            
-            s = 'median value for all chains = '+str(medainALL)
-            s = s+"\nTotal number of points in the chain = "+str(len(chiSquaredsChain))+"\n\n"
-            s = s+"Burn-in length = "+str(burnInLength)+"\n\n"
-            log.write(s+"\n\n")
-            if verbose:
-                print 'For chain # '+chainNumStr+s
-            
-    log.close()
+
 
 def gelmanRubinStage2(dataFilenames):
     """
@@ -623,7 +632,7 @@ def gelmanRubinStage2(dataFilenames):
     the results for each individual chain and combine to calculate the final inter-chain
     value.
     """
-    verbose = True
+    verbose = False
     # push dataFilenames in to a list if not one already
     if type(dataFilenames)!=list:
         dataFilenames = [dataFilenames]
@@ -737,7 +746,7 @@ def gelmanRubinStage2(dataFilenames):
         print 'Output file with all T values for each parameter at each itteration written to: \n'+ToutputFilename
         ToutputFile.close()
             
-def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
+def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
     """
     This function will calculate the correlation length of each parameter in the input file(s).
     If simAnneal=True, it will assume that only the last 25% of the chains are suitible for 
@@ -753,9 +762,10 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
     startMCMCsample=0
     if simAnneal:
         if os.path.exists(dataFilenames[0]):
-            chiSquaredsChain = dataReader(dataFilenames[0],7)
+            (log,dataAry,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=False, returnData=False, returnChiSquareds=True)
             startMCMCsample = int(0.75*len(chiSquaredsChain))
                 
+    summaryStr=''
     for filename in dataFilenames:           
         if os.path.exists(filename):
             #find chain number and update logFilename with path and number
@@ -768,7 +778,7 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
             
             ## find conff levels of data that is always outputed from sims
             s= '\nlongANs have:'
-            data = dataReader(filename,0)
+            (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=0, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
@@ -782,11 +792,12 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
             if CorrLength>0:
                 s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
+            summaryStr+='\n'+s
             if verbose:
                 print s
             
             s= '\nes have'
-            data = dataReader(filename,1)
+            (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=1, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
@@ -800,11 +811,12 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
             if CorrLength>0:
                 s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
+            summaryStr+='\n'+s
             if verbose:
                 print s
             
             s= '\nTs have:'
-            data = dataReader(filename,2)
+            (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=2, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
@@ -818,11 +830,12 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
             if CorrLength>0:
                 s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
+            summaryStr+='\n'+s
             if verbose:
                 print s
             
             s= '\nperiods have:'
-            data = dataReader(filename,3)
+            (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=3, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
@@ -836,11 +849,12 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
             if CorrLength>0:
                 s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
+            summaryStr+='\n'+s
             if verbose:
                 print s
             
             s= '\ninclinations have:'
-            data= dataReader(filename,4)
+            (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=4, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
@@ -854,11 +868,12 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
             if CorrLength>0:
                 s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
+            summaryStr+='\n'+s
             if verbose:
                 print s
             
             s= '\nargPeris have:'
-            data = dataReader(filename,5)
+            (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=5, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
@@ -872,11 +887,12 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
             if CorrLength>0:
                 s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
+            summaryStr+='\n'+s
             if verbose:
                 print s
             
             s= "\na_totals have:"
-            data = dataReader(filename,6)
+            (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=6, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
@@ -890,11 +906,12 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
             if CorrLength>0:
                 s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
+            summaryStr+='\n'+s
             if verbose:
                 print s
             
             s= "\nKs have:"
-            data = dataReader(filename,8)
+            (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=8, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
@@ -908,6 +925,7 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
             if CorrLength>0:
                 s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
+            summaryStr+='\n'+s
             if verbose:
                 print s
         
@@ -922,6 +940,7 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
             if numDataCols==10:
                 s= 'There were 9 columns of data found in the datafile, thus no RVoffsets were recorded'
                 log.write(s+'\n')
+                summaryStr+='\n'+s
                 if verbose:
                     print s
             elif numDataCols>10:
@@ -932,7 +951,7 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
                 numRVdatasets = numDataCols - 10
                 for dataset in range(0,numRVdatasets):
                     s= '\ndataset # '+str(dataset+1)+' RV offsets have:'
-                    data = dataReader(filename,dataset+9)
+                    (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=dataset+9, returnData=True, returnChiSquareds=False)
                     if simAnneal:
                         data = data[startMCMCsample:]
                     s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
@@ -946,14 +965,18 @@ def MCMCeffectivePointsCalc(dataFilenames,simAnneal=False):
                     if CorrLength>0:
                         s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
                     log.write(s+'\n')
+                    summaryStr+='\n'+s
                     if verbose:
                         print s
         else:
-            s= "confidenceLevelsFinderNEW: ERROR!!!! file doesn't exist"
+            s= "mcmcEffectivePointsCalc: ERROR!!!! file doesn't exist"
             print s
             log.write(s+'\n')
-        log.write('\n'+75*'+'+'\n Leaving MCMCeffectivePointsCalc \n'+75*'+'+'\n')
+            summaryStr+='\n'+s
+        log.write('\n'+75*'+'+'\n Leaving mcmcEffectivePointsCalc \n'+75*'+'+'\n')
         log.close()
+        
+        return summaryStr
         
 def effectivePointsCalcFunc(data):
     """
@@ -989,7 +1012,6 @@ def effectivePointsCalcFunc(data):
             break
     
     #print str(N_eff) + ' effective points in the MCMC chain.'
-    
     return N_eff
     
 def burnInStripper(fullFilename, burnInLength, burnInStrippedFilename):
@@ -1925,6 +1947,10 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                         valUse=returnDict['CalcBurnIn'] = strToBool(val,False)
                         if verbose:
                             print 'CalcBurnIn found to be = '+str(returnDict['CalcBurnIn'])
+                    elif 'removeBurnIn'in key:
+                        valUse=returnDict['removeBurnIn'] = strToBool(val,False)
+                        if verbose:
+                            print 'removeBurnIn found to be = '+str(returnDict['removeBurnIn'])
                     elif 'calcCorrLengths'in key:
                         returnDict['calcCorrLengths'] = strToBool(val,False)
                         if verbose:

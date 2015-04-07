@@ -341,7 +341,7 @@ def multiProcessStarter(paramSettingsDict):
                 #########################################################################
                 ## strip burn ins and combine into new final file
                 strippedNames = []
-                for i in range(0,dataFiles):
+                for i in range(0,len(dataFiles)):
                     strippedName = dataFiles[i][:-3]+"_burnInStripped.dat"
                     tools.gen.burnInStripper(dataFiles[i], burnInLengths[i], strippedName)
                     strippedNames.append(strippedName)
@@ -399,6 +399,17 @@ def multiProcessStarter(paramSettingsDict):
             copyFiles.append(os.path.join(DBdir,os.path.basename(summaryPlotFile)+".png"))
             origFiles.append(summaryPlotFile+"-ChiSquaredDist.png")
             copyFiles.append(os.path.join(DBdir,os.path.basename(summaryPlotFile)+"-ChiSquaredDist.png"))
+            if paramSettingsDict['DIonly']==False:
+                origFiles.append(summaryPlotFile+"RVoffsets.png")
+                copyFiles.append(os.path.join(DBdir,os.path.basename(summaryPlotFile)+"RVoffsets.png"))
+            if paramSettingsDict['removeBurnIn']:
+                origFiles.append(summaryPlotFile+"burnInRemoved.png")
+                copyFiles.append(os.path.join(DBdir,os.path.basename(summaryPlotFile)+"burnInRemoved.png"))
+                origFiles.append(summaryPlotFile+"burnInRemoved-ChiSquaredDist.png")
+                copyFiles.append(os.path.join(DBdir,os.path.basename(summaryPlotFile)+"burnInRemoved-ChiSquaredDist.png"))
+                if paramSettingsDict['DIonly']==False:
+                    origFiles.append(summaryPlotFile+"burnInRemoved-RVoffsets.png")
+                    copyFiles.append(os.path.join(DBdir,os.path.basename(summaryPlotFile)+"burnInRemoved-RVoffsets.png"))
         # get RV plot filenames
         if os.path.exists(RVdatafilename) and (paramSettingsDict['DIonly']==False)and(paramSettingsDict['makeOrbitPlots']):
             origFiles.append(rvPlotFilename+'-FullOrbit.png')
@@ -439,8 +450,14 @@ def multiProcessStarter(paramSettingsDict):
         origFiles.append(os.path.join(paramSettingsDict['outputData_dir'],'processManagerLogFile.txt'))
         copyFiles.append(os.path.join(DBdir,'processManagerLogFile.txt'))
         # get GR filenames
-        origFiles.append(os.path.join(paramSettingsDict['outputData_dir'],'GRvalues.txt'))
-        copyFiles.append(os.path.join(DBdir,'GRvalues.txt'))
+        if paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing']:
+            origFiles.append(os.path.join(paramSettingsDict['outputData_dir'],'GRvalues.txt'))
+            copyFiles.append(os.path.join(DBdir,'GRvalues.txt'))
+        # get RESULTS.txt filenames
+        origFiles.append(os.path.join(paramSettingsDict['outputData_dir'],'RESULTS.txt'))
+        copyFiles.append(os.path.join(DBdir,'RESULTS.txt'))
+        origFiles.append(os.path.join(paramSettingsDict['outputData_dir'],'RAMusage_clean.png'))
+        copyFiles.append(os.path.join(DBdir,'RAMusage_clean.png'))
         
         ## copy all files in lists
         for fileNum in range(0,len(origFiles)):
@@ -461,11 +478,21 @@ def multiProcessStarter(paramSettingsDict):
                 for filename in dataFiles:
                     print 'Deleting file: '+os.path.basename(filename)
                     os.remove(filename)
+                if paramSettingsDict['removeBurnIn']:
+                    print '\nDeleting Burn-In removed MCMC chain data files\n'+"-"*40
+                    for filename in strippedNames:
+                        print 'Deleting file: '+os.path.basename(filename)
+                        os.remove(filename)
         else:
             print '\n\nDeleting final output chain data files\n'+"-"*40
             for filename in dataFiles:
                 print 'Deleting file: '+os.path.basename(filename)
                 os.remove(filename)
+            if paramSettingsDict['removeBurnIn']:
+                    print '\nDeleting Burn-In removed MCMC chain data files\n'+"-"*40
+                    for filename in strippedNames:
+                        print 'Deleting file: '+os.path.basename(filename)
+                        os.remove(filename)
     ## delete GR chain files if requested
     if (paramSettingsDict['delGRchainFiles'] and (len(dataFiles)>1)):
         print '\n\nDeleting final output GR chain value files\n'+"-"*40
@@ -481,7 +508,10 @@ def multiProcessStarter(paramSettingsDict):
         if cleanDataFilename!='':
             print 'Deleting file: '+cleanDataFilename
             os.remove(cleanDataFilename)
-                
+        if paramSettingsDict['removeBurnIn']:
+            print 'Deleting file: '+dataFinalFilename2
+            os.remove(dataFinalFilename2)
+            
     s= '\n**** EVERYTHING FINISHED ****\n'
     print s
     PMlogFile.write(s)

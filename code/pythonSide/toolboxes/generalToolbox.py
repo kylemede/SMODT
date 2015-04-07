@@ -164,7 +164,7 @@ def recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV,ef
         resultsFile.write('\n'+"-"*60+"\nBurn-In Values:\n"+"-"*60+'\n'+burnInStr)
     ## Effective Points and Correlation Length values
     if paramSettingsDict['calcCorrLengths']:
-        resultsFile.write('\n'+"-"*60+"\nCorrelation Lengths and number of Effective Points Values:\n"+"-"*60+'\n'+effectivePointsStr)
+        resultsFile.write('\n'+"-"*60+"\nCorrelation Lengths and number of Effective Points Values:\n"+"-"*60+effectivePointsStr)
     
     resultsFile.close()
     print "*"*60+"\n"+"Final results file written to: "+os.path.join(datadir,"RESULTS.txt")+"\n"+"*"*60
@@ -305,7 +305,7 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
     data file.
     
     columns must be:
-     longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+     longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
         
         file format must be:
         
@@ -762,7 +762,7 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
     startMCMCsample=0
     if simAnneal:
         if os.path.exists(dataFilenames[0]):
-            (log,dataAry,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=False, returnData=False, returnChiSquareds=True)
+            (log,dataAry,chiSquaredsChain,bestsAry) = dataReader(dataFilenames[0], columNum=False, returnData=False, returnChiSquareds=True)
             startMCMCsample = int(0.75*len(chiSquaredsChain))
                 
     summaryStr=''
@@ -790,7 +790,7 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
@@ -809,7 +809,7 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
@@ -828,13 +828,13 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= '\nperiods have:'
+            s= '\nTcs have:'
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=3, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -847,13 +847,13 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= '\ninclinations have:'
+            s= '\nperiods have:'
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=4, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -866,13 +866,13 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= '\nargPeris have:'
+            s= '\ninclinations have:'
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=5, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -885,13 +885,13 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= "\na_totals have:"
+            s= '\nargPeris have:'
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=6, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -904,14 +904,14 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= "\nKs have:"
-            (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=8, returnData=True, returnChiSquareds=False)
+            s= "\na_totals have:"
+            (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=7, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
             s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
@@ -923,7 +923,26 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+            log.write(s+'\n')
+            summaryStr+='\n'+s
+            if verbose:
+                print s
+            
+            s= "\nKs have:"
+            (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=9, returnData=True, returnChiSquareds=False)
+            if simAnneal:
+                data = data[startMCMCsample:]
+            s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
+            #N_eff = effectivePointsCalcFunc(data)
+            #s=s+ '\nEffective number of points = '+repr(N_eff)
+            CorrLength = corrLengthCalcVar(data)
+            if CorrLength == data.size:
+                s=s+"\nPROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
+            else:
+                s=s+'\nCorrelation length found to be = '+str(CorrLength)
+            if CorrLength>0:
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
@@ -937,21 +956,21 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             dataLineCols = dataline.split()
             numDataCols = len(dataLineCols)
             f.close()
-            if numDataCols==10:
-                s= 'There were 9 columns of data found in the datafile, thus no RVoffsets were recorded'
+            if numDataCols==11:
+                s= 'There were 11 columns of data found in the datafile, thus no RVoffsets were recorded'
                 log.write(s+'\n')
                 summaryStr+='\n'+s
                 if verbose:
                     print s
-            elif numDataCols>10:
+            elif numDataCols>11:
                 s= 'There were '+str(numDataCols)+' columns of data, thus '+str(numDataCols - 10)+ ' columns must be RV offsets' 
                 log.write(s+'\n')
                 if verbose:
                     print s
-                numRVdatasets = numDataCols - 10
+                numRVdatasets = numDataCols - 11
                 for dataset in range(0,numRVdatasets):
                     s= '\ndataset # '+str(dataset+1)+' RV offsets have:'
-                    (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=dataset+9, returnData=True, returnChiSquareds=False)
+                    (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=dataset+10, returnData=True, returnChiSquareds=False)
                     if simAnneal:
                         data = data[startMCMCsample:]
                     s=s+ '\n[Min,Max] = '+repr([data.min(),data.max()])+", and median = "+str(np.median(data))
@@ -963,7 +982,7 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
                     else:
                         s=s+'\nCorrelation length found to be = '+str(CorrLength)
                     if CorrLength>0:
-                        s = s+',  and  '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                        s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
                     log.write(s+'\n')
                     summaryStr+='\n'+s
                     if verbose:
@@ -1184,7 +1203,7 @@ def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=Fal
     Read in the data for a single column of data and expand it to its full length with the timesBeenHere param.
     
     Columns must be:
-        longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+        longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
     columnNum must be an int.
     
     file format must be:
@@ -1397,7 +1416,7 @@ def outputDatafileToDict(filename):
     NOT a good function to load data from a long simulation with lots of output sets.
     
     Columns must be:
-    longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+    longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
         
         file format must be:
         
@@ -1721,7 +1740,7 @@ def confidenceLevelsFinderLoopedDatasets(filename, verbose=False):
     PURPOSE: This is to determine the errors that the mod dataset runs were designed to determine.
     
     Columns must be:
-        longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+        longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
         
         file format must be:
         
@@ -2417,7 +2436,7 @@ def findTop20orbits(filename):
     orbits in the format that is used in the 'paramSettingsDict'.
     
    Columns must be:
-        longAN [deg]      e [N/A]       To [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+        longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
         
         file format must be:
         

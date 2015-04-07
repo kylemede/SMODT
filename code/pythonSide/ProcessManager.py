@@ -213,6 +213,7 @@ def multiProcessStarter(paramSettingsDict):
     ## Make DI ellipse plot if DI data exists
     ############################################################
     DIdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['DIdataFilename'])
+    chiSquaredStrDI=''
     if os.path.exists(DIdatafilename)and ((paramSettingsDict['RVonly']==False)and(paramSettingsDict['makeOrbitPlots'])):
         s = '\n**** Now starting to make a DI orbit plot ***\n'
         print s
@@ -221,7 +222,7 @@ def multiProcessStarter(paramSettingsDict):
         orbitEllipsePlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'orbitEllipsePlot')
         #update argPeri value to take offset into account
         argPeriUse = bestOrbit[6]+paramSettingsDict['argPeriOffsetDI']
-        tools.plot.orbitEllipsePlotter(bestOrbit[0],bestOrbit[1],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7],\
+        chiSquaredStrDI = tools.plot.orbitEllipsePlotter(bestOrbit[0],bestOrbit[1],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7],\
                              sysDataDict,DIdataDict,plotFilename=orbitEllipsePlotFilename,show=False,To=bestOrbit[2], nuDI=nuDI)          
         s = '\n**** Back from making a DI orbit plot ***\n'
         print s
@@ -231,6 +232,7 @@ def multiProcessStarter(paramSettingsDict):
     ## Make RV scatter.trend plots if RV data exists
     ############################################################
     RVdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['RVdataFilename'])
+    chiSquaredStrRV=''
     if True:
         s= "RVdatafilename = "+paramSettingsDict['RVdataFilename']
         print s
@@ -245,7 +247,7 @@ def multiProcessStarter(paramSettingsDict):
             #update argPeri value to take offset into account
             argPeriUse = bestOrbit[6]+paramSettingsDict['argPeriOffsetRV']
             # full orbit
-            tools.plot.rvPlotter(bestOrbit[1],bestOrbit[2],bestOrbit[3],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7], \
+            chiSquaredStrRV = tools.plot.rvPlotter(bestOrbit[1],bestOrbit[2],bestOrbit[3],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7], \
                   sysDataDict,RVdataDict,paramSettingsDict,K=bestOrbit[8],RVoffsets=bestOrbit[9],\
                   nuRV=nuRV,plotFilename=rvPlotFilename+'-FullOrbit', show=False, plotFullOrbit=True)              
             if True:
@@ -409,7 +411,8 @@ def multiProcessStarter(paramSettingsDict):
     ####################################################################################################    
     ##wrap up background process tacking RAM use and plot results
     maxRAMuse = tools.memTracker.wrapUp(memTracProc,memLogFilename)
-    tools.gen.recordResults(paramSettingsDict,maxRAMuse)
+    ## recordResults MUST be done before deleting all the extra files!!!!
+    tools.gen.recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV)
     
     ############################################################
     ## Delete chain and/or combined data files?

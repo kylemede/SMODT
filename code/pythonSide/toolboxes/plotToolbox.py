@@ -2237,6 +2237,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     # write last log statement and close log
     log.write('\n'+75*'#'+'\n Leaving orbitEllipsePlotter \n'+75*'#'+'\n')
     log.close()
+    
+    return chiSquaredStr
   
 
 def mcmcProgressPlotter(filenames,rootPlotFilename,nu=1, plot4x1=False,TcStepping=False):
@@ -3022,12 +3024,11 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     #colorsList = ['b','m','k','g','y','o','p']
     colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     
+    #plot data and fit, plus build up the chiSquaredStr
     for orb in range(0,len(argPeri_deg)):
-        meanMedianChiSquaredSTR = ''
+        chiSquaredStr = ''
         for dataset in range(0,len(RVs)):
-            #meanMedianChiSquaredSTR = meanMedianChiSquaredSTR+'\nmean of residuals for dataset '+str(dataset)+' is = '+str(np.mean(residuals3[orb][dataset]))
-            #meanMedianChiSquaredSTR = meanMedianChiSquaredSTR+'\nmedian of residuals for dataset '+str(dataset)+' is = '+str(np.median(residuals3[orb][dataset]))
-            meanMedianChiSquaredSTR = meanMedianChiSquaredSTR+'\nchiSquared_reduced for dataset '+str(dataset)+' is = '+str(chi_squared_RV_reducedCur2[dataset])
+            chiSquaredStr = chiSquaredStr+'\nchiSquared_reduced for dataset '+str(dataset)+' is = '+str(chi_squared_RV_reducedCur2[dataset])
             residualsPlot.scatter(phases3[orb][dataset],residuals3[orb][dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
             
             s= '\n\n*** RMS of residuals '+str(dataset)+'= '+str(np.sqrt(np.mean(np.array(residuals3[orb][dataset])**2)))+' ***\n\n'
@@ -3040,8 +3041,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                 ys = [residuals3[orb][dataset][epoch]-abs(RV_errors[dataset][epoch]),residuals3[orb][dataset][epoch]+abs(RV_errors[dataset][epoch])]
                 residualsPlot.plot(xs,ys,c='k')
                
-    meanMedianChiSquaredSTR = meanMedianChiSquaredSTR+'\nchiSquared_reduced for ALL data is = '+str(chi_squared_RV_reduced)
-    s= meanMedianChiSquaredSTR
+    chiSquaredStr = chiSquaredStr+'\nchiSquared_reduced for ALL data is = '+str(chi_squared_RV_reduced)
+    s= chiSquaredStr
     if verbose:
         print s
     log.write(s+'\n')
@@ -3127,7 +3128,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         else:
             paramsLegndStr=paramsLegndStr+', '
         paramsLegndStr = paramsLegndStr+'offset '+str(dataset)+'= '+str(RVoffsets[dataset])
-    paramsLegndStr = paramsLegndStr+meanMedianChiSquaredSTR
+    paramsLegndStr = paramsLegndStr+chiSquaredStr
     if verbose:
         print paramsLegndStr
     log.write(paramsLegndStr+'\n')
@@ -3212,7 +3213,6 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         
     plt.close()
     
-    
     ### New residuals gaussian plot
     residuals3_trimmed = []
     for orb in range(0,len(argPeri_deg)):
@@ -3256,6 +3256,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         plt.close()
     log.write('\n'+75*'#'+'\n Leaving rvPlotterDuo \n'+75*'#'+'\n') 
     log.close()
+    
+    return chiSquaredStr
 
 def rvModDatasetMaker(e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, paramSettingsDict,\
                  RVoffsets=[0], modDatasetsFilename='', numModDatasets=100):

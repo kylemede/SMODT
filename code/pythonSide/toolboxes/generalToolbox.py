@@ -44,7 +44,7 @@ def recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV):
     DIdataDict = DItools.DIdataToDict(DIdatafilename)
     RVdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['RVdataFilename'])
     RVdataDict = RVtools.RVdataToDict(RVdatafilename)
-    bestOrbit = bestOrbitFinder(outputDataFilename, printToScreen=False, saveToFile=False, returnAsList=True)
+    bestOrbit = bestOrbitFileToList(os.path.join(paramSettingsDict['outputData_dir'],'bestOrbit.txt'))
 #     if len(rvOffsetsBest)>0:
 #         bestOrbit = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, rvOffsetsBest,lowestChiSquared]
 #     else:
@@ -77,7 +77,7 @@ def recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV):
     ###################################################################
     ## Record basic input and general simulation values
     ###################################################################
-    resultsFile.write("Basic Information about simulation:\n"+"-"*60+"\n")
+    resultsFile.write("-"*60+"\n"+"Basic Information about simulation::\n"+"-"*60+"\n")
     resultsFile.write("All files for this simulation written to the directory:\n"+paramSettingsDict['outputData_dir']+"\n")
     resultsFile.write("\nNumber of processes ran: "+str(paramSettingsDict['numProcesses'])+"\n")
     if paramSettingsDict['mcONLY']:
@@ -87,7 +87,7 @@ def recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV):
         resultsFile.write("Followed by Sigma Tuning for: "+str(paramSettingsDict["numSamples_SimAnneal"]*0.30)+"\n")
         if not paramSettingsDict['simAnneal']:
             resultsFile.write("The last of these samples was used to start a full MCMC of length: "+str(paramSettingsDict["numSamples"])+"\n")
-    resultsFile.write("For a total number of samples = "+totalSamplesStr(paramSettingsDict["numSamples"]*paramSettingsDict['numProcesses'])+"\n")
+    resultsFile.write("For a total number of samples = "+totalSamplesStr(paramSettingsDict["numSamples"]*paramSettingsDict['numProcesses'])[:-9]+"\n")
     resultsFile.write("Max RAM occupied during simulation was "+str(maxRAMuse)+" MB\n")
     mode = "3D"
     if paramSettingsDict["RVonly"]:
@@ -100,9 +100,9 @@ def recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV):
             resultsFile.write("The primary star's radial velocity values were used in the RV model plotting."+"\n")
         else:
             resultsFile.write("The secondary/companion's radial velocity values were used in the RV model and plotting."+"\n")
-        resultsFile.write("To the varied value of the Argument of Periapsis, in the DI mode a constant value of "+str(paramSettingsDict['argPeriOffsetDI'])+" was added."+"\n")
+        resultsFile.write("To the varied value of the Argument of Periapsis, in the DI mode a constant value of "+str(paramSettingsDict['argPeriOffsetDI'])+" [deg] was added."+"\n")
     if (mode=="3D")or(mode=="RVonly"):
-        resultsFile.write("To the varied value of the Argument of Periapsis, in the RV mode a constant value of "+str(paramSettingsDict['argPeriOffsetRV'])+" was added."+"\n")
+        resultsFile.write("To the varied value of the Argument of Periapsis, in the RV mode a constant value of "+str(paramSettingsDict['argPeriOffsetRV'])+" [deg] was added."+"\n")
     if (mode=="3D")or(mode=="DIonly"):
         resultsFile.write("Total number of epochs of DI data was: "+str(numDIepochs)+'\n')
     if (mode=="3D")or(mode=="RVonly"):
@@ -112,12 +112,12 @@ def recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV):
     ##############################################
     ## Record output statistical values of use.
     ##############################################
-    resultsFile.write("\nResulting Statistics:\n"+"-"*60)
+    resultsFile.write('\n'+"-"*60+"\n"+"Resulting Statistics::\n"+"-"*60)
     ## Best fit values and their confidence levels
-    resultsFile.write("\nResulting ChiSquared values:\nDI:\n"+"*"*25+"\nDI nu value: "+str(nuDI)+"\nRV:\n"+"*"*25+"\nRV nu value: "+str(nuRV)+'\n'+chiSquaredStrDI+'\n'+chiSquaredStrRV+'\n')
-    resultsFile.write("Total:\n"+"*"*25+"\nTotal nu value: "+str(nu)+"\nTotal ChiSquared = "+str(bestOrbit[-1][0])+", or reduced = "+str(bestOrbit[-1][0]/nu)+'\n')
+    resultsFile.write("\nBest Fit ChiSquared values:\nDI:\n"+"*"*35+"\nDI nu value: "+str(nuDI)+'\n'+chiSquaredStrDI+"\nRV:\n"+"*"*35+"\nRV nu value: "+str(nuRV)+chiSquaredStrRV+'\n')
+    resultsFile.write("Total:\n"+"*"*35+"\nTotal nu value: "+str(nu)+"\nTotal ChiSquared = "+str(bestOrbit[-1])+", or reduced = "+str(bestOrbit[-1]/nu)+'\n')
     resultsFile.write("\nBest values and their confidence levels:"+"\n")
-    resultsFile.write("format->\n'Parameter name =  Best fit value, [68% confidence range], [98% confidence range]'"+"\n\n")
+    resultsFile.write("format->\n'Parameter name =  Best fit value, [68% confidence range], [98% confidence range]'"+"\n")
     ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,6, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
     resultsFile.write('Argument of Perigie [deg] =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
     ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,5, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
@@ -210,9 +210,9 @@ def bestOrbitFileToList(filename=''):
         
     l = []
     if len(rvOffsetsBest)>0:
-        l = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, rvOffsetsBest]
+        l = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, rvOffsetsBest, chiSquaredBest]
     else:
-        l = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest]
+        l = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, chiSquaredBest]
     return l
      
 def eccArgPeri2ToTcCalc(e, period, argPeri_deg, To, Tc=0):
@@ -379,9 +379,9 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
         s=s+ "\nchiSquaredMin = "+str(lowestChiSquared)
         
         if len(rvOffsetsBest)>0:
-            list = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, rvOffsetsBest,lowestChiSquared]
+            list = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, rvOffsetsBest, lowestChiSquared]
         else:
-            list = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest,lowestChiSquared]
+            list = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, lowestChiSquared]
     
     if printToScreen:
         print s

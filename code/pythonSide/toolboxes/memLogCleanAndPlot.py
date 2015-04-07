@@ -9,12 +9,20 @@ def starter(paramSettingsDict,sleep=6):
     toolDir = os.path.join(paramSettingsDict['pythonCodeDir'],'toolboxes')
     shScriptPath = os.path.join(toolDir,'ramLogger.sh')
     memLogFilename = os.path.join(paramSettingsDict['outputData_dir'],"RAMusage.log")
+    totSamples = paramSettingsDict["numSamples"]*paramSettingsDict['numProcesses']
+    sleepUse = sleep
+    if totSamples<100000:
+        sleepUse = 1
+    elif (totSamples>100000)and(totSamples<10000000):
+        sleepUse = 6 
+    else:
+        sleepUse = 60
     memTracProc = Popen([shScriptPath,memLogFilename,str(sleep)],stdout=FNULL)
-    return (memTracProc,memLogFilename)
+    return (memTracProc,memLogFilename,sleepUse)
 
-def wrapUp(proc,memLogFilename):
+def wrapUp(proc,memLogFilename,sleep=6):
     proc.terminate()
-    maxUse = memUsageLogCleaner(memLogFilename)
+    maxUse = memUsageLogCleaner(memLogFilename,sleep)
     return maxUse
     
 def memUsageLogCleaner(filename = '',sleep=6,delOrigLog=True):

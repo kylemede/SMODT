@@ -28,7 +28,7 @@ def totalSamplesStr(numSamplesTOTAL):
         numSamplesString = str(int(numSamplesTOTAL))+'-in_Total'
     return numSamplesString
 
-def recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV,effectivePointsStr,burnInStr):
+def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrRV,effectivePointsStr,burnInStr):
     """
     A function to clean up the results and make a single text file 
     summarizing them.
@@ -51,7 +51,7 @@ def recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV,ef
 #         bestOrbit = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest,lowestChiSquared]
     print repr(bestOrbit)
     logFilename = os.path.join(paramSettingsDict['outputData_dir'],'log-chain_1.txt')
-    [nu,nuRV,nuDI,printStr] = findNuFromLog(logFilename)
+    [nu,nuRV,nuDI,printStr] = [nus[0],nus[1],nus[2],False]
     
     ## find number of RV datasets
     f = open(outputDataFilename,'r')
@@ -2863,3 +2863,27 @@ def makeArtificialData(longAN_deg, e, T, Tc, period, inc, argPeri_deg, a_total, 
         print '\n\nRV data output:\n'
         for epoch in range(0,numDataPoints):
             print str(epochs[epoch])+'    '+str(VRs[epoch])+"    "+str(VR_errors[epoch])
+
+def copytree(src, dst):
+    """
+    Recursively copy a directory and its contents to another directory.
+    
+    WARNING: this is not advised for higher level folders as it can also copy subfolders 
+    thus leading to a very large copy command if not careful.
+    
+    Code taken and simplified from:
+    http://stackoverflow.com/questions/1868714/how-do-i-copy-an-entire-directory-of-files-into-an-existing-directory-using-pyth
+    """
+    verbose = False
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            shutil.copytree(s, d)
+            if verbose:
+                print "Copying:\n "+repr(s)+'\nto:\n'+repr(d) 
+        else:
+            shutil.copy2(s, d)
+            if verbose:
+                print "Copying:\n "+repr(s)+'\nto:\n'+repr(d)
+            

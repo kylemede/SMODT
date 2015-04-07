@@ -188,6 +188,7 @@ def multiProcessStarter(paramSettingsDict):
     bestOrbit = tools.gen.bestOrbitFinder(dataFinalFilename, printToScreen=True, saveToFile=True, returnAsList=True)
     logFilename = os.path.join(paramSettingsDict['outputData_dir'],'log-chain_1.txt')
     [nu,nuRV,nuDI,printStr] = tools.gen.findNuFromLog(logFilename)
+    nus = [nu,nuRV,nuDI]
     print printStr+'\n'+'#'*50
     PMlogFile.write(printStr+'\n'+'#'*50+'\n')
     
@@ -342,7 +343,7 @@ def multiProcessStarter(paramSettingsDict):
                 ## strip burn ins and combine into new final file
                 strippedNames = []
                 for i in range(0,len(dataFiles)):
-                    strippedName = dataFiles[i][:-3]+"_burnInStripped.dat"
+                    strippedName = dataFiles[i][:-4]+"_burnInStripped.dat"
                     tools.gen.burnInStripper(dataFiles[i], burnInLengths[i], strippedName)
                     strippedNames.append(strippedName)
                 dataFinalFilename2 = os.path.join(paramSettingsDict['outputData_dir'],'outputData-ALL-burnInRemoved.dat') 
@@ -379,8 +380,85 @@ def multiProcessStarter(paramSettingsDict):
     ##wrap up background process tacking RAM use and plot results
     maxRAMuse = tools.memTracker.wrapUp(memTracProc,memLogFilename,sleep=sleepUse)
     ## recordResults MUST be done before deleting all the extra files!!!!
-    tools.gen.recordResults(paramSettingsDict,maxRAMuse,chiSquaredStrDI,chiSquaredStrRV,effectivePointsStr,burnInStr)
+    tools.gen.recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrRV,effectivePointsStr,burnInStr)
     
+    ############################################################
+    ## Move useful results files into new results sub-folder
+    ############################################################
+    resultsFolder = os.path.join(paramSettingsDict['outputData_dir'],'RESULTS/')
+    os.mkdir(resultsFolder)
+    origFolder = paramSettingsDict['outputData_dir']
+    ## build up list of files to copy over
+    origFiles = []
+    origFiles.append("bestOrbit.txt")
+    # get Summary plot filenames
+    if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
+        origFiles.append(os.path.basename(summaryPlotFile)+".png")
+        origFiles.append(os.path.basename(summaryPlotFile)+"-ChiSquaredDist.png")
+        if paramSettingsDict['DIonly']==False:
+            origFiles.append(os.path.basename(summaryPlotFile)+"-RVoffsets.png")
+        if paramSettingsDict['removeBurnIn']:
+            origFiles.append(os.path.basename(summaryPlotFile)+"-burnInRemoved.png")
+            origFiles.append(os.path.basename(summaryPlotFile)+"-burnInRemoved-ChiSquaredDist.png")
+            if paramSettingsDict['DIonly']==False:
+                origFiles.append(os.path.basename(summaryPlotFile)+"-burnInRemoved-RVoffsets.png")
+    # get RV plot filenames
+    if os.path.exists(RVdatafilename) and (paramSettingsDict['DIonly']==False)and(paramSettingsDict['makeOrbitPlots']):
+        origFiles.append(os.path.basename(rvPlotFilename)+'-FullOrbit.png')
+        origFiles.append(os.path.basename(rvPlotFilename)+'-FullOrbit-paramInfo.png')
+        origFiles.append(os.path.basename(rvPlotFilename)+'-FullOrbit_TREND.png')
+        origFiles.append(os.path.basename(rvPlotFilename)+'_DataDist.png')
+        origFiles.append(os.path.basename(rvPlotFilename)+'-FullOrbit_DataDist.png')
+        origFiles.append(os.path.basename(rvPlotFilename)+'_TREND.png')
+        origFiles.append(os.path.basename(rvPlotFilename)+'.png')
+        origFiles.append(os.path.basename(rvPlotFilename)+'-paramInfo.png')
+    # get DI plot filenames
+    if os.path.exists(DIdatafilename)and ((paramSettingsDict['RVonly']==False)and(paramSettingsDict['makeOrbitPlots'])):
+        origFiles.append(os.path.basename(orbitEllipsePlotFilename)+'.png')
+        origFiles.append(os.path.basename(orbitEllipsePlotFilename)+'-CROPPED.png')
+        origFiles.append(os.path.basename(orbitEllipsePlotFilename)+'-paramInfo.png')
+    # get progress plot filenames
+    if paramSettingsDict['simAnneal']:
+        if paramSettingsDict['makeSimAnnealProgPlots']:
+            for chainNum in range(1,len(dataFiles)+1):
+                origFiles.append(os.path.basename(MCMCsummaryRootPlotFilename)+"-chain_"+str(chainNum)+".png" )
+    if paramSettingsDict['makeMCMCprogPlots']:
+        for chainNum in range(1,len(dataFiles)+1):
+            origFiles.append(os.path.basename(MCMCsummaryRootPlotFilename)+"-chain_"+str(chainNum)+".png")
+        if paramSettingsDict['makeSimAnnealProgPlots']:
+            for chainNum in range(1,len(dataFiles)+1):
+                origFiles.append(os.path.basename(simAnnealSummaryRootPlotFilename)+"-chain_"+str(chainNum)+".png")
+    # get GR filenames
+    if paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing']:
+        origFiles.append('GRvalues.txt')
+        origFiles.append('Tvalues.txt')
+    # get RESULTS.txt filenames
+    origFiles.append('RESULTS.txt')
+    origFiles.append('RAMusage_clean.png')
+    ## move the files over 
+    print 'Moving all useful results files into a new RESULTS folder:\n '+resultsFolder
+    for file in origFiles:
+        try:
+            shutil.move(os.path.join(origFolder,file),os.path.join(resultsFolder,file))
+        except:
+            nothing=True
+            
+    ## build up list of log files and move to new folder
+    origFiles = []
+    for chainNum in range(1,len(dataFiles)+1):
+        origFiles.append("log-chain_"+str(chainNum)+".txt")
+    origFiles.append('processManagerLogFile.txt')
+    origFiles.append("RAMusage_clean.log")
+    ## move the files over 
+    logFolder = os.path.join(paramSettingsDict['outputData_dir'],'logs/')
+    os.mkdir(logFolder)
+    print 'Moving all log files into a new logs folder:\n '+logFolder
+    for file in origFiles:
+        try:
+            shutil.move(os.path.join(origFolder,file),os.path.join(logFolder,file))
+        except:
+            nothing=True
+        
     ############################################################
     ## COPY OUTPUT PLOTS TO DROPBOX FOLDER?
     ############################################################
@@ -390,79 +468,8 @@ def multiProcessStarter(paramSettingsDict):
             f = f[:-1]
         fs = f.split('/')
         DBdir = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/',fs[-1])
-        origFiles = []
-        copyFiles = []
-        
-        # get Summary plot filenames
-        if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
-            origFiles.append(summaryPlotFile+".png")
-            copyFiles.append(os.path.join(DBdir,os.path.basename(summaryPlotFile)+".png"))
-            origFiles.append(summaryPlotFile+"-ChiSquaredDist.png")
-            copyFiles.append(os.path.join(DBdir,os.path.basename(summaryPlotFile)+"-ChiSquaredDist.png"))
-            if paramSettingsDict['DIonly']==False:
-                origFiles.append(summaryPlotFile+"RVoffsets.png")
-                copyFiles.append(os.path.join(DBdir,os.path.basename(summaryPlotFile)+"RVoffsets.png"))
-            if paramSettingsDict['removeBurnIn']:
-                origFiles.append(summaryPlotFile+"burnInRemoved.png")
-                copyFiles.append(os.path.join(DBdir,os.path.basename(summaryPlotFile)+"burnInRemoved.png"))
-                origFiles.append(summaryPlotFile+"burnInRemoved-ChiSquaredDist.png")
-                copyFiles.append(os.path.join(DBdir,os.path.basename(summaryPlotFile)+"burnInRemoved-ChiSquaredDist.png"))
-                if paramSettingsDict['DIonly']==False:
-                    origFiles.append(summaryPlotFile+"burnInRemoved-RVoffsets.png")
-                    copyFiles.append(os.path.join(DBdir,os.path.basename(summaryPlotFile)+"burnInRemoved-RVoffsets.png"))
-        # get RV plot filenames
-        if os.path.exists(RVdatafilename) and (paramSettingsDict['DIonly']==False)and(paramSettingsDict['makeOrbitPlots']):
-            origFiles.append(rvPlotFilename+'-FullOrbit.png')
-            copyFiles.append(os.path.join(DBdir,os.path.basename(rvPlotFilename+'-FullOrbit.png')))
-            origFiles.append(rvPlotFilename+'_DataDist.png')
-            copyFiles.append(os.path.join(DBdir,os.path.basename(rvPlotFilename+'_DataDist.png')))
-            origFiles.append(rvPlotFilename+'_TREND.png')
-            copyFiles.append(os.path.join(DBdir,os.path.basename(rvPlotFilename+'_TREND.png')))
-            origFiles.append(rvPlotFilename+'.png')
-            copyFiles.append(os.path.join(DBdir,os.path.basename(rvPlotFilename+'.png')))
-        # get DI plot filenames
-        if os.path.exists(DIdatafilename)and ((paramSettingsDict['RVonly']==False)and(paramSettingsDict['makeOrbitPlots'])):
-            origFiles.append(orbitEllipsePlotFilename+'.png')
-            copyFiles.append(os.path.join(DBdir,os.path.basename(orbitEllipsePlotFilename+'.png')))
-        # get progress plot filenames
-        if paramSettingsDict['simAnneal']:
-            if paramSettingsDict['makeSimAnnealProgPlots']:
-                MCMCsummaryRootPlotFilename2 = os.path.join(DBdir,'simAnnealProgressSummary')
-                for chainNum in range(1,len(dataFiles)+1):
-                    origFiles.append(MCMCsummaryRootPlotFilename+"-chain_"+str(chainNum)+".png" )
-                    copyFiles.append(MCMCsummaryRootPlotFilename2+"-chain_"+str(chainNum)+".png" )
-        if paramSettingsDict['makeMCMCprogPlots']:
-            MCMCsummaryRootPlotFilename2 = os.path.join(DBdir,'MCMCprogressSummary')
-            for chainNum in range(1,len(dataFiles)+1):
-                origFiles.append(MCMCsummaryRootPlotFilename+"-chain_"+str(chainNum)+".png")
-                copyFiles.append(MCMCsummaryRootPlotFilename2+"-chain_"+str(chainNum)+".png")
-            if paramSettingsDict['makeSimAnnealProgPlots']:
-                simAnnealSummaryRootPlotFilename2 = os.path.join(DBdir,'simAnnealProgressSummary')
-                for chainNum in range(1,len(dataFiles)+1):
-                    origFiles.append(simAnnealSummaryRootPlotFilename+"-chain_"+str(chainNum)+".png")
-                    copyFiles.append(simAnnealSummaryRootPlotFilename2+"-chain_"+str(chainNum)+".png")
-        # get log filenames
-        chainLogRootName = os.path.join(paramSettingsDict['outputData_dir'],'log')
-        chainLogRootName2 = os.path.join(DBdir,'log')
-        for chainNum in range(1,len(dataFiles)+1):
-            origFiles.append(chainLogRootName+"-chain_"+str(chainNum)+".txt")
-            copyFiles.append(chainLogRootName2+"-chain_"+str(chainNum)+".txt")
-        origFiles.append(os.path.join(paramSettingsDict['outputData_dir'],'processManagerLogFile.txt'))
-        copyFiles.append(os.path.join(DBdir,'processManagerLogFile.txt'))
-        # get GR filenames
-        if paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing']:
-            origFiles.append(os.path.join(paramSettingsDict['outputData_dir'],'GRvalues.txt'))
-            copyFiles.append(os.path.join(DBdir,'GRvalues.txt'))
-        # get RESULTS.txt filenames
-        origFiles.append(os.path.join(paramSettingsDict['outputData_dir'],'RESULTS.txt'))
-        copyFiles.append(os.path.join(DBdir,'RESULTS.txt'))
-        origFiles.append(os.path.join(paramSettingsDict['outputData_dir'],'RAMusage_clean.png'))
-        copyFiles.append(os.path.join(DBdir,'RAMusage_clean.png'))
-        
-        ## copy all files in lists
-        for fileNum in range(0,len(origFiles)):
-            if os.path.exists(origFiles[fileNum]):
-                shutil.copy(origFiles[fileNum],copyFiles[fileNum])
+        print 'Copying all files in the RESULTS folder over to DropBox folder:\n '+DBdir
+        tools.gen.copytree(resultsFolder, DBdir)
             
     ############################################################
     ## Delete chain and/or combined data files?
@@ -526,7 +533,6 @@ def multiProcessStarter(paramSettingsDict):
     PMlogFile.write(s+'\n\nCLOSING PM LOG NOW!!\n\n')
     PMlogFile.close()
     
-   
 ##############################################################
 ## end
 ##############################################################

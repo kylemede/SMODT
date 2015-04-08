@@ -2272,7 +2272,7 @@ def mcmcProgressPlotter(filenames,rootPlotFilename,nu=1, plot4x1=False,TcSteppin
 #    outputSettingsFile = fName+'_DuoVersion'+ext
 #    paramSettingsDict = cFileToSimSettingsDict(outputSettingsFile)
 #    
-#    print '&& The value of paramSettingsDict["simulate_StarPlanet"] = '+repr(paramSettingsDict["simulate_StarPlanet"])
+#    print '&& The value of paramSettingsDict["simulate_StarPlanetRV"] = '+repr(paramSettingsDict["simulate_StarPlanetRV"])
 
     for filename in filenames:
         # check if the passed in value for filename includes '.txt'
@@ -2528,7 +2528,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
         fileList = []
         for num in range(1,numChains+1):
             fileList.append(os.path.join(os.path.dirname(outputDatafile),'outputData-chain_'+str(num)+'.txt'))
-        progessPlotterSingleFile(outputDatafile, summaryPlotFile+"-MCMCprogress", weight=False, confLevels=True, nu=1, SimPlanetStar=paramSettingsDict["simulate_StarPlanet"])
+        progessPlotterSingleFile(outputDatafile, summaryPlotFile+"-MCMCprogress", weight=False, confLevels=True, nu=1, SimPlanetStar=paramSettingsDict["simulate_StarPlanetRV"])
     if False:
         ## Make the posterior prob histograms.
         summaryPlotter(outputDatafile, summaryPlotFile, weight=False, confLevels=True, nu=1, plot4x1=False)
@@ -2628,10 +2628,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         
         
     Mass1 = sysDataDict['Mass1'] 
-    simulate_StarStar = paramSettingsDict["simulate_StarStar"]
-    simulate_StarPlanet = paramSettingsDict["simulate_StarPlanet"]
-    if (simulate_StarStar is True) and(simulate_StarPlanet is True):
-        print "Error: simulate_StarStar and simulate_StarPlanet can NOT BOTH be True!"
+    simulate_StarStarRV = paramSettingsDict["simulate_StarStarRV"]
+    simulate_StarPlanetRV = paramSettingsDict["simulate_StarPlanetRV"]
+    if (simulate_StarStarRV is True) and(simulate_StarPlanetRV is True):
+        print "Error: simulate_StarStarRV and simulate_StarPlanetRV can NOT BOTH be True!"
 
     if plotFilename!='':
         datadir = os.path.dirname(plotFilename)
@@ -2741,8 +2741,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     star_incs = []
     K_use = False
     # e, T, period, inc, argPeri_deg, a,
-    if simulate_StarPlanet:
-        s= 'simulate_StarPlanet==True, so loading up inputs as planet variables'
+    if simulate_StarPlanetRV:
+        s= 'simulate_StarPlanetRV==True, so loading up inputs as planet variables'
         log.write(s+'\n')
         if verbose:
             print s
@@ -2779,8 +2779,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             planet_Ks.append(planet_K)
             planet_incs.append(0)
             
-    if simulate_StarStar:
-        s= 'simulate_StarStar==True, so loading up inputs as star variables'
+    if simulate_StarStarRV:
+        s= 'simulate_StarStarRV==True, so loading up inputs as star variables'
         log.write(s+'\n')
         if verbose:
             print s
@@ -2919,7 +2919,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     ## Make an updated Radial Velocities for data accounting for planet or star RVs
     RVsOUTupdated3 = []
     # if simulating star's orbit and planet RVs exist sub them
-    if (simulate_StarStar and (planetVRs3[0][0][0]!=0)):
+    if (simulate_StarStarRV and (planetVRs3[0][0][0]!=0)):
         s= '\n Subtracting planet VRs from data!\n'
         if verbose:
             print s
@@ -2933,7 +2933,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                 RVsOUTupdated2.append(RVsOUTupdated)
             RVsOUTupdated3.append(RVsOUTupdated2)
     # if simulating planet's orbit and star RVs exist sub them
-    elif (simulate_StarPlanet  and (starVRs3[0][0][0]!=0)):
+    elif (simulate_StarPlanetRV  and (starVRs3[0][0][0]!=0)):
         s= '\n Subtracting star VRs from data!\n'
         if verbose:
             print s
@@ -3320,11 +3320,11 @@ def rvModDatasetMaker(e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, R
         RVs = [RVs]
     
     Mass1 = sysDataDict['Mass1'] 
-    simulate_StarStar = paramSettingsDict["simulate_StarStar"]
-    simulate_StarPlanet = paramSettingsDict["simulate_StarPlanet"]
-    if (simulate_StarStar is True) and(simulate_StarPlanet is True):
-        print "Error: simulate_StarStar and simulate_StarPlanet can NOT BOTH be True!"
-    if simulate_StarPlanet:
+    simulate_StarStarRV = paramSettingsDict["simulate_StarStarRV"]
+    simulate_StarPlanetRV = paramSettingsDict["simulate_StarPlanetRV"]
+    if (simulate_StarStarRV is True) and(simulate_StarPlanetRV is True):
+        print "Error: simulate_StarStarRV and simulate_StarPlanetRV can NOT BOTH be True!"
+    if simulate_StarPlanetRV:
         T_center = sysDataDict['planet_Tc']
     else:
         T_center = T[0]
@@ -3409,7 +3409,7 @@ def rvModDatasetMaker(e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, R
     star_incs = []
     K_use = False
     # e, T, period, inc, argPeri_deg, a,
-    if simulate_StarPlanet:
+    if simulate_StarPlanetRV:
         planet_Ps = period
         planet_es = e
         planet_argPeris = argPeri_deg
@@ -3436,7 +3436,7 @@ def rvModDatasetMaker(e, T_lastPeri, period, inc, argPeri_deg, a, sysDataDict, R
             planet_Ks.append(planet_K)
             planet_incs.append(0)
             
-    if simulate_StarStar:
+    if simulate_StarStarRV:
         star_es = e
         star_Ts = T
         star_Ps = period

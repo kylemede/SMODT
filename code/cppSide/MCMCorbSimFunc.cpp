@@ -359,7 +359,7 @@ void MCMCorbFuncObj::simulator()
 				if (SSO.TcStepping)
 				{
 					//cout<<" values in SYSdo: planet_T = "<< SYSdo.planet_T<<", star_T = "<<SYSdo.star_T <<endl;
-					if (SSO.simulate_StarPlanet==true)
+					if (SSO.simulate_StarPlanetRV==true)
 						T_proposed = SYSdo.planet_T;
 					else
 						T_proposed = SYSdo.star_T;
@@ -367,7 +367,7 @@ void MCMCorbFuncObj::simulator()
 				else
 				{
 					//cout<<" values in SYSdo: planet_Tc = "<<SYSdo.planet_Tc <<", star_Tc = "<< SYSdo.star_Tc<<endl;
-					if (SSO.simulate_StarPlanet==true)
+					if (SSO.simulate_StarPlanetRV==true)
 						Tc_proposed = SYSdo.planet_Tc;
 					else
 						Tc_proposed = SYSdo.star_Tc;
@@ -375,7 +375,7 @@ void MCMCorbFuncObj::simulator()
 			}
 			else
 			{
-				if (SSO.simulate_StarPlanet==true)
+				if (SSO.simulate_StarPlanetRV==true)
 				{
 					T_proposed = SYSdo.planet_T;
 					Tc_proposed = SYSdo.planet_Tc;
@@ -421,7 +421,7 @@ void MCMCorbFuncObj::simulator()
 			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,0.5*SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
 			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,0.5*SYSdo.Mass1_error,SYSdo.Mass1_error);
 			// load up mass2 with correct value depending on star or planet companion
-			if (SSO.simulate_StarPlanet==false)
+			if (SSO.simulate_StarPlanetRV==false)
 				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,0.5*SYSdo.star_Mass2_error,SYSdo.star_Mass2_error);
 			else
 				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,0.5*SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
@@ -438,7 +438,7 @@ void MCMCorbFuncObj::simulator()
 			SMT_in.a_total = 0;
 			SMT_in.period = period_proposed;
 			SMT_in.Mass1 = Mass1_proposed;
-			if (SSO.simulate_StarStar==true)
+			if (SSO.simulate_StarStarRV==true)
 				SMT_in.Mass2 = star_Mass2_proposed;
 			else
 				SMT_in.Mass2 = planet_MsinI_proposed/sin(inclination_deg_proposed*(PI/180.0));
@@ -534,7 +534,7 @@ void MCMCorbFuncObj::simulator()
 			// load up params drawn from fixed gaussians
 			DIt.Sys_Dist_PC = Sys_Dist_PC_proposed ;
 			DIt.Mass1 = Mass1_proposed;
-			if (SSO.simulate_StarStar==true)
+			if (SSO.simulate_StarStarRV==true)
 				DIt.Mass2 =  star_Mass2_proposed;
 			else
 				DIt.Mass2 = planet_MsinI_proposed/sin(DIt.inclination_deg*(PI/180.0));
@@ -606,7 +606,7 @@ void MCMCorbFuncObj::simulator()
 
 				// Load up ss or sp parts of RVdo with current trials
 				// param values as needed.
-				if (SSO.simulate_StarPlanet==true)
+				if (SSO.simulate_StarPlanetRV==true)
 				{
 					if ( SSO.silent==false )
 						cout<<"loading up input params for star-planet rv calcs"<<endl;
@@ -621,7 +621,7 @@ void MCMCorbFuncObj::simulator()
 					RVdo.planet_inc = DIt.inclination_deg ;
 					RVdo.planet_MsinI = DIt.Mass2 ;
 				}
-				if (SSO.simulate_StarStar==true)
+				if (SSO.simulate_StarStarRV==true)
 				{
 					if ( SSO.silent==false )
 						cout<<"loading up input params for star-star rv calcs"<<endl;
@@ -644,7 +644,7 @@ void MCMCorbFuncObj::simulator()
 					//generate latest params for planet VR calcs from Gaussians  $$$$ Make this a boolean in settings files $$$$
 					if (false)
 					{
-						if (SSO.simulate_StarStar==true)
+						if (SSO.simulate_StarStarRV==true)
 						{
 							RVdo2.planet_e = RanGen2.NormalTrunc(RVdo.planet_e,RVdo.planet_e_error,3.0*RVdo.planet_e_error);
 							RVdo2.planet_T = RanGen2.NormalTrunc(RVdo.planet_T,RVdo.planet_T_error,3.0*RVdo.planet_T_error);
@@ -662,12 +662,9 @@ void MCMCorbFuncObj::simulator()
 					}
 					else
 						VRCsp = GT.VRcalcStarPlanetLoadUp(RVdo);
-					//K_p_errorPercent = VRCsp.K_p_error/VRCsp.K_p;
-					//cout<<"Back from VRcalcStarPlanetLoadUp"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$
-					//cout<<"there were "<<RVdo.epochs_RV.size()<<" datasets found in the RVdata file"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$
 					VRCsp.verbose = false;
 					//Set value for primaryStarRVs boolean
-					if (SSO.simulate_StarPlanet==true)
+					if (SSO.simulate_StarPlanetRV==true)
 						VRCsp.primaryStarRVs = SSO.primaryStarRVs;
 					else
 						VRCsp.primaryStarRVs = false;
@@ -682,7 +679,7 @@ void MCMCorbFuncObj::simulator()
 						VRp_vector = VRCsp.multiEpochCalc();
 						VRp_vector2.push_back(VRp_vector);
 					}
-					if (SSO.simulate_StarPlanet==true)
+					if (SSO.simulate_StarPlanetRV==true)
 					{
 						a_total_curr = VRCsp.a_total;
 						if (vary_K==false)
@@ -701,7 +698,7 @@ void MCMCorbFuncObj::simulator()
 					//generate latest params for planet VR calcs from Gaussians  $$$$ Make this a boolean in settings files $$$$
 					if (false)
 					{
-						if (SSO.simulate_StarStar==true)
+						if (SSO.simulate_StarStarRV==true)
 						{
 							RVdo2.star_e = RanGen2.NormalTrunc(RVdo.star_e,RVdo.star_e_error,3.0*RVdo.star_e_error);
 							RVdo2.star_T = RanGen2.NormalTrunc(RVdo.star_T,RVdo.star_T_error,3.0*RVdo.star_T_error);
@@ -716,7 +713,8 @@ void MCMCorbFuncObj::simulator()
 					else
 						VRCss = GT.VRcalcStarStarLoadUp(RVdo);
 					VRCss.verbose = false;
-					if (SSO.simulate_StarStar==true)
+					//Set value for primaryStarRVs boolean
+					if (SSO.simulate_StarStarRV==true)
 						VRCss.primaryStarRVs = SSO.primaryStarRVs;
 					else
 						VRCss.primaryStarRVs = false;
@@ -730,7 +728,7 @@ void MCMCorbFuncObj::simulator()
 						VRs_vector = VRCss.multiEpochCalc();
 						VRs_vector2.push_back(VRs_vector);
 					}
-					if (SSO.simulate_StarStar==true)
+					if (SSO.simulate_StarStarRV==true)
 					{
 						a_total_curr = VRCss.a_total;
 						if (vary_K==false)

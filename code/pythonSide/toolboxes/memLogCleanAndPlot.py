@@ -56,7 +56,10 @@ def memUsageLogCleaner(filename = '',sleep=6,delOrigLog=True):
     fOut.close()
     print "cleaned RAMusage log file written to: "+fnamOut
     os.remove(filename)
-    print "Original RAMusage log deleted"
+    if os.path.exists(filename):
+        print "ERROR occurred while trying to delete :"+filename
+    else:
+        print "Original RAMusage log deleted: "+filename
     if True:
         multmod=sleep/3600
         strmod= "[hrs]"
@@ -77,6 +80,5 @@ def memUsageLogCleaner(filename = '',sleep=6,delOrigLog=True):
     print "Max RAM used during simulation was "+str(maxUse)+" MB"
     return maxUse
     
-        
 if __name__ == '__main__':
     memUsageLogCleaner() 

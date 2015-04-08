@@ -49,7 +49,7 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
 #         bestOrbit = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, rvOffsetsBest,lowestChiSquared]
 #     else:
 #         bestOrbit = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest,lowestChiSquared]
-    print repr(bestOrbit)
+    #print repr(bestOrbit)
     logFilename = os.path.join(paramSettingsDict['outputData_dir'],'log-chain_1.txt')
     [nu,nuRV,nuDI,printStr] = [nus[0],nus[1],nus[2],False]
     
@@ -143,7 +143,7 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
             ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,9+dataset, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
             resultsFile.write('RV offset '+str(dataset)+' [m/s] =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
     ## GR values
-    if paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing']:
+    if (paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing'])and(paramSettingsDict["mcONLY"]==False):
         header = "Lc  longAN  e  To  Tc  period  inclination  argPeri  a_total  K"
         headings = header.split()
         #first find resulting GR values
@@ -160,10 +160,10 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
                 wrstInt=i
         resultsFile.write("The least converged value was that of "+headings[wrstInt]+" = "+str(wrstVal)+'\n')
     ## Burn-in value
-    if paramSettingsDict['CalcBurnIn']:
+    if (paramSettingsDict['CalcBurnIn'])and(paramSettingsDict["mcONLY"]==False):
         resultsFile.write('\n'+"-"*60+"\nBurn-In Values:\n"+"-"*60+'\n'+burnInStr)
     ## Effective Points and Correlation Length values
-    if paramSettingsDict['calcCorrLengths']:
+    if (paramSettingsDict['calcCorrLengths'])and(paramSettingsDict["mcONLY"]==False):
         resultsFile.write('\n'+"-"*60+"\nCorrelation Lengths and number of Effective Points Values:\n"+"-"*60+effectivePointsStr)
     
     resultsFile.close()
@@ -456,17 +456,17 @@ def burnInCalcMultiFile(dataFilenames,simAnneal=True):
             if simAnneal:
                 chiSquaredsChain = chiSquaredsChain[startMCMCsample:-1]
             #medianChain = np.median(chiSquaredsChain)
-            burnInLength = burnInCalcFunc(chiSquaredsChain, medainALL,jumpy=False)
+            burnInLength = burnInCalcFunc(chiSquaredsChain, medainALL, jumpy=False)
             burnInLengths.append(burnInLength)
             
-            s += 'median value for all chains = '+str(medainALL)
+            s += '\nmedian value for all chains = '+str(medainALL)
             s += "\nTotal number of points in the chain = "+str(len(chiSquaredsChain))+"\n"
-            s += "Burn-in length = "+str(burnInLength)+"\n\n"
+            s += "Burn-in length = "+str(burnInLength)+"\n"
             log.write(s+"\n\n")
             if verbose:
                 print 'For chain # '+chainNumStr+s
-            
     log.close()
+    
     return (s,burnInLengths)
     
     
@@ -2048,14 +2048,14 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                         valUse=returnDict['loopedMCMC'] = strToBool(val,False)
                         if verbose:
                             print 'loopedMCMC found to be = '+str(returnDict['loopedMCMC'])
-                    elif 'simulate_StarStar'in key:
-                        valUse=returnDict['simulate_StarStar'] = strToBool(val,False)
+                    elif 'simulate_StarStarRV'in key:
+                        valUse=returnDict['simulate_StarStarRV'] = strToBool(val,False)
                         if verbose:
-                            print 'simulate_StarStar found to be = '+str(returnDict['simulate_StarStar'])
-                    elif 'simulate_StarPlanet'in key:
-                        valUse=returnDict['simulate_StarPlanet'] = strToBool(val,False)
+                            print 'simulate_StarStarRV found to be = '+str(returnDict['simulate_StarStarRV'])
+                    elif 'simulate_StarPlanetRV'in key:
+                        valUse=returnDict['simulate_StarPlanetRV'] = strToBool(val,False)
                         if verbose:
-                            print 'simulate_StarPlanet found to be = '+str(returnDict['simulate_StarPlanet'])
+                            print 'simulate_StarPlanetRV found to be = '+str(returnDict['simulate_StarPlanetRV'])
                             
                     elif 'simulate_PrimaryOrbitRV'in key:
                         valUse=returnDict['simulate_PrimaryOrbitRV'] = strToBool(val,False)

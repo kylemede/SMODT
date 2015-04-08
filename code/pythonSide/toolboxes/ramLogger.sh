@@ -7,7 +7,10 @@ echo
 echo "output log full path provided = $1"
 echo "sleep time will be $2 seconds"
 
-rm $1
+if [ -f $1 ]; then
+	rm $1 
+	echo "removed previous file: $1"
+fi
 
 while true; do 
 			free -m >> $1

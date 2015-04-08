@@ -118,7 +118,7 @@ void simAnealOrbFuncObj::simulator()
 	double inclination_deg_latest = 0;
 	if (SSO.inclination_degMAX==0)
 	{
-		if (SSO.simulate_StarPlanet==true)
+		if (SSO.simulate_StarPlanetRV==true)
 			inclination_deg_latest = RVdo.planet_inc;
 		else
 			inclination_deg_latest = RVdo.star_inc;
@@ -135,7 +135,7 @@ void simAnealOrbFuncObj::simulator()
 	{
 		if (SSO.longAN_degMAX==0)
 		{
-			if (SSO.simulate_StarPlanet==true)
+			if (SSO.simulate_StarPlanetRV==true)
 				longAN_deg_latest = RVdo.planet_long_AN;
 			else
 				longAN_deg_latest = RVdo.star_long_AN;
@@ -150,7 +150,7 @@ void simAnealOrbFuncObj::simulator()
 	double argPeri_deg_latest=90;
 	if (SSO.argPeri_degMAX==0)
 	{
-		if (SSO.simulate_StarPlanet==true)
+		if (SSO.simulate_StarPlanetRV==true)
 		{
 			if (SSO.DIonly==true)
 				argPeri_deg_latest = DIdo.planet_argPeri;
@@ -185,9 +185,9 @@ void simAnealOrbFuncObj::simulator()
 	double period_latest=0;
 	if (SSO.periodMAX==0)
 	{
-		if (SSO.simulate_StarPlanet==true)
+		if (SSO.simulate_StarPlanetRV==true)
 			period_latest = RVdo.planet_P;
-		if (SSO.simulate_StarStar==true)
+		if (SSO.simulate_StarStarRV==true)
 			period_latest = RVdo.star_P;
 	}
 	else
@@ -204,7 +204,7 @@ void simAnealOrbFuncObj::simulator()
 
 	if (SSO.eMAX==0)
 	{
-		if (SSO.simulate_StarPlanet==true)
+		if (SSO.simulate_StarPlanetRV==true)
 			e_latest = RVdo.planet_e;
 		else
 			e_latest = RVdo.star_e;
@@ -260,7 +260,7 @@ void simAnealOrbFuncObj::simulator()
 	// load initial T and Tc values from system data file
 	double T_latest;
 	double Tc_latest;
-	if (SSO.simulate_StarPlanet==true)
+	if (SSO.simulate_StarPlanetRV==true)
 	{
 		Tc_latest = SYSdo.planet_Tc;
 		T_latest = SYSdo.planet_T;
@@ -956,7 +956,7 @@ void simAnealOrbFuncObj::simulator()
 				if (SSO.TcStepping)
 				{
 					//cout<<" values in SYSdo: planet_T = "<< SYSdo.planet_T<<", star_T = "<<SYSdo.star_T <<endl;
-					if (SSO.simulate_StarPlanet==true)
+					if (SSO.simulate_StarPlanetRV==true)
 						T_proposed = SYSdo.planet_T;
 					else
 						T_proposed = SYSdo.star_T;
@@ -964,7 +964,7 @@ void simAnealOrbFuncObj::simulator()
 				else
 				{
 					//cout<<" values in SYSdo: planet_Tc = "<<SYSdo.planet_Tc <<", star_Tc = "<< SYSdo.star_Tc<<endl;
-					if (SSO.simulate_StarPlanet==true)
+					if (SSO.simulate_StarPlanetRV==true)
 						Tc_proposed = SYSdo.planet_Tc;
 					else
 						Tc_proposed = SYSdo.star_Tc;
@@ -972,7 +972,7 @@ void simAnealOrbFuncObj::simulator()
 			}
 			else
 			{
-				if (SSO.simulate_StarPlanet==true)
+				if (SSO.simulate_StarPlanetRV==true)
 				{
 					T_proposed = SYSdo.planet_T;
 					Tc_proposed = SYSdo.planet_Tc;
@@ -1019,7 +1019,7 @@ void simAnealOrbFuncObj::simulator()
 			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,0.5*SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
 			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,0.5*SYSdo.Mass1_error,3.0*SYSdo.Mass1_error);
 			// load up mass2 with correct value depending on star or planet companion
-			if (SSO.simulate_StarPlanet==false)
+			if (SSO.simulate_StarPlanetRV==false)
 				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,0.5*SYSdo.star_Mass2_error,SYSdo.star_Mass2_error);
 			else
 				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,0.5*SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
@@ -1037,7 +1037,7 @@ void simAnealOrbFuncObj::simulator()
 			SMT_in.a_total = 0;
 			SMT_in.period = period_proposed;
 			SMT_in.Mass1 = Mass1_proposed;
-			if (SSO.simulate_StarStar==true)
+			if (SSO.simulate_StarStarRV==true)
 				SMT_in.Mass2 = star_Mass2_proposed;
 			else
 				SMT_in.Mass2 = planet_MsinI_proposed/sin(inclination_deg_proposed*(PI/180.0));
@@ -1203,7 +1203,7 @@ void simAnealOrbFuncObj::simulator()
 			// load up params drawn from fixed gaussians
 			DIt.Sys_Dist_PC = Sys_Dist_PC_proposed ;
 			DIt.Mass1 = Mass1_proposed ;
-			if (SSO.simulate_StarStar==true)
+			if (SSO.simulate_StarStarRV==true)
 				DIt.Mass2 =  star_Mass2_proposed;
 			else
 				DIt.Mass2 = planet_MsinI_proposed/sin(DIt.inclination_deg*(PI/180.0));
@@ -1302,7 +1302,7 @@ void simAnealOrbFuncObj::simulator()
 
 				// Load up ss or sp parts of RVdo with current trials
 				// param values as needed.
-				if (SSO.simulate_StarPlanet==true)
+				if (SSO.simulate_StarPlanetRV==true)
 				{
 					if ( SSO.silent==false )
 						cout<<"loading up input params for star-planet RV calcs"<<endl;
@@ -1316,7 +1316,7 @@ void simAnealOrbFuncObj::simulator()
 					RVdo.planet_inc = DIt.inclination_deg ;
 					RVdo.planet_MsinI = DIt.Mass2;
 				}
-				if (SSO.simulate_StarStar==true)
+				if (SSO.simulate_StarStarRV==true)
 				{
 					if ( SSO.silent==false )
 						cout<<"loading up input params for star-star RV calcs"<<endl;
@@ -1339,7 +1339,7 @@ void simAnealOrbFuncObj::simulator()
 					//generate latest params for planet VR calcs from Gaussians $$$$ Make this a boolean in settings files $$$$
 					if (false)
 					{
-						if (SSO.simulate_StarStar==true)
+						if (SSO.simulate_StarStarRV==true)
 						{
 							RVdo2.planet_e = RanGen2.NormalTrunc(RVdo.planet_e,RVdo.planet_e_error,3.0*RVdo.planet_e_error);
 							RVdo2.planet_T = RanGen2.NormalTrunc(RVdo.planet_T,RVdo.planet_T_error,3.0*RVdo.planet_T_error);
@@ -1363,7 +1363,7 @@ void simAnealOrbFuncObj::simulator()
 					//cout<<"there were "<<RVdo.epochs_RV.size()<<" datasets found in the RVdata file"<<endl;//$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
 					VRCsp.verbose = false;
 					//Set value for primaryStarRVs boolean
-					if (SSO.simulate_StarPlanet==true)
+					if (SSO.simulate_StarPlanetRV==true)
 						VRCsp.primaryStarRVs = SSO.primaryStarRVs;
 					else
 						VRCsp.primaryStarRVs = false;
@@ -1379,7 +1379,7 @@ void simAnealOrbFuncObj::simulator()
 						VRp_vector = VRCsp.multiEpochCalc();
 						VRp_vector2.push_back(VRp_vector);
 					}
-					if (SSO.simulate_StarPlanet==true)
+					if (SSO.simulate_StarPlanetRV==true)
 					{
 						a_total_curr = VRCsp.a_total;
 						if (vary_K==false)
@@ -1398,7 +1398,7 @@ void simAnealOrbFuncObj::simulator()
 					//generate latest params for planet VR calcs from Gaussians  $$$$ Make this a boolean in settings files $$$$
 					if (false)
 					{
-						if (SSO.simulate_StarPlanet==true)
+						if (SSO.simulate_StarPlanetRV==true)
 						{
 							RVdo2.star_e = RanGen2.NormalTrunc(RVdo.star_e,RVdo.star_e_error,3.0*RVdo.star_e_error);
 							RVdo2.star_T = RanGen2.NormalTrunc(RVdo.star_T,RVdo.star_T_error,3.0*RVdo.star_T_error);
@@ -1414,7 +1414,7 @@ void simAnealOrbFuncObj::simulator()
 						VRCss = GT.VRcalcStarStarLoadUp(RVdo);
 					VRCss.verbose = false;
 					//Set value for primaryStarRVs boolean
-					if (SSO.simulate_StarStar==true)
+					if (SSO.simulate_StarStarRV==true)
 						VRCss.primaryStarRVs = SSO.primaryStarRVs;
 					else
 						VRCss.primaryStarRVs = false;
@@ -1428,7 +1428,7 @@ void simAnealOrbFuncObj::simulator()
 						VRs_vector = VRCss.multiEpochCalc();
 						VRs_vector2.push_back(VRs_vector);
 					}
-					if (SSO.simulate_StarStar==true)
+					if (SSO.simulate_StarStarRV==true)
 					{
 						a_total_curr = VRCss.a_total;
 						if (vary_K==false)

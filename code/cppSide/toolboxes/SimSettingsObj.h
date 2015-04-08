@@ -27,8 +27,8 @@ public:
 	bool mcONLY;
 	bool simAnneal;
 	// advanced RV and DI settings
-	bool simulate_StarStar;
-	bool simulate_StarPlanet;
+	bool simulate_StarStarRV;
+	bool simulate_StarPlanetRV;
 	bool simulate_PrimaryOrbitRV;
 	bool calcCorrLengths;
 	bool CalcGelmanRubin;

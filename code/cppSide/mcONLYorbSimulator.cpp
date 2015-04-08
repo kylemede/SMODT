@@ -73,19 +73,8 @@ int main(int argc ,char *argv[])
 	DIdataObj DIdo;
 	RVdataObj RVdo;
 	DataObj SYSdo;
-
-	// instantiate S-P calc object and load up its params
 	VRcalcStarPlanet VRCsp;
-	if (SSO.simulate_StarPlanet==true)
-		VRCsp.primaryStarRVs = SSO.primaryStarRVs;
-	else
-		VRCsp.primaryStarRVs = false;
-	// instantiate S-S calc object and load up its params
 	VRcalcStarStar VRCss;
-	if (SSO.simulate_StarStar==true)
-		VRCss.primaryStarRVs = SSO.primaryStarRVs;
-	else
-		VRCss.primaryStarRVs = false;
 
 	// log and maybe print all inputs to C++ call
 	string inputsStr;
@@ -110,9 +99,9 @@ int main(int argc ,char *argv[])
 	SSlog<<simModeStr;
 	cout<<simModeStr<<endl;
 
-	cout<<"\n$$$$ about to try and load up sys data"<<endl;
+	//cout<<"\n$$$$ about to try and load up sys data"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$
 	SYSdo.systemDataLoadUp(SystemDataFilename.c_str());
-	cout<<"DI and RV data objects instantiated"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$
+	//cout<<"DI and RV data objects instantiated"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$
 	if ((SSO.DIonly==true) or (SSO.RVonly==false && SSO.DIonly==false))
 	{
 		//cout<<"Starting to load up DI data obj"<<endl; //$$$$$$$$$$$$$$$$$
@@ -157,7 +146,7 @@ int main(int argc ,char *argv[])
 	string numSamplesString =  GT.numSamplesStringMaker(SSO.numSamples);
 	ss<<"\nMCONLY: $$$$$$$$$$$$$$$$$$$  Starting Simple Monte Carlo Simulator $$$$$$$$$$$$$$$$$" <<endl;
 	ss<<"Number of sample orbits being created = " << numSamplesString <<endl;
-	ss<<"\nRandom Generator Seed = "<<time_nsec<<"\n"<<endl;
+	ss<<"Random Generator Seed = "<<time_nsec<<endl;
 	starterString = ss.str();
 	ss.clear();
 	ss.str(std::string());
@@ -228,7 +217,7 @@ int main(int argc ,char *argv[])
     }
     else
 	{
-		if (SSO.simulate_StarPlanet==true)
+		if (SSO.simulate_StarPlanetRV==true)
 			inclination_deg_proposed = RVdo.planet_inc;
 		else
 			inclination_deg_proposed = RVdo.star_inc;
@@ -238,7 +227,7 @@ int main(int argc ,char *argv[])
 	{
 		if (SSO.longAN_degMAX==0)
 		{
-			if (SSO.simulate_StarPlanet==true)
+			if (SSO.simulate_StarPlanetRV==true)
 				longAN_deg_proposed = RVdo.planet_long_AN;
 			else
 				longAN_deg_proposed = RVdo.star_long_AN;
@@ -257,7 +246,6 @@ int main(int argc ,char *argv[])
     	numParams+=1;
     }
     double a_total_proposed = 0;
-    double a_total_curr=0;
     //NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2! and will calculate semi-majors from the period and provided masses.
     if ((SSO.a_totalMAX!=0)&&(SSO.DIonly==true))
     {
@@ -274,9 +262,9 @@ int main(int argc ,char *argv[])
     }
     else
 	{
-		if (SSO.simulate_StarPlanet==true)
+		if (SSO.simulate_StarPlanetRV==true)
 			period_proposed = RVdo.planet_P;
-		if (SSO.simulate_StarStar==true)
+		if (SSO.simulate_StarStarRV==true)
 			period_proposed = RVdo.star_P;
 	}
     double e_proposed=0;
@@ -285,7 +273,7 @@ int main(int argc ,char *argv[])
 	double sqrtEccMax = sqrt(SSO.eMAX);
 	if (SSO.eMAX==0)
 	{
-		if (SSO.simulate_StarPlanet==true)
+		if (SSO.simulate_StarPlanetRV==true)
 			e_proposed = RVdo.planet_e;
 		else
 			e_proposed = RVdo.star_e;
@@ -297,9 +285,9 @@ int main(int argc ,char *argv[])
 		numDIparams+=1;
 		numParams+=1;
 		if (SSO.eMAX<0.3)
-			ss<<"\n\n #### eMAX<0.3, So using sqrt(e)sin(omega),sqrt(e)cos(omega) ####\n\n"<<endl;
+			ss<<"\n #### eMAX<0.3, So using sqrt(e)sin(omega),sqrt(e)cos(omega) ####\n"<<endl;
 		else
-			ss<<"\n\n ### Using DIRECT e and omega ### \n\n"<<endl;
+			ss<<"\n ### Using DIRECT e and omega ### \n"<<endl;
 	}
 
 	double Tmin;
@@ -319,7 +307,7 @@ int main(int argc ,char *argv[])
 			Tmin = earliestEpoch-SSO.periodMAX*365.242;
 			TMIN = earliestEpoch-SSO.periodMAX*365.242;
 			TMAX = earliestEpoch;
-			ss<<"******  both T_Min and T_Max set to -1  ******"<<endl;
+			ss<<"\n******  both T_Min and T_Max set to -1  ******"<<endl;
 		}
 		else
 		{
@@ -328,11 +316,11 @@ int main(int argc ,char *argv[])
 			TMAX = SSO.T_Max;
 		}
 	}
-	ss<<fixed<<std::setprecision(6)<<"\n\nTMIN = "<<TMIN<<", TMAX = "<<TMAX<<"\n\n"<<endl;
+	//ss<<fixed<<std::setprecision(6)<<"\nTMIN = "<<TMIN<<", TMAX = "<<TMAX<<"\n"<<endl;
 	// load initial T and Tc values from system data file
 	double T_proposed = 0;
 	double Tc_proposed = 0;
-	if (SSO.simulate_StarPlanet==true)
+	if (SSO.simulate_StarPlanetRV==true)
 	{
 		Tc_proposed = SYSdo.planet_Tc;
 		T_proposed = SYSdo.planet_T;
@@ -508,7 +496,7 @@ int main(int argc ,char *argv[])
 				if (SSO.TcStepping)
 				{
 					//cout<<" values in SYSdo: planet_T = "<< SYSdo.planet_T<<", star_T = "<<SYSdo.star_T <<endl;
-					if (SSO.simulate_StarPlanet==true)
+					if (SSO.simulate_StarPlanetRV==true)
 						T_proposed = SYSdo.planet_T;
 					else
 						T_proposed = SYSdo.star_T;
@@ -516,7 +504,7 @@ int main(int argc ,char *argv[])
 				else
 				{
 					//cout<<" values in SYSdo: planet_Tc = "<<SYSdo.planet_Tc <<", star_Tc = "<< SYSdo.star_Tc<<endl;
-					if (SSO.simulate_StarPlanet==true)
+					if (SSO.simulate_StarPlanetRV==true)
 						Tc_proposed = SYSdo.planet_Tc;
 					else
 						Tc_proposed = SYSdo.star_Tc;
@@ -524,7 +512,7 @@ int main(int argc ,char *argv[])
 			}
 			else
 			{
-				if (SSO.simulate_StarPlanet==true)
+				if (SSO.simulate_StarPlanetRV==true)
 				{
 					T_proposed = SYSdo.planet_T;
 					Tc_proposed = SYSdo.planet_Tc;
@@ -597,7 +585,7 @@ int main(int argc ,char *argv[])
 			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,0.5*SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
 			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,0.5*SYSdo.Mass1_error,3.0*SYSdo.Mass1_error);
 			// load up mass2 with correct value depending on star or planet companion
-			if (SSO.simulate_StarPlanet==false)
+			if (SSO.simulate_StarPlanetRV==false)
 				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,0.5*SYSdo.star_Mass2_error,SYSdo.star_Mass2_error);
 			else
 				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,0.5*SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
@@ -605,7 +593,7 @@ int main(int argc ,char *argv[])
 		//Load these up into the DIt object
 		DIt.Sys_Dist_PC = Sys_Dist_PC_proposed ;
 		DIt.Mass1 = Mass1_proposed ;
-		if (SSO.simulate_StarStar==true)
+		if (SSO.simulate_StarStarRV==true)
 			DIt.Mass2 =  star_Mass2_proposed;
 		else
 			DIt.Mass2 = planet_MsinI_proposed/sin(DIt.inclination_deg*(PI/180.0));
@@ -714,7 +702,7 @@ int main(int argc ,char *argv[])
 
         	// Load up ss or sp parts of RVdo with current trial's
         	// param values as needed.
-        	if (SSO.simulate_StarPlanet==true)
+        	if (SSO.simulate_StarPlanetRV==true)
 			{
         		if ( SSO.silent==false )
         			cout<<"loading up input params for star-planet rv calcs"<<endl;
@@ -728,7 +716,7 @@ int main(int argc ,char *argv[])
         		RVdo.planet_argPeri  = argPeri_deg_proposed+SSO.argPeriOffsetRV ;
         		RVdo.planet_inc = DIt.inclination_deg ;
 			}
-        	if (SSO.simulate_StarStar==true)
+        	if (SSO.simulate_StarStarRV==true)
         	{
         		if ( SSO.silent==false )
         			cout<<"loading up input params for star-star rv calcs"<<endl;
@@ -742,16 +730,17 @@ int main(int argc ,char *argv[])
         		RVdo.star_inc  = DIt.inclination_deg ;
         	}
         	// get residual velocities for companion planet if needed
-        	if (RVdo.planet_P!=0 and RVdo.planet_e!=0 )
+        	if (RVdo.planet_P!=0)
         	{
         		if ( SSO.silent==false )
         			cout<<"Starting to calculate residual vel for star-planet"<<endl;
         		VRCsp = GT.VRcalcStarPlanetLoadUp(RVdo);
-        		//K_p_errorPercent = VRCsp.K_p_error/VRCsp.K_p;
-        		//cout<<"K_p_errorPercent = "<<K_p_errorPercent <<endl;
-        		//cout<<"Back from VRcalcStarPlanetLoadUp"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$
-        		//cout<<"there were "<<RVdo.epochs_RV.size()<<" datasets found in the RVdata file"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$
         		VRCsp.verbose = false;
+        		//Set value for primaryStarRVs boolean
+				if (SSO.simulate_StarPlanetRV==true)
+					VRCsp.primaryStarRVs = SSO.primaryStarRVs;
+				else
+					VRCsp.primaryStarRVs = false;
         		// run through all RV data sets and calc residuals for it
 				for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
 				{
@@ -763,19 +752,24 @@ int main(int argc ,char *argv[])
 					VRp_vector = VRCsp.multiEpochCalc();
 					VRp_vector2.push_back(VRp_vector);
 				}
-				if ((SSO.simulate_StarPlanet==true)&&(SSO.DIonly==false))
+				if ((SSO.simulate_StarPlanetRV==true)&&(SSO.DIonly==false))
 					a_total_curr = VRCsp.a_total;
 				if ( SSO.silent==false )
 				        cout<<"K_p = "<<VRCsp.K_p<<endl;
         	}
 
         	// get residual velocities for companion star if needed
-        	if (RVdo.star_P!=0 and RVdo.star_e!=0)
+        	if (RVdo.star_P!=0)
         	{
         		if ( SSO.silent==false )
         			cout<<"Starting to calculate residual vel for star-star"<<endl;
         		VRCss = GT.VRcalcStarStarLoadUp(RVdo);
         		VRCss.verbose = false;
+        		//Set value for primaryStarRVs boolean
+        		if (SSO.simulate_StarStarRV==true)
+					VRCss.primaryStarRVs = SSO.primaryStarRVs;
+				else
+					VRCss.primaryStarRVs = false;
         		// run through all RV data sets and calc residuals for it
         		for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
         		{
@@ -786,7 +780,7 @@ int main(int argc ,char *argv[])
         			VRs_vector = VRCss.multiEpochCalc();
         			VRs_vector2.push_back(VRs_vector);
         		}
-        		if ((SSO.simulate_StarStar==true)&&(SSO.DIonly==false))
+        		if ((SSO.simulate_StarStarRV==true)&&(SSO.DIonly==false))
         			a_total_curr = VRCss.a_total;
         		if ( SSO.silent==false )
         			cout<<"K_s = "<<VRCss.K_s<<endl;
@@ -798,10 +792,6 @@ int main(int argc ,char *argv[])
         	{
         		if ( SSO.silent==false )
         			cout<<"\nStarting to calculate chiSquared from residuals for dataset# "<< dataset<<endl;
-//				if (dataset==0)
-//					RVoffsets_proposed[0] = 10.486022;
-//				if (dataset==1)
-//					RVoffsets_proposed[1] = 1.0;
 				for (int epoch=0; epoch<RVdo.epochs_RV[dataset].size(); ++epoch)
 				{
 					double planetVR = 0;

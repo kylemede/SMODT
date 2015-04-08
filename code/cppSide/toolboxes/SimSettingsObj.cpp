@@ -43,8 +43,8 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 	DIonly = true;
 	mcONLY = true;
 	simAnneal = false;
-	simulate_StarStar = false;
-	simulate_StarPlanet = false;
+	simulate_StarStarRV = false;
+	simulate_StarPlanetRV = false;
 	simulate_PrimaryOrbitRV = false;
 	calcCorrLengths=false;
 	CalcGelmanRubin=true;
@@ -288,17 +288,17 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 					if (verboseInternal)
 						cout<<"simAnneal: "<<GT.boolToStr(simAnneal)<<endl;
 				}
-				else if (key.compare("simulate_StarStar")==0)
+				else if (key.compare("simulate_StarStarRV")==0)
 				{
-					simulate_StarStar = boolParser(val);
+					simulate_StarStarRV = boolParser(val);
 					if (verboseInternal)
-						cout<<"simulate_StarStar: "<<GT.boolToStr(simulate_StarStar)<<endl;
+						cout<<"simulate_StarStarRV: "<<GT.boolToStr(simulate_StarStarRV)<<endl;
 				}
-				else if (key.compare("simulate_StarPlanet")==0)
+				else if (key.compare("simulate_StarPlanetRV")==0)
 				{
-					simulate_StarPlanet = boolParser(val);
+					simulate_StarPlanetRV = boolParser(val);
 					if (verboseInternal)
-						cout<<"simulate_StarPlanet: "<<GT.boolToStr(simulate_StarPlanet)<<endl;
+						cout<<"simulate_StarPlanetRV: "<<GT.boolToStr(simulate_StarPlanetRV)<<endl;
 				}
 				else if (key.compare("simulate_PrimaryOrbitRV")==0)
 				{

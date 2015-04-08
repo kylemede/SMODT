@@ -257,8 +257,7 @@ false & true/false & $K_2$ & $\omega_{vary}$ & $\omega_{vary}$\\
 
 Here we will go over the large array of settings in the settings file and the possible modes to run the simulator in.  In this section ALL of the settings will be briefly described in the order they appear in the `SimSettings.txt' file, and the more intricate details of the settings most important to changing how the 3 data modes are discussed in Section (\ref{sec:simDataModes}).
 
-First, lets go through ALL the settings in the "SimSettings" file, as it is where the user is expected to spend the bulk of their time playing around to get things to run the way they want.
-
+{\bf \color{blue} General Settings: }\\
 {\bf chiSquaredMax}\\
 This will set the maximum allowed reduced $\chi^2$ allowed during simple Monte Carlo runs.  During Simulated Annealing it also poses a use to allow the starting parameters to jump to a new set if the chain has yet to find a solution under that value, in this case trial and error are needed but a value around 300 might work at the start and reduced as the parameters are constrained.  That situation can occur if you have a low starting temperature, or the initial parameters are unfortunately in a very bad section of the parameter space.  Thus, the jumping routine helps get out of those ruts and this parameter determines if it is in said rut.
 
@@ -273,7 +272,6 @@ Turn on multi-processing?  If set to true, then there will be multiple chains st
 
 {\bf silent}\\
 There are two levels of extra information printing above that of the print block controlled with "numSamplePrints", or any error prints due to problems.  The higher level one is "silent", with some extra prints that will occur for each sample and is useful for some debugging.
-
 
 {\bf verbose}\\
 This is the second level of debug print messages.  It will basically trigger the simulator to give you a high level of verbosity to its step by step process, including for all the pre-simulation file checking and such.
@@ -305,8 +303,8 @@ Only perform fitting to the astrometry data?  Set both this and "RVonly" to fals
 {\bf simAnneal}\\
 Run only Simulated Annealing?  This is a good way to make sure that the Simulated Annealing stage is running well and finding a suitable starting place for the following MCMC simulations.
 
-{\bf loopedMCMC}\\
-This might be still broken when you download SMODT, but it is designed to run bootstrap type simulations on a special version of the input data, maybe only the RV data.  There are functions to produce a set of the RV data with re-arranged errors.  If many of these data sets are created, this version of the simulator would run on each data set and give different final solutions for each, that can all be plotted together to give an idea of the output solution set's range.  It was suggested by some and thus implemented, but later given up on.
+{\bf startTemp}\\
+Starting temperature for the Simulated Annealing runs.  Anything between 50-1000 could work, but it depends on how long you want to run that stage of the simulation for and how well constrained the parameters are.
 
 {\bf makePosteriorsPlot}\\
 Make plots of the posterior distributions?  These will be histograms of the output values from Monte Carlo or MCMC, but not possible with Simulated Annealing by definition of how it runs.
@@ -314,23 +312,16 @@ Make plots of the posterior distributions?  These will be histograms of the outp
 {\bf makeOrbitPlots}\\
 Make plots of the orbits, both astrometry and radial velocity if requested with "RVonly" and "DIonly", with the data also represented.  Tweaks to these plots can be made in the Python "plotToolbox.py" file if the user wishes.
 
-{\bf makeSimAnnealProgPlots}\\
-Make progress plots of the Simulated Annealing run.  This is a time series showing the values of all the varying parameters as a function of sample number.  It is useful for seeing how the simulation converges to the final parameters.
-
-{\bf startTemp}\\
-Starting temperature for the Simulated Annealing runs.  Anything between 50-1000 could work, but it depends on how long you want to run that stage of the simulation for and how well constrained the parameters are.
-
 {\bf delChainsAfter}\\
 Delete the output data files for each chain after the simulation is complete?  This is a good way to save you from filling up your disk space when running many successive simulations.  Remember that long simulations (over say 1e8) an cause large output data files on the order of hundreds of Gigabites.
 
 {\bf delCombinedDataAfter}\\
 Delete the combined data file after simulation completes?  After processing anything needed for the individual chains, they are combined to make a final single output data file (in the cases of MCMC and Monte Carlo only).  Again, deleting these after can help save space.
 
-{\bf TcStepping}\\
-The simulator calculates the Time of Last Periapsis (To) from other parameters and the Time of Center Transit (Tc), or vice versa.  In the cases of very low eccentricities (under 0.3) it is recommended to step through the parameter space in Tc to help avoid biasing towards higher eccentric orbits.  Thus, set this to true to do just that, or set it to false to calculate Tc from the varying To values.
-
 {\bf CopyToDrobox}\\
 If you like, you can define the location of a DropBox directory, or another directory, you wish the smaller files produced by the simulator (plots, and maybe the log files) to be copied to at the end of the simulation.  This is useful for showing collaborators recent results, or for you to see results on your home computer when running it on your work desktop.
+
+{\bf \color{blue} Settings for MCMC mode }\\
 
 {\bf CalcBurnIn}\\
 The burn in is the stage of the MCMC where the chain is "forgetting" its starting point.  This is hopefully handled during the final sigma tunning at the end of the Simulated Annealing stage, but if it is a much larger value, then you should consider deleting the samples from the MCMC chains to remove any bias caused by the starting location.
@@ -347,6 +338,9 @@ When running MCMC mode, this will set the number of samples for the Simulated An
 {\bf makeMCMCprogPlots}\\
 Make progress plots of the MCMC chains.  Just like the earlier setting for the Simulated Annealing chains, this can give you another visual way to investigate how the MCMC chains are exploring the parameter space.  As MCMC is statistically designed to explore the space efficiently, this is commonly useless, but could pose useful to some users.
 
+{\bf makeSimAnnealProgPlots}\\
+Make progress plots of the Simulated Annealing run.  This is a time series showing the values of all the varying parameters as a function of sample number.  It is useful for seeing how the simulation converges to the final parameters.
+
 {\bf CalcGelmanRubin}\\
 The Gelman Rubin statistic (R) gives an indication on the simulations convergence to the final posterior distribution.  R values of 1.0 indicate a perfect convergence, while values much higher indicate the simulation needs to be ran longer.  Typically R $\leq1.1$ is considered the criterion for convergence.
 
@@ -356,11 +350,41 @@ How often should the R values be calculate?  This calculation is very heavy, so 
 {\bf delGRchainFiles}\\
 Delete the output Gelman Rubin value files for each chain after the simulation is complete?  This should basically always be `true' as only the resulting `GRvalues.txt' is useful after simulation is complete, the individual chain versions are just used to calculate it. 
 
-{\bf simulate\_StarStar }\\
-Simulate a Star-Star system?  ie. a binary.
+{\bf\color{red} loopedMCMC}\\
+This might be still broken when you download SMODT, but it is designed to run bootstrap type simulations on a special version of the input data, maybe only the RV data.  There are functions to produce a set of the RV data with re-arranged errors.  If many of these data sets are created, this version of the simulator would run on each data set and give different final solutions for each, that can all be plotted together to give an idea of the output solution set's range.  It was suggested by some and thus implemented, but later given up on.
 
-{\bf simulate\_StarPlanet}\\
-Simulate a Star-Planet system?
+{\bf \color{blue} Special Settings for the models: }\\
+
+{\bf simulate\_StarStarRV}\\
+This indicates to draw the sample variables for the secondary star's orbit.  If there are values in the ``SystemSettings.txt'' file for the planet, they will be used to generate a fixed planetary RVs for the same epochs of the RV data for the star.
+
+{\bf simulate\_StarPlanetRV}\\
+This indicates to draw the sample variables for the planet's orbit.  If there are values in the ``SystemSettings.txt'' file for the secondary star, they will be used to generate a fixed secondary star RVs for the same epochs of the RV data for the planet.
+
+{\bf simulate\_PrimaryOrbitRV}\\
+Fit for the primary star's orbit?  This will help determine which versions of $K$ and $\omega$ to use in the above RV equations.  As the value of the primaryStarRVs parameter is also needed to determine which versions to use, please see below for the options.
+
+{\bf primaryStarRVs}\\
+Are the RV values in the `RVdata.dat' file that of the primary star?  \\
+$\bullet$If `true' and simulate\_PrimaryOrbitRV is `true': Use $K_1$ and $\omega = \omega_{primary}$.\\
+$\bullet$If `false' and simulate\_PrimaryOrbitRV is `true': Use $K_2$ and $\omega = \omega_{secondary}+180^{\circ}.$\\
+$\bullet$If `true' and simulate\_PrimaryOrbitRV is `false': Use $K_1$ and $\omega = \omega_{primary}-180^{\circ}$.\\
+$\bullet$If `false' and simulate\_PrimaryOrbitRV is `false': Use $K_2$ and $\omega = \omega_{secondary}$.\\
+These all reduce down to those shown in table (\ref{tbl:3Dvals})
+
+{\bf TcEqualT}\\
+In cases where the inclination is within +/-15$^{\circ}$ of 90, the value of the time of center transit ($T\_c$) needs to also be taken into account to ensure the phase shift is correct.  As this phase is not always needed at inclination values outside this range, this is a parameter that the user can flag on and off to see how it affects the RV fit.  Note, that $T_c$ plays no role in the astrometry fitting, only RV.
+
+{\bf argPeriPlusRV}\\
+This is a fixed value in degrees to be added to the value of the $\omega$ used in the RV model. ie. $\omega_{RVmodel}=\omega+argPeriPlusRV$.
+
+{\bf TcStepping}\\
+The simulator calculates the Time of Last Periapsis (To) from other parameters and the Time of Center Transit (Tc), or vice versa.  In the cases of very low eccentricities (under 0.3) it is recommended to step through the parameter space in Tc to help avoid biasing towards higher eccentric orbits.  Thus, set this to true to do just that, or set it to false to calculate Tc from the varying To values.
+
+{\bf argPeriPlusDI}\\
+This is a fixed value in degrees to be added to the value of the $\omega$ used in the DI model. ie. $\omega_{DImodel}=\omega+argPeriPlusRV$.
+
+{\bf \color{blue} Ranges for acceptable random number inputs: }\\
 
 {\bf longAN\_degMIN}\\
 Minimum value for the Longitude of the Ascending node parameter.

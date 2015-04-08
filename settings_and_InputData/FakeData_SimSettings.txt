@@ -1,14 +1,17 @@
 #These are all the general settings for the simulation
 # Fake data using Tim's model
 
+########################
+### General Settings ###
+########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
-chiSquaredMax =500.0
+chiSquaredMax =15.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =10000
+numSamples =3000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing =false
+useMultiProcessing =true
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -25,7 +28,7 @@ RVdataFilename =RVdata.dat
 outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-outputData_filenameRoot = FakeData-3D-openParams-PrimaryRVs-ToEQUALTc-FINAL
+outputData_filenameRoot = FakeData-mconly-3D-openParams-PrimaryRVs-ToEQUALTc-testing
 #*************************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -33,7 +36,7 @@ RVonly =false
 DIonly =false
 ## if both mcONLY and simAnneal are set to false, then MCMC will be used!
 # Set to true to perform standard Monte Carlo only[bool]
-mcONLY =false
+mcONLY =true
 # Set to true to perform SimulateAnnealing[bool]
 simAnneal =false
 # Simulated Annealing starting temperature [double]
@@ -70,11 +73,11 @@ CalcGelmanRubin =true
 numTimesCalcGR =100
 # Delete Gelman Rubin chain files after?  Still keeps resulting single 'GRvalues.txt' file though. [bool]
 delGRchainFiles = true
-# Set to true to perform the 100 mod dataset MCMC loop $$ NOTE, this might not work as I haven't checked it still works... [bool]
+# Set to true to perform the 100 mod dataset MCMC loop $$ NOTE, this MIGHT NOT WORK as I haven't checked it still works... [bool]
 loopedMCMC =False
 
 #####################################
-# Special settings for the models ###
+# Special Settings for the models ###
 #####################################
 ## Settings for possible RV cases:
 # If RV data is of a companion star, set simulate_StarStar=true
@@ -83,8 +86,8 @@ loopedMCMC =False
 # If a second companion exists with a known orbit, its values MUST 
 # be set in the 'SystemData.txt' file to ensure it is included in 
 # residual velocity calculations.
-simulate_StarStar =True
-simulate_StarPlanet =false 
+simulate_StarStarRV =True
+simulate_StarPlanetRV =false 
 # fit to the primary's RV orbit [bool]
 simulate_PrimaryOrbitRV = false
 # Are the RVs in the RVdata.dat for the Primary star? [bool]

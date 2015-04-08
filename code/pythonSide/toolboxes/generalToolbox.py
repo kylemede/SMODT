@@ -105,7 +105,7 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
         resultsFile.write("Total number of epochs of DI data was: "+str(numDIepochs)+'\n')
     if (mode=="3D")or(mode=="RVonly"):
         resultsFile.write("Number of RV data sets included was: "+str(numRVdatasets)+'\n')
-        resultsFile.write("Total number of RV epochs was: "+str(numDIepochs)+'\n')
+        resultsFile.write("Total number of RV epochs was: "+str(numRVepochs)+'\n')
         
     ##############################################
     ## Record output statistical values of use.

@@ -12,9 +12,18 @@ if [ -f $1 ]; then
 	echo "removed previous file: $1"
 fi
 
+echo "Start of log file:" >>$1
+
 while true; do 
-			free -m >> $1
-			echo "Just logged latest usage, after pressing Ctrl+c to clean and plot type:"
-			echo "'python /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/code/pythonSide/toolboxes/memLogCleanAndPlot.py'"
-			sleep $2
+			if [ -f $1 ]; then
+				free -m >> $1
+				echo "Just logged latest usage, after pressing Ctrl+c to clean and plot type:"
+				echo "'python /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/code/pythonSide/toolboxes/memLogCleanAndPlot.py'"
+				sleep $2
+			fi
+
+			if [ ! -f $1 ]; then
+				break
+			fi
+
 			done

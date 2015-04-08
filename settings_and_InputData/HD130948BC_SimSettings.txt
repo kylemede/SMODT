@@ -1,8 +1,9 @@
 #These are all the general settings for the simulation
 #HD 130948BC DI data from Dupuy email
 
-# Using the 'Duo' simulations? ie. Python starter with C++ core. [bool]
-Duo =true
+########################
+### General Settings ###
+########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 chiSquaredMax =500.0
 # The number of samples orbital parameters to try/draw [int]
@@ -56,6 +57,8 @@ CopyToDrobox =false
 ############################
 # Calculate the length of the burn in for each chain? [bool] 
 CalcBurnIn =False
+# remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?
+removeBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths =false
 # number of samples to draw for simAnneal stage [int] 
@@ -83,20 +86,20 @@ loopedMCMC =False
 # If a second companion exists with a known orbit, its values MUST 
 # be set in the 'SystemData.txt' file to ensure it is included in 
 # residual velocity calculations.
-simulate_StarStar =false
-simulate_StarPlanet =true 
+simulate_StarStarRV =false
+simulate_StarPlanetRV =true 
 # fit to the primary's RV orbit [bool]
 simulate_PrimaryOrbitRV = false
 # Are the RVs in the RVdata.dat for the Primary star? [bool]
 primaryStarRVs = true
+# Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
+TcStepping = false
 # take the time of center transit (inferior conjunction) into account? [bool]
 TcEqualT = true
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
 argPeriPlusRV = 0.0
 ##################################################
 ## Special settings DI model:
-# Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
-TcStepping = false
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
 argPeriPlusDI = 0.0
 

@@ -40,17 +40,13 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
     datadir = paramSettingsDict['outputData_dir']
     outputDataFilename = os.path.join(datadir,'outputData-ALL.dat') 
     resultsFile = open(os.path.join(datadir,"RESULTS.txt"),'w')
-    DIdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['DIdataFilename'])
-    DIdataDict = DItools.DIdataToDict(DIdatafilename)
-    RVdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['RVdataFilename'])
-    RVdataDict = RVtools.RVdataToDict(RVdatafilename)
+    if paramSettingsDict['RVonly']==False:
+        DIdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['DIdataFilename'])
+        DIdataDict = DItools.DIdataToDict(DIdatafilename)
+    if paramSettingsDict['DIonly']==False:
+        RVdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['RVdataFilename'])
+        RVdataDict = RVtools.RVdataToDict(RVdatafilename)
     bestOrbit = bestOrbitFileToList(os.path.join(paramSettingsDict['outputData_dir'],'bestOrbit.txt'))
-#     if len(rvOffsetsBest)>0:
-#         bestOrbit = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest, rvOffsetsBest,lowestChiSquared]
-#     else:
-#         bestOrbit = [longANBest, eBest, TBest, TcBest, periodBest, incBest, argPeriBest, aBest, KBest,lowestChiSquared]
-    #print repr(bestOrbit)
-    logFilename = os.path.join(paramSettingsDict['outputData_dir'],'log-chain_1.txt')
     [nu,nuRV,nuDI,printStr] = [nus[0],nus[1],nus[2],False]
     
     ## find number of RV datasets
@@ -68,11 +64,13 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
         if (len(line)>11):
             numRVdatasets = len(dataLineCols) - 11 
     f.close()
-    ## Find number of DI epochs
-    numDIepochs = len(DIdataDict['DI_epochs'])
-    ## Find number of RV epochs
-    RVepochs = np.array(RVdataDict['RV_epochs'])
-    numRVepochs = RVepochs.size
+    if paramSettingsDict['RVonly']==False:
+        ## Find number of DI epochs
+        numDIepochs = len(DIdataDict['DI_epochs'])
+    if paramSettingsDict['DIonly']==False:
+        ## Find number of RV epochs
+        RVepochs = np.array(RVdataDict['RV_epochs'])
+        numRVepochs = RVepochs.size
     
     ###################################################################
     ## Record basic input and general simulation values

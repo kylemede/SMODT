@@ -1,14 +1,14 @@
 # These are the settings for the system under investigation
-# HR 8799 System Data
+# Fake data using Tim's model, System Data
 
 # System distance [PC]
-Sys_Dist_PC = 39.4
+Sys_Dist_PC = 5
 # System distance error [PC]
-Sys_Dist_PC_error = 1.0
+Sys_Dist_PC_error = 0.05
 # Mass of primary star [Msun] # ESTIMATED
-Mass1 = 1.56
+Mass1 = 1.0
 # Error in primary stat's mass [Msun] # GUESTIMATED
-Mass1_error = 0.5
+Mass1_error = 0.1
 
 # Further settings to properly set up RV part of simulations.
 # RULES: -If using 3D, the RV data must be of the same companion as the DI data.
@@ -34,20 +34,20 @@ planet_e_error = 0
 planet_T = 0
 # Planet's time of last pariapsis error [JD][double]
 planet_T_error = 0
-# Planet's time of center of transit [JD][double]#2455652.108
+# Planet's time of center of transit [JD][double]
 planet_Tc = 0
 # Planet's time of last pariapsis error [JD][double]
 planet_Tc_error = 0
-# Planet's period [years][double]#0.0090690212183436
-planet_P = 0
+# Planet's period [years][double]
+planet_P =  0
 # Planet's period error [years][double]
 planet_P_error = 0
-# Planet's M.sin(i) ie, Mass times sine of the inclination. [Msun][double] # GUESTATED
-planet_MsinI = 0.00477
+# Planet's M.sin(i) ie, Mass times sine of the inclination. [Msun][double] # ESTIMATED
+planet_MsinI = 0.0
 # Planet's M.sin(i) error [Msun][double]# GUESTATED
-planet_MsinI_error = 0.002
+planet_MsinI_error = 0.00
 # Planet's argument of pariapsis [degrees][double]
-planet_argPeri = 90
+planet_argPeri = 0
 # Planet's argument of pariapsis error [degrees][double]
 planet_argPeri_error = 0
 # Planet's inclination if able to measure separately [degrees][double]
@@ -66,16 +66,24 @@ star_e_error = 0
 star_T = 0
 # Star's time of last pariapsis error [JD][double]
 star_T_error = 0
+# Star's time of last center of transit [JD][double]
+star_Tc = 0
+# Star's time of last center of transit error [JD][double]
+star_Tc_error = 0
+# Star's semi-major amplitude [m/s] [double]
+star_K = 0
+# Star's semi-major amplitude error [m/s][double]
+star_K_error = 0
 # Star's period [years][double]
 star_P = 0
 # Star's period error [years][double]
 star_P_error = 0
 # Star's Mass [Msun][double]
-star_Mass2 = 0
+star_Mass2 = 0.5
 # Star's Mass error [Msun][double]
-star_Mass2_error = 0
+star_Mass2_error = 0.01
 # Star's argument of pariapsis [degrees][double]
-star_argPeri = 90
+star_argPeri = 0
 # Star's argument of pariapsis error [degrees][double]
 star_argPeri_error = 0
 # Star's inclination [degrees][double]

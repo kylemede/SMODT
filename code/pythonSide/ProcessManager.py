@@ -336,7 +336,7 @@ def multiProcessStarter(paramSettingsDict):
                     effectivePointsStr+= tools.gen.mcmcEffectivePointsCalc(simAnnealDataFiles,simAnneal=True)
                 print '\nCalculating the number of effective points for the MCMC chains\n'
                 effectivePointsStr+= tools.gen.mcmcEffectivePointsCalc(dataFiles,simAnneal=False)
-            if paramSettingsDict['removeBurnIn']:
+            if paramSettingsDict['removeBurnIn'] and paramSettingsDict['CalcBurnIn']:
                 #########################################################################
                 ## make general parameter result summary figures AFTER BURN-IN STRIPPED!!
                 #########################################################################
@@ -397,7 +397,7 @@ def multiProcessStarter(paramSettingsDict):
         origFiles.append(os.path.basename(summaryPlotFile)+"-ChiSquaredDist.png")
         if paramSettingsDict['DIonly']==False:
             origFiles.append(os.path.basename(summaryPlotFile)+"-RVoffsets.png")
-        if paramSettingsDict['removeBurnIn']and(paramSettingsDict["mcONLY"]==False):
+        if (paramSettingsDict['removeBurnIn']and(paramSettingsDict["mcONLY"]==False))and paramSettingsDict['CalcBurnIn']:
             origFiles.append(os.path.basename(summaryPlotFile)+"-burnInRemoved.png")
             origFiles.append(os.path.basename(summaryPlotFile)+"-burnInRemoved-ChiSquaredDist.png")
             if paramSettingsDict['DIonly']==False:
@@ -422,12 +422,18 @@ def multiProcessStarter(paramSettingsDict):
         if paramSettingsDict['makeSimAnnealProgPlots']:
             for chainNum in range(1,len(dataFiles)+1):
                 origFiles.append(os.path.basename(MCMCsummaryRootPlotFilename)+"-chain_"+str(chainNum)+".png" )
+                if paramSettingsDict['DIonly']==False:
+                    origFiles.append(os.path.basename(MCMCsummaryRootPlotFilename)+"-chain_"+str(chainNum)+"-RVoffsets.png")
     if paramSettingsDict['makeMCMCprogPlots']:
         for chainNum in range(1,len(dataFiles)+1):
             origFiles.append(os.path.basename(MCMCsummaryRootPlotFilename)+"-chain_"+str(chainNum)+".png")
+            if paramSettingsDict['DIonly']==False:
+                origFiles.append(os.path.basename(MCMCsummaryRootPlotFilename)+"-chain_"+str(chainNum)+"-RVoffsets.png")
         if paramSettingsDict['makeSimAnnealProgPlots']:
             for chainNum in range(1,len(dataFiles)+1):
                 origFiles.append(os.path.basename(simAnnealSummaryRootPlotFilename)+"-chain_"+str(chainNum)+".png")
+                if paramSettingsDict['DIonly']==False:
+                    origFiles.append(os.path.basename(simAnnealSummaryRootPlotFilename)+"-chain_"+str(chainNum)+"-RVoffsets.png")
     # get GR filenames
     if (paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing'])and(paramSettingsDict["mcONLY"]==False):
         origFiles.append('GRvalues.txt')
@@ -485,7 +491,7 @@ def multiProcessStarter(paramSettingsDict):
                 for filename in dataFiles:
                     print 'Deleting file: '+os.path.basename(filename)
                     os.remove(filename)     
-                if (paramSettingsDict['removeBurnIn'])and(paramSettingsDict["mcONLY"]==False):
+                if (paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and paramSettingsDict['CalcBurnIn']:
                     print '\nDeleting Burn-In removed MCMC chain data files\n'+"-"*40
                     for filename in strippedNames:
                         print 'Deleting file: '+os.path.basename(filename)
@@ -495,14 +501,14 @@ def multiProcessStarter(paramSettingsDict):
             for filename in dataFiles:
                 print 'Deleting file: '+os.path.basename(filename)
                 os.remove(filename)
-            if (paramSettingsDict['removeBurnIn'])and(paramSettingsDict["mcONLY"]==False):
+            if (paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and paramSettingsDict['CalcBurnIn']:
                 print '\nDeleting Burn-In removed MCMC chain data files\n'+"-"*40
                 for filename in strippedNames:
                     print 'Deleting file: '+os.path.basename(filename)
                     os.remove(filename)
             
     ## delete GR chain files if requested
-    if (paramSettingsDict['delGRchainFiles'] and (len(dataFiles)>1))and(paramSettingsDict["mcONLY"]==False):
+    if (paramSettingsDict['CalcGelmanRubin'] and(paramSettingsDict['delGRchainFiles'] and (len(dataFiles)>1)))and(paramSettingsDict["mcONLY"]==False):
         print '\n\nDeleting final output GR chain value files\n'+"-"*40
         for chainNum in range(1,len(dataFiles)+1):
             filename = os.path.join(paramSettingsDict['outputData_dir'],"gelmanRubin-chain_"+str(chainNum)+".txt")
@@ -516,7 +522,7 @@ def multiProcessStarter(paramSettingsDict):
         if cleanDataFilename!='':
             print 'Deleting file: '+cleanDataFilename
             os.remove(cleanDataFilename)
-        if (paramSettingsDict['removeBurnIn'])and(paramSettingsDict["mcONLY"]==False):
+        if (paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and paramSettingsDict['CalcBurnIn']:
             print 'Deleting file: '+dataFinalFilename2
             os.remove(dataFinalFilename2)
             

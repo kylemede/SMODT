@@ -361,8 +361,9 @@ void simAnealOrbFuncObj::simulator()
 			{
 				numRVparams+=1;
 				offsetStart = RanGen.UniformRandom(SSO.RVoffsetMINs[dataset],SSO.RVoffsetMAXs[dataset]);
-				offset_sigmas.push_back((sigmaPercent_latest/100.0)*(SSO.RVoffsetMAXs[dataset]-SSO.RVoffsetMINs[dataset]));
-				sig = 0.5;
+				sig = 15.0;
+				offset_sigmas.push_back((sig/100.0)*(SSO.RVoffsetMAXs[dataset]-SSO.RVoffsetMINs[dataset]));
+
 				paramsToVaryIntsAry.push_back(8+dataset);
 			}
 			RVoffsets_latest.push_back(offsetStart);
@@ -375,14 +376,14 @@ void simAnealOrbFuncObj::simulator()
 	numParams = paramsToVaryIntsAry.size();
 
 	//These starting sigma values were found through trial and error testing, work fine, but edit as you please.
-	double inc_sigmaPercent_latest = 10;//sigmaPercent_min;
-	double longAN_sigmaPercent_latest = 1.0;//sigmaPercent_min;
-	double argPeri_sigmaPercent_latest = 0.4;//1.0;
-	double e_sigmaPercent_latest = 1.6;//2.0;
-	double period_sigmaPercent_latest = 0.5;//sigmaPercent_min*0.5;//5.0;
-	double T_sigmaPercent_latest = 0.3;//sigmaPercent_min*0.5;//1.0;
-	double K_sigmaPercent_latest = 0.5;//sigmaPercent_min;//3.0;
-	double a_total_sigmaPercent_latest = 0.8;//sigmaPercent_min;
+	double inc_sigmaPercent_latest = 15;//sigmaPercent_min;
+	double longAN_sigmaPercent_latest = 20;//sigmaPercent_min;
+	double argPeri_sigmaPercent_latest = 40.0;//1.0;
+	double e_sigmaPercent_latest = 10;//2.0;
+	double period_sigmaPercent_latest = 25;//sigmaPercent_min*0.5;//5.0;
+	double T_sigmaPercent_latest = 100;//sigmaPercent_min*0.5;//1.0;
+	double K_sigmaPercent_latest = 10;//sigmaPercent_min;//3.0;
+	double a_total_sigmaPercent_latest = 10;//sigmaPercent_min;
 	double sqrtESinomega_sigmaPercent_latest = 0.02;//0.035;//sigmaPercent_min*0.1;
 	double sqrtECosomega_sigmaPercent_latest = 0.055;//0.039;//sigmaPercent_min*0.1;
 

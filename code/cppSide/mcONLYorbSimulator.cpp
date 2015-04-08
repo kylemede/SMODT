@@ -166,9 +166,9 @@ int main(int argc ,char *argv[])
     //int numParams = 3;//there are 3 params that MUST always vary, so this is the minimum
     double a_total_curr = 0;
     //double K_p_errorPercent = 0;
-    double DI_chiSquared_reduced_lowest = 1e6;
-    double RV_chiSquared_reduced_lowest = 1e6;
-    double TOTAL_chiSquared_reduced_lowest = 1e6;
+    double DI_chiSquared_reduced_lowest = 1e9;
+    double RV_chiSquared_reduced_lowest = 1e9;
+    double TOTAL_chiSquared_reduced_lowest = 1e9;
     double DI_chiSquared_reduced = 0;
     double RV_chiSquared_reduced = 0;
     double TOTAL_chiSquared_reduced = 0;
@@ -179,7 +179,6 @@ int main(int argc ,char *argv[])
     double one_over_nu_RV=1;
 	double one_over_nu_DI=1;
 	double one_over_nu_TOTAL=1;
-    double chiSquareMin = SSO.chiSquaredMax;
     int bestOrbit = 0;
 
     //****************************************************************************************
@@ -422,7 +421,7 @@ int main(int argc ,char *argv[])
 			ss << asctime (timeinfo);
 			ss << "largest reduced chiSquared total allowed = "<<SSO.chiSquaredMax<<endl;
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared_reduced<<", RV = "<<RV_chiSquared_reduced <<", Total = "<< TOTAL_chiSquared_reduced<<endl;
-			ss << "lowest reduced chiSquare so far = "<< chiSquareMin <<endl;
+			ss << "LOWEST reduced chiSquareds: DI = "<< DI_chiSquared_reduced_lowest <<", RV = "<< RV_chiSquared_reduced_lowest <<", Total = "<< TOTAL_chiSquared_reduced_lowest <<endl;
 			printLine = ss.str();
 			ss.clear();
 			ss.str(std::string());
@@ -673,9 +672,6 @@ int main(int argc ,char *argv[])
 				cout<<"DI_chiSquared_reduced = "<<DI_chiSquared_reduced<<endl;
 			}
 			//SSO.silent=true;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			// update lowest DI reduced chiSquared if current one is lower
-			if ( DI_chiSquared_reduced<DI_chiSquared_reduced_lowest )
-				DI_chiSquared_reduced_lowest = DI_chiSquared_reduced;
         }
         else
         {
@@ -842,10 +838,6 @@ int main(int argc ,char *argv[])
 				cout<<"RV_chiSquared_original = "<< RV_chiSquared_original<<endl;
 				cout<<"RV_chiSquared_reduced = "<< RV_chiSquared_reduced <<endl;
         	}
-
-        	// update lowest reduced RV chisquared value found if current one is lower
-        	if ( RV_chiSquared_reduced<RV_chiSquared_reduced_lowest )
-        		RV_chiSquared_reduced_lowest = RV_chiSquared_reduced;
         }
         else
         {
@@ -889,10 +881,12 @@ int main(int argc ,char *argv[])
 			acceptedCounter +=1;
 
 			//store location of best orbit out of all accepted
-			if ( TOTAL_chiSquared_reduced<chiSquareMin)
+			if ( TOTAL_chiSquared_reduced<TOTAL_chiSquared_reduced_lowest)
 			{
-				chiSquareMin = TOTAL_chiSquared_reduced;
+				TOTAL_chiSquared_reduced_lowest = TOTAL_chiSquared_reduced;
 				bestOrbit = acceptedCounter-1;
+				DI_chiSquared_reduced_lowest = DI_chiSquared_reduced;
+				RV_chiSquared_reduced_lowest = RV_chiSquared_reduced;
 			}
 			// store inputs
 			ODT.longAN_degs.push_back(DIt.longAN_deg);

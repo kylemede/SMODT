@@ -3005,11 +3005,11 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         for step in range(0,int(numSteps)):
             t = t + periodIncrement
             times.append(t)
-            a = a1
+            aUse = a1
             if primaryRVs==False:
-                a = a2
+                aUse = a2
             # calculate the velocity residual due to the companion 
-            (v_r_c,K) = rvTools.vrCalculatorSemiMajorType(t,e[orb],T[orb],period[orb],argPeri_deg[orb],a,T_center=Tc[orb],i=inc[orb], K=K_use, verbose=False)
+            (v_r_c,K) = rvTools.vrCalculatorSemiMajorType(t,e[orb],T[orb],period[orb],argPeri_deg[orb],aUse,T_center=Tc[orb],i=inc[orb], K=K_use, verbose=False)
             orbitVRs.append(v_r_c)
         #print 'times were '+repr(times)
         s= 'Orbit '+str(orb)+" had a K = "+str(K)
@@ -3127,32 +3127,37 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                 ys = [RVsOUTupdated3[orb][dataset][epoch]-abs(RV_errors[dataset][epoch]),RVsOUTupdated3[orb][dataset][epoch]+abs(RV_errors[dataset][epoch])]
                 fitPlot.plot(xs,ys,c='k',linewidth=2.0)
             
-    paramsLegndStr = 'e = '+str(e[0])+\
-                '\ninc = '+str(inc[0])+\
-                '\na = '+str(a[0])+'\nargPeri_deg = '+str(argPeri_deg[0])+\
-                '\nperiod [days] = '+str(period[0]*365.242)+'\nTo = '+str(T[0])+", Tc = "+str(Tc[orb])
+    paramsLegndStr = 'e = '+str(e[0])
+    paramsLegndStr +='\ninc = '+str(inc[0])
+    paramsLegndStr +='\na = '+str(a[0])
+    paramsLegndStr +='\nargPeri_deg = '+str(argPeri_deg[0])
+    paramsLegndStr +='\nperiod [days] = '+str(period[0]*365.242)
+    paramsLegndStr +='\nTo = '+str(T[0])
+    paramsLegndStr +=", Tc = "+str(Tc[0])
     for dataset in range(0,len(RVs)):
         if dataset==0:
-            paramsLegndStr=paramsLegndStr+'\n'
+            paramsLegndStr+='\n'
         else:
-            paramsLegndStr=paramsLegndStr+', '
-        paramsLegndStr = paramsLegndStr+'offset '+str(dataset)+'= '+str(RVoffsets[dataset])
-    paramsLegndStr = paramsLegndStr+chiSquaredStr
+            paramsLegndStr+=', '
+        paramsLegndStr += 'offset '+str(dataset)+'= '+str(RVoffsets[dataset])
+    paramsLegndStr += chiSquaredStr
     if verbose:
         print paramsLegndStr
     log.write(paramsLegndStr+'\n')
-#    addLegend=True
-#    if plotFullOrbit and addLegend:
-#        # in bottom right
-#        #residualsPlot.text(fitXLimsUSE[1]-abs(fitXLimsUSE[1]*0.002),abs(fitYLimsUSE[1]*0.5),paramsLegndStr,ha='left')
-#        # in bottom left
-#        paramsLegndY = fitYLimsUSE[0]+abs(fitYLimsUSE[0]*0.02)
-#        paramsLegndX = fitXLimsUSE[0]+abs(fitXLimsUSE[0]*0.03)
-#        fitPlot.text(paramsLegndX,paramsLegndY,paramsLegndStr,ha='left')
-#        s= '\nlegend bottom left corner at [ '+str(paramsLegndX)+' , '+str(paramsLegndY)+' ]'
-#        if verbose:
-#            print s
-#        log.write(s+'\n')
+    
+    ## code to add a legend to the plot, but might need to be tweaked depending on your plot and param values.
+    addLegend=False
+    if plotFullOrbit and addLegend:
+        # in bottom right
+        #residualsPlot.text(fitXLimsUSE[1]-abs(fitXLimsUSE[1]*0.002),abs(fitYLimsUSE[1]*0.5),paramsLegndStr,ha='left')
+        # in bottom left
+        paramsLegndY = fitYLimsUSE[0]+abs(fitYLimsUSE[0]*0.02)
+        paramsLegndX = fitXLimsUSE[0]+abs(fitXLimsUSE[0]*0.03)
+        fitPlot.text(paramsLegndX,paramsLegndY,paramsLegndStr,ha='left')
+        s= '\nlegend bottom left corner at [ '+str(paramsLegndX)+' , '+str(paramsLegndY)+' ]'
+        if verbose:
+            print s
+        log.write(s+'\n')
         
     # save plot to file
     if plotFilename!='':

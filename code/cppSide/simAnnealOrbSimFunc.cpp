@@ -195,7 +195,7 @@ void simAnealOrbFuncObj::simulator()
 		numRVparams+=1;
 		numDIparams+=1;
 		period_latest = RanGen.UniformRandom(SSO.periodMIN, SSO.periodMAX); //  [yrs]
-		ss<<"\n\n**********************************\nperiodMIN = "<<SSO.periodMIN<<", periodMAX = "<<SSO.periodMAX<<"\n**********************************\n\n"<<endl;
+		//ss<<"\n\n**********************************\nperiodMIN = "<<SSO.periodMIN<<", periodMAX = "<<SSO.periodMAX<<"\n**********************************\n\n"<<endl;
 		paramsToVaryIntsAry.push_back(3);
 	}
 	double e_latest=0;
@@ -218,7 +218,7 @@ void simAnealOrbFuncObj::simulator()
 		paramsToVaryIntsAry.push_back(1);
 		if (SSO.eMAX<0.3)
 		{
-			ss<<"\n\n #### eMAX<0.3, So using sqrt(e)sin(omega),sqrt(e)cos(omega) ####\n\n"<<endl;
+			ss<<" #### eMAX<0.3, So using sqrt(e)sin(omega),sqrt(e)cos(omega) ####\n"<<endl;
 			if (SSO.argPeri_degMAX!=0)
 			{
 				sqrtESinomega_latest = sqrt(e_latest)*sin((PI/180.0)*argPeri_deg_latest);
@@ -226,7 +226,7 @@ void simAnealOrbFuncObj::simulator()
 			}
 		}
 		else
-			ss<<"\n\n ### Using DIRECT e and omega ### \n\n"<<endl;
+			ss<<"\n ### Using DIRECT e and omega ### \n"<<endl;
 	}
 
 	double Tmin;
@@ -246,7 +246,7 @@ void simAnealOrbFuncObj::simulator()
 			Tmin = earliestEpoch-period_latest*365.242;
 			TMIN = earliestEpoch-SSO.periodMAX*365.242;
 			TMAX = earliestEpoch;
-			ss<<"******  both T_Min and T_Max set to -1  ******"<<endl;
+			ss<<"\n******  both T_Min and T_Max set to -1  ******\n"<<endl;
 		}
 		else
 		{
@@ -255,7 +255,7 @@ void simAnealOrbFuncObj::simulator()
 			TMAX = SSO.T_Max;
 		}
 	}
-	ss<<fixed<<std::setprecision(6)<<"\n\nTMIN = "<<TMIN<<", TMAX = "<<TMAX<<"\n\n"<<endl;
+	ss<<fixed<<std::setprecision(6)<<"\nTMIN = "<<TMIN<<", TMAX = "<<TMAX<<"\n"<<endl;
 	//cout<<"line # 247"<<endl;//$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$
 	// load initial T and Tc values from system data file
 	double T_latest;
@@ -516,7 +516,7 @@ void simAnealOrbFuncObj::simulator()
 			ss << "sigmaPercent_min = "<<sigmaPercent_min<<" , sigmaPercent_latest = "<<sigmaPercent_latest<<endl;
 			sigmaPercent_min=sigmaPercent_min_simAnneal;
 			ss << "Latest param being varied = "<<paramBeingVaried<<", timesBeenHere = "<<timesBeenHere<<endl;
-			ss << "Largest allowed reduced chiSquareds: DI =        N/A,     RV =         N/A,        Total = "<<SSO.chiSquaredMax  <<endl;
+			ss << "Largest allowed reduced chiSquareds: DI =   N/A, RV =   N/A, Total = "<<SSO.chiSquaredMax  <<endl;
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared*one_over_nu_DI<<", RV = "<<RV_chiSquared*one_over_nu_RV <<", Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
 			ss << "LOWEST reduced chiSquareds: DI = "<< chiSquaredMin_DI*one_over_nu_DI <<", RV = "<< chiSquaredMin_RV*one_over_nu_RV <<", Total = "<< chiSquaredMin*one_over_nu_TOTAL <<endl;
 			ss << "\nLast Accepted parameters:"<<endl;
@@ -672,7 +672,7 @@ void simAnealOrbFuncObj::simulator()
 			ss << "Latest acceptance rate = "<<latestAcceptRate<<endl<<endl;
 			ss << "Latest param being varied = "<<paramBeingVaried<<", timesBeenHere = "<<timesBeenHere<<endl;
 			ss << "Times NONE of params passed = "<<timesNONEpassed<<endl;
-			ss << "Largest allowed reduced chiSquareds: DI =        N/A,     RV =         N/A,        Total = "<<SSO.chiSquaredMax  <<endl;
+			ss << "Largest allowed reduced chiSquareds: DI =   N/A, RV =  N/A, Total = "<<SSO.chiSquaredMax  <<endl;
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared*one_over_nu_DI<<", RV = "<<RV_chiSquared*one_over_nu_RV <<", Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
 			ss << "LOWEST reduced chiSquareds: DI = "<< chiSquaredMin_DI*one_over_nu_DI <<", RV = "<< chiSquaredMin_RV*one_over_nu_RV <<", Total = "<< chiSquaredMin*one_over_nu_TOTAL <<endl;
 			//cout<<"SimAnnealFunc, line #"<<679<<endl;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$

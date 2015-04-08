@@ -173,7 +173,8 @@ void simAnealOrbFuncObj::simulator()
 		paramsToVaryIntsAry.push_back(5);
 	}
 	double a_total_latest = 0;
-	if ((SSO.a_totalMAX!=0)&&(SSO.DIonly==true))//{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
+	//NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2! and will calculate semi-majors from the period and provided masses.
+	if ((SSO.a_totalMAX!=0)&&(SSO.DIonly==true))
 	{
 		numRVparams+=1;
 		numDIparams+=1;
@@ -203,7 +204,6 @@ void simAnealOrbFuncObj::simulator()
 
 	if (SSO.eMAX==0)
 	{
-
 		if (SSO.simulate_StarPlanet==true)
 			e_latest = RVdo.planet_e;
 		else
@@ -221,12 +221,6 @@ void simAnealOrbFuncObj::simulator()
 			ss<<"\n\n #### eMAX<0.3, So using sqrt(e)sin(omega),sqrt(e)cos(omega) ####\n\n"<<endl;
 			if (SSO.argPeri_degMAX!=0)
 			{
-				//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-				//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-				//e_latest = 0.001;
-				//argPeri_deg_latest = 181;
-				//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-				//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				sqrtESinomega_latest = sqrt(e_latest)*sin((PI/180.0)*argPeri_deg_latest);
 				sqrtECosomega_latest = sqrt(e_latest)*cos((PI/180.0)*argPeri_deg_latest);
 			}
@@ -250,7 +244,7 @@ void simAnealOrbFuncObj::simulator()
 		if ((SSO.T_Min==-1)&&(SSO.T_Max==-1))
 		{
 			Tmin = earliestEpoch-period_latest*365.242;
-			TMIN = earliestEpoch-SSO.periodMAX*365.0;
+			TMIN = earliestEpoch-SSO.periodMAX*365.242;
 			TMAX = earliestEpoch;
 			ss<<"******  both T_Min and T_Max set to -1  ******"<<endl;
 		}
@@ -312,7 +306,7 @@ void simAnealOrbFuncObj::simulator()
 		}
 		else
 			ss<<"Setting T to a constant"<<endl;
-		cout<<"SSO.T_Min = "<<SSO.T_Min<<",SSO.T_Min = "<<SSO.T_Min<<endl;
+		//cout<<"SSO.T_Min = "<<SSO.T_Min<<",SSO.T_Min = "<<SSO.T_Min<<endl;
 		if (Tc_latest==0)
 			ss<<"Setting Tc to 0 and will calculate it with eccArgPeri2ToTcCalc"<<endl;
 		else
@@ -380,6 +374,7 @@ void simAnealOrbFuncObj::simulator()
 
 	numParams = paramsToVaryIntsAry.size();
 
+	//These starting sigma values were found through trial and error testing, work fine, but edit as you please.
 	double inc_sigmaPercent_latest = 10;//sigmaPercent_min;
 	double longAN_sigmaPercent_latest = 1.0;//sigmaPercent_min;
 	double argPeri_sigmaPercent_latest = 0.4;//1.0;
@@ -393,7 +388,7 @@ void simAnealOrbFuncObj::simulator()
 
 	double a_total_curr=0;
 
-	// temp and sigma tunning params
+	// temp and other sim anneal and sigma tunning params
 	int numSamplesSimAnneal = int(double(numSamples_SA)*(percentSimAnneal/100.0));
 	int numSamplesSigmaTune = numSamples_SA-numSamplesSimAnneal;
 	int dropTempTime = numParams*int((1.0/double(numParams))*(tempStepSizePercent/100.0)*double(numSamplesSimAnneal));;
@@ -521,8 +516,8 @@ void simAnealOrbFuncObj::simulator()
 			ss << "sigmaPercent_min = "<<sigmaPercent_min<<" , sigmaPercent_latest = "<<sigmaPercent_latest<<endl;
 			sigmaPercent_min=sigmaPercent_min_simAnneal;
 			ss << "Latest param being varied = "<<paramBeingVaried<<", timesBeenHere = "<<timesBeenHere<<endl;
-			ss << "Largest allowed reduced chiSquareds: DI = "<<SSO.chiSquaredMax <<", RV = "<<SSO.chiSquaredMax <<", Total = "<<SSO.chiSquaredMax  <<endl;
-			ss << "latest reduced chiSquareds Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
+			ss << "Largest allowed reduced chiSquareds: DI =        N/A,     RV =         N/A,        Total = "<<SSO.chiSquaredMax  <<endl;
+			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared*one_over_nu_DI<<", RV = "<<RV_chiSquared*one_over_nu_RV <<", Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
 			ss << "LOWEST reduced chiSquareds: DI = "<< chiSquaredMin_DI*one_over_nu_DI <<", RV = "<< chiSquaredMin_RV*one_over_nu_RV <<", Total = "<< chiSquaredMin*one_over_nu_TOTAL <<endl;
 			ss << "\nLast Accepted parameters:"<<endl;
 			ss << "inclination_deg_latest = "<< inclination_deg_latest<<endl;
@@ -677,7 +672,7 @@ void simAnealOrbFuncObj::simulator()
 			ss << "Latest acceptance rate = "<<latestAcceptRate<<endl<<endl;
 			ss << "Latest param being varied = "<<paramBeingVaried<<", timesBeenHere = "<<timesBeenHere<<endl;
 			ss << "Times NONE of params passed = "<<timesNONEpassed<<endl;
-			ss << "Largest allowed reduced chiSquareds Total = "<<SSO.chiSquaredMax<<endl;
+			ss << "Largest allowed reduced chiSquareds: DI =        N/A,     RV =         N/A,        Total = "<<SSO.chiSquaredMax  <<endl;
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared*one_over_nu_DI<<", RV = "<<RV_chiSquared*one_over_nu_RV <<", Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
 			ss << "LOWEST reduced chiSquareds: DI = "<< chiSquaredMin_DI*one_over_nu_DI <<", RV = "<< chiSquaredMin_RV*one_over_nu_RV <<", Total = "<< chiSquaredMin*one_over_nu_TOTAL <<endl;
 			//cout<<"SimAnnealFunc, line #"<<679<<endl;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -1030,9 +1025,9 @@ void simAnealOrbFuncObj::simulator()
 				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,0.5*SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
 		}
 
-		//*****************************************************************************
+		//********************************************************************************
 		//calculate the proposed a_total using K3 in the case of RVonly and 3D simulations
-		//*****************************************************************************
+		//********************************************************************************
 		if (SSO.DIonly==false)
 		{
 			semiMajorType SMT_in;
@@ -1199,7 +1194,7 @@ void simAnealOrbFuncObj::simulator()
 			timesNONEpassed = 0;
 			DIt.inclination_deg = inclination_deg_proposed;
 			DIt.longAN_deg = longAN_deg_proposed;
-
+			// include DI argPeri offset here
 			DIt.argPeri_deg = argPeri_deg_proposed+SSO.argPeriOffsetDI;
 			DIt.e = e_proposed;
 			DIt.period = period_proposed; //  [yrs]

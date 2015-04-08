@@ -426,6 +426,25 @@ void MCMCorbFuncObj::simulator()
 			else
 				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,0.5*SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
 		}
+		//********************************************************************************
+		//calculate the proposed a_total using K3 in the case of RVonly and 3D simulations
+		//********************************************************************************
+		if (SSO.DIonly==false)
+		{
+			semiMajorType SMT_in;
+			semiMajorType SMT_out;
+			SMT_in.a1 = 0;
+			SMT_in.a2 = 0;
+			SMT_in.a_total = 0;
+			SMT_in.period = period_proposed;
+			SMT_in.Mass1 = Mass1_proposed;
+			if (SSO.simulate_StarStar==true)
+				SMT_in.Mass2 = star_Mass2_proposed;
+			else
+				SMT_in.Mass2 = planet_MsinI_proposed/sin(inclination_deg_proposed*(PI/180.0));
+			SMT_out = GT.semiMajorConverter(SMT_in);
+			a_total_proposed = SMT_out.a_total;
+		}
 		// **** Done producing 'proposed' versions of all params being varied this round ****
 
 		//*****************************************************************************
@@ -506,6 +525,7 @@ void MCMCorbFuncObj::simulator()
 			timesNONEpassed = 0;
 			DIt.inclination_deg = inclination_deg_proposed;
 			DIt.longAN_deg = longAN_deg_proposed;
+			// include DI argPeri offset here
 			DIt.argPeri_deg = argPeri_deg_proposed+SSO.argPeriOffsetDI;
 			DIt.e = e_proposed;
 			DIt.period = period_proposed; //  [yrs]

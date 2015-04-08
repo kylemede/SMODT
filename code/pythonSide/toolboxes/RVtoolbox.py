@@ -158,7 +158,7 @@ def RVdataToDict(filename):
     else:
         print "filename '"+filename+"' does not exist!!!"
    
-def subtractPlanetRV(rvDataFilename,e_p,p_p,K_p,argPeri_p,T_p):
+def subtractPlanetRV(rvDataFilename,e_p,p_p,K_p,argPeri_p,T_p,Tc_p):
     """
     This function will subtract the RV due to a companion planet leaving only the residual
     that could be caused by a secondary star or another planet.  If the system you are 
@@ -176,7 +176,7 @@ def subtractPlanetRV(rvDataFilename,e_p,p_p,K_p,argPeri_p,T_p):
     for RVdataSet in range(0,len(RVs)):
         print '\nworking on RVdataSet ',RVdataSet
         for epoch in range(0,len(RV_epochs[RVdataSet])):
-            v_r_p = vrCalculatorPlanetMassType(RV_epochs[RVdataSet][epoch], e_p, T_p, p_p, argPeri_p, M1=0, M2SineI=False, K=K_p, verbose=False)
+            v_r_p = vrCalculatorPlanetMassType(RV_epochs[RVdataSet][epoch], e_p, T_p, p_p, argPeri_p, M1=0, T_center=Tc_p, M2SineI=False, K=K_p, verbose=False)
             RVprimary = RVs[RVdataSet][epoch]
             rvWithoutPlanetResidual = RVprimary - v_r_p
             rvWithoutPlanetResiduals.append(rvWithoutPlanetResidual)
@@ -247,7 +247,8 @@ def vrCalculatorPlanetMassType(t,e,T,period,argPeri,M1,T_center=0,M2SineI=False,
 def vrCalculatorMassType(t,e,T,period,argPeri,M1,M2,T_center=0,i=False, K=False, verbose=False):
     """
     NOTE: This version is the one that uses the objects masses to calculate K. 
-          It will work for a companion star or planet.
+          It will work for a companion star or planet.  Keep in mind that the M2sin(i) needs to be handled
+          before calling this function, providing the resulting M2 not M2sin(i) value.
           To use the one that calculates it using the semi-major axis, use vrCalculatorSemiMajorType.
     
     M1 and M2 in Msun
@@ -302,6 +303,11 @@ def vrCalculatorMassType(t,e,T,period,argPeri,M1,M2,T_center=0,i=False, K=False,
 
 def vrCalculatorSemiMajorType(t,e,T,period,argPeri,a1,T_center=0,i=False, K=False, verbose=False):
     """
+    Most recommended way to calculate the radial velocity as it avoids all the mass issues (reduced 
+    formula or M2sin(i)).  Although please provide the proper semi-major axis value for either 
+    the primary star if you are comparing to the primary's RV values, or the companion's if 
+    using its RVs (ie. provide a1 if primary RV's, or a2 if companion's).
+    
     NOTE: this is the version which uses the K equation with the semi-major axis of primary's orbit.
           This version will work for both a companion star or planet.
           To use the masses instead, use vrCalculatorStarMassType or vrCalculatorPlanetMassType.
@@ -316,7 +322,7 @@ def vrCalculatorSemiMajorType(t,e,T,period,argPeri,a1,T_center=0,i=False, K=Fals
     
     K=False implies that the provided values will be used to 
     calculate it from scratch, else the provided value will
-    be used to calculate the radial velocity residule.  Thus,
+    be used to calculate the radial velocity residual.  Thus,
     this param must be either False or a float in units of 
     m/s.
     

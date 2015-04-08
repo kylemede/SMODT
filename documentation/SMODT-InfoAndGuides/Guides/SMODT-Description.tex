@@ -181,7 +181,7 @@ Therefore, either [{\it i}, $\Omega$, {\it e}, {\it a}, $\omega$, {\it M}] or [{
 
 \clearpage
 %----------------------------------------------------------------------------------------------------------
-\section{Simulator Modes}\label{sec:simModes}
+\section{Simulator Data Modes}\label{sec:simDataModes}
 
 There are 3 main modes that SMODT can be ran in (Astrometry only, Radial Velocity only, or 3D).  Each of these have been tested, but there are important things to keep in mind when using any of them.
 %----------------------
@@ -255,7 +255,7 @@ false & true/false & $K_2$ & $\omega_{vary}$ & $\omega_{vary}$\\
 %----------------------------------------------------------------------------------------------------------
 \section{Simulator Settings}\label{sec:simSettings}
 
-Here we will go over the large array of settings in the settings file and the possible modes to run the simulator in.
+Here we will go over the large array of settings in the settings file and the possible modes to run the simulator in.  In this section ALL of the settings will be briefly described in the order they appear in the `SimSettings.txt' file, and the more intricate details of the settings most important to changing how the 3 data modes are discussed in Section (\ref{sec:simDataModes}).
 
 First, lets go through ALL the settings in the "SimSettings" file, as it is where the user is expected to spend the bulk of their time playing around to get things to run the way they want.
 
@@ -334,6 +334,9 @@ If you like, you can define the location of a DropBox directory, or another dire
 
 {\bf CalcBurnIn}\\
 The burn in is the stage of the MCMC where the chain is "forgetting" its starting point.  This is hopefully handled during the final sigma tunning at the end of the Simulated Annealing stage, but if it is a much larger value, then you should consider deleting the samples from the MCMC chains to remove any bias caused by the starting location.
+
+{\bf removeBurnIn}\\
+Remove the burn-in from the beginning of the MCMC chains?  While for a decent length Simulate Annealing stage before starting MCMC, along with a long MCMC chain, this should have a negligible affect on the results.  The Sigma Tuning stage just after finding the approximate global minimum with Simulate Annealing should handle the burn-in as well.  Although, if the user wishes to be sure, they can use this parameter, with `CalcBurnIn' set to true as well, to calculate and remove it.  Following its removal, a new set of posterior distributions will be plotted for comparison.
 
 {\bf calcCorrLengths}\\
 Another way to look at the progress of an MCMC chain is its correlation length.  This will tell you how well the chain really explores the parameter space.

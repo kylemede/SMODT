@@ -219,9 +219,8 @@ int main(int argc ,char *argv[])
     	ss<<"\nvary_K = true"<<endl;
 	}
 
-
     double inclination_deg_proposed = 0.0;
-    if ((SSO.inclination_degMIN!=0)&&(SSO.inclination_degMAX!=0))
+    if (SSO.inclination_degMAX!=0)
     {
     	numRVparams+=1;
     	numDIparams+=1;
@@ -234,20 +233,6 @@ int main(int argc ,char *argv[])
 		else
 			inclination_deg_proposed = RVdo.star_inc;
 	}
-    if (SSO.RVonly==false)
-    {
-    	if ((SSO.longAN_degMIN!=0)&&(SSO.longAN_degMAX!=0))
-    	{
-    		numDIparams+=1;
-    		numParams+=1;
-    	}
-    }
-    if ((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
-    {
-    	numRVparams+=1;
-    	numDIparams+=1;
-    	numParams+=1;
-    }
     double longAN_deg_proposed = 0;
 	if (SSO.RVonly==false)
 	{
@@ -262,7 +247,6 @@ int main(int argc ,char *argv[])
 		{
 			numDIparams+=1;
 			numParams+=1;
-			longAN_deg_proposed = RanGen.UniformRandom(SSO.longAN_degMIN, SSO.longAN_degMAX);
 		}
 	}
     double argPeri_deg_proposed=90;
@@ -273,7 +257,9 @@ int main(int argc ,char *argv[])
     	numParams+=1;
     }
     double a_total_proposed = 0;
-    if ((SSO.a_totalMAX!=0)&&(SSO.DIonly==true))//{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
+    double a_total_curr=0;
+    //NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2! and will calculate semi-majors from the period and provided masses.
+    if ((SSO.a_totalMAX!=0)&&(SSO.DIonly==true))
     {
 		numRVparams+=1;
 		numDIparams+=1;
@@ -331,7 +317,7 @@ int main(int argc ,char *argv[])
 		if ((SSO.T_Min==-1)&&(SSO.T_Max==-1))
 		{
 			Tmin = earliestEpoch-SSO.periodMAX*365.242;
-			TMIN = earliestEpoch-SSO.periodMAX*365.0;
+			TMIN = earliestEpoch-SSO.periodMAX*365.242;
 			TMAX = earliestEpoch;
 			ss<<"******  both T_Min and T_Max set to -1  ******"<<endl;
 		}
@@ -423,7 +409,7 @@ int main(int argc ,char *argv[])
 	//*****************************************************************************
     // ***** Start the samples loop *****
 	//*****************************************************************************
-    for ( int sample=1; sample<(SSO.numSamples+1); sample++)
+    for ( int sample=0; sample<SSO.numSamples; ++sample)
     {
     	//cout<<"mcONLYorbSimulator.cpp, line# "<<375<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     	//*****************************************************************************
@@ -434,7 +420,6 @@ int main(int argc ,char *argv[])
         {
             printsDone = printsDone+1;
             printCount = 0;
-            int sampleUSE = sample;
 
 			// create a time object and find current time
 			time_t rawtime;
@@ -502,7 +487,8 @@ int main(int argc ,char *argv[])
 			argPeri_deg_proposed = 90.0;
         //cout<<"mcONLYorbSimulator.cpp, line# "<<443<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         DIt.e = e_proposed;
-        DIt.argPeri_deg = argPeri_deg_proposed;
+        //include DI argPeri offset here
+        DIt.argPeri_deg = argPeri_deg_proposed+SSO.argPeriOffsetDI;
         if ((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
         	period_proposed = RanGen.UniformRandom(SSO.periodMIN, SSO.periodMAX); //  [yrs]
         DIt.period = period_proposed;
@@ -558,7 +544,7 @@ int main(int argc ,char *argv[])
 				// calculate the To value from proposed values (omega, e, P & Tc)
 				eccArgPeri2ToTcType EATT;
 				EATT.period = period_proposed;
-				EATT.argPeri_deg = argPeri_deg_proposed+SSO.argPeriOffsetDI;
+				EATT.argPeri_deg = argPeri_deg_proposed;
 				EATT.e = e_proposed;
 				EATT.To = T_proposed;
 				EATT.Tc= Tc_proposed;
@@ -684,6 +670,7 @@ int main(int argc ,char *argv[])
 
 			// Calculate the reduced chiSquared from the returned chiSquared
 			DI_chiSquared_original = MEOCRT.chi_squared_total;
+			a_total_curr = MEOCRT.a_total;
 			if (one_over_nu_DI==1)
 			{
 				numDIepochs = DIdo.numEpochs_DI;
@@ -776,8 +763,8 @@ int main(int argc ,char *argv[])
 					VRp_vector = VRCsp.multiEpochCalc();
 					VRp_vector2.push_back(VRp_vector);
 				}
-				//if ((SSO.simulate_StarPlanet==true)&&(SSO.DIonly==false))
-				//	a_total_curr = VRCsp.a_total;
+				if ((SSO.simulate_StarPlanet==true)&&(SSO.DIonly==false))
+					a_total_curr = VRCsp.a_total;
 				if ( SSO.silent==false )
 				        cout<<"K_p = "<<VRCsp.K_p<<endl;
         	}
@@ -799,8 +786,8 @@ int main(int argc ,char *argv[])
         			VRs_vector = VRCss.multiEpochCalc();
         			VRs_vector2.push_back(VRs_vector);
         		}
-        		//if ((SSO.simulate_StarStar==true)&&(SSO.DIonly==false))
-        		//	a_total_curr = VRCss.a_total;
+        		if ((SSO.simulate_StarStar==true)&&(SSO.DIonly==false))
+        			a_total_curr = VRCss.a_total;
         		if ( SSO.silent==false )
         			cout<<"K_s = "<<VRCss.K_s<<endl;
         		//cout<<"a_total = "<<VRCss.a_total<<endl;
@@ -924,14 +911,13 @@ int main(int argc ,char *argv[])
 			ODT.Tcs.push_back(Tc_proposed);
 			ODT.periods.push_back(DIt.period);
 			ODT.inclination_degs.push_back(DIt.inclination_deg);
-			ODT.argPeri_degs.push_back(DIt.argPeri_deg);
+			ODT.argPeri_degs.push_back(argPeri_deg_proposed);
 			// store outputs
 			ODT.chiSquareds.push_back(chiSquared_TOTAL_original);
-			ODT.a_totals.push_back(DIt.a_total);
+			ODT.a_totals.push_back(a_total_curr);
 			ODT.Ks.push_back(K_proposed);
 			ODT.RVoffsets.push_back(RVoffsets_proposed);
 			ODT.timesBeenHeres.push_back(1);
-
 		}// Done storing accepted orbit parameters
     }//Done sample loops
 

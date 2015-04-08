@@ -2040,9 +2040,6 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     #calculate and draw an X at the center of the semi-major axis
     xStar = (Xhalf+Xstart)/2.0
     yStar = (Yhalf+Ystart)/2.0
-    if True:
-        print "xStar = "+str(xStar)
-        print "yStart = "+str(yStar)
     if telescopeView:
         yStar = -yStar
         xStar = -xStar
@@ -2557,14 +2554,17 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
         genTools.gelmanRubinStage2(fileList)
 
 def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, paramSettingsDict,\
-                 K=0, RVoffsets=[0], nuRV=1, plotFilename='', show=True, plotFullOrbit=True):
+                 K=0, RVoffsets=[0], nuRV=1, plotFilename='', show=True, plotFullOrbit=True, primaryRVs=True):
     """
     create a plot for the RV data and a fit line from the best orbit data params.
     
     NOTES:
-    If a star-planet system is being simulated, then the provided inclination will be used with the
-    planet's mass in the system data file/ provided dict, to calculate the residual vel.  If the value
-    in the dictionary/file is actually, please set inc=0 to tell this func to ignore it and use the file's value.
+    #1: If a star-planet system is being simulated, then the provided inclination will be used with the
+    planet's mass in the system data file/provided dict, to calculate the residual vel (due to M2sin(i)).
+    If the value in the dictionary/file is actually, please set inc=0 to tell this func to ignore it and use the file's value.
+    #2: Handling of the argPeriOffsetRV must be done before calling this function.
+    #3: primaryRVs parameter in call will set the semi-major value used to a_1 rather than a_2 if K=0, else K provided will be used. 
+    Thus, providing K allows the user to ignore this parameter. 
     """
     verbose = False
     
@@ -2605,8 +2605,9 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             TcUse.append(Tcent)
         else:
             TcUse.append(Tc[i])
-    print "Tc = "+repr(Tc)
-    print "TcUse = "+repr(TcUse)
+    if verbose:
+        print "Tc = "+repr(Tc)
+        print "TcUse = "+repr(TcUse)
     Tc = TcUse
     
     if type(K)!=list:
@@ -2861,7 +2862,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                 if (star_Ps[orb]==0):
                     (v_r_c,K_s)=(0,0)
                 else:
-                    (v_r_c,K_s) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],star_es[orb],T[orb],star_Ps[orb],star_argPeris[orb],a1_s,T_center=star_Tcs[orb],i=star_incs[orb], K=star_Ks[orb], verbose=False)
+                    a_s = a1_s
+                    if primaryRVs==False:
+                        a_s = a2_s
+                    (v_r_c,K_s) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],star_es[orb],T[orb],star_Ps[orb],star_argPeris[orb],a_s,T_center=star_Tcs[orb],i=star_incs[orb], K=star_Ks[orb], verbose=False)
                 # calculate the velocity residual due to the planet around primary
                 if (planet_Ps[orb]==0):
                     (v_r_p,K_p)=(0,0)
@@ -2871,8 +2875,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                     log.write(s+'\n')
                     if False:
                         print s
-                        
-                    (v_r_p,K_p) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],planet_es[orb],planet_Ts[orb],planet_Ps[orb], planet_argPeris[orb],a1_p,T_center=planet_Tcs[orb],i=planet_incs[orb], K=planet_Ks[orb], verbose=False)
+                    a_p = a1_p
+                    if primaryRVs==False:
+                        a_p = a2_p
+                    (v_r_p,K_p) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],planet_es[orb],planet_Ts[orb],planet_Ps[orb], planet_argPeris[orb],a_p,T_center=planet_Tcs[orb],i=planet_incs[orb], K=planet_Ks[orb], verbose=False)
                     #print 'K_p being used is = ',planet_Ks[orb]
                     #print "v_r_p = ",v_r_p
                 RV =rvs[epoch]- (v_r_c+v_r_p)
@@ -2999,8 +3005,11 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         for step in range(0,int(numSteps)):
             t = t + periodIncrement
             times.append(t)
+            a = a1
+            if primaryRVs==False:
+                a = a2
             # calculate the velocity residual due to the companion 
-            (v_r_c,K) = rvTools.vrCalculatorSemiMajorType(t,e[orb],T[orb],period[orb],argPeri_deg[orb],a1,T_center=Tc[orb],i=inc[orb], K=K_use, verbose=False)
+            (v_r_c,K) = rvTools.vrCalculatorSemiMajorType(t,e[orb],T[orb],period[orb],argPeri_deg[orb],a,T_center=Tc[orb],i=inc[orb], K=K_use, verbose=False)
             orbitVRs.append(v_r_c)
         #print 'times were '+repr(times)
         s= 'Orbit '+str(orb)+" had a K = "+str(K)

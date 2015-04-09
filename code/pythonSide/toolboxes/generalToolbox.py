@@ -1023,7 +1023,6 @@ def effectivePointsCalcFunc(data):
         
         # If the typical sub-variance is at least half the total variance,
         # we have found the effective length of a sub-chain
-    
         if np.mean(var_di) > 0.5 * var_obs:
             N_eff = N_pts // di
             break
@@ -2814,7 +2813,7 @@ def semiMajorConverter(Mass1, Mass2, a_total=0.0,a1=0.0,a2=0.0, period=0.0, verb
 def makeArtificialData(longAN_deg, e, T, Tc, period, inc, argPeri_deg, a_total, sys_dist, Mass1, Mass2, numDataPoints=100):    
     """
     A usable, but fixed value type function for created artificial data within a gaussian distrubution based on the central values 
-    provided as inputs.  User needs to go into here and adjust the sigma values fot the gaussians as they may not be appropriate for 
+    provided as inputs.  User needs to go into here and adjust the sigma values fit the gaussians as they may not be appropriate for 
     their test case.
     """
     epochs = []

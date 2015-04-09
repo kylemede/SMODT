@@ -162,9 +162,6 @@ void MCMCorbFuncObj::simulator()
 
 	double a_total_curr = 0;
 
-	// Reserve data for the output data vectors to save time resizing them
-	ODT= GT.odtStart(ODT, SSO.numSamples);
-
 	bool ALLpassed;
 
 	//*****************************************************************************
@@ -1022,9 +1019,6 @@ void MCMCorbFuncObj::simulator()
 			timesBeenHereTotal+=(timesBeenHere-1);
 		}
 	}
-
-	//shrink final ODT vectors to their actual size
-	ODT = GT.odtFinish(ODT);
 
 	// final print to let us know it was able to get to end of file
 	cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;

@@ -49,14 +49,6 @@ struct semiMajorType
 	double period;
 };
 
-struct eccArgPeriCalcType
-{
-	double e;
-	double argPeri_deg;
-	double sqrtEsinArgPeri;
-	double sqrtEcosArgPeri;
-};
-
 struct eccArgPeri2ToTcType
 {
 	double e;
@@ -94,7 +86,6 @@ public:
 	string timeStr(int timeElapsed);
 	int corrLengthJumpyCalc(vector<double> data);
 	double varianceCalc(vector<double> data, int lastPoint);
-	eccArgPeriCalcType eccArgPeriCalc(eccArgPeriCalcType EACT);
 	eccArgPeri2ToTcType eccArgPeri2ToTcCalc(eccArgPeri2ToTcType EATT);
 	double atanTopBtm(double top, double btm);
 	double meanCalc(vector<double> v, int lastPoint);
@@ -106,7 +97,4 @@ public:
 	string findDirectory(string str);
 	string findChainNumberStr(string str);
 	vector<double> fillOutDataVector(vector<double> data,vector<int> timesBeenHere);
-	outputDataType odtStart(outputDataType ODT, int numTotalSamples);
-	outputDataType odtFinish(outputDataType ODT);
-	//string	confidenceLevelFinder(vector<double> data,vector<int> timesBeenHere);
 };

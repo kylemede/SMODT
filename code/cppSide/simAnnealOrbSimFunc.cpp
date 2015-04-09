@@ -1766,14 +1766,15 @@ void simAnealOrbFuncObj::simulator()
 				samplesTillAcceptRateCalc=0;
 				for (int i=0;i<paramsToVaryIntsAry.size();i++)
 				{
-					if (true)
+					bool verboseAcceptCalc = true;
+					if (verboseAcceptCalc)
 						ss<<"calculating acceptance rate for param at location "<<i <<endl;
 					int paramInt = paramsToVaryIntsAry[i];
 					double totalVaried = 0;
 					double totalAccepted = 0;
-					if (true)
+					if (verboseAcceptCalc)
 						ss<<"size paramsVariedRecentlyAry = "<<paramsVariedRecentlyAry.size() <<", size acceptedIntsRecentlyAry = "<<acceptedIntsRecentlyAry.size() <<endl;
-
+					//Go through recently varied list to find element most recently varied then calculate how often it was accepted
 					for (int j=0; j<paramsVariedRecentlyAry.size();j++)
 					{
 						if (paramsVariedRecentlyAry[j]==paramInt)
@@ -1785,7 +1786,7 @@ void simAnealOrbFuncObj::simulator()
 					// calculate latest acceptance ratio for param
 					latestAcceptRate = totalAccepted/totalVaried;
 
-					if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					if (verboseAcceptCalc)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 						ss<<"For paramInt "<<paramInt<<", (totalAccepted) "<< totalAccepted<<"/"<< totalVaried<< " (totalVaried) = latestAcceptRate = "<< latestAcceptRate<<endl;
 
 					// ******* Determine which param's sigma to vary *************************
@@ -1827,14 +1828,14 @@ void simAnealOrbFuncObj::simulator()
 					{
 						if (sigmaPercent_latest<sigmaPercent_max)
 							sigmaPercent_latest = sigmaPercent_latest+sigmaPercent_min;
-						if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+						if (verboseAcceptCalc)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 							ss<<"latest acceptance was "<<latestAcceptRate <<" which is >"<<upperLimit<<", so sigmaPercent_latest raised to "<< sigmaPercent_latest<<" for parameter # "<<paramInt<<endl;
 					}
 					else if (latestAcceptRate<lowerLimit)
 					{
 						if (sigmaPercent_latest>=(sigmaPercent_min*2.0))
 							sigmaPercent_latest = sigmaPercent_latest-sigmaPercent_min;
-						if (true)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+						if (verboseAcceptCalc)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 							ss<<"latest acceptance was "<<latestAcceptRate <<" which is <"<<lowerLimit<<", so sigmaPercent_latest lowered to "<< sigmaPercent_latest<<" for parameter # "<<paramInt<<endl;
 					}
 

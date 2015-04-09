@@ -137,10 +137,10 @@ T_Max =2447751
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]#46904
 K_MIN =26904
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]
-K_MAX =46905
+K_MAX =36905
 # Minimum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMINs =[-1177]
+RVoffsetMINs =[177]
 # Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMAXs =[-1176]
+RVoffsetMAXs =[1276]

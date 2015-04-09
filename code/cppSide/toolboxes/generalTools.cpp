@@ -17,59 +17,6 @@
 
 using namespace std;
 /*! \file */
-outputDataType generalTools::odtStart(outputDataType ODT, int numTotalSamples)
-{
-	/*
-	 * This will preallocate the space needed for each of the possibly large
-	 * variables in the outputDataType object.  As this is making them initially
-	 * large enough to fit a value for each sample attempted, it is actually
-	 * over allocating the memory needed, but there is now way to know exactly
-	 * how many successful samples there will be.  An attempt to clear out the
-	 * extra memory after the chain is complete is done with the odtFinish
-	 * function.  Unfortunately, this function does not seem to be releasing
-	 * the memory back to the OS at the moment... Hopefully it can be fixed
-	 * or a better method will be implemented in the future to handle this issue.
-	 */
-	//repeat for all vectors in ODT
-	ODT.a_totals.reserve(numTotalSamples);
-	ODT.longAN_degs.reserve(numTotalSamples);
-	ODT.es.reserve(numTotalSamples);
-	ODT.Ts.reserve(numTotalSamples);
-	ODT.Tcs.reserve(numTotalSamples);
-	ODT.periods.reserve(numTotalSamples);
-	ODT.inclination_degs.reserve(numTotalSamples);
-	ODT.argPeri_degs.reserve(numTotalSamples);
-	//RVoffsets
-	ODT.Ks.reserve(numTotalSamples);
-	ODT.chiSquareds.reserve(numTotalSamples);
-	ODT.timesBeenHeres.reserve(numTotalSamples);
-	return ODT;
-}
-
-outputDataType generalTools::odtFinish(outputDataType ODT)
-{
-	/**
-	 * An attempt to clear out the extra memory of the space allocated to the
-	 * variables in an outputDataType object after a chain is complete.
-	 * Unfortunately, this function does not seem to be releasing
-	 * the memory back to the OS at the moment... Hopefully it can be fixed
-	 * or a better method will be implemented in the future to handle this issue.
-	 */
-	//repeat for all vectors in ODT
-//	ODT.a_totals.shrink_to_fit();
-//	ODT.longAN_degs.shrink_to_fit();
-//	ODT.es.shrink_to_fit();
-//	ODT.Ts.shrink_to_fit();
-//	ODT.periods.shrink_to_fit();
-//	ODT.inclination_degs.shrink_to_fit();
-//	ODT.argPeri_degs.shrink_to_fit();
-//	ODT.Ks.shrink_to_fit();
-//	ODT.chiSquareds.shrink_to_fit();
-//	ODT.timesBeenHeres.shrink_to_fit();
-
-	return ODT;
-}
-
 eccArgPeri2ToTcType generalTools::eccArgPeri2ToTcCalc(eccArgPeri2ToTcType EATT)
 {
 	/**
@@ -101,72 +48,6 @@ eccArgPeri2ToTcType generalTools::eccArgPeri2ToTcCalc(eccArgPeri2ToTcType EATT)
 		double top = sqrt(1.0-EATT.e)*sin(TA_s_rad/2.0);
 		double btm = sqrt(1.0+EATT.e)*cos(TA_s_rad/2.0);
 		double ATAN_rad ;
-	//	ATAN_rad = atanTopBtm(top,btm);
-	//	//fix angles calculated to make sense
-	//	if (ATAN_rad>(2.0*PI))
-	//		ATAN_rad = ATAN_rad-2.0*PI;
-	//	if ((ATAN_rad>0)&&(TA_s_rad<0))
-	//		ATAN_rad = ATAN_rad-2.0*PI;
-
-//		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//		//$$$$$$$$$$$$$$$$$$$$$$$$$$ TEST $$$$$$$$$$$$$$$$$$$$$$$$$
-//		if (true)
-//		{
-//			vector<double> argPeri_degs;
-//			argPeri_degs.push_back(1.0);
-//			argPeri_degs.push_back(89.0);
-//			argPeri_degs.push_back(91.0);
-//			argPeri_degs.push_back(179.0);
-//			argPeri_degs.push_back(181.0);
-//			argPeri_degs.push_back(359.0);
-//			argPeri_degs.push_back(-1.0);
-//			double e = 0.1;
-//			cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
-//			cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
-//			for ( int i=0;i<argPeri_degs.size();i++)
-//			{
-//
-//				double TA_s_deg_TEST1 = 90.0 - argPeri_degs[i];
-//				if (backHalf)
-//					TA_s_deg_TEST1 = TA_s_deg_TEST1+180.0;
-//
-//				if (TA_s_deg_TEST1<0.0)
-//					TA_s_deg_TEST1 = TA_s_deg_TEST1+360.0;
-//				double TA_s_rad_TEST1 = TA_s_deg_TEST1*(PI/180.0);
-//				double top_TEST = sqrt(1.0-e)*sin(TA_s_rad_TEST1/2.0);
-//				double btm_TEST = sqrt(1.0+e)*cos(TA_s_rad_TEST1/2.0);
-//				double ATAN_rad_TEST1 ;
-//
-//				ATAN_rad_TEST1 = atanTopBtm(top_TEST,btm_TEST);
-//				//fix angles calculated to make sense
-//				if (ATAN_rad_TEST1>(2.0*PI))
-//					ATAN_rad_TEST1 = ATAN_rad_TEST1-2.0*PI;
-//				if ((ATAN_rad_TEST1>0)&&(TA_s_rad_TEST1<0))
-//					ATAN_rad_TEST1 = ATAN_rad_TEST1-2.0*PI;
-//				double E_s_rad_TEST1 = ATAN_rad_TEST1*2.0;
-//
-//				double 	ATAN_rad_TEST2;
-//				ATAN_rad_TEST2 = atan2(top_TEST,btm_TEST);
-//				double E_s_rad_TEST2 = ATAN_rad_TEST2*2.0;
-//
-//				cout<<"\n\nargPeri_degs[i] = "<< argPeri_degs[i] <<endl;
-//				cout<<"TA_s_deg_TEST1 = "<< TA_s_deg_TEST1 <<endl;
-//				cout<<"top_TEST = "<< top_TEST <<endl;
-//				cout<<"btm_TEST = "<<btm_TEST  <<endl;
-//				cout<<"ATAN_rad_TEST1 = "<<ATAN_rad_TEST1*(180.0/PI)  <<endl;
-//				cout<<"E_s_rad_TEST1 = "<<E_s_rad_TEST1*(180.0/PI)  <<endl;
-//				cout<<"\nATAN_rad_TEST2 = "<< ATAN_rad_TEST2*(180.0/PI)<<endl;
-//				cout<<"E_s_rad_TEST2 = "<< E_s_rad_TEST2*(180.0/PI) <<endl;
-//				cout<<"E_s_rad_TEST1-E_s_rad_TEST2 = "<<(E_s_rad_TEST1-E_s_rad_TEST2)*(180.0/PI)  <<endl;
-//				//cout<<" = "<<  <<endl;
-//			}
-//			cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
-//			cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
-//		}
-
-
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		ATAN_rad = atan2(top,btm);
 		if (ATAN_rad<0)
 			ATAN_rad +=2.0*PI;
@@ -248,74 +129,6 @@ double generalTools::atanTopBtm(double top, double btm)
 		ATAN_rad = ATAN_rad-2.0*PI;
 
 	return ATAN_rad;
-}
-
-eccArgPeriCalcType generalTools::eccArgPeriCalc(eccArgPeriCalcType EACT)
-{
-	/**
-	 * Calculate the Eccentricity and Argument of Periapsis from the provided
-	 * sqrt(e*sin(ArgPeri)) and sqrt(e*cos(ArgPeri)) values.
-	 */
-	bool verbose=false;
-	EACT.e;
-	EACT.argPeri_deg;
-	EACT.sqrtEsinArgPeri;
-	EACT.sqrtEcosArgPeri;
-
-	if (verbose)
-	{
-		cout<<"-----------------------------------------------------"<<endl;
-		cout<< "EACT.sqrtEsinArgPeri = "<< EACT.sqrtEsinArgPeri<<endl;
-		cout<< "EACT.sqrtEcosArgPeri = "<< EACT.sqrtEcosArgPeri<<endl;
-	}
-
-	double ecc = (EACT.sqrtEsinArgPeri*EACT.sqrtEsinArgPeri)+(EACT.sqrtEcosArgPeri*EACT.sqrtEcosArgPeri);
-	if (verbose)
-		cout<<"\necc = "<<ecc<<endl;
-
-	EACT.e = ecc;
-
-	double ATAN_rad ;
-	ATAN_rad = atanTopBtm(EACT.sqrtEsinArgPeri,EACT.sqrtEcosArgPeri);
-
-	if (verbose)
-		cout<<"Before conditionals applied, atan_deg = "<<(ATAN_rad * 180 / PI)<<endl;
-//
-//	int quad = 0;
-////	if ((EACT.sqrtEsinArgPeri>=0.0)and(EACT.sqrtEcosArgPeri>=0.0))
-////		quad = 1;
-////	if ((EACT.sqrtEsinArgPeri>=0.0)and(EACT.sqrtEcosArgPeri<=0.0))
-////		quad = 2;
-////	if ((EACT.sqrtEsinArgPeri<=0.0)and(EACT.sqrtEcosArgPeri>=0.0))
-////		quad = 3;
-////	if ((EACT.sqrtEsinArgPeri<=0.0)and(EACT.sqrtEcosArgPeri<=0.0))
-////		quad = 4;
-//
-//	if ((EACT.sqrtEsinArgPeri>=0.0)and(TAN>=0.0))
-//		quad = 1;
-//	if ((EACT.sqrtEsinArgPeri>=0.0)and(TAN<=0.0))
-//		quad = 2;
-//	if ((EACT.sqrtEsinArgPeri<=0.0)and(TAN>=0.0))
-//		quad = 3;
-//	if ((EACT.sqrtEsinArgPeri<=0.0)and(TAN<=0.0))
-//		quad = 4;
-//
-//	if ((quad==2)||(quad==3))
-//		ATAN = ATAN+PI;
-//	else if (quad==4)
-//		ATAN = ATAN+2.0*PI;
-//	if (ATAN>(2.0*PI))
-//		ATAN = ATAN-2.0*PI;
-
-	if (verbose)
-	{
-		cout<<"After conditionals applied, atan_deg = "<<(ATAN_rad * 180 / PI)<<endl;
-		cout<<"-----------------------------------------------------"<<endl;
-	}
-	// Calculate argPeri and correct for if it calculates it as a negative angle.
-	double atan_deg=ATAN_rad * 180 / PI;
-
-	return EACT;
 }
 
 TAcalcReturnType generalTools::TAcalculator(TAcalcInputType TACIT)

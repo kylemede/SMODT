@@ -56,13 +56,13 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
     line = f.readline()
     dataLineCols = line.split()
     numRVdatasets=0
-    if (len(line)>11):
-        numRVdatasets = len(dataLineCols) - 11
+    if (len(line)>10):
+        numRVdatasets = len(dataLineCols) - 10
     else:
         line = f.readline()
         dataLineCols = line.split()
-        if (len(line)>11):
-            numRVdatasets = len(dataLineCols) - 11 
+        if (len(line)>10):
+            numRVdatasets = len(dataLineCols) - 10
     f.close()
     if paramSettingsDict['RVonly']==False:
         ## Find number of DI epochs
@@ -316,8 +316,8 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
         .
     """
   
-    lowestChiSquared = 10000000
-    inclinationBest = 0
+    lowestChiSquared = 10000000000
+    incBest = 0
     eBest = 0
     longANBest = 0
     periodBest = 0
@@ -348,7 +348,7 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
                 dataLineCols = line.split()
                 chiSquared = float(dataLineCols[8])
                 
-                if (chiSquared<lowestChiSquared)and(chiSquared>0.00001):
+                if (chiSquared<lowestChiSquared)and(chiSquared>0.0000001):
                     lowestChiSquared = chiSquared
                     incBest = float(dataLineCols[5])
                     eBest = float(dataLineCols[1])
@@ -358,10 +358,10 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
                     aBest = float(dataLineCols[7])
                     TBest = float(dataLineCols[2])
                     TcBest = float(dataLineCols[3])
-                    if len(dataLineCols)>11:
+                    if len(dataLineCols)>10:
                         KBest = float(dataLineCols[9])
                         rvOffsetsBest=[]
-                        for dataset in range(0,int(len(dataLineCols) - 11)):
+                        for dataset in range(0,int(len(dataLineCols) - 10)):
                             rvOffsetsBest.append(float(dataLineCols[10+dataset]))
                 
         # print the values for the best orbit
@@ -960,7 +960,7 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
                 summaryStr+='\n'+s
                 if verbose:
                     print s
-            elif numDataCols>11:
+            elif numDataCols>10:
                 s= 'There were '+str(numDataCols)+' columns of data, thus '+str(numDataCols - 10)+ ' columns must be RV offsets' 
                 log.write(s+'\n')
                 if verbose:
@@ -1056,11 +1056,11 @@ def burnInStripper(fullFilename, burnInLength, burnInStrippedFilename):
             # still haven't reached the burn-in length, so check length and write
             # to output file if this particular line is the first to reach the it
             dataLineCols = line.split()
-            timesBeenHere = int(dataLineCols[-1])
-            if timesBeenHere>1:
+            #timesBeenHere = int(dataLineCols[-1])
+            if True:#timesBeenHere>1:
                 # This loop will go through the number of times 
                 # the simulator stayed at that step/orbit
-                for i in range(0,timesBeenHere): 
+                for i in range(0,1):#timesBeenHere): 
                     currLength +=1
                     if currLength>burnInLength:
                         # create a new version of the line that has a timesBeenHere=1
@@ -1168,7 +1168,7 @@ def dataFileCombiner(filenames,outFilename):
         numLines = len(lines)
         fileOne.close()
         
-        # replace first files title header and rest into a new output line list
+        # replace first file's title header and write it and the rest into a new output line list
         outLines = lines
         outLines[0] = os.path.basename(outFilename)+'\n' # all 
         
@@ -1197,10 +1197,10 @@ def dataFileCombiner(filenames,outFilename):
 
 def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False):
     """
-    Read in the data for a single column of data and expand it to its full length with the timesBeenHere param.
+    Read in the data for a single column of data.
     
     Columns must be:
-        longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+        longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  
     columnNum must be an int.
     
     file format must be:
@@ -1245,12 +1245,12 @@ def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=Fal
         if i>1:
             try:
                 if line[0].isdigit():
-                    timesBeen = float(line.split()[-1])
-                    TotalSamples+= timesBeen
+                    #timesBeen = float(line.split()[-1])
+                    TotalSamples+=1#timesBeen
             except:
                 print "failure loading up TotalSamples.  Value so far = "+str(TotalSamples)
                 print "type(line[0]) = "+repr(type(line[0]))
-                print "type(timesBeen) = "+repr(type(timesBeen))
+                #print "type(timesBeen) = "+repr(type(timesBeen))
                 print "line[0] = "+line[0]
     fp.close()
     TotalSamples = int(TotalSamples)
@@ -1333,12 +1333,12 @@ def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=Fal
                     #s = "1060"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     chiSquared = float(dataLineCols[8])
                     #s = "1062"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
-                    timesBeenHere = float(dataLineCols[-1])
-                    s2 = "timesBeenHere = "+str(timesBeenHere)+", chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
+                    #timesBeenHere = float(dataLineCols[-1])
+                    s2 =" chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     #if (chiSquared==0)or(dataValue==0):
                         # if verboseInternal:
                         #     print line
-                    for k in range(0,int(timesBeenHere)):
+                    for k in range(0,1):#int(timesBeenHere)):
                         if firstJ=="":
                             firstJ=j
                         s2+="\nIn itter loop, j="+str(j)+", totalAccepted="+str(totalAccepted)+", len(dataAry)="+str(len(dataAry))
@@ -1413,7 +1413,7 @@ def outputDatafileToDict(filename):
     NOT a good function to load data from a long simulation with lots of output sets.
     
     Columns must be:
-    longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+    longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...
         
         file format must be:
         
@@ -1443,19 +1443,20 @@ def outputDatafileToDict(filename):
             outDict["longANs"] = dataReader(filename, column=0)
             outDict["es"] = dataReader(filename, column=1)
             outDict["Ts"] = dataReader(filename, column=2)
-            outDict["periods"] = dataReader(filename, column=3)
-            outDict["inclinations"] = dataReader(filename, column=4)
-            outDict["argPeris"] = dataReader(filename, column=5)
-            outDict["a_totals"] = dataReader(filename, column=6)
-            outDict["chiSquareds"] = dataReader(filename, column=7)
-            outDict["Ks"]= dataReader(filename, column=8)
+            outDict["Ts"] = dataReader(filename, column=3)
+            outDict["periods"] = dataReader(filename, column=4)
+            outDict["inclinations"] = dataReader(filename, column=5)
+            outDict["argPeris"] = dataReader(filename, column=6)
+            outDict["a_totals"] = dataReader(filename, column=7)
+            outDict["chiSquareds"] = dataReader(filename, column=8)
+            outDict["Ks"]= dataReader(filename, column=9)
             # last column should be number of times been here
-            outDict["timesBeenHere"] = dataReader(filename, column=(numDataCols-1))
+            #outDict["timesBeenHere"] = dataReader(filename, column=(numDataCols-1))
             
             RVoffsets = []
-            numRVdatasets = numDataCols - 9
+            numRVdatasets = numDataCols - 11
             for dataset in range(0,numRVdatasets):
-                colnum = int(8+dataset)
+                colnum = int(10+dataset)
                 RVoffsetsCurr = dataReader(filename, column=colnum)
                 if numRVdatasets==1:
                     RVoffsets = RVoffsetsCurr
@@ -1481,6 +1482,19 @@ def dataReadTrimWrite(filename, chiSquareCutOff, verbose=False):
     
     NOTE: output files will have same name with 'chiSquare-cut-off-####' added to 
           show it is the new trimmed version.
+
+    Columns must be:
+    longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...
+        
+        file format must be:
+        
+        line1: title
+        line2: data headings
+        line3: space delimited data
+        line4: space delimited data
+        .
+        .
+        .
     
     :param filename:              filename
     :type filename:               string
@@ -1519,7 +1533,7 @@ def dataReadTrimWrite(filename, chiSquareCutOff, verbose=False):
         line = INfile.readline()
         if line!='':
             dataLineCols = line.split()
-            chiSquareStr = dataLineCols[7]
+            chiSquareStr = dataLineCols[8]
             chiSquared = float(chiSquareStr)
             if chiSquared<chiSquareCutOff:
                 OUTfile.write(line)
@@ -1737,7 +1751,7 @@ def confidenceLevelsFinderLoopedDatasets(filename, verbose=False):
     PURPOSE: This is to determine the errors that the mod dataset runs were designed to determine.
     
     Columns must be:
-        longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+        longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...
         
         file format must be:
         
@@ -1755,15 +1769,17 @@ def confidenceLevelsFinderLoopedDatasets(filename, verbose=False):
         print 'es have conf levels: \n68.3% = '+repr(esCLevels[0])+' \n95.4% = '+repr(esCLevels[1])+'\n'
         TsCLevels = confLevelFinder(filename,2)
         print 'Ts have conf levels: \n68.3% = '+repr(TsCLevels[0])+' \n95.4% = '+repr(TsCLevels[1])+'\n'
-        periodsCLevels = confLevelFinder(filename,3)
+        TcsCLevels = confLevelFinder(filename,3)
+        print 'Tcs have conf levels: \n68.3% = '+repr(TcsCLevels[0])+' \n95.4% = '+repr(TcsCLevels[1])+'\n'
+        periodsCLevels = confLevelFinder(filename,4)
         print 'periods have conf levels: \n68.3% = '+repr(periodsCLevels[0])+' \n95.4% = '+repr(periodsCLevels[1])+'\n'
-        inclination_degsCLevels= confLevelFinder(filename,4)
+        inclination_degsCLevels= confLevelFinder(filename,5)
         print 'inclinations have conf levels: \n68.3% = '+repr(inclination_degsCLevels[0])+' \n95.4% = '+repr(inclination_degsCLevels[1])+'\n'
-        argPeri_degsCLevels = confLevelFinder(filename,5)
+        argPeri_degsCLevels = confLevelFinder(filename,6)
         print 'argPeris have conf levels: \n68.3% = '+repr(argPeri_degsCLevels[0])+' \n95.4% = '+repr(argPeri_degsCLevels[1])+'\n'
-        asCLevels = confLevelFinder(filename,6)
+        asCLevels = confLevelFinder(filename,7)
         print 'a_totals have conf levels: \n68.3% = '+repr(asCLevels[0])+' \n95.4% = '+repr(asCLevels[1])+'\n'
-        KsCLevels = confLevelFinder(filename,8)
+        KsCLevels = confLevelFinder(filename,9)
         print 'Ks have conf levels: \n68.3% = '+repr(asCLevels[0])+' \n95.4% = '+repr(asCLevels[1])+'\n'
     
         ## figure out if there is any RV offsets in output file and find their confLevels 
@@ -1777,11 +1793,11 @@ def confidenceLevelsFinderLoopedDatasets(filename, verbose=False):
         if numDataCols==9:
             print 'There were 9 columns of data found in the datafile, thus no RVoffsets were recorded'
         elif numDataCols>9:
-            print 'There were '+str(numDataCols)+' columns of data, thus '+str(numDataCols - 9)+ ' columns must be RV offsets' 
-            numRVdatasets = numDataCols - 9
+            print 'There were '+str(numDataCols)+' columns of data, thus '+str(numDataCols - 11)+ ' columns must be RV offsets' 
+            numRVdatasets = numDataCols - 11
             for dataset in range(0,numRVdatasets):
-                offsetsCurrCLevels = confLevelFinder(filename,dataset+8)
-                print 'dataset # '+str(dataset+1)+' RV offsets have conf levels: \n68.3% = '+repr(offsetsCurrCLevels[0])+' \n95.4% = '+repr(offsetsCurrCLevels[1])+'\n'
+                offsetsCurrCLevels = confLevelFinder(filename,dataset+10)
+                print 'dataset # '+str(dataset)+' RV offsets have conf levels: \n68.3% = '+repr(offsetsCurrCLevels[0])+' \n95.4% = '+repr(offsetsCurrCLevels[1])+'\n'
     else:
         print "confidenceLevelsFinderNEW: ERROR!!!! file doesn't exist"    
     
@@ -2433,7 +2449,7 @@ def findTop20orbits(filename):
     orbits in the format that is used in the 'paramSettingsDict'.
     
    Columns must be:
-        longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+        longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  
         
         file format must be:
         
@@ -2459,7 +2475,7 @@ def findTop20orbits(filename):
         line = f.readline()
         if line!='':
             dataLineCols = line.split()
-            curChiSquared = float(dataLineCols[7])
+            curChiSquared = float(dataLineCols[8])
             chiSquareds.append(curChiSquared)
     ## reached end of file, so close it
     f.close()
@@ -2499,14 +2515,14 @@ def findTop20orbits(filename):
             #Check if this line is on the list to save
             if lineNumber==unSortedAscendingOrder[indicesNumber]:
                 dataLineCols = line.split()
-                curChiSquared = float(dataLineCols[7])
+                curChiSquared = float(dataLineCols[8])
                 saveLine = '['
                 for i in range(0,len(dataLineCols)-1):
                     if i!=7:
                         saveLine+=dataLineCols[i]+', '
-                saveLine+=']    chiSquared = '+dataLineCols[7]
+                saveLine+=']    chiSquared = '+dataLineCols[8]
                 bestOrbits.append(saveLine)
-                saveLineChiSquareds.append(float(dataLineCols[7]))
+                saveLineChiSquareds.append(float(dataLineCols[8]))
                 if indicesNumber<19:
                     indicesNumber +=1    
             # increment line number

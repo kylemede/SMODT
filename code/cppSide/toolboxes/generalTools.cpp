@@ -304,7 +304,7 @@ void generalTools::fileWriter(outputDataType ODT)
 	 * produce nice looking output files.
 	 *
 	 * Format will be:
-	 * longAN [deg]   e [N/A]   To [julian date]  Tc [julian date]     period [yrs] inclination [deg]  argPeri [deg]  a_total [AU]    chiSquared    K [m/s]  RVorigin_* [m/s] timesBeenHere
+	 * longAN [deg]   e [N/A]   To [julian date]  Tc [julian date]     period [yrs] inclination [deg]  argPeri [deg]  a_total [AU]    chiSquared    K [m/s]  RVorigin_* [m/s]
 	 *
 	 * Note: There will be one column for each RVorigin.
 	 */
@@ -319,7 +319,8 @@ void generalTools::fileWriter(outputDataType ODT)
 	file <<"     inclination [deg]  argPeri [deg]  a_total [AU]    chiSquared         K [m/s]";
 	for (int dataset=0;dataset<int(ODT.RVoffsets[0].size());++dataset)
 		file<<"     RVorigin_"<<dataset<<" [m/s]  ";
-	file <<"   timesBeenHere"<<endl;
+	//file <<"   timesBeenHere"<<endl;
+	file<<endl;
 
 	for (int sample=0; sample<ODT.numSamplesAccepted; sample++)
 	{
@@ -336,7 +337,8 @@ void generalTools::fileWriter(outputDataType ODT)
 		for (int set=0;set<int(ODT.RVoffsets[0].size());++set)
 			file<<"      "<<ODT.RVoffsets[sample][set]<<"   ";
 
-		file<< "       "<<ODT.timesBeenHeres[sample]<<endl;
+		//file<< "       "<<ODT.timesBeenHeres[sample]<<endl;
+		file<<endl;
 	}//finished writing inputs file
 	file.close () ;
 	cout<<"\n***************************************************************"<<endl;
@@ -613,7 +615,7 @@ double generalTools::earliestEpochFinder(DIdataObj DIdo, RVdataObj RVdo)
 	return earliestEpoch;
 }
 
-string generalTools::CorrelationLengthCalc(vector<double> data, string paramName, vector<int> timesBeenHere)
+string generalTools::CorrelationLengthCalc(vector<double> data, string paramName)//, vector<int> timesBeenHere)
 {
 	/**
 	 * Given a single column of data from an MCMC chain, and the associated
@@ -633,7 +635,7 @@ string generalTools::CorrelationLengthCalc(vector<double> data, string paramName
 	else
 	{
 		vector<double> data2;
-		data2 = fillOutDataVector(data,timesBeenHere);
+		data2 = data;//fillOutDataVector(data);//,timesBeenHere);
 		int corrLength = corrLengthJumpyCalc(data2);
 		ss<<paramName<<" had Correlation length: "<<corrLength<<endl;
 		ss<<data2.size()<<"/"<<corrLength<<" = "<<(data2.size()/double(corrLength))<<endl;
@@ -864,7 +866,7 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	{
 		cout<<"Starting to calculate GR values for longAN_degs"<<endl;
 		// load up string vectors for each parameters var,mean
-		GRFRT_longAN_degs = gelmanRubinStage1func(ODT.longAN_degs,ODT.timesBeenHeres,numTimes);
+		GRFRT_longAN_degs = gelmanRubinStage1func(ODT.longAN_degs,numTimes);//ODT.timesBeenHeres,numTimes);
 		//clear memory from input data vector
 		ODT.longAN_degs.clear();
 		vector<double>().swap(ODT.longAN_degs);
@@ -877,7 +879,7 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	if (ODT.es.size()>1)
 	{
 		cout<<"Starting to calculate GR values for es"<<endl;
-		GRFRT_es = gelmanRubinStage1func(ODT.es,ODT.timesBeenHeres,numTimes);
+		GRFRT_es = gelmanRubinStage1func(ODT.es,numTimes);//ODT.timesBeenHeres,numTimes);
 		ODT.es.clear();
 		vector<double>().swap(ODT.es);
 		if (verbose)
@@ -890,7 +892,7 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	if (ODT.Ts.size()>1)
 	{
 		cout<<"Starting to calculate GR values for Ts"<<endl;
-		GRFRT_Ts = gelmanRubinStage1func(ODT.Ts,ODT.timesBeenHeres,numTimes);
+		GRFRT_Ts = gelmanRubinStage1func(ODT.Ts,numTimes);//ODT.timesBeenHeres,numTimes);
 		ODT.Ts.clear();
 		vector<double>().swap(ODT.Ts);
 		if (verbose)
@@ -902,7 +904,7 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	if (ODT.Tcs.size()>1)
 	{
 		cout<<"Starting to calculate GR values for Tcs"<<endl;
-		GRFRT_Tcs = gelmanRubinStage1func(ODT.Tcs,ODT.timesBeenHeres,numTimes);
+		GRFRT_Tcs = gelmanRubinStage1func(ODT.Tcs,numTimes);//ODT.timesBeenHeres,numTimes);
 		ODT.Tcs.clear();
 		vector<double>().swap(ODT.Tcs);
 		if (verbose)
@@ -914,7 +916,7 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	if (ODT.periods.size()>1)
 	{
 		cout<<"Starting to calculate GR values for periods"<<endl;
-		GRFRT_periods = gelmanRubinStage1func(ODT.periods,ODT.timesBeenHeres,numTimes);
+		GRFRT_periods = gelmanRubinStage1func(ODT.periods,numTimes);//ODT.timesBeenHeres,numTimes);
 		ODT.periods.clear();
 		vector<double>().swap(ODT.periods);
 		if (verbose)
@@ -927,7 +929,7 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	if (ODT.inclination_degs.size()>1)
 	{
 		cout<<"Starting to calculate GR values for inclination_degs"<<endl;
-		GRFRT_inclination_degs = gelmanRubinStage1func(ODT.inclination_degs,ODT.timesBeenHeres,numTimes);
+		GRFRT_inclination_degs = gelmanRubinStage1func(ODT.inclination_degs,numTimes);//ODT.timesBeenHeres,numTimes);
 		ODT.inclination_degs.clear();
 		vector<double>().swap(ODT.inclination_degs);
 		if (verbose)
@@ -940,7 +942,7 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	if (ODT.argPeri_degs.size()>1)
 	{
 		cout<<"Starting to calculate GR values for argPeri_degs"<<endl;
-		GRFRT_argPeri_degs = gelmanRubinStage1func(ODT.argPeri_degs,ODT.timesBeenHeres,numTimes);
+		GRFRT_argPeri_degs = gelmanRubinStage1func(ODT.argPeri_degs,numTimes);//ODT.timesBeenHeres,numTimes);
 		ODT.argPeri_degs.clear();
 		vector<double>().swap(ODT.argPeri_degs);
 		if (verbose)
@@ -953,7 +955,7 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	if (ODT.a_totals.size()>1)
 	{
 		cout<<"Starting to calculate GR values for a_totals"<<endl;
-		GRFRT_a_totals = gelmanRubinStage1func(ODT.a_totals,ODT.timesBeenHeres,numTimes);
+		GRFRT_a_totals = gelmanRubinStage1func(ODT.a_totals,numTimes);//ODT.timesBeenHeres,numTimes);
 		ODT.a_totals.clear();
 		vector<double>().swap(ODT.a_totals);
 		if (verbose)
@@ -966,7 +968,7 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	if (ODT.Ks.size()>1)
 	{
 		cout<<"Starting to calculate GR values for Ks"<<endl;
-		GRFRT_Ks = gelmanRubinStage1func(ODT.Ks,ODT.timesBeenHeres,numTimes);
+		GRFRT_Ks = gelmanRubinStage1func(ODT.Ks,numTimes);//ODT.timesBeenHeres,numTimes);
 		ODT.Ks.clear();
 		vector<double>().swap(ODT.Ks);
 		if (verbose)
@@ -1030,35 +1032,35 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	cout<<"***************************************************************\n"<<endl;
 }
 
-vector<double> generalTools::fillOutDataVector(vector<double> data,vector<int> timesBeenHere)
-{
-	/**
-	 * Puts data into proper vector taking timesBeenHere into account.
-	 *
-	 * Note: Caution, the timesBeenHere feature compacts the vector size to be
-	 * approximately 30% of its total size and this function expands it to its
-	 * full size.
-	 */
-	vector<double> data2;
-	//int timesBeenHereTOTAL = 0;
-	for (int i=0;i<data.size();++i)
-	{
-		if (timesBeenHere[i]>0)
-		{
-			for (int j=0;j<timesBeenHere[i];++j)
-			{
-				if (data[i]>1e-10)
-				{
-					data2.push_back(data[i]);
-					//timesBeenHereTOTAL+=1;
-				}
-			}
-		}
-	}
-	return data2;
-}
+//vector<double> generalTools::fillOutDataVector(vector<double> data)//,vector<int> timesBeenHere)
+//{
+//	/**
+//	 * Puts data into proper vector taking timesBeenHere into account.
+//	 *
+//	 * Note: Caution, the timesBeenHere feature compacts the vector size to be
+//	 * approximately 30% of its total size and this function expands it to its
+//	 * full size.
+//	 */
+//	vector<double> data2;
+//	//int timesBeenHereTOTAL = 0;
+//	for (int i=0;i<data.size();++i)
+//	{
+//		if (timesBeenHere[i]>0)
+//		{
+//			for (int j=0;j<timesBeenHere[i];++j)
+//			{
+//				if (data[i]>1e-10)
+//				{
+//					data2.push_back(data[i]);
+//					//timesBeenHereTOTAL+=1;
+//				}
+//			}
+//		}
+//	}
+//	return data2;
+//}
 
-GRfuncReturnType generalTools::gelmanRubinStage1func(vector<double> data,vector<int> timesBeenHere,int numTimes)
+GRfuncReturnType generalTools::gelmanRubinStage1func(vector<double> data,int numTimes)//vector<int> timesBeenHere,int numTimes)
 {
 	/**
 	 * This function will calculate the variance and mean numTimes times
@@ -1069,7 +1071,7 @@ GRfuncReturnType generalTools::gelmanRubinStage1func(vector<double> data,vector<
 	bool verbose = false;
 
 	vector<double> data2;
-	data2 = fillOutDataVector(data,timesBeenHere);
+	data2 = data;//fillOutDataVector(data);//,timesBeenHere);
 //	//$$$$$$$$
 //	for (int i=0;i<data2.size();++i)
 //	{

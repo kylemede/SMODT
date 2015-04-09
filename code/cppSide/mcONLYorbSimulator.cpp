@@ -180,6 +180,8 @@ int main(int argc ,char *argv[])
 	double one_over_nu_DI=1;
 	double one_over_nu_TOTAL=1;
     int bestOrbit = 0;
+    double Kp_calculated=0;
+    double Ks_calculated=0;
 
     //****************************************************************************************
     //Set some of the initial values and determine the  number of params to vary for DI and RV
@@ -748,10 +750,15 @@ int main(int argc ,char *argv[])
 					VRp_vector = VRCsp.multiEpochCalc();
 					VRp_vector2.push_back(VRp_vector);
 				}
-				if ((SSO.simulate_StarPlanetRV==true)&&(SSO.DIonly==false))
+				if (SSO.simulate_StarPlanetRV==true)
+				{
 					a_total_curr = VRCsp.a_total;
+					if (vary_K==false)
+						K_proposed = VRCsp.K_p;
+				}
+				Kp_calculated = VRCsp.K_p;
 				if ( SSO.silent==false )
-				        cout<<"K_p = "<<VRCsp.K_p<<endl;
+					cout<<"K_p = "<<VRCsp.K_p<<endl;
         	}
 
         	// get residual velocities for companion star if needed
@@ -776,10 +783,15 @@ int main(int argc ,char *argv[])
         			VRs_vector = VRCss.multiEpochCalc();
         			VRs_vector2.push_back(VRs_vector);
         		}
-        		if ((SSO.simulate_StarStarRV==true)&&(SSO.DIonly==false))
-        			a_total_curr = VRCss.a_total;
-        		if ( SSO.silent==false )
-        			cout<<"K_s = "<<VRCss.K_s<<endl;
+        		if (SSO.simulate_StarStarRV==true)
+				{
+					a_total_curr = VRCss.a_total;
+					if (vary_K==false)
+						K_proposed = VRCss.K_s;
+				}
+				Ks_calculated = VRCss.K_s;
+				if ( SSO.silent==false )
+					cout<<"K_s = "<<VRCss.K_s<<endl;
         		//cout<<"a_total = "<<VRCss.a_total<<endl;
         	}
 
@@ -862,7 +874,6 @@ int main(int argc ,char *argv[])
 		{
 			cout<<"\nDI_chiSquared_original = "<<DI_chiSquared_original <<endl;
 			cout<<"RV_chiSquared_original = "<< RV_chiSquared_original<<endl;
-			cout<<"RV_chiSquared_original = "<< RV_chiSquared_original<<endl;
 			cout<<"numDIepochs = "<<numDIepochs <<endl;
 			cout<<"numRVepochs = "<< numRVepochs<<endl;
 			cout<<"numParams = "<< numParams<<endl;
@@ -878,16 +889,15 @@ int main(int argc ,char *argv[])
 		//*****************************************************************************
 		if ( TOTAL_chiSquared_reduced<=SSO.chiSquaredMax )
 		{
-			acceptedCounter +=1;
-
 			//store location of best orbit out of all accepted
 			if ( TOTAL_chiSquared_reduced<TOTAL_chiSquared_reduced_lowest)
 			{
 				TOTAL_chiSquared_reduced_lowest = TOTAL_chiSquared_reduced;
-				bestOrbit = acceptedCounter-1;
+				bestOrbit = acceptedCounter;
 				DI_chiSquared_reduced_lowest = DI_chiSquared_reduced;
 				RV_chiSquared_reduced_lowest = RV_chiSquared_reduced;
 			}
+			acceptedCounter +=1;
 			// store inputs
 			ODT.longAN_degs.push_back(DIt.longAN_deg);
 			ODT.es.push_back(DIt.e);
@@ -901,7 +911,7 @@ int main(int argc ,char *argv[])
 			ODT.a_totals.push_back(a_total_curr);
 			ODT.Ks.push_back(K_proposed);
 			ODT.RVoffsets.push_back(RVoffsets_proposed);
-			ODT.timesBeenHeres.push_back(1);
+//			ODT.timesBeenHeres.push_back(1);
 		}// Done storing accepted orbit parameters
     }//Done sample loops
 
@@ -919,7 +929,8 @@ int main(int argc ,char *argv[])
     ss << "\n$$$$$$$$$$$$$$$ SIMULATOR COMPLETE $$$$$$$$$$$$$$$"<<endl;
     ss<< totalAccepted <<" orbits were accepted during simulation"<<endl;
     ss<< "\nBest orbit found:"<<endl;
-    ss<< "chiSquaredMin = "<< chiSquareMin <<endl;
+    ss<< "chiSquaredMin = "<< ODT.chiSquareds[bestOrbit] <<endl;
+    ss<< "TOTAL_chiSquared_reduced_lowest = "<<TOTAL_chiSquared_reduced_lowest<<endl;
     ss<< "LongAN = "<< ODT.longAN_degs[bestOrbit] <<endl;
     ss<< "e = "<< ODT.es[bestOrbit] <<endl;
     ss<< "To = "<< fixed <<ODT.Ts[bestOrbit] <<endl;

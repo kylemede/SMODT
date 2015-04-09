@@ -3,7 +3,7 @@ import os
 import sys
 import shutil
 import toolboxes as tools
-from ProcessManager import multiProcessStarter
+from SimulationManager import simulator
 import dicts
 
 def main():
@@ -152,7 +152,7 @@ def main():
     
     
     # figure out what files are used in this simulation run
-    pythonFiles = ['SMODTstarter.py','dicts/HARDCODEDsettingsDict.py','ProcessManager.py']
+    pythonFiles = ['SMODTstarter.py','dicts/HARDCODEDsettingsDict.py','SimulationManager.py']
     pythonToolboxFiles = ['generalToolbox.py','DItoolbox.py','plotToolbox.py','RVtoolbox.py']
     cppFiles = []
     cppToolboxFiles = ['SimSettingsObj.cpp','RVtools.cpp', 'generalTools.h',
@@ -213,7 +213,7 @@ def main():
 #     if mcONLY:
 #         mcSimStarter(paramSettingsDict)
 #     else:
-    multiProcessStarter(paramSettingsDict)
+    simulator(paramSettingsDict)
 
 if __name__ == '__main__':
     main()  

@@ -159,6 +159,7 @@ int main(int argc ,char *argv[])
 	SAOFO.tempStepSizePercent = 0.025;
 	SAOFO.startTemp = SSO.startTemp;
 	SAOFO.sigmaPercent = 1.0;
+	SAOFO.saveEachInt = 10;
 
 	if (true)
 	{
@@ -196,10 +197,10 @@ int main(int argc ,char *argv[])
     // Get all best orbit values
     //cout<<"line # 185"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ss << "\n$$$$$$$$$$$$$$$ SIMULATOR COMPLETE $$$$$$$$$$$$$$$"<<endl;
-    ss<< totalAccepted <<" orbits were accepted during simulation"<<endl;
-    ss<< "timesBeenHereTotal = "<<SAOFO.timesBeenHereTotal<<endl;
-    int sum = GT.sumIntCalc(SAOFO.ODT.timesBeenHeres,SAOFO.ODT.timesBeenHeres.size());
-    ss<< "timesBeenHeres total = "<<sum<<endl;
+//    ss<< totalAccepted <<" orbits were accepted during simulation"<<endl;
+//    ss<< "timesBeenHereTotal = "<<SAOFO.timesBeenHereTotal<<endl;
+//    int sum = GT.sumIntCalc(SAOFO.ODT.timesBeenHeres,SAOFO.ODT.timesBeenHeres.size());
+//    ss<< "timesBeenHeres total = "<<sum<<endl;
 	ss<< "\nBest orbit found at step "<<SAOFO.bestOrbit<<" :"<<endl;
 	ss<<"chiSquareMin_reduced = "<<SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<endl;
 	ss<< "chiSquaredMin = "<< SAOFO.chiSquaredMin <<endl;
@@ -241,7 +242,7 @@ int main(int argc ,char *argv[])
 			for (int set=0;set<SAOFO.ODT.RVoffsets.back().size();++set)
 				ss<<"RVoffset for dataset "<<set<<", was = "<< SAOFO.ODT.RVoffsets.back()[set]<<endl;
 		}
-		ss<< "timesBeenHere = "<<SAOFO.ODT.timesBeenHeres.back() <<endl;
+//		ss<< "timesBeenHere = "<<SAOFO.ODT.timesBeenHeres.back() <<endl;
 	}
 	if (true)
 	{
@@ -262,7 +263,7 @@ int main(int argc ,char *argv[])
 			for (int set=0;set<SAOFO.ODT.RVoffsets[totalAccepted-2].size();++set)
 				ss<<"RVoffset for dataset "<<set<<", was = "<< SAOFO.ODT.RVoffsets[totalAccepted-2][set]<<endl;
 		}
-		ss<< "timesBeenHere = "<<SAOFO.ODT.timesBeenHeres[totalAccepted-2] <<endl;
+//		ss<< "timesBeenHere = "<<SAOFO.ODT.timesBeenHeres[totalAccepted-2] <<endl;
 	}
 	if (true)
 	{

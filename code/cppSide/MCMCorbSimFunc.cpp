@@ -31,6 +31,7 @@ void MCMCorbFuncObj::simulator()
 	// variables for param changing
 	int samplesSinceParmaChange = 1;
 	// acceptance rate calcs
+	int numSaved = 0;
 	double acceptedCounter = 0;
 	double acceptCalcTime = double(SSO.numSamples)/(SSO.numSamplePrints*10.0);
 	vector<int> paramsVariedRecentlyAry;
@@ -39,8 +40,8 @@ void MCMCorbFuncObj::simulator()
 	double samplesTillAcceptRateCalc = 0;
 	double latestAcceptRate = 0;
 	int timesNONEpassed = 0;
-	int timesBeenHere = 1;
-	timesBeenHereTotal = 0;
+//	int timesBeenHere = 1;
+//	timesBeenHereTotal = 0;
 	int paramBeingVaried = 2;
 	bool latestParamsSaved;
 	//double K_p_errorPercent = 0;
@@ -211,8 +212,9 @@ void MCMCorbFuncObj::simulator()
 			string printLine;
 			ss <<"\n"<< int(acceptedCounter)<<"/"<<sample<<" Successful. "<<printsDone<<"/"<<SSO.numSamplePrints<<" completed at ";
 			ss << asctime (timeinfo);
+			ss << "Number saved so far = "<<numSaved<<endl;
 			ss << "Latest acceptance rate = "<<latestAcceptRate<<endl;
-			ss << "Latest param being varied = "<<paramBeingVaried<<", timesBeenHere = "<<timesBeenHere<<endl;
+			ss << "Latest param being varied = "<<paramBeingVaried<<endl;//", timesBeenHere = "<<timesBeenHere<<endl;
 			ss << "Times NONE of params passed = "<<timesNONEpassed<<endl;
 			ss << "Largest allowed reduced chiSquareds Total = "<<SSO.chiSquaredMax<<endl;
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared*one_over_nu_DI<<", RV = "<<RV_chiSquared*one_over_nu_RV <<", Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
@@ -852,38 +854,43 @@ void MCMCorbFuncObj::simulator()
 				acceptedCounter +=1;
 				chiSquare_latest = TOTAL_chiSquared;
 
-				//store location of best orbit out of all accepted
-				if ( TOTAL_chiSquared<=chiSquaredMin)
-				{
-					chiSquaredMin = TOTAL_chiSquared;
-					bestOrbit = acceptedCounter-1;
-					chiSquaredMin_DI = DI_chiSquared;
-					chiSquaredMin_RV = RV_chiSquared;
-				}
 
-				latestParamsSaved=true;
+
+//				latestParamsSaved=true;
 				// store inputs
-				ODT.longAN_degs.push_back(DIt.longAN_deg);
-				ODT.es.push_back(DIt.e);
-				ODT.Ts.push_back(DIt.T);
-				ODT.Tcs.push_back(Tc_proposed);
-				ODT.periods.push_back(DIt.period);
-				ODT.inclination_degs.push_back(DIt.inclination_deg);
-				ODT.argPeri_degs.push_back(argPeri_deg_proposed);
-				// store outputs
-				ODT.chiSquareds.push_back(TOTAL_chiSquared);
-				if (a_total_curr>1e4)
+				if ((acceptedCounter%saveEachInt)==false)
 				{
-					cout<<"\n\n!!!!! a_total_curr>1e4 in m-h passed section!!!!\n\n"<<endl;
-					a_total_curr=0;
+					//store location of best orbit out of all accepted
+					if ( TOTAL_chiSquared<=chiSquaredMin)
+					{
+						chiSquaredMin = TOTAL_chiSquared;
+						bestOrbit = numSaved;
+						chiSquaredMin_DI = DI_chiSquared;
+						chiSquaredMin_RV = RV_chiSquared;
+					}
+					numSaved+=1;
+					ODT.longAN_degs.push_back(DIt.longAN_deg);
+					ODT.es.push_back(DIt.e);
+					ODT.Ts.push_back(DIt.T);
+					ODT.Tcs.push_back(Tc_proposed);
+					ODT.periods.push_back(DIt.period);
+					ODT.inclination_degs.push_back(DIt.inclination_deg);
+					ODT.argPeri_degs.push_back(argPeri_deg_proposed);
+					// store outputs
+					ODT.chiSquareds.push_back(TOTAL_chiSquared);
+					if (a_total_curr>1e4)
+					{
+						cout<<"\n\n!!!!! a_total_curr>1e4 in m-h passed section!!!!\n\n"<<endl;
+						a_total_curr=0;
+					}
+					ODT.a_totals.push_back(a_total_curr);
+					ODT.Ks.push_back(K_proposed);
+					ODT.RVoffsets.push_back(RVoffsets_proposed);
 				}
-				ODT.a_totals.push_back(a_total_curr);
-				ODT.Ks.push_back(K_proposed);
-				ODT.RVoffsets.push_back(RVoffsets_proposed);
-				ODT.timesBeenHeres.push_back(timesBeenHere);
-				timesBeenHereTotal+=timesBeenHere;
-				//reset timesBeenHere counter
-				timesBeenHere = 1;
+//				ODT.timesBeenHeres.push_back(timesBeenHere);
+//				timesBeenHereTotal+=timesBeenHere;
+//				//reset timesBeenHere counter
+//				timesBeenHere = 1;
 				//Replace 'latest' values
 				inclination_deg_latest = DIt.inclination_deg;
 				longAN_deg_latest = DIt.longAN_deg;
@@ -905,7 +912,7 @@ void MCMCorbFuncObj::simulator()
 				//****************************************************************
 				// alpha<=RHS not satisfied, increment timesBeenHere and try again
 				//****************************************************************
-				timesBeenHere+=1;
+				//timesBeenHere+=1;
 				accepted = "false";
 				if (paramsVariedRecentlyAry.size()<acceptCalcTime)
 				{
@@ -923,6 +930,7 @@ void MCMCorbFuncObj::simulator()
 					cout<<"alpha = "<< alpha <<endl;
 					cout<<"RHS = "<< RHS<<endl;
 					cout<<"accepted = "<<accepted<<endl;
+					cout<<"saved"
 					cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
 				}
 			}
@@ -932,7 +940,7 @@ void MCMCorbFuncObj::simulator()
 			//****************************************************************************
 			// Proposed parameters did not all pass, increment timesBeenHere and try again
 			//****************************************************************************
-			timesBeenHere+=1;
+			//timesBeenHere+=1;
 			accepted = "false";
 			if (paramsVariedRecentlyAry.size()<acceptCalcTime)
 			{
@@ -992,33 +1000,33 @@ void MCMCorbFuncObj::simulator()
 
 	}//Done sample loops
 
-	//******************************************************
-	//Done sampling, so save last position if not done yet
-	//******************************************************
-	if (latestParamsSaved==false)
-	{
-		SSlog<<"\nlatestParamsSaved==false, so storing last values at sample number "<<sample<<", the timesBeenHere = "<<timesBeenHere<<endl;
-		SSlog<<"Before storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;
-		if (timesBeenHere>1)
-		{
-			SSlog<<"storing values now"<<endl;
-			// store inputs
-			ODT.longAN_degs.push_back(longAN_deg_latest);
-			ODT.es.push_back(e_latest);
-			ODT.Ts.push_back(T_latest);
-			ODT.Tcs.push_back(Tc_latest);
-			ODT.periods.push_back(period_latest);
-			ODT.inclination_degs.push_back(inclination_deg_latest);
-			ODT.argPeri_degs.push_back(argPeri_deg_latest);
-			// store outputs
-			ODT.chiSquareds.push_back(chiSquare_latest);
-			ODT.a_totals.push_back(ODT.a_totals.back());
-			ODT.Ks.push_back(K_latest);
-			ODT.RVoffsets.push_back(RVoffsets_latest);
-			ODT.timesBeenHeres.push_back(timesBeenHere-1);
-			timesBeenHereTotal+=(timesBeenHere-1);
-		}
-	}
+//	//******************************************************
+//	//Done sampling, so save last position if not done yet
+//	//******************************************************
+//	if (latestParamsSaved==false)
+//	{
+//		SSlog<<"\nlatestParamsSaved==false, so storing last values at sample number "<<sample<<", the timesBeenHere = "<<timesBeenHere<<endl;
+//		//SSlog<<"Before storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;
+//		if (timesBeenHere>1)
+//		{
+//			SSlog<<"storing values now"<<endl;
+//			// store inputs
+//			ODT.longAN_degs.push_back(longAN_deg_latest);
+//			ODT.es.push_back(e_latest);
+//			ODT.Ts.push_back(T_latest);
+//			ODT.Tcs.push_back(Tc_latest);
+//			ODT.periods.push_back(period_latest);
+//			ODT.inclination_degs.push_back(inclination_deg_latest);
+//			ODT.argPeri_degs.push_back(argPeri_deg_latest);
+//			// store outputs
+//			ODT.chiSquareds.push_back(chiSquare_latest);
+//			ODT.a_totals.push_back(ODT.a_totals.back());
+//			ODT.Ks.push_back(K_latest);
+//			ODT.RVoffsets.push_back(RVoffsets_latest);
+//			//ODT.timesBeenHeres.push_back(timesBeenHere-1);
+//			//timesBeenHereTotal+=(timesBeenHere-1);
+//		}
+//	}
 
 	// final print to let us know it was able to get to end of file
 	cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;

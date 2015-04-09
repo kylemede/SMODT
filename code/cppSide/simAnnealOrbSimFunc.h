@@ -23,6 +23,7 @@ public:
 	double one_over_nu_TOTAL;
 	int bestOrbit;
 	int timesBeenHereTotal;
+	int saveEachInt;
 	double earliestEpoch;
 	int randSeed;
 	outputDataType ODT;

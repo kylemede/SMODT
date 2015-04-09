@@ -59,8 +59,47 @@ class singleProcessStarter(Process):
                    
 def multiProcessStarter(paramSettingsDict):
     """
+    This will call singleProcessStarter to handle each individual chain.   
+    The output dataFile for each chain will be returned as a list of filenames.
+        
+    :param dict paramSettingsDict: A dictionary created by using the 
+        cFileToSimSettingsDict function that converts the SimSettings.txt into
+        a Python dictionary.
+    """
+    # Get copied settings filename with its directory
+    outSimSettingsFilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+os.path.basename(paramSettingsDict['UpdatedSettingsFile']))
+    numProcesses = paramSettingsDict['numProcesses']
+    master = []
+    for processNumber in range(numProcesses):
+        # create title for this thread's output data file
+        ext = os.path.splitext(paramSettingsDict['outputData_filenameRoot'])[1]
+        
+        if ext=='':
+            ext='.dat' # just a default value, '.txt' is also fine
+        filenameUSE = 'outputData-chain_'+str(processNumber+1)+ext
+        filenameUSE_full = os.path.join(paramSettingsDict['outputData_dir'],filenameUSE)
+        # start process
+        master.append(singleProcessStarter(simSettingsFilename=outSimSettingsFilename, 
+                                         filename=filenameUSE_full, 
+                                         cppCodeDir=paramSettingsDict['cppCodeDir'],
+                                         simAnneal=paramSettingsDict['simAnneal'],
+                                         mcONLY=paramSettingsDict['mcONLY'],
+                                         loopedMCMC=paramSettingsDict['loopedMCMC']))
+        master[processNumber].start()
+    # wait for completion of all process $$$$ STILL DON'T UNDERSTAND HOW THIS WORKS $$$$
+    for processNumber in range(numProcesses):
+        master[processNumber].join()    
+    
+    dataFiles = []
+    for processNumber in range(numProcesses):
+        dataFiles.append(master[processNumber].filename)
+   
+    return dataFiles
+    
+def simulator(paramSettingsDict):
+    """
     This is the master function to start a multiprocess SMODT simulator run.
-    The singleProcessStarter will be called to handle each individual chain
+    The singleProcessStarter will be called by multiProcessStarter to handle each individual chain
     and the toolboxes will then be utilized to perform post-completion 
     statistical calculations and plotting to summarize the results.  The user 
     can choose which calculations and plots to produce with the simulation 
@@ -71,6 +110,7 @@ def multiProcessStarter(paramSettingsDict):
         cFileToSimSettingsDict function that converts the SimSettings.txt into
         a Python dictionary.
     """
+    
     ##set up Python log file name and open file
     logFilename = os.path.join(paramSettingsDict['outputData_dir'],"processManagerLogFile.txt")
     PMlogFile = open(logFilename,'a')
@@ -103,36 +143,13 @@ def multiProcessStarter(paramSettingsDict):
     print s
     PMlogFile.write(s)
     
-    # Get copied settings filename with its directory
-    outSimSettingsFilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+os.path.basename(paramSettingsDict['UpdatedSettingsFile']))
-    
     ############################################################
     ### start running threads ###
     ############################################################
     # record the time the Total Simulation started
     tic=timeit.default_timer()
-    numProcesses = paramSettingsDict['numProcesses']
-    master = []
-    for processNumber in range(numProcesses):
-        # create title for this thread's output data file
-        ext = os.path.splitext(paramSettingsDict['outputData_filenameRoot'])[1]
-        
-        if ext=='':
-            ext='.dat' # just a default value, '.txt' is also fine
-        filenameUSE = 'outputData-chain_'+str(processNumber+1)+ext
-        filenameUSE_full = os.path.join(paramSettingsDict['outputData_dir'],filenameUSE)
-        # start process
-        master.append(singleProcessStarter(simSettingsFilename=outSimSettingsFilename, 
-                                         filename=filenameUSE_full, 
-                                         cppCodeDir=paramSettingsDict['cppCodeDir'],
-                                         simAnneal=paramSettingsDict['simAnneal'],
-                                         mcONLY=paramSettingsDict['mcONLY'],
-                                         loopedMCMC=paramSettingsDict['loopedMCMC']))
-        master[processNumber].start()
-    # wait for completion of all process $$$$ STILL DON'T UNDERSTAND HOW THIS WORKS $$$$
-    for processNumber in range(numProcesses):
-        master[processNumber].join()    
-        
+    ## Use multiProcessStarter func to handle starting and running threads     
+    dataFiles = multiProcessStarter(paramSettingsDict)
     s= '\nMultiprocess: $$$$$$$$$$$$$ FINISHED Multiprocess Sim $$$$$$$$$$$$$$$\n' 
     # write total elapsed time to screen and log.
     toc=timeit.default_timer()
@@ -140,17 +157,13 @@ def multiProcessStarter(paramSettingsDict):
     s= s+'\n\nTotal simulation took '+totalTimeString2+' to complete.\n'
     print s
     PMlogFile.write(s)
-    
     ############################################################
     # combine the input files into one final file
     ############################################################
-    dataFiles = []
     dataFinalFilename = os.path.join(paramSettingsDict['outputData_dir'],'outputData-ALL.dat') 
     s= '\nStarting to write original data to final combined file'
     print s
     PMlogFile.write(s)
-    for processNumber in range(numProcesses):
-        dataFiles.append(master[processNumber].filename)
     tools.gen.dataFileCombiner(dataFiles, dataFinalFilename)
     
     ############################################################
@@ -501,7 +514,7 @@ def multiProcessStarter(paramSettingsDict):
             for filename in dataFiles:
                 print 'Deleting file: '+os.path.basename(filename)
                 os.remove(filename)
-            if (paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and paramSettingsDict['CalcBurnIn']:
+            if (paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and (paramSettingsDict['CalcBurnIn']and (paramSettingsDict['simAnneal']==False)):
                 print '\nDeleting Burn-In removed MCMC chain data files\n'+"-"*40
                 for filename in strippedNames:
                     print 'Deleting file: '+os.path.basename(filename)

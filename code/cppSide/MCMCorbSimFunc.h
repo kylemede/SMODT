@@ -21,6 +21,7 @@ public:
 	double one_over_nu_DI;
 	double one_over_nu_TOTAL;
 	int timesBeenHereTotal;
+	int saveEachInt;
 	int bestOrbit;
 	double earliestEpoch;
 	int randSeed;

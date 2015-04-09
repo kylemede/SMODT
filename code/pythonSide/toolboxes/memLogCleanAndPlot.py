@@ -13,13 +13,13 @@ def starter(paramSettingsDict,sleep=1):
     if False:
         print "memLogCleanerAndPlot starter found totalSamples = "+str(totSamples)
     sleepUse = sleep
-    if totSamples<10000001:
+    if totSamples<100000001:
         sleepUse = 1
-    elif (totSamples>10000000)and(totSamples<50000000):
+    elif (totSamples>100000000)and(totSamples<10000000000):
         sleepUse = 6 
     else:
         sleepUse = 60
-    memTracProc = Popen([shScriptPath,memLogFilename,str(sleep)],stdout=FNULL)
+    memTracProc = Popen([shScriptPath,memLogFilename,str(sleepUse)],stdout=FNULL)
     return (memTracProc,memLogFilename,sleepUse)
 
 def wrapUp(proc,memLogFilename,sleep=6):
@@ -44,14 +44,22 @@ def memUsageLogCleaner(filename = '',sleep=1,delOrigLog=True):
     fOut.write("total[MB]   Used[%] \n")
     used = []
     mem = []
+    totalRAM = 0
     for line in lines:
-        if line[0]=="M":
+        if (line[0]=="M")and(totalRAM==0):
             #print line
             l = line.split()[1:3]
             #print repr(l)
-            usedPercent = int((float(l[1])/float(l[0]))*100.)
-            lineOut = "  "+str(l[0])+"        "+str(usedPercent)+"\n"
-            used.append(float(l[1]))
+            totalRAM = float(l[0])
+        if (line[0]=="-")and(totalRAM>1):
+            usedRAM = float(line.split(":")[-1].split()[0])
+            usedPercent = int((usedRAM/totalRAM)*100.)
+            if False:
+                print 'line = '+line
+                print 'usedRAM = '+str(usedRAM)
+                print 'usedPercent = '+str(usedPercent)
+            lineOut = "  "+str(totalRAM)+"        "+str(usedPercent)+"\n"
+            used.append(usedRAM)
             fOut.write(lineOut)
             mem.append(usedPercent)
             #print repr(lineOut)

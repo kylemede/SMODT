@@ -256,10 +256,52 @@ false & true/false & $K_2$ & $\omega_{vary}$ & $\omega_{vary}$\\
 
 
 \clearpage
+%----------------------------------------------------------------------------------------
+\subsection{Note on RAM and CPU usage}\label{sec:RAMusage}
+
+Natural issues that need to be understood when using a simulator like SMODT are the RAM and CPU ussage.  By using the `useMultiProcessing'=true setting, will occupy all but one of the virtual cores of your computer 100\%.  Therefore, the user needs to be careful about keeping their computer cool and avoid running other CPU heavy processes while SMODT is running.  Also, the RAM used by SMODT has been reduced as best as possible by only saving the actual steps in the MCMC and Simulated Annealing chains, and even saving progressively less of the steps as the chains get longer following:
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+	number of samples per chain & percent of steps saved\\
+\hline
+	numSample $<$3e5 & 100\%\\
+\hline
+	3e5$<$ numSample $>$3e7 & 10\%\\
+\hline
+	3e7$<$ numSample & 1\%\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Percent of MCMC and Simulated Annealing steps saved depending on the proposed chain length.}
+\label{tbl:savePercent}
+\end{table}
+
+It was found that an approximate formula can be used to calculate the ammount of RAM that will be used in total.
+
+\begin{subequations}
+\begin{align}
+\label{eq:ramUse-a}
+\big(\frac{\text{percent saved}}{100}\big)(\text{\# proposed samples per chain})(\text{\# of processes})\times M& = \text{Total RAM [MB]}\\
+\label{eq:ramUse-b}
+M \approx 8e-5
+\end{align}
+\end{subequations}
+
+So, by just using equations (\ref{eq:ramUse-a} \& \ref{eq:ramUse-b}) the value of proposed samples per chain can be chosen to ensure the RAM used never goes beyond what is available for the particular computer SMODT is ran on.
+
+\clearpage
 %----------------------------------------------------------------------------------------------------------
 \section{Simulator Settings}\label{sec:simSettings}
 
 Here we will go over the large array of settings in the settings file and the possible modes to run the simulator in.  In this section ALL of the settings will be briefly described in the order they appear in the `SimSettings.txt' file, and the more intricate details of the settings most important to changing how the 3 data modes are discussed in Section (\ref{sec:simDataModes}).
+
+
+
+
+
 
 {\bf \color{blue} General Settings: }\\
 {\bf chiSquaredMax}\\

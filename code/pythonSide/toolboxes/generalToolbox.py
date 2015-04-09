@@ -965,7 +965,7 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
                 log.write(s+'\n')
                 if verbose:
                     print s
-                numRVdatasets = numDataCols - 11
+                numRVdatasets = numDataCols - 10
                 for dataset in range(0,numRVdatasets):
                     s= '\ndataset # '+str(dataset+1)+' RV offsets have:'
                     (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=dataset+10, returnData=True, returnChiSquareds=False)

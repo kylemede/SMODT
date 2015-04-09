@@ -57,12 +57,12 @@ int main(int argc ,char *argv[])
 		cout<<" so, value within settings file or default being used."<<endl;
 	}
 
-	cout<<"Command line arguments all loaded"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	//cout<<"Command line arguments all loaded"<<endl; //$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$
 
 	// instantiate the settings object and load it up
 	SimSettingsObj SSO;
 	SSO.settingsLoadUp(settingsFilename.c_str());
-	//cout<< "Settings obj all loaded up"<<endl; //$$$$$$$$$$$$$$
+	//cout<< "Settings obj all loaded up"<<endl; //$$$$$$ DEBUGGING $$$$$$$$
 
 	// instantiate and load up DI and RV data objects as needed
 	string outSettingsDir = GT.findDirectory(settingsFilename.c_str())+"/";
@@ -99,39 +99,39 @@ int main(int argc ,char *argv[])
 	SSlog<<simModeStr;
 	cout<<simModeStr<<endl;
 
-	//cout<<"\n$$$$ about to try and load up sys data"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$
+	//cout<<"\n$$$$ about to try and load up sys data"<<endl;//$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$
 	SYSdo.systemDataLoadUp(SystemDataFilename.c_str());
-	//cout<<"DI and RV data objects instantiated"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$
+	//cout<<"DI and RV data objects instantiated"<<endl; //$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$
 	if ((SSO.DIonly==true) or (SSO.RVonly==false && SSO.DIonly==false))
 	{
-		//cout<<"Starting to load up DI data obj"<<endl; //$$$$$$$$$$$$$$$$$
+		//cout<<"Starting to load up DI data obj"<<endl; //$$$$$$$ DEBUGGING $$$$$$$$$$
 		string DIdataFilename = outSettingsDir + SSO.DIdataFilename;
 		DIdo.dataLoadUp(DIdataFilename.c_str());
 		DIdo.systemDataLoadUp(SystemDataFilename.c_str());
 		// instantiate DI tools obj and load it up with same values
 		DIt = GT.DItoolsParamLoadUp(DIdo);
 		DIt.verbose=SSO.verbose;
-		//cout<<"DI data object loaded up"<<endl; //$$$$$$$$$$$$$$$$
+		//cout<<"DI data object loaded up"<<endl; //$$$$$$$ DEBUGGING $$$$$$$$$
 	}
 	if ((SSO.RVonly==true) or (SSO.RVonly==false && SSO.DIonly==false))
 	{
-		//cout<<"starting to load up RV data obj"<<endl; //$$$$$$$$$$$$$$
+		//cout<<"starting to load up RV data obj"<<endl; //$$$$$ DEBUGGING $$$$$$$$$
 		string RVdataFilename = outSettingsDir + SSO.RVdataFilename;
 		RVdo.dataLoadUp(RVdataFilename.c_str());
 		RVdo.systemDataLoadUp(SystemDataFilename.c_str());
-		//cout<<"RVdo.planet_argPeri = "<<RVdo.planet_argPeri<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//cout<<"Done loading up RV data obj"<<endl; //$$$$$$$$$$$$$$$$$$
+		//cout<<"RVdo.planet_argPeri = "<<RVdo.planet_argPeri<<endl;//$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$
+		//cout<<"Done loading up RV data obj"<<endl; //$$$$$$$$$$ DEBUGGING $$$$$$$$
 	}
 	// find the earliest epoch for the time of last pariapsis min/max settings
 	double earliestEpoch = GT.earliestEpochFinder(DIdo, RVdo);
-	//cout<<"\n\nearliestEpoch = "<< earliestEpoch<<"\n\n"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	//cout<<"\n\nearliestEpoch = "<< earliestEpoch<<"\n\n"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 	//Start seed for random number generator
 	//create very high precision seed for generator (nanosecond precision)
 	timespec time1;
 	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 	int time_nsec=time1.tv_nsec;
-	//cout<<"Starting time in nanoseconds for use as a random number generator seed = "<<time_nsec<<endl; //$$$$$$$$$$$$$$
+	//cout<<"Starting time in nanoseconds for use as a random number generator seed = "<<time_nsec<<endl; //$$$$$$$ DEBUGGING $$$$$$$
 
 	//choose generator
 	CRandomSFMT1 RanGen(time_nsec);//this is the most advanced uniform random number generator, which combines SFMT and Mother-Of-All.
@@ -156,14 +156,13 @@ int main(int argc ,char *argv[])
 
 	outputDataType ODT;
 	ODT.data_filename = outputDataFilename;
-	//cout<<"outputDataType instantiated"<<endl;//$$$$$$$$$$$$$$$$$$$$$
+	//cout<<"outputDataType instantiated"<<endl;//$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
 
 	// variables for the success rate print block in chain loop
     int printTime = SSO.numSamples/SSO.numSamplePrints;
     int printCount = 0;
     int printsDone = 0;
     int acceptedCounter = 0;
-    //int numParams = 3;//there are 3 params that MUST always vary, so this is the minimum
     double a_total_curr = 0;
     //double K_p_errorPercent = 0;
     double DI_chiSquared_reduced_lowest = 1e9;
@@ -317,7 +316,7 @@ int main(int argc ,char *argv[])
 			TMAX = SSO.T_Max;
 		}
 	}
-	//ss<<fixed<<std::setprecision(6)<<"\nTMIN = "<<TMIN<<", TMAX = "<<TMAX<<"\n"<<endl;
+	//ss<<fixed<<std::setprecision(6)<<"\nTMIN = "<<TMIN<<", TMAX = "<<TMAX<<"\n"<<endl;//$$$$$$$$ DEBUGGING $$$$$$$$$$$
 	// load initial T and Tc values from system data file
 	double T_proposed = 0;
 	double Tc_proposed = 0;
@@ -362,7 +361,7 @@ int main(int argc ,char *argv[])
 		}
 		else
 			ss<<"Setting T to a constant"<<endl;
-		//cout<<"SSO.T_Min = "<<SSO.T_Min<<",SSO.T_Min = "<<SSO.T_Min<<endl;
+		//cout<<"SSO.T_Min = "<<SSO.T_Min<<",SSO.T_Min = "<<SSO.T_Min<<endl;//$$$$$$ DEBUGGING $$$$$$$
 		if (Tc_proposed==0)
 			ss<<"Setting Tc to 0 and will calculate it with eccArgPeri2ToTcCalc"<<endl;
 		else
@@ -400,7 +399,7 @@ int main(int argc ,char *argv[])
 	//*****************************************************************************
     for ( int sample=0; sample<SSO.numSamples; ++sample)
     {
-    	//cout<<"mcONLYorbSimulator.cpp, line# "<<375<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    	//cout<<"mcONLYorbSimulator.cpp, line# "<<375<<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$
     	//*****************************************************************************
 		// block to control printing success rate to screen
     	//*****************************************************************************
@@ -430,7 +429,7 @@ int main(int argc ,char *argv[])
 			cout<<printLine;
 			SSlog<< printLine;
         }
-        //cout<<"mcONLYorbSimulator.cpp, line# "<<405<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        //cout<<"mcONLYorbSimulator.cpp, line# "<<405<<endl;//$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
         //*****************************************************************************
         // Generate random numbers in the required ranges for the inputs to the orbCalc
         //*****************************************************************************
@@ -446,7 +445,7 @@ int main(int argc ,char *argv[])
 				a_total_proposed = RanGen.UniformRandom(SSO.a_totalMIN, SSO.a_totalMAX);
         }
 		DIt.a_total = a_total_proposed;
-		//cout<<"mcONLYorbSimulator.cpp, line# "<<421<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//cout<<"mcONLYorbSimulator.cpp, line# "<<421<<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$
         //Take care of proposals for all cases of eMAX
         if ((SSO.eMAX<0.3)&&(SSO.eMAX!=0))
         {
@@ -474,7 +473,7 @@ int main(int argc ,char *argv[])
         // Forcing to 90 if not varying it, indicated mostly with MIN && MAX==0
 		if ((SSO.argPeri_degMAX==0)&&(SSO.argPeri_degMIN==0))
 			argPeri_deg_proposed = 90.0;
-        //cout<<"mcONLYorbSimulator.cpp, line# "<<443<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        //cout<<"mcONLYorbSimulator.cpp, line# "<<443<<endl;//$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
         DIt.e = e_proposed;
         //include DI argPeri offset here
         DIt.argPeri_deg = argPeri_deg_proposed+SSO.argPeriOffsetDI;
@@ -482,7 +481,7 @@ int main(int argc ,char *argv[])
         	period_proposed = RanGen.UniformRandom(SSO.periodMIN, SSO.periodMAX); //  [yrs]
         DIt.period = period_proposed;
         Tmin = earliestEpoch-period_proposed*365.242;
-       // cout<<"mcONLYorbSimulator.cpp, line# "<<450<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+       // cout<<"mcONLYorbSimulator.cpp, line# "<<450<<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$
         if (Tmin<TMIN)
         	Tmin = TMIN;
         if (SSO.TcStepping)
@@ -496,7 +495,7 @@ int main(int argc ,char *argv[])
 			{
 				if (SSO.TcStepping)
 				{
-					//cout<<" values in SYSdo: planet_T = "<< SYSdo.planet_T<<", star_T = "<<SYSdo.star_T <<endl;
+					//cout<<" values in SYSdo: planet_T = "<< SYSdo.planet_T<<", star_T = "<<SYSdo.star_T <<endl;//$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$4
 					if (SSO.simulate_StarPlanetRV==true)
 						T_proposed = SYSdo.planet_T;
 					else
@@ -504,7 +503,7 @@ int main(int argc ,char *argv[])
 				}
 				else
 				{
-					//cout<<" values in SYSdo: planet_Tc = "<<SYSdo.planet_Tc <<", star_Tc = "<< SYSdo.star_Tc<<endl;
+					//cout<<" values in SYSdo: planet_Tc = "<<SYSdo.planet_Tc <<", star_Tc = "<< SYSdo.star_Tc<<endl;//$$$$$4 DEBUGGING $$$$$$$$$$
 					if (SSO.simulate_StarPlanetRV==true)
 						Tc_proposed = SYSdo.planet_Tc;
 					else
@@ -551,37 +550,34 @@ int main(int argc ,char *argv[])
 				Tc_proposed = T_proposed;
 		}
         DIt.T = T_proposed;
-        //cout<<"mcONLYorbSimulator.cpp, line# "<<454<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        //cout<<"mcONLYorbSimulator.cpp, line# "<<454<<endl;//$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
         //reset RVoffsets_proposed vector and get current param vals for K and offsets.
         vector<double> RVoffsets_proposed;
         if (SSO.DIonly==false)
         {
-        	//cout<<"mcONLYorbSimulator.cpp, line# "<<459<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        	//cout<<"mcONLYorbSimulator.cpp, line# "<<459<<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$
         	if (vary_K)
         		K_proposed = RanGen.UniformRandom(SSO.K_MIN,SSO.K_MAX);
-        	//cout<<"mcONLYorbSimulator.cpp, line# "<<462<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        	//cout<<"mcONLYorbSimulator.cpp, line# "<<462<<endl;//$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
         	for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
         	{
         		double offset_proposed=0;
         		if (SSO.RVoffsetMAXs[dataset]!=0)
         		{
-					//cout<<"mcONLYorbSimulator.cpp, line# "<<465<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-					//cout<< SSO.RVoffsetMINs[dataset]<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-					//cout<< SSO.RVoffsetMAXs[dataset]<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-					//cout<< <<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					//cout<<"mcONLYorbSimulator.cpp, line# "<<465<<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$
 					offset_proposed = RanGen.UniformRandom(SSO.RVoffsetMINs[dataset],SSO.RVoffsetMAXs[dataset]);
-					//cout<<"mcONLYorbSimulator.cpp, line# "<<467<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					//cout<<"mcONLYorbSimulator.cpp, line# "<<467<<endl;//$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
         		}
         		RVoffsets_proposed.push_back(offset_proposed);
         	}
 		}
-        //cout<<"mcONLYorbSimulator.cpp, line# "<<469<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        //cout<<"mcONLYorbSimulator.cpp, line# "<<469<<endl;//$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$
 
         if ( SSO.silent==false )
         	cout<<"ALL random numbers loaded"<<endl;
 
         // Generate Gaussian values for the sys dist and masses
-		if (false)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		if (false)//$$$$$$$$$$$$$$$$$$ NOT USING YET $$$$$$$$$$$$$$$$$$$$$$
 		{
 			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,0.5*SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
 			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,0.5*SYSdo.Mass1_error,3.0*SYSdo.Mass1_error);
@@ -646,7 +642,7 @@ int main(int argc ,char *argv[])
         //*****************************************************************************
         if (SSO.RVonly==false)
         {
-        	//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        	//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$
         	//*****************************************************************************
         	// #### DO STUFF FOR DI ORBIT CALCNS #####
         	//*****************************************************************************
@@ -655,7 +651,6 @@ int main(int argc ,char *argv[])
 
         	// Call the orbCalc to have it apply the model to the inputs and produce outputs
 			MEOCRT = DIt.multiEpochOrbCalc();
-			//a_total_curr = MEOCRT.a_total;
 
 			// Calculate the reduced chiSquared from the returned chiSquared
 			DI_chiSquared_original = MEOCRT.chi_squared_total;
@@ -666,25 +661,25 @@ int main(int argc ,char *argv[])
 				one_over_nu_DI = (1.0/((2.0*numDIepochs)-numDIparams));
 			}
 			DI_chiSquared_reduced = one_over_nu_DI*DI_chiSquared_original;
-			//SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//SSO.silent=false;//$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$
 			if ( SSO.silent==false )
 			{
 				cout<<"DI_chiSquared_original = "<<DI_chiSquared_original<<endl;
 				cout<<"one_over_nu_DI = "<<one_over_nu_DI<<endl;
 				cout<<"DI_chiSquared_reduced = "<<DI_chiSquared_reduced<<endl;
 			}
-			//SSO.silent=true;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//SSO.silent=true;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
         }
         else
         {
-        	//cout<<"In DI else block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        	//cout<<"In DI else block"<<endl;//$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$
         	DI_chiSquared_reduced_lowest = 0;
         	numDIepochsInternal=0;
         }
 
         if (SSO.DIonly==false)
         {
-        	//cout<<"In RV block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        	//cout<<"In RV block"<<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$
         	if ( SSO.silent==false )
         		cout<<"Calculating RV residuals for this round"<<endl;
         	RV_chiSquared_original = 0.0;
@@ -705,7 +700,7 @@ int main(int argc ,char *argv[])
         		if ( SSO.silent==false )
         			cout<<"loading up input params for star-planet rv calcs"<<endl;
         		RVdo.planet_e  = DIt.e ;
-        		//cout<<"e = "<<DIt.e<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        		//cout<<"e = "<<DIt.e<<endl;//$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$
         		RVdo.planet_T  = DIt.T ;
         		RVdo.planet_P  = DIt.period ;
         		if (vary_K)
@@ -746,7 +741,7 @@ int main(int argc ,char *argv[])
 						cout<<"Calculating P-S residuals for dataset "<<(dataset+1)<<"/"<<int(RVdo.epochs_RV.size())<<endl;
 					VRCsp.epochs_p = RVdo.epochs_RV[dataset];
 					vector<double> VRp_vector;
-					//cout<<"about to call multiEpochCalc for dataset "<<dataset<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+					//cout<<"about to call multiEpochCalc for dataset "<<dataset<<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
 					VRp_vector = VRCsp.multiEpochCalc();
 					VRp_vector2.push_back(VRp_vector);
 				}
@@ -792,7 +787,6 @@ int main(int argc ,char *argv[])
 				Ks_calculated = VRCss.K_s;
 				if ( SSO.silent==false )
 					cout<<"K_s = "<<VRCss.K_s<<endl;
-        		//cout<<"a_total = "<<VRCss.a_total<<endl;
         	}
 
         	// go through all residual vels and calculate the RV chiSquareds
@@ -808,16 +802,15 @@ int main(int argc ,char *argv[])
 					if (RVdo.planet_P!=0 and RVdo.planet_e!=0)
 					{
 						planetVR = VRp_vector2[dataset][epoch];
-						//cout<<"planetVR for epoch "<<epoch <<" is "<<planetVR <<endl;//$$$$$$$$$$$$$$$$
+						//cout<<"planetVR for epoch "<<epoch <<" is "<<planetVR <<endl;//$$$$$$ DEBUGGING $$$$$$$$$$
 					}
 					if (RVdo.star_P!=0 and RVdo.star_e!=0)
 					{
 						companionStarVR = VRs_vector2[dataset][epoch];
-						//cout<<"companionStarVR for epoch "<<epoch <<" is "<<companionStarVR <<endl;//$$$$$$$$$$$$$$$$
+						//cout<<"companionStarVR for epoch "<<epoch <<" is "<<companionStarVR <<endl;//$$$$$$ DEBUGGING $$$$$$$$$$
 					}
 
 					double updatedRV_inv_var = RVdo.RV_inv_var[dataset][epoch];
-					//double updatedRV_inv_var= 1.0/((1.0/RVdo.RV_inv_var[dataset][epoch])+(K_p_errorPercent*planetVR)*(K_p_errorPercent*planetVR));
 					if (false)
 					{
 						cout<< "RV_inv_var = "<<RVdo.RV_inv_var[dataset][epoch] <<",planetVR  ="<< planetVR <<endl;//<<", K_p_errorPercent = " << K_p_errorPercent <<endl;
@@ -828,7 +821,6 @@ int main(int argc ,char *argv[])
 					if ( SSO.silent==false )
 					{
 						cout<<"\nWorking on epoch "<<epoch<<endl;
-						//cout<<"\noffset = "<< RVoffsets_proposed[dataset]<<endl;
 						cout<<"RVdo.RVs[dataset][epoch] = "<<RVdo.RVs[dataset][epoch]<<", RVoffsets_proposed = "<<RVoffsets_proposed[dataset]<<", -> ("<<RVdo.RVs[dataset][epoch]<<" - "<<RVoffsets_proposed[dataset]<<")="<<(RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]) <<", planetVR= "<< planetVR<<", companionStarVR= "<< companionStarVR<<endl;
 						cout<<"Difference = "<<RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]-planetVR-companionStarVR<<endl;
 						cout<<"ChiSquared for this RV is = "<<RV_chiSquared_cur<<endl;
@@ -853,13 +845,13 @@ int main(int argc ,char *argv[])
         }
         else
         {
-        	//cout<<"In RV else block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        	//cout<<"In RV else block"<<endl;//$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$
         	RVoffsets_proposed.push_back(0);
         	RV_chiSquared_reduced_lowest=0;
         }
         if (SSO.DIonly==false && SSO.RVonly==false)
         {
-        	//cout<<"In both false block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        	//cout<<"In both false block"<<endl;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$
         	// THUS, do both DI and RV parts
         }
 
@@ -869,7 +861,7 @@ int main(int argc ,char *argv[])
         	one_over_nu_TOTAL = 1.0/(2.0*numDIepochs+1.0*numRVepochs-numParams);
         TOTAL_chiSquared_reduced = one_over_nu_TOTAL*chiSquared_TOTAL_original;
 
-        //SSO.silent=false;//$$$$$$$$$$$$$$$$$$
+        //SSO.silent=false;//$$$$$$ DEBUGGING $$$$$$$$$$$$
 		if ( SSO.silent==false )
 		{
 			cout<<"\nDI_chiSquared_original = "<<DI_chiSquared_original <<endl;
@@ -911,7 +903,6 @@ int main(int argc ,char *argv[])
 			ODT.a_totals.push_back(a_total_curr);
 			ODT.Ks.push_back(K_proposed);
 			ODT.RVoffsets.push_back(RVoffsets_proposed);
-//			ODT.timesBeenHeres.push_back(1);
 		}// Done storing accepted orbit parameters
     }//Done sample loops
 

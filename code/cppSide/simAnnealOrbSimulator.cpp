@@ -196,19 +196,12 @@ int main(int argc ,char *argv[])
 
 
     int totalAccepted = SAOFO.ODT.es.size();
-//    if (acceptedCounter!=totalAccepted)
-//    	cout<<"Warning: (acceptedCounter) "<<acceptedCounter<< " != "<<totalAccepted<<" (totalAccepted)"<<endl;
-
     SAOFO.ODT.numSamplesAccepted = totalAccepted;
 
     string printLine3="";
     // Get all best orbit values
     //cout<<"line # 185"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ss << "\n$$$$$$$$$$$$$$$ SIMULATOR COMPLETE $$$$$$$$$$$$$$$"<<endl;
-//    ss<< totalAccepted <<" orbits were accepted during simulation"<<endl;
-//    ss<< "timesBeenHereTotal = "<<SAOFO.timesBeenHereTotal<<endl;
-//    int sum = GT.sumIntCalc(SAOFO.ODT.timesBeenHeres,SAOFO.ODT.timesBeenHeres.size());
-//    ss<< "timesBeenHeres total = "<<sum<<endl;
 	ss<< "\nBest orbit found at step "<<SAOFO.bestOrbit<<" :"<<endl;
 	ss<<"chiSquareMin_reduced = "<<SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<endl;
 	ss<< "chiSquaredMin = "<< SAOFO.chiSquaredMin <<endl;
@@ -250,7 +243,6 @@ int main(int argc ,char *argv[])
 			for (int set=0;set<SAOFO.ODT.RVoffsets.back().size();++set)
 				ss<<"RVoffset for dataset "<<set<<", was = "<< SAOFO.ODT.RVoffsets.back()[set]<<endl;
 		}
-//		ss<< "timesBeenHere = "<<SAOFO.ODT.timesBeenHeres.back() <<endl;
 	}
 	if (true)
 	{
@@ -271,7 +263,6 @@ int main(int argc ,char *argv[])
 			for (int set=0;set<SAOFO.ODT.RVoffsets[totalAccepted-2].size();++set)
 				ss<<"RVoffset for dataset "<<set<<", was = "<< SAOFO.ODT.RVoffsets[totalAccepted-2][set]<<endl;
 		}
-//		ss<< "timesBeenHere = "<<SAOFO.ODT.timesBeenHeres[totalAccepted-2] <<endl;
 	}
 	if (true)
 	{

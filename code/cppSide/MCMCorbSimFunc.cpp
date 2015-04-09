@@ -74,6 +74,7 @@ void MCMCorbFuncObj::simulator()
 	ss<<"Important loop counters and params:"<<endl;
 	ss<<"printTime = "<< printTime<<endl;
 	ss<<"acceptCalcTime = "<<acceptCalcTime <<endl;
+	ss<<"saveEachInt = "<<saveEachInt<<endl;
 	string silentStr = GT.boolToStr(SSO.silent);
 	ss<<"silent = "<< silentStr <<endl;
 	string verboseStr = GT.boolToStr(SSO.verbose);

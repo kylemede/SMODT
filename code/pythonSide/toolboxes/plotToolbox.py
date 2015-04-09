@@ -576,13 +576,13 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         line = f.readline()
         dataLineCols = line.split()
         numRVdatasets=0
-        if (len(line)>11):
-            numRVdatasets = len(dataLineCols) - 11
+        if (len(line)>10):
+            numRVdatasets = len(dataLineCols) - 10
         else:
             line = f.readline()
             dataLineCols = line.split()
-            if (len(line)>11):
-                numRVdatasets = len(dataLineCols) - 11
+            if (len(line)>10):
+                numRVdatasets = len(dataLineCols) - 10
         s= "\nNumber of RV datasets found in summaryPlotter was "+str(numRVdatasets)+"\n"
         if TcStepping==True:
             s=s+"\nTcStepping passed in was True, so plotting Tc instead of To"
@@ -1174,14 +1174,14 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
         line = f.readline()
         dataLineCols = line.split()
         rvFirstVal = 0
-        if (len(line)>11):
-            numRVdatasets = len(dataLineCols) - 11
+        if (len(line)>10):
+            numRVdatasets = len(dataLineCols) - 10
             rvFirstVal = float(dataLineCols[-2])
         else:
             line = f.readline()
             dataLineCols = line.split()
-            if (len(line)>11):
-                numRVdatasets = len(dataLineCols) - 11
+            if (len(line)>10):
+                numRVdatasets = len(dataLineCols) - 10
         s= "\nNumber of RV datasets found in progessPlotterSingleFile was "+str(numRVdatasets)+"\n"
         print s
         log.write(s+'\n')

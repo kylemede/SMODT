@@ -13,6 +13,10 @@ if [ -f $1 ]; then
 fi
 
 echo "Start of log file:" >>$1
+echo "sleep time will be $2 seconds">>$1
+echo "-----------------------------">>$1
+echo "">>$1
+
 
 while true; do 
 			if [ -f $1 ]; then

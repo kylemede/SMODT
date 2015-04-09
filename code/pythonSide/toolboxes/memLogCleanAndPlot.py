@@ -4,16 +4,18 @@ import numpy as np
 from subprocess import Popen
 plt = pylab.matplotlib.pyplot
 
-def starter(paramSettingsDict,sleep=6):
+def starter(paramSettingsDict,sleep=1):
     FNULL=open(os.devnull,'w')
     toolDir = os.path.join(paramSettingsDict['pythonCodeDir'],'toolboxes')
     shScriptPath = os.path.join(toolDir,'ramLogger.sh')
     memLogFilename = os.path.join(paramSettingsDict['outputData_dir'],"RAMusage.log")
     totSamples = paramSettingsDict["numSamples"]*paramSettingsDict['numProcesses']
+    if False:
+        print "memLogCleanerAndPlot starter found totalSamples = "+str(totSamples)
     sleepUse = sleep
-    if totSamples<100000:
+    if totSamples<10000001:
         sleepUse = 1
-    elif (totSamples>100000)and(totSamples<10000000):
+    elif (totSamples>10000000)and(totSamples<50000000):
         sleepUse = 6 
     else:
         sleepUse = 60
@@ -25,7 +27,7 @@ def wrapUp(proc,memLogFilename,sleep=6):
     maxUse = memUsageLogCleaner(memLogFilename,sleep)
     return maxUse
     
-def memUsageLogCleaner(filename = '',sleep=6,delOrigLog=True):
+def memUsageLogCleaner(filename = '',sleep=1,delOrigLog=True):
     """
     A function I whipped together to clean up a RAM usage log produced with a super simple bash script.
     """ 
@@ -61,12 +63,17 @@ def memUsageLogCleaner(filename = '',sleep=6,delOrigLog=True):
     else:
         print "Original RAMusage log deleted: "+filename
     if True:
-        multmod=sleep/3600
+        multmod=sleep/3600.0
         strmod= "[hrs]"
         if ((sleep*len(mem))/3600.0)<1.0:
-            multmod=sleep/60
+            multmod=sleep/60.0
             strmod="[minutes]"
         times = np.arange(len(mem))*multmod
+        if False:
+            print "len(times) = "+repr(times.size)
+            print "repr(times) = "+repr(times)
+            print "len(mem) = "+repr(len(mem))
+            print "repr(mem) = "+repr(mem)
         fig = plt.figure(1, figsize=(15,10),dpi=200)
         subPlot = fig.add_subplot(111)
         subPlot.plot(times,mem)

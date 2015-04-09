@@ -141,7 +141,7 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
             ([conf68Vals,conf95Vals], bestDataVal) = confLevelFinder(outputDataFilename,9+dataset, returnData=False, returnChiSquareds=False, returnBestDataVal=True,fast=True)
             resultsFile.write('RV offset '+str(dataset)+' [m/s] =  '+str(bestDataVal)+",  "+repr(conf68Vals)+",  "+repr(conf95Vals)+"\n")
     ## GR values
-    if (paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing'])and(paramSettingsDict["mcONLY"]==False):
+    if (paramSettingsDict['CalcGelmanRubin']and paramSettingsDict['useMultiProcessing'])and((paramSettingsDict["mcONLY"]==False)and(paramSettingsDict["simAnneal"]==False)):
         header = "Lc  longAN  e  To  Tc  period  inclination  argPeri  a_total  K"
         headings = header.split()
         #first find resulting GR values
@@ -954,8 +954,8 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             dataLineCols = dataline.split()
             numDataCols = len(dataLineCols)
             f.close()
-            if numDataCols==11:
-                s= 'There were 11 columns of data found in the datafile, thus no RVoffsets were recorded'
+            if numDataCols==10:
+                s= 'There were 10 columns of data found in the datafile, thus no RVoffsets were recorded'
                 log.write(s+'\n')
                 summaryStr+='\n'+s
                 if verbose:

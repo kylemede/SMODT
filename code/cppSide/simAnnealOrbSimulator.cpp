@@ -140,7 +140,14 @@ int main(int argc ,char *argv[])
 	outputDataType ODT;
 	ODT.data_filename = outputDataFilename;
 	//cout<<"outputDataType instantiated"<<endl;//$$$$$$$$$$$$$$$$$$$$$
-
+	//### Find out how often to save accepted steps to output data array ###
+	int saveEachInt;
+	if (SSO.numSamples<100001)
+		saveEachInt=10;
+	else if ((SSO.numSamples>100000)&&(SSO.numSamples<10000000))
+		saveEachInt=100;
+	else
+		saveEachInt=1000;
 
 	//###############################################################################
 	//
@@ -159,7 +166,7 @@ int main(int argc ,char *argv[])
 	SAOFO.tempStepSizePercent = 0.025;
 	SAOFO.startTemp = SSO.startTemp;
 	SAOFO.sigmaPercent = 1.0;
-	SAOFO.saveEachInt = 10;
+	SAOFO.saveEachInt = saveEachInt;
 
 	if (true)
 	{
@@ -169,6 +176,7 @@ int main(int argc ,char *argv[])
 		ss<<"tempStepSizePercent = "<<SAOFO.tempStepSizePercent <<endl;
 		ss<<"startTemp = "<< SAOFO.startTemp<< endl;
 		ss<<"sigmaPercent = "<< SAOFO.sigmaPercent<< endl;
+		ss<<"saveEachInt = "<<SAOFO.saveEachInt<<endl;
 		startParmsString = ss.str();
 		ss.clear();
 		ss.str(std::string());

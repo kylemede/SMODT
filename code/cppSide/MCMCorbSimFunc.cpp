@@ -32,7 +32,7 @@ void MCMCorbFuncObj::simulator()
 	int samplesSinceParmaChange = 1;
 	// acceptance rate calcs
 	int numSaved = 0;
-	double acceptedCounter = 0;
+	int acceptedCounter = 0;
 	double acceptCalcTime = double(SSO.numSamples)/(SSO.numSamplePrints*10.0);
 	vector<int> paramsVariedRecentlyAry;
 	vector<int> acceptedIntsRecentlyAry;
@@ -930,7 +930,7 @@ void MCMCorbFuncObj::simulator()
 					cout<<"alpha = "<< alpha <<endl;
 					cout<<"RHS = "<< RHS<<endl;
 					cout<<"accepted = "<<accepted<<endl;
-					cout<<"saved"
+					cout<<"saved"<<endl;
 					cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
 				}
 			}

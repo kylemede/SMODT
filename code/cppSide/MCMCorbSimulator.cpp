@@ -182,6 +182,14 @@ int main(int argc ,char *argv[])
 	outputDataType ODT;
 	ODT.data_filename = outputDataFilename;
 	//cout<<"outputDataType instantiated"<<endl;//$$$$$$$$$$$$$$$$$$$$$
+	//### Find out how often to save accepted steps to output data array ###
+	int saveEachInt;
+	if (SSO.numSamples_SimAnneal<1000001)
+		saveEachInt=10;
+	else if ((SSO.numSamples_SimAnneal>1000000)&&(SSO.numSamples_SimAnneal<10000000))
+		saveEachInt=100;
+	else
+		saveEachInt=1000;
 
 	simAnealOrbFuncObj SAOFO;
 	SAOFO.SSO = SSO;
@@ -200,7 +208,7 @@ int main(int argc ,char *argv[])
 	SAOFO.tempStepSizePercent = 0.025;
 	SAOFO.startTemp = SSO.startTemp;
 	SAOFO.sigmaPercent = 1.0;
-	SAOFO.saveEachInt = 10;
+	SAOFO.saveEachInt = saveEachInt;
 
 	string starterString;
 	string numSamplesString =  GT.numSamplesStringMaker(SAOFO.numSamples_SA);
@@ -374,6 +382,13 @@ int main(int argc ,char *argv[])
 	SSlog<<starterString2;
 
     MCMCorbFuncObj MCMCOFO;
+    //### Find out how often to save accepted steps to output data array ###
+	if (SSO.numSamples<100001)
+		saveEachInt=10;
+	else if ((SSO.numSamples>100000)&&(SSO.numSamples<10000000))
+		saveEachInt=100;
+	else
+		saveEachInt=1000;
 
     // Best fit values
 //    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[SAOFO.bestOrbit];
@@ -446,7 +461,7 @@ int main(int argc ,char *argv[])
     MCMCOFO.earliestEpoch = earliestEpoch;
     MCMCOFO.randSeed = time_nsec;
     MCMCOFO.ODT = ODT2;
-    MCMCOFO.saveEachInt = 10;
+    MCMCOFO.saveEachInt = saveEachInt;
 
     MCMCOFO.paramChangeStepSizePercent = 0.025;
     //MCMCOFO.sigmaPercent = 2.45;
@@ -546,7 +561,7 @@ int main(int argc ,char *argv[])
 				cout<<"\nCalculating correlation length and effective number of steps for all params\n"<<endl;
 			SSlog<<"\nCalculating correlation length and effective number of steps for all params\n"<<endl;
 			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.longAN_degs, "LongAN")//,MCMCOFO.ODT.timesBeenHeres);
+			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.longAN_degs, "LongAN");//,MCMCOFO.ODT.timesBeenHeres);
 			endTime = time(NULL);
 			timeElapsed = endTime-startTime;
 			timeString = GT.timeStr( timeElapsed);
@@ -554,7 +569,7 @@ int main(int argc ,char *argv[])
 				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.es, "e")//,MCMCOFO.ODT.timesBeenHeres);
+			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.es, "e");//,MCMCOFO.ODT.timesBeenHeres);
 			endTime = time(NULL);
 			timeElapsed = endTime-startTime;
 			timeString = GT.timeStr( timeElapsed);
@@ -562,22 +577,14 @@ int main(int argc ,char *argv[])
 				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Ts, "To")//,MCMCOFO.ODT.timesBeenHeres);
+			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Ts, "To");//,MCMCOFO.ODT.timesBeenHeres);
 			endTime = time(NULL);
 			timeElapsed = endTime-startTime;
 			timeString = GT.timeStr( timeElapsed);
 			if (SSO.verbose)
 				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Tcs, "Tc")//,MCMCOFO.ODT.timesBeenHeres);
-			endTime = time(NULL);
-			timeElapsed = endTime-startTime;
-			timeString = GT.timeStr( timeElapsed);
-			if (SSO.verbose)
-				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.periods, "period")//,MCMCOFO.ODT.timesBeenHeres);
+			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Tcs, "Tc");//,MCMCOFO.ODT.timesBeenHeres);
 			endTime = time(NULL);
 			timeElapsed = endTime-startTime;
 			timeString = GT.timeStr( timeElapsed);
@@ -585,7 +592,7 @@ int main(int argc ,char *argv[])
 				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.inclination_degs, "inclination")//,MCMCOFO.ODT.timesBeenHeres);
+			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.periods, "period");//,MCMCOFO.ODT.timesBeenHeres);
 			endTime = time(NULL);
 			timeElapsed = endTime-startTime;
 			timeString = GT.timeStr( timeElapsed);
@@ -593,7 +600,7 @@ int main(int argc ,char *argv[])
 				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.argPeri_degs, "argPeri")//,MCMCOFO.ODT.timesBeenHeres);
+			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.inclination_degs, "inclination");//,MCMCOFO.ODT.timesBeenHeres);
 			endTime = time(NULL);
 			timeElapsed = endTime-startTime;
 			timeString = GT.timeStr( timeElapsed);
@@ -601,7 +608,15 @@ int main(int argc ,char *argv[])
 				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.a_totals, "a_total")//,MCMCOFO.ODT.timesBeenHeres);
+			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.argPeri_degs, "argPeri");//,MCMCOFO.ODT.timesBeenHeres);
+			endTime = time(NULL);
+			timeElapsed = endTime-startTime;
+			timeString = GT.timeStr( timeElapsed);
+			if (SSO.verbose)
+				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+			startTime = time(NULL);
+			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.a_totals, "a_total");//,MCMCOFO.ODT.timesBeenHeres);
 			endTime = time(NULL);
 			timeElapsed = endTime-startTime;
 			timeString = GT.timeStr( timeElapsed);
@@ -611,7 +626,7 @@ int main(int argc ,char *argv[])
 			if (MCMCOFO.SSO.DIonly==false)
 			{
 				startTime = time(NULL);
-				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Ks, "K")//,MCMCOFO.ODT.timesBeenHeres);
+				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Ks, "K");//,MCMCOFO.ODT.timesBeenHeres);
 				endTime = time(NULL);
 				timeElapsed = endTime-startTime;
 				timeString = GT.timeStr( timeElapsed);
@@ -626,7 +641,7 @@ int main(int argc ,char *argv[])
 //					ss.clear();
 //					ss.str(std::string());
 //					startTime = time(NULL);
-//					corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.RVoffsets[][set], offsetStr,MCMCOFO.ODT.timesBeenHeres);
+//					corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.RVoffsets[][set], offsetStr);//,MCMCOFO.ODT.timesBeenHeres);
 //					endTime = time(NULL);
 //					timeElapsed = endTime-startTime;
 //					timeString = GT.timeStr( timeElapsed);

@@ -21,7 +21,7 @@ void MCMCorbFuncObj::simulator()
 	*/
 
 	generalTools GT;
-	cout<<"\n$$$$$ inside MCMCfunc $$$$\n"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	cout<<"\n$$$$$ inside MCMCfunc $$$$\n"<<endl;//$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
 	// variables for the success rate print block in chain loop
 	int printTime = SSO.numSamples/SSO.numSamplePrints;
 	int printCount = 0;
@@ -40,8 +40,6 @@ void MCMCorbFuncObj::simulator()
 	double samplesTillAcceptRateCalc = 0;
 	double latestAcceptRate = 0;
 	int timesNONEpassed = 0;
-//	int timesBeenHere = 1;
-//	timesBeenHereTotal = 0;
 	int paramBeingVaried = 2;
 	bool latestParamsSaved;
 	//double K_p_errorPercent = 0;
@@ -189,7 +187,6 @@ void MCMCorbFuncObj::simulator()
 		star_Mass2_proposed = SYSdo.star_Mass2;
 		sqrtESinomega_proposed = sqrtESinomega_latest;
 		sqrtECosomega_proposed = sqrtECosomega_latest;
-		//double argPeri_deg_proposed_use;
 
 		// block to control printing success rate to screen
 		printCount = printCount + 1;
@@ -215,7 +212,7 @@ void MCMCorbFuncObj::simulator()
 			ss << asctime (timeinfo);
 			ss << "Number saved so far = "<<numSaved<<endl;
 			ss << "Latest acceptance rate = "<<latestAcceptRate<<endl;
-			ss << "Latest param being varied = "<<paramBeingVaried<<endl;//", timesBeenHere = "<<timesBeenHere<<endl;
+			ss << "Latest param being varied = "<<paramBeingVaried<<endl;
 			ss << "Times NONE of params passed = "<<timesNONEpassed<<endl;
 			ss << "Largest allowed reduced chiSquareds Total = "<<SSO.chiSquaredMax<<endl;
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared*one_over_nu_DI<<", RV = "<<RV_chiSquared*one_over_nu_RV <<", Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
@@ -282,10 +279,6 @@ void MCMCorbFuncObj::simulator()
 			// ******* Determine which param to vary *************************
 			if (paramBeingVaried==0)
 				longAN_deg_proposed = RanGen.UniformRandom(longAN_deg_latest-longAN_deg_sigma,longAN_deg_latest+longAN_deg_sigma);
-	//		if (paramBeingVaried==1)
-	//			e_proposed = RanGen.UniformRandom(e_latest-e_sigma,e_latest+e_sigma);
-	//		else if (paramBeingVaried==1)
-	//			sqrtESinomega_proposed = RanGen.UniformRandom(sqrtESinomega_latest-sqrtESinomega_sigma,sqrtESinomega_latest+sqrtESinomega_sigma);
 			else if (paramBeingVaried==1)
 			{
 				if (SSO.eMAX==0)
@@ -310,10 +303,6 @@ void MCMCorbFuncObj::simulator()
 				period_proposed = RanGen.UniformRandom(period_latest-period_sigma,period_latest+period_sigma);//  [yrs]
 			else if (paramBeingVaried==4)
 				inclination_deg_proposed = RanGen.UniformRandom(inclination_deg_latest-inclination_deg_sigma,inclination_deg_latest+inclination_deg_sigma);
-	//		else if (paramBeingVaried==5)
-	//			argPeri_deg_proposed = RanGen.UniformRandom(argPeri_deg_latest-argPeri_deg_sigma,argPeri_deg_latest+argPeri_deg_sigma);
-	//		else if (paramBeingVaried==5)
-	//			sqrtECosomega_proposed = RanGen.UniformRandom(sqrtECosomega_latest-sqrtECosomega_sigma,sqrtECosomega_latest+sqrtECosomega_sigma);
 			else if (paramBeingVaried==5)
 			{
 				if (SSO.eMAX==0)
@@ -330,12 +319,9 @@ void MCMCorbFuncObj::simulator()
 			else if (paramBeingVaried>7)
 			{
 				dataset = paramBeingVaried-8;
-				if (SSO.RVoffsetMAXs[dataset]!=0)
-				{
-					RVoffsets_proposed[dataset] = RanGen.UniformRandom(RVoffsets_latest[dataset]-offset_sigmas[dataset],RVoffsets_latest[dataset]+offset_sigmas[dataset]);
-					if (false)
-						ss<<"dataset = " <<dataset<<", RVoffsets_proposed[dataset] = "<<RVoffsets_proposed[dataset] <<", RVoffsetMIN = "<<SSO.RVoffsetMINs[dataset]<<", MAX = "<< SSO.RVoffsetMAXs[dataset]<<endl;
-				}
+				RVoffsets_proposed[dataset] = RanGen.UniformRandom(RVoffsets_latest[dataset]-offset_sigmas[dataset],RVoffsets_latest[dataset]+offset_sigmas[dataset]);
+				if (false)
+					ss<<"dataset = " <<dataset<<", RVoffsets_proposed[dataset] = "<<RVoffsets_proposed[dataset] <<", RVoffsetMIN = "<<SSO.RVoffsetMINs[dataset]<<", MAX = "<< SSO.RVoffsetMAXs[dataset]<<endl;
 			}
 		}
 		//Convert proposed sqrt(e)cos(omega) and ..sin(omega) into useful e and omega
@@ -358,7 +344,7 @@ void MCMCorbFuncObj::simulator()
 			{
 				if (SSO.TcStepping)
 				{
-					//cout<<" values in SYSdo: planet_T = "<< SYSdo.planet_T<<", star_T = "<<SYSdo.star_T <<endl;
+					//cout<<" values in SYSdo: planet_T = "<< SYSdo.planet_T<<", star_T = "<<SYSdo.star_T <<endl;//$$$$$$ DEBUGGING $$$$$$$$$$$
 					if (SSO.simulate_StarPlanetRV==true)
 						T_proposed = SYSdo.planet_T;
 					else
@@ -366,7 +352,7 @@ void MCMCorbFuncObj::simulator()
 				}
 				else
 				{
-					//cout<<" values in SYSdo: planet_Tc = "<<SYSdo.planet_Tc <<", star_Tc = "<< SYSdo.star_Tc<<endl;
+					//cout<<" values in SYSdo: planet_Tc = "<<SYSdo.planet_Tc <<", star_Tc = "<< SYSdo.star_Tc<<endl;//$$$$$ DEBUGGING $$$$$$$$$$$$$
 					if (SSO.simulate_StarPlanetRV==true)
 						Tc_proposed = SYSdo.planet_Tc;
 					else
@@ -386,7 +372,7 @@ void MCMCorbFuncObj::simulator()
 					Tc_proposed = SYSdo.star_Tc;
 				}
 			}
-			//cout<<"T in = "<<T_proposed <<", Tc in = "<< Tc_proposed<<endl;
+			//cout<<"T in = "<<T_proposed <<", Tc in = "<< Tc_proposed<<endl;//$$$ DEBUGGING $$$$$$
 
 			//update non-updated T if it was 0 in the dictionary
 			if ((T_proposed==0)||(Tc_proposed==0))
@@ -400,7 +386,7 @@ void MCMCorbFuncObj::simulator()
 				EATT.To = T_proposed;
 				EATT.Tc=Tc_proposed;
 				EATT = GT.eccArgPeri2ToTcCalc(EATT);
-				//cout<<"T in = "<<T_proposed <<", Tc in = "<< Tc_proposed<<", T out = "<<EATT.To <<", Tc out = "<< EATT.Tc<<endl;
+				//cout<<"T in = "<<T_proposed <<", Tc in = "<< Tc_proposed<<", T out = "<<EATT.To <<", Tc out = "<< EATT.Tc<<endl;//$$$ DEBUGGING $$$$$$
 				T_proposed = EATT.To;
 				Tc_proposed = EATT.Tc;
 			}
@@ -505,11 +491,8 @@ void MCMCorbFuncObj::simulator()
 			}
 			for (int dataset=0; dataset<RVoffsets_latest.size();++dataset)
 			{
-				if (SSO.RVoffsetMAXs[dataset]!=0)
-				{
-					if ((SSO.RVoffsetMINs[dataset]>RVoffsets_proposed[dataset])||(SSO.RVoffsetMAXs[dataset]<RVoffsets_proposed[dataset]))
-						ALLpassed = false;
-				}
+				if ((SSO.RVoffsetMINs[dataset]>RVoffsets_proposed[dataset])||(SSO.RVoffsetMAXs[dataset]<RVoffsets_proposed[dataset]))
+					ALLpassed = false;
 			}
 		}
 		// **** Done checking 'proposed' versions of all params being varied this round ****
@@ -562,29 +545,25 @@ void MCMCorbFuncObj::simulator()
 			//*****************************************************************************
 			if (SSO.RVonly==false)
 			{
-				//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$
 				// #### DO STUFF FOR DI ORBIT CALCNS #####
 				if ( SSO.silent==false )
 					cout<<"Calculating DI orbit for this round "<<endl;
 
 				// Call the orbCalc to have it apply the model to the inputs and produce outputs
-				//DIt.verbose=true;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//DIt.verbose=true;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				MEOCRT = DIt.multiEpochOrbCalc();
 				a_total_curr = MEOCRT.a_total;
-				//DIt.verbose=SSO.verbose;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//DIt.verbose=SSO.verbose;//$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				if (a_total_curr>1e4)
 					cout<<"\n\n!!!!! a_total_curr>1e4 in DI section!!!!\n\n"<<endl;
 
 				// Calculate the reduced chiSquared from the returned chiSquared
 				DI_chiSquared = MEOCRT.chi_squared_total;
-
-				// update lowest DI reduced chiSquared if current one is lower
-//				if ( DI_chiSquared<chiSquaredMin_DI )
-//					chiSquaredMin_DI = DI_chiSquared;
 			}
 			else
 			{
-				//cout<<"In DI else block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"In DI else block"<<endl;//$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				//chiSquaredMin_DI = 0;
 			}
 			//*****************************************************************************
@@ -592,7 +571,7 @@ void MCMCorbFuncObj::simulator()
 			//*****************************************************************************
 			if (SSO.DIonly==false)
 			{
-				//cout<<"In RV block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"In RV block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				if ( SSO.silent==false )
 					cout<<"Calculating RV residuals for this round"<<endl;
 				RV_chiSquared = 0.0;
@@ -614,7 +593,6 @@ void MCMCorbFuncObj::simulator()
 					RVdo.planet_T = DIt.T ;
 					RVdo.planet_Tc = Tc_proposed;
 					RVdo.planet_P = DIt.period ;
-					//RVdo.planet_MsinI  = DIt.Mass2 ;
 					if (vary_K)
 						RVdo.planet_K = K_proposed;
 					RVdo.planet_argPeri = argPeri_deg_proposed+SSO.argPeriOffsetRV;
@@ -629,7 +607,6 @@ void MCMCorbFuncObj::simulator()
 					RVdo.star_T = DIt.T ;
 					RVdo.star_Tc = Tc_proposed;
 					RVdo.star_P = DIt.period ;
-					//RVdo.star_Mass2 = DIt.Mass2 ;
 					if (vary_K)
 						RVdo.star_K = K_proposed;
 					RVdo.star_argPeri = argPeri_deg_proposed+SSO.argPeriOffsetRV;
@@ -675,7 +652,7 @@ void MCMCorbFuncObj::simulator()
 							cout<<"Calculating P-S residuals for dataset "<<(dataset+1)<<"/"<<int(RVdo.epochs_RV.size())<<endl;
 						VRCsp.epochs_p = RVdo.epochs_RV[dataset];
 						vector<double> VRp_vector;
-						//cout<<"about to call multiEpochCalc for dataset "<<dataset<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+						//cout<<"about to call multiEpochCalc for dataset "<<dataset<<endl;//$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$
 						VRp_vector = VRCsp.multiEpochCalc();
 						VRp_vector2.push_back(VRp_vector);
 					}
@@ -745,10 +722,6 @@ void MCMCorbFuncObj::simulator()
 				{
 					if ( SSO.silent==false )
 						cout<<"\nStarting to calculate chiSquared from residuals for dataset# "<< dataset<<endl;
-
-
-//						RVoffsets_proposed[0]=161.5790;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//						RVoffsets_proposed[1]=-0.544084;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 					for (int epoch=0; epoch<RVdo.epochs_RV[dataset].size(); ++epoch)
 					{
 						double planetVR = 0;
@@ -757,23 +730,14 @@ void MCMCorbFuncObj::simulator()
 						if (RVdo.planet_P!=0 )
 						{
 							planetVR = VRp_vector2[dataset][epoch];
-							//cout<<"planetVR for epoch "<<epoch <<" is "<<planetVR <<endl;//$$$$$$$$$$$$$$$$
+							//cout<<"planetVR for epoch "<<epoch <<" is "<<planetVR <<endl;//$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$
 						}
 						if (RVdo.star_P!=0)
 						{
 							companionStarVR = VRs_vector2[dataset][epoch];
-							//cout<<"companionStarVR for epoch "<<epoch <<" is "<<companionStarVR <<endl;//$$$$$$$$$$$$$$$$
+							//cout<<"companionStarVR for epoch "<<epoch <<" is "<<companionStarVR <<endl;//$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
 						}
-
-						double updatedRV_inv_var = RVdo.RV_inv_var[dataset][epoch];
-						//double updatedRV_inv_var = 1.0/((1.0/RVdo.RV_inv_var[dataset][epoch])+(K_p_errorPercent*planetVR)*(K_p_errorPercent*planetVR));
-						if (false)
-						{
-							cout<< "RV_inv_var = "<<RVdo.RV_inv_var[dataset][epoch] <<",planetVR  ="<< planetVR <<endl;//<<", K_p_errorPercent = " << K_p_errorPercent <<endl;
-							cout<<"updatedRV_inv_var = "<<updatedRV_inv_var <<", RV_inv_var = "<< RVdo.RV_inv_var[dataset][epoch]<<endl;
-						}
-						double  RV_chiSquared_cur = GT.chiSquaredCalc((RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]),updatedRV_inv_var,(planetVR+companionStarVR));
-//							double  RV_chiSquared_cur = GT.chiSquaredCalc((RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]),RVdo.RV_inv_var[dataset][epoch],(planetVR+companionStarVR));
+						double  RV_chiSquared_cur = GT.chiSquaredCalc((RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]),RVdo.RV_inv_var[dataset][epoch],(planetVR+companionStarVR));
 						RV_chiSquared = RV_chiSquared + RV_chiSquared_cur;
 						if ( SSO.silent==false )
 						{
@@ -788,7 +752,7 @@ void MCMCorbFuncObj::simulator()
 			}//End RV calc block
 			else
 			{
-				//cout<<"In RV else block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				//cout<<"In RV else block"<<endl;//$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$
 				RVoffsets_latest.push_back(0);
 			}
 
@@ -799,17 +763,18 @@ void MCMCorbFuncObj::simulator()
 			// Determine if the orbit should be accepted
 			//*******************************************
 			//Calculate priors ratio
-			//e_prior = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//e_prior = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if (((period_latest*365.242)<1000.0)||(SSO.eMAX==0))
 				e_prior = 1.0;
 			else
 				e_prior = e_latest/DIt.e;
+			//inc_prior = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 			if ((SSO.inclination_degMIN!=0)&&(SSO.inclination_degMAX!=0))
 				inc_prior = sin(DIt.inclination_deg*(PI/180.0))/sin(inclination_deg_latest*(PI/180.0));
 			else
 				inc_prior = 1.0;
-			//P_prior = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			if (false)//((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
+			//P_prior = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			if ((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
 				P_prior = DIt.period/period_latest;
 			else
 				P_prior = 1.0;
@@ -818,7 +783,7 @@ void MCMCorbFuncObj::simulator()
 			likelihood_ratio = exp((chiSquare_latest - TOTAL_chiSquared)/2.0);
 			RHS = priors_ratio*likelihood_ratio;
 			alpha = RanGen.UniformRandom(0.0, 1.0);
-			//alpha=0.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			//alpha=0.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 			if ( alpha<=RHS )
 			{
@@ -854,10 +819,6 @@ void MCMCorbFuncObj::simulator()
 				}
 				acceptedCounter +=1;
 				chiSquare_latest = TOTAL_chiSquared;
-
-
-
-//				latestParamsSaved=true;
 				// store inputs
 				if ((acceptedCounter%saveEachInt)==false)
 				{
@@ -888,10 +849,6 @@ void MCMCorbFuncObj::simulator()
 					ODT.Ks.push_back(K_proposed);
 					ODT.RVoffsets.push_back(RVoffsets_proposed);
 				}
-//				ODT.timesBeenHeres.push_back(timesBeenHere);
-//				timesBeenHereTotal+=timesBeenHere;
-//				//reset timesBeenHere counter
-//				timesBeenHere = 1;
 				//Replace 'latest' values
 				inclination_deg_latest = DIt.inclination_deg;
 				longAN_deg_latest = DIt.longAN_deg;
@@ -955,7 +912,7 @@ void MCMCorbFuncObj::simulator()
 		//**********************************
 		int randInt = RanGen.IRandomX(0,numParams-1);
 		paramBeingVaried = paramsToVaryIntsAry[randInt];
-		if (false)//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		if (false)//$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$
 			cout<<"\n randInt = "<<randInt<<"-> paramBeingVaried = "<<paramBeingVaried<<endl;
 
 		//********************************************
@@ -1000,34 +957,6 @@ void MCMCorbFuncObj::simulator()
 			samplesTillAcceptRateCalc +=1;
 
 	}//Done sample loops
-
-//	//******************************************************
-//	//Done sampling, so save last position if not done yet
-//	//******************************************************
-//	if (latestParamsSaved==false)
-//	{
-//		SSlog<<"\nlatestParamsSaved==false, so storing last values at sample number "<<sample<<", the timesBeenHere = "<<timesBeenHere<<endl;
-//		//SSlog<<"Before storing: ODT.timesBeenHeres.size() = "<<ODT.timesBeenHeres.size()<<endl;
-//		if (timesBeenHere>1)
-//		{
-//			SSlog<<"storing values now"<<endl;
-//			// store inputs
-//			ODT.longAN_degs.push_back(longAN_deg_latest);
-//			ODT.es.push_back(e_latest);
-//			ODT.Ts.push_back(T_latest);
-//			ODT.Tcs.push_back(Tc_latest);
-//			ODT.periods.push_back(period_latest);
-//			ODT.inclination_degs.push_back(inclination_deg_latest);
-//			ODT.argPeri_degs.push_back(argPeri_deg_latest);
-//			// store outputs
-//			ODT.chiSquareds.push_back(chiSquare_latest);
-//			ODT.a_totals.push_back(ODT.a_totals.back());
-//			ODT.Ks.push_back(K_latest);
-//			ODT.RVoffsets.push_back(RVoffsets_latest);
-//			//ODT.timesBeenHeres.push_back(timesBeenHere-1);
-//			//timesBeenHereTotal+=(timesBeenHere-1);
-//		}
-//	}
 
 	// final print to let us know it was able to get to end of file
 	cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;

@@ -20,7 +20,6 @@ struct outputDataType
 	vector<double> Ks;
 	//outputs
 	vector<double> chiSquareds ;
-	//vector<int> timesBeenHeres;
 };
 
 struct TAcalcInputType
@@ -76,7 +75,7 @@ public:
 	VRcalcStarPlanet VRcalcStarPlanetLoadUp(RVdataObj RVdo);
 	semiMajorType semiMajorConverter(semiMajorType SMT);
 	double earliestEpochFinder(DIdataObj DIdo, RVdataObj RVdo);
-	string CorrelationLengthCalc(vector<double> data, string paramName);//, vector<int> timesBeenHere);
+	string CorrelationLengthCalc(vector<double> data, string paramName);
 	string numSamplesStringMaker(int numSamples);
 	void logFileWriter(string filename, string LOGlines);
 	string filenameEndAppend(string inputString, string endAppendString);
@@ -92,9 +91,8 @@ public:
 	double sumCalc(vector<double> v,int lastPoint);
 	int sumIntCalc(vector<int> v,int lastPoint);
 	void gelmanRubinStage1(outputDataType ODT,int numTimes);
-	GRfuncReturnType gelmanRubinStage1func(vector<double> data,int numTimes);//vector<int> timesBeenHere,int numTimes);
+	GRfuncReturnType gelmanRubinStage1func(vector<double> data,int numTimes);
 	string fileBasename(string str);
 	string findDirectory(string str);
 	string findChainNumberStr(string str);
-	//vector<double> fillOutDataVector(vector<double> data);//,vector<int> timesBeenHere);
 };

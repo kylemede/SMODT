@@ -4,39 +4,61 @@ import numpy as np
 from subprocess import Popen
 plt = pylab.matplotlib.pyplot
 
-def starter(paramSettingsDict,sleep=1):
+class RAMtracker:
     """
-    The ramTracker module will start running the ramLogger.sh script as a
-    background process to log the RAM usage while SMODT is running. 
-    The wrapUp function can then be called to terminate the process, then 
-    it calls logCleanAndPlot to clean up the log file and plot the results.
+    An object to start, and wrap up RAM usage logging.
     """
+   
+    def __init__(self,paramSettingsDict,sleep=1):
+        self.paramSettingsDict = paramSettingsDict
+        self.sleep = sleep
+        self._memTrackProc = None
+        self._memLogFilename = None
+        
+    def run(self):
+        self.starter()
+        return self #return (memTracProc,memLogFilename)
     
-    FNULL=open(os.devnull,'w')
-    toolDir = os.path.join(paramSettingsDict['pythonCodeDir'],'toolboxes')
-    shScriptPath = os.path.join(toolDir,'ramLogger.sh')
-    memLogFilename = os.path.join(paramSettingsDict['outputData_dir'],"RAMusage.log")
-    totSamples = paramSettingsDict["numSamples"]*paramSettingsDict['numProcesses']
-    if False:
-        print "memLogCleanerAndPlot starter found totalSamples = "+str(totSamples)
-    sleepUse = sleep
-    if totSamples<500000001:
-        sleepUse = 1
-    elif (totSamples>500000000)and(totSamples<50000000000):
-        sleepUse = 6 
-    else:
-        sleepUse = 60
-    memTracProc = Popen([shScriptPath,memLogFilename,str(sleepUse)],stdout=FNULL)
-    return (memTracProc,memLogFilename,sleepUse)
+    def starter(self):
+        """
+        The ramTracker module will start running the ramLogger.sh script as a
+        background process to log the RAM usage while SMODT is running. 
+        The wrapUp function can then be called to terminate the process, then 
+        it calls logCleanAndPlot to clean up the log file and plot the results.
+        """
+        FNULL=open(os.devnull,'w')
+        toolDir = os.path.join(self.paramSettingsDict['pythonCodeDir'],'toolboxes')
+        shScriptPath = os.path.join(toolDir,'ramLogger.sh')
+        memLogFilename = os.path.join(self.paramSettingsDict['outputData_dir'],"RAMusage.log")
+        totSamples = self.paramSettingsDict["numSamples"]*self.paramSettingsDict['numProcesses']
+        if False:
+            print "memLogCleanerAndPlot starter found totalSamples = "+str(totSamples)
+        if totSamples<500000001:
+            self.sleep = 1
+        elif (totSamples>500000000)and(totSamples<50000000000):
+            self.sleep = 6 
+        else:
+            self.sleep = 60
+        memTrackProc = Popen([shScriptPath,memLogFilename,str(self.sleep)],stdout=FNULL)
+        self._memLogFilename = memLogFilename
+        self._memTrackProc = memTrackProc
+        #return (memTracProc,memLogFilename)
 
-def wrapUp(proc,memLogFilename,sleep=6):
-    """
-    Terminates the background process used by ramLogger.sh, , then 
-    it calls logCleanAndPlot to clean up the log file and plot the results.
-    """
-    proc.terminate()
-    maxUse = logCleanAndPlot(memLogFilename,sleep)
-    return maxUse
+    def chainsDonePrint(self):#,memLogFilename):
+        """
+        Add a print to log to locate where C++ chains finished.
+        """
+        f = open(self._memLogFilename,'a')
+        f.write('\n'+"*"*50+"\nMCMC chains ENDED NOW!!!!\n"+"*"*50+'\n')
+        
+    def wrapUp(self):#,memTracProc,memLogFilename):
+        """
+        Terminates the background process used by ramLogger.sh, , then 
+        it calls logCleanAndPlot to clean up the log file and plot the results.
+        """
+        self._memTrackProc.terminate()
+        maxUse = logCleanAndPlot(self._memLogFilename,self.sleep)
+        return maxUse
     
 def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
     """
@@ -55,14 +77,21 @@ def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
     fOut.write("total[MB]   Used[%] \n")
     used = []
     mem = []
+    mcmcEndCounter = 0
+    mcmcEnded = False
     totalRAM = 0
     for line in lines:
-        if (line[0]=="M")and(totalRAM==0):
+        if ("Mem" in line)and(totalRAM==0):
             #print line
             l = line.split()[1:3]
             #print repr(l)
             totalRAM = float(l[0])
         if (line[0]=="-")and(totalRAM>1):
+            if ("ENDED"in line) and (mcmcEnded==False):
+                mcmcEnded=True
+                print "MCMC chains ended at iteration # "+str(mcmcEndCounter)
+            elif (mcmcEnded==False):
+                mcmcEndCounter+=1
             usedRAM = float(line.split(":")[-1].split()[0])
             usedPercent = int((usedRAM/totalRAM)*100.)
             if False:
@@ -102,6 +131,7 @@ def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
         plt.suptitle("RAM usage Information *during* SMODT Run\nNot necessarily solely due to SMODT", fontsize=20)
         memRange = mem.max()-mem.min()
         yLim = [mem.min()-0.1*memRange,mem.max()+0.1*memRange]
+        subPlot.plot([times[mcmcEndCounter],times[mcmcEndCounter]],[yLim[0],yLim[1]],color='red')
         subPlot.axes.set_ylim(yLim)
         subPlot.axes.set_ylabel("Total System RAM used [%]",fontsize=15)
         subPlot2 = fig.add_subplot(212)

@@ -116,7 +116,7 @@ def simulator(paramSettingsDict):
     PMlogFile = open(logFilename,'a')
     
     ##Start a process that tracks the memory usage in the background
-    (memTracProc,memLogFilename,sleepUse) = tools.rt.starter(paramSettingsDict)
+    RT = tools.RAMtracker(paramSettingsDict)
     
     ###############################################################
     # make call to 'make' to build the C++ code for this simulation
@@ -157,6 +157,7 @@ def simulator(paramSettingsDict):
     s= s+'\n\nTotal simulation took '+totalTimeString2+' to complete.\n'
     print s
     PMlogFile.write(s)
+    RT.chainsDonePrint()
     ############################################################
     # combine the input files into one final file
     ############################################################
@@ -391,7 +392,7 @@ def simulator(paramSettingsDict):
     ## perform final wrap up functions, ie finish tracking RAM use and recored simulations total results
     ####################################################################################################    
     ##wrap up background process tacking RAM use and plot results
-    maxRAMuse = tools.rt.wrapUp(memTracProc,memLogFilename,sleep=sleepUse)
+    maxRAMuse = RT.wrapUp()
     ## recordResults MUST be done before deleting all the extra files!!!!
     tools.gen.recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrRV,effectivePointsStr,burnInStr)
     

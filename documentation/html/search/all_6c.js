@@ -14,6 +14,7 @@ var searchData=
   ['lng',['lng',['../class_c_fishers_n_c_hypergeometric.html#a9ec30d96fe60d9a203576ad4a37b9ceb',1,'CFishersNCHypergeometric::lng()'],['../class_c_multi_fishers_n_c_hypergeometric.html#a5588e29d42480a1ec0a42956bb03143a',1,'CMultiFishersNCHypergeometric::lng()'],['../class_c_fishers_n_c_hypergeometric.html#a9ec30d96fe60d9a203576ad4a37b9ceb',1,'CFishersNCHypergeometric::lng()'],['../class_c_multi_fishers_n_c_hypergeometric.html#a5588e29d42480a1ec0a42956bb03143a',1,'CMultiFishersNCHypergeometric::lng()']]],
   ['log1mx',['log1mx',['../rnd_2wnchyppr_8cpp.html#ae0bb615969860ec2d34182d0f5eee286',1,'log1mx(double x, double x1):&#160;wnchyppr.cpp'],['../toolboxes_2rnd_2wnchyppr_8cpp.html#ae0bb615969860ec2d34182d0f5eee286',1,'log1mx(double x, double x1):&#160;wnchyppr.cpp']]],
   ['log1pow',['log1pow',['../rnd_2wnchyppr_8cpp.html#ade4c6ff246a39841fa5bcf1d6c29ce83',1,'log1pow(double q, double x):&#160;wnchyppr.cpp'],['../toolboxes_2rnd_2wnchyppr_8cpp.html#ade4c6ff246a39841fa5bcf1d6c29ce83',1,'log1pow(double q, double x):&#160;wnchyppr.cpp']]],
+  ['logcleanandplot',['logCleanAndPlot',['../namespacetoolboxes_1_1ram_tracker.html#a448844afeb92ee2be40483f627a5a188',1,'toolboxes::ramTracker']]],
   ['logfilewriter',['logFileWriter',['../classgeneral_tools.html#ac87e4d400d47a1aa170cb5fcd969fbcf',1,'generalTools']]],
   ['logodds',['logodds',['../class_c_fishers_n_c_hypergeometric.html#afd3d5c6e6a098a4a70ea8adef56ef311',1,'CFishersNCHypergeometric::logodds()'],['../class_c_multi_fishers_n_c_hypergeometric.html#ad3c94616ebbb8901fa33333ecc5a569c',1,'CMultiFishersNCHypergeometric::logodds()']]],
   ['longan_5fdeg',['longAN_deg',['../class_d_itools.html#a06eed06e6e08d1261715d6050372963c',1,'DItools']]],
@@ -24,5 +25,5 @@ var searchData=
   ['loop',['loop',['../class_c_multi_wallenius_n_c_hypergeometric_moments.html#a31b46893503a4d7a8235b3d1a77f2573',1,'CMultiWalleniusNCHypergeometricMoments::loop()'],['../class_c_multi_fishers_n_c_hypergeometric.html#af1bd4346cbfd3c9e3d5f1696ff9c7b17',1,'CMultiFishersNCHypergeometric::loop()'],['../class_c_multi_wallenius_n_c_hypergeometric_moments.html#a31b46893503a4d7a8235b3d1a77f2573',1,'CMultiWalleniusNCHypergeometricMoments::loop()'],['../class_c_multi_fishers_n_c_hypergeometric.html#af1bd4346cbfd3c9e3d5f1696ff9c7b17',1,'CMultiFishersNCHypergeometric::loop()']]],
   ['looped_5fmcmcorbsimulator_2ecpp',['looped_MCMCorbSimulator.cpp',['../looped___m_c_m_corb_simulator_8cpp.html',1,'']]],
   ['looped_5fmcmcorbsimulator1_2ecpp',['looped_MCMCorbSimulator1.cpp',['../looped___m_c_m_corb_simulator1_8cpp.html',1,'']]],
-  ['loopedmcmc',['loopedMCMC',['../class_m_c_m_c___process_manager_duo_1_1mcmc_process_manager.html#a4d6de0eb7612b225960b97c49031507f',1,'MCMC_ProcessManagerDuo::mcmcProcessManager']]]
+  ['loopedmcmc',['loopedMCMC',['../class_simulation_manager_1_1single_process_starter.html#a24bcf478fbd2ce89227c5b34e55aee5f',1,'SimulationManager::singleProcessStarter']]]
 ];

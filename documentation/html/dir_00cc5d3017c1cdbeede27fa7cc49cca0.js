@@ -19,7 +19,6 @@ var dir_00cc5d3017c1cdbeede27fa7cc49cca0 =
       [ "TAcalcInputType", "struct_t_acalc_input_type.html", "struct_t_acalc_input_type" ],
       [ "TAcalcReturnType", "struct_t_acalc_return_type.html", "struct_t_acalc_return_type" ],
       [ "semiMajorType", "structsemi_major_type.html", "structsemi_major_type" ],
-      [ "eccArgPeriCalcType", "structecc_arg_peri_calc_type.html", "structecc_arg_peri_calc_type" ],
       [ "eccArgPeri2ToTcType", "structecc_arg_peri2_to_tc_type.html", "structecc_arg_peri2_to_tc_type" ],
       [ "GRfuncReturnType", "struct_g_rfunc_return_type.html", "struct_g_rfunc_return_type" ],
       [ "generalTools", "classgeneral_tools.html", "classgeneral_tools" ]

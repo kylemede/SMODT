@@ -13,6 +13,5 @@ var structoutput_data_type =
     [ "periods", "structoutput_data_type.html#ad00257c12a9f62448586d38521856098", null ],
     [ "RVoffsets", "structoutput_data_type.html#a6db317a936d76134a5f5b7326e4483af", null ],
     [ "Tcs", "structoutput_data_type.html#aa35b33121cf728e9b436e0cc97ecd8ce", null ],
-    [ "timesBeenHeres", "structoutput_data_type.html#a1928a3df571ee8dfe18939af20ddd324", null ],
     [ "Ts", "structoutput_data_type.html#a8757abfffdc779b6289e6d2c57a751db", null ]
 ];

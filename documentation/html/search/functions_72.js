@@ -1,20 +1,14 @@
 var searchData=
 [
-  ['radectosapa',['RADECtoSAPA',['../namespacetoolboxes_1_1_d_itoolbox.html#a22cd9c71285764492280091f47953d69',1,'toolboxes::DItoolbox']]],
   ['random',['Random',['../class_t_random_combined.html#aac4e9b2b4cd12a605aec1b42e9752112',1,'TRandomCombined::Random()'],['../class_c_random_s_f_m_t.html#a18cf8ee6ce14291f171998782ec7e8e2',1,'CRandomSFMT::Random()'],['../class_t_random_combined.html#aac4e9b2b4cd12a605aec1b42e9752112',1,'TRandomCombined::Random()'],['../class_c_random_s_f_m_t.html#a18cf8ee6ce14291f171998782ec7e8e2',1,'CRandomSFMT::Random()']]],
   ['randominit',['RandomInit',['../class_t_random_combined.html#a41b066529c5e6b2bce99881199be8235',1,'TRandomCombined::RandomInit()'],['../class_c_random_s_f_m_t.html#a6f46955432e98c16bc167ffdbd286910',1,'CRandomSFMT::RandomInit()'],['../class_t_random_combined.html#a41b066529c5e6b2bce99881199be8235',1,'TRandomCombined::RandomInit()'],['../class_c_random_s_f_m_t.html#a6f46955432e98c16bc167ffdbd286910',1,'CRandomSFMT::RandomInit()']]],
   ['randominitbyarray',['RandomInitByArray',['../class_c_random_s_f_m_t.html#af77c1a33fb1b50e46cadf049d951ba0e',1,'CRandomSFMT::RandomInitByArray(int const seeds[], int NumSeeds)'],['../class_c_random_s_f_m_t.html#af77c1a33fb1b50e46cadf049d951ba0e',1,'CRandomSFMT::RandomInitByArray(int const seeds[], int NumSeeds)']]],
+  ['recordresults',['recordResults',['../namespacetoolboxes_1_1general_toolbox.html#ac4afbcb30bb56a2baa6794e206634849',1,'toolboxes::generalToolbox']]],
   ['recursive',['recursive',['../class_c_wallenius_n_c_hypergeometric.html#a974a3934722b9bc6b32462d4f95d0ed0',1,'CWalleniusNCHypergeometric::recursive(void)'],['../class_c_wallenius_n_c_hypergeometric.html#a974a3934722b9bc6b32462d4f95d0ed0',1,'CWalleniusNCHypergeometric::recursive(void)']]],
   ['render',['render',['../classprogressbar_1_1multiprogressbar_1_1_progress_bar.html#ad8cd5747d468fe9c8ccbdc1d8491a0ac',1,'progressbar.multiprogressbar.ProgressBar.render()'],['../classprogressbar_1_1progressbar_1_1_progress_bar.html#a99aac81a9db4206c2c99c0d663c54712',1,'progressbar.progressbar.ProgressBar.render()'],['../classprogressbar_1_1progressbar__backup_1_1_progress_bar.html#a22df7635b6dc0589f43bea82973480b8',1,'progressbar.progressbar_backup.ProgressBar.render()'],['../namespaceprogressbar_1_1terminal.html#a4a9afee40d80ee155d5296979e7983e7',1,'progressbar.terminal.render()']]],
-  ['run',['run',['../class_m_c_m_c___process_manager_duo_1_1mcmc_process_manager.html#a4dd907b4b3a44a2230f19991cb81e574',1,'MCMC_ProcessManagerDuo::mcmcProcessManager']]],
-  ['rv1bodycalculator',['rv1bodyCalculator',['../namespacetoolboxes_1_1_r_vtoolbox.html#a04864fcc02f2b2ff21c015bf2925752c',1,'toolboxes::RVtoolbox']]],
-  ['rv1bodycalculator2',['rv1bodyCalculator2',['../namespacetoolboxes_1_1_r_vtoolbox.html#a8814947051652aaff4f97f9f210148e7',1,'toolboxes::RVtoolbox']]],
-  ['rv2bodycalculator3',['rv2bodyCalculator3',['../namespacetoolboxes_1_1_r_vtoolbox.html#ad60d38fe1bb63b8e3c04d6d820f51012',1,'toolboxes::RVtoolbox']]],
-  ['rv2bodycalculator4',['rv2bodyCalculator4',['../namespacetoolboxes_1_1_r_vtoolbox.html#a4af2881f505f45a7a31b94d25caad125',1,'toolboxes::RVtoolbox']]],
+  ['run',['run',['../class_simulation_manager_1_1single_process_starter.html#a38d30f120c83e078f55e447e6721932f',1,'SimulationManager::singleProcessStarter']]],
   ['rvdatatodict',['RVdataToDict',['../namespacetoolboxes_1_1_r_vtoolbox.html#ac48be301e32e2e7bf16651cc8c72c6d6',1,'toolboxes::RVtoolbox']]],
-  ['rvfitplotter1body',['rvFitPlotter1Body',['../namespacetoolboxes_1_1plot_toolbox.html#a77f390548bdb168193b49e7b57a9f612',1,'toolboxes::plotToolbox']]],
-  ['rvmoddatasetmakerduo',['rvModDatasetMakerDuo',['../namespacetoolboxes_1_1plot_toolbox.html#a1a902178112f12f47511ab73d6fccfe4',1,'toolboxes::plotToolbox']]],
+  ['rvmoddatasetmaker',['rvModDatasetMaker',['../namespacetoolboxes_1_1plot_toolbox.html#abdda9105d8f3b70805245f0a5256d00e',1,'toolboxes::plotToolbox']]],
   ['rvoffsetsparser',['rvOffsetsParser',['../_sim_settings_obj_8cpp.html#a4cd9aff0afb881a95ccc930b0dd6b20f',1,'rvOffsetsParser(string strIn):&#160;SimSettingsObj.cpp'],['../_sim_settings_obj_8h.html#a4cd9aff0afb881a95ccc930b0dd6b20f',1,'rvOffsetsParser(string strIn):&#160;SimSettingsObj.cpp']]],
-  ['rvplotterduo',['rvPlotterDuo',['../namespacetoolboxes_1_1plot_toolbox.html#af022c77ab2a89116dffd1915952135e6',1,'toolboxes::plotToolbox']]],
-  ['rvresidualwithoutplanetresidual',['rvResidualWithoutPlanetResidual',['../namespacetoolboxes_1_1_r_vtoolbox.html#a9e308dcd033cab74a8e6da38f0fe3c72',1,'toolboxes::RVtoolbox']]]
+  ['rvplotter',['rvPlotter',['../namespacetoolboxes_1_1plot_toolbox.html#ac33175e93451da7a57e153a0fd6e1329',1,'toolboxes::plotToolbox']]]
 ];

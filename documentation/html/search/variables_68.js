@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['hardcodedsettingsdict',['HARDCODEDsettingsDict',['../namespacedicts_1_1_h_a_r_d_c_o_d_e_dsettings_dict.html#a4101eaa7c30853330981244bbbf69134',1,'dicts::HARDCODEDsettingsDict']]],
+  ['hardcodedsettingsdict',['hardcodedSettingsDict',['../namespacedicts_1_1_h_a_r_d_c_o_d_e_dsettings_dict.html#aac74dea48635f45a79e106cef1561d8e',1,'dicts::HARDCODEDsettingsDict']]],
   ['hyp_5fa',['hyp_a',['../class_stochastic_lib1.html#a0ef0ef7e1df9d74204e9ea36f2728cc9',1,'StochasticLib1']]],
   ['hyp_5fbound',['hyp_bound',['../class_stochastic_lib1.html#a74e1464d8e492cac7c0fb11ef335d4d3',1,'StochasticLib1']]],
   ['hyp_5fc_5fpm',['Hyp_c_pm',['../class_stochastic_lib2.html#a05b1f9e4453a67789135df86aa23ccea',1,'StochasticLib2']]],

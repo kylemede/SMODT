@@ -11,5 +11,5 @@ var searchData=
   ['longan_5fdegmax',['longAN_degMAX',['../class_sim_settings_obj.html#a6b0ceffac32d52ed30b7aac6c76e193e',1,'SimSettingsObj']]],
   ['longan_5fdegmin',['longAN_degMIN',['../class_sim_settings_obj.html#a144e3a370da394273744000e0512dadf',1,'SimSettingsObj']]],
   ['longan_5fdegs',['longAN_degs',['../structoutput_data_type.html#af8d59638947496073899e431d2c8bea5',1,'outputDataType']]],
-  ['loopedmcmc',['loopedMCMC',['../class_m_c_m_c___process_manager_duo_1_1mcmc_process_manager.html#a4d6de0eb7612b225960b97c49031507f',1,'MCMC_ProcessManagerDuo::mcmcProcessManager']]]
+  ['loopedmcmc',['loopedMCMC',['../class_simulation_manager_1_1single_process_starter.html#a24bcf478fbd2ce89227c5b34e55aee5f',1,'SimulationManager::singleProcessStarter']]]
 ];

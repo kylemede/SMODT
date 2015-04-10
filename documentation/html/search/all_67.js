@@ -2,7 +2,7 @@ var searchData=
 [
   ['gaussiandist',['gaussianDist',['../namespacetoolboxes_1_1general_toolbox.html#a3cd0c56ca8fd3c34b377ceba9f7ffc86',1,'toolboxes::generalToolbox']]],
   ['gelmanrubinstage1',['gelmanRubinStage1',['../classgeneral_tools.html#a96f22c1a1d0f36da3881663fd738d8db',1,'generalTools']]],
-  ['gelmanrubinstage1func',['gelmanRubinStage1func',['../classgeneral_tools.html#ac71b30a7d40529d4cc45ec01a88b1f4e',1,'generalTools']]],
+  ['gelmanrubinstage1func',['gelmanRubinStage1func',['../classgeneral_tools.html#a7c836dcfa9b545da6ab5abe66ad5321e',1,'generalTools']]],
   ['gelmanrubinstage2',['gelmanRubinStage2',['../namespacetoolboxes_1_1general_toolbox.html#a001f7aa4443807d0f9bc942df3263b5e',1,'toolboxes::generalToolbox']]],
   ['generaltoolbox_2epy',['generalToolbox.py',['../general_toolbox_8py.html',1,'']]],
   ['generaltools',['generalTools',['../classgeneral_tools.html',1,'']]],

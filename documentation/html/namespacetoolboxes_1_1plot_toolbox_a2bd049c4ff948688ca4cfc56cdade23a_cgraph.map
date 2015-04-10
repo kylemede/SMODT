@@ -1,10 +1,5 @@
 <map id="G" name="G">
-<area shape="rect" id="node3" href="$namespacetoolboxes_1_1general_toolbox.html#abc160309f0fb07050e60de59dd025e08" title="toolboxes.generalToolbox.data\lReadTrimWriteNEW2" alt="" coords="245,5,443,46"/>
-<area shape="rect" id="node5" href="$namespacetoolboxes_1_1general_toolbox.html#a6d04cdb4339412f19cc1063795deaeef" title="toolboxes.generalToolbox.find\lNuFromLog" alt="" coords="499,59,693,101"/>
-<area shape="rect" id="node7" href="$namespacetoolboxes_1_1plot_toolbox.html#a072829157bb4a2842ed7d5f5d066d6d9" title="toolboxes.plotToolbox.summary\lPlotter2" alt="" coords="241,125,447,166"/>
-<area shape="rect" id="node9" href="$namespacetoolboxes_1_1general_toolbox.html#adef6c6b46f32612a595cf0091bfac567" title="toolboxes.generalToolbox.conf\lLevelFinderNEWdataVersion" alt="" coords="497,125,695,166"/>
-<area shape="rect" id="node11" href="$namespacetoolboxes_1_1general_toolbox.html#ae923c8465cc1d61c599249e34bf91e61" title="toolboxes.generalToolbox.time\lString" alt="" coords="777,150,975,191"/>
-<area shape="rect" id="node14" href="$namespacetoolboxes_1_1plot_toolbox.html#a45dfae2d5c79967c2cfe7e676595dba6" title="toolboxes.plotToolbox.hist\lConverter" alt="" coords="509,242,683,283"/>
-<area shape="rect" id="node16" href="$namespacetoolboxes_1_1plot_toolbox.html#a502a649a58d3f1b29043759c4ac9ec2f" title="toolboxes.plotToolbox.fix\lPlotBordersAndLabels" alt="" coords="793,229,959,270"/>
-<area shape="rect" id="node18" href="$namespacetoolboxes_1_1general_toolbox.html#acd36be66768f54fa0192333252dc2c04" title="toolboxes.generalToolbox.likelihoodsCalc" alt="" coords="745,295,1007,321"/>
+<area shape="rect" id="node3" href="$namespacetoolboxes_1_1plot_toolbox.html#aeee13ba3fb7a27754eb2a31e7d6d4e7a" title="toolboxes.plotToolbox.summary\lPlotter" alt="" coords="241,5,447,46"/>
+<area shape="rect" id="node5" href="$namespacetoolboxes_1_1plot_toolbox.html#a45dfae2d5c79967c2cfe7e676595dba6" title="toolboxes.plotToolbox.hist\lConverter" alt="" coords="497,5,671,46"/>
+<area shape="rect" id="node7" href="$namespacetoolboxes_1_1plot_toolbox.html#a502a649a58d3f1b29043759c4ac9ec2f" title="toolboxes.plotToolbox.fix\lPlotBordersAndLabels" alt="" coords="721,5,887,46"/>
 </map>

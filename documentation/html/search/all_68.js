@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['hardcodedsettingsdict',['HARDCODEDsettingsDict',['../namespacedicts_1_1_h_a_r_d_c_o_d_e_dsettings_dict.html#a4101eaa7c30853330981244bbbf69134',1,'dicts::HARDCODEDsettingsDict']]],
+  ['hardcodedsettingsdict',['hardcodedSettingsDict',['../namespacedicts_1_1_h_a_r_d_c_o_d_e_dsettings_dict.html#aac74dea48635f45a79e106cef1561d8e',1,'dicts::HARDCODEDsettingsDict']]],
   ['hardcodedsettingsdict_2epy',['HARDCODEDsettingsDict.py',['../_h_a_r_d_c_o_d_e_dsettings_dict_8py.html',1,'']]],
   ['histandcontourplotter',['histAndContourPlotter',['../namespacetoolboxes_1_1plot_toolbox.html#a40ba61c65b05f1caf487f31d4949a653',1,'toolboxes::plotToolbox']]],
   ['histandscatterplotter',['histAndScatterPlotter',['../namespacetoolboxes_1_1plot_toolbox.html#ae1274884844e761129c1b75ee60bffc7',1,'toolboxes::plotToolbox']]],

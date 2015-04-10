@@ -1,4 +1,5 @@
 <map id="G" name="G">
-<area shape="rect" id="node3" href="$namespacetoolboxes_1_1general_toolbox.html#ac439627b4120ee91ed9f992727d5e633" title="toolboxes.generalToolbox.burn\lInCalc3" alt="" coords="254,5,453,46"/>
-<area shape="rect" id="node5" href="$namespacetoolboxes_1_1general_toolbox.html#a2db5bf42aeb327e8e0777bc067d2fd4e" title="toolboxes.generalToolbox.data\lReaderNEW" alt="" coords="254,70,453,111"/>
+<area shape="rect" id="node3" href="$namespacetoolboxes_1_1general_toolbox.html#a400f5231ad2566ac0bd6906708a9fb17" title="toolboxes.generalToolbox.burn\lInCalcFunc" alt="" coords="254,5,453,46"/>
+<area shape="rect" id="node5" href="$namespacetoolboxes_1_1general_toolbox.html#adef710ff6f752aae93cf09d99d7fc86e" title="toolboxes.generalToolbox.data\lReader" alt="" coords="254,70,453,111"/>
+<area shape="rect" id="node7" href="$namespacetoolboxes_1_1general_toolbox.html#ae923c8465cc1d61c599249e34bf91e61" title="toolboxes.generalToolbox.time\lString" alt="" coords="502,70,701,111"/>
 </map>

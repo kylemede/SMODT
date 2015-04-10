@@ -5,6 +5,13 @@ from subprocess import Popen
 plt = pylab.matplotlib.pyplot
 
 def starter(paramSettingsDict,sleep=1):
+    """
+    The ramTracker module will start running the ramLogger.sh script as a
+    background process to log the RAM usage while SMODT is running. 
+    The wrapUp function can then be called to terminate the process, then 
+    it calls logCleanAndPlot to clean up the log file and plot the results.
+    """
+    
     FNULL=open(os.devnull,'w')
     toolDir = os.path.join(paramSettingsDict['pythonCodeDir'],'toolboxes')
     shScriptPath = os.path.join(toolDir,'ramLogger.sh')
@@ -23,11 +30,15 @@ def starter(paramSettingsDict,sleep=1):
     return (memTracProc,memLogFilename,sleepUse)
 
 def wrapUp(proc,memLogFilename,sleep=6):
+    """
+    Terminates the background process used by ramLogger.sh, , then 
+    it calls logCleanAndPlot to clean up the log file and plot the results.
+    """
     proc.terminate()
-    maxUse = memUsageLogCleaner(memLogFilename,sleep)
+    maxUse = logCleanAndPlot(memLogFilename,sleep)
     return maxUse
     
-def memUsageLogCleaner(filename = '',sleep=1,delOrigLog=True):
+def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
     """
     A function I whipped together to clean up a RAM usage log produced with a super simple bash script.
     """ 
@@ -111,4 +122,4 @@ def memUsageLogCleaner(filename = '',sleep=1,delOrigLog=True):
     return maxUse
     
 if __name__ == '__main__':
-    memUsageLogCleaner() 
+    logCleanAndPlot() 

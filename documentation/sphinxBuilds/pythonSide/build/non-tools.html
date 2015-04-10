@@ -80,11 +80,49 @@ from the directory it is contained in (ie. SMODT/code/pythonSide/)</p>
 </dd></dl>
 
 </div>
-<div class="section" id="mcmc-process-manager">
-<h2>MCMC Process Manager<a class="headerlink" href="#mcmc-process-manager" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-SimulationManager">
+<span id="simulation-manager"></span><h2>Simulation Manager<a class="headerlink" href="#module-SimulationManager" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="SimulationManager.multiProcessStarter">
+<tt class="descclassname">SimulationManager.</tt><tt class="descname">multiProcessStarter</tt><big>(</big><em>paramSettingsDict</em><big>)</big><a class="headerlink" href="#SimulationManager.multiProcessStarter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This will call singleProcessStarter to handle each individual chain.   
+The output dataFile for each chain will be returned as a list of filenames.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paramSettingsDict</strong> (<em>dict</em>) &#8211; A dictionary created by using the 
+cFileToSimSettingsDict function that converts the SimSettings.txt into
+a Python dictionary.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="SimulationManager.simulator">
+<tt class="descclassname">SimulationManager.</tt><tt class="descname">simulator</tt><big>(</big><em>paramSettingsDict</em><big>)</big><a class="headerlink" href="#SimulationManager.simulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the master function to start a multiprocess SMODT simulator run.
+The singleProcessStarter will be called by multiProcessStarter to handle each individual chain
+and the toolboxes will then be utilized to perform post-completion 
+statistical calculations and plotting to summarize the results.  The user 
+can choose which calculations and plots to produce with the simulation 
+settings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paramSettingsDict</strong> (<em>dict</em>) &#8211; A dictionary created by using the 
+cFileToSimSettingsDict function that converts the SimSettings.txt into
+a Python dictionary.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="class">
-<dt id="MCMC_ProcessManager.singleProcessStarter">
-<em class="property">class </em><tt class="descclassname">MCMC_ProcessManager.</tt><tt class="descname">singleProcessStarter</tt><big>(</big><em>simSettingsFilename</em>, <em>filename</em>, <em>cppCodeDir</em>, <em>simAnneal</em>, <em>loopedMCMC</em><big>)</big><a class="headerlink" href="#MCMC_ProcessManager.singleProcessStarter" title="Permalink to this definition">¶</a></dt>
+<dt id="SimulationManager.singleProcessStarter">
+<em class="property">class </em><tt class="descclassname">SimulationManager.</tt><tt class="descname">singleProcessStarter</tt><big>(</big><em>simSettingsFilename</em>, <em>filename</em>, <em>cppCodeDir</em>, <em>simAnneal</em>, <em>mcONLY</em>, <em>loopedMCMC</em><big>)</big><a class="headerlink" href="#SimulationManager.singleProcessStarter" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is the Manager object that controls the a single processes for a 
 SMODT simulation run.  It is called by the multiProcessStarter once for 
 each chain/process requested by the user through the simulation settings 
@@ -109,27 +147,6 @@ lives.</li>
 </table>
 </dd></dl>
 
-<dl class="function">
-<dt id="MCMC_ProcessManager.multiProcessStarter">
-<tt class="descclassname">MCMC_ProcessManager.</tt><tt class="descname">multiProcessStarter</tt><big>(</big><em>paramSettingsDict</em><big>)</big><a class="headerlink" href="#MCMC_ProcessManager.multiProcessStarter" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is the master function to start a multiprocess SMODT simulator run.
-The singleProcessStarter will be called to handle each individual chain
-and the toolboxes will then be utilized to perform post-completion 
-statistical calculations and plotting to summarize the results.  The user 
-can choose which calculations and plots to produce with the simulation 
-settings.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>paramSettingsDict</strong> (<em>dict</em>) &#8211; A dictionary created by using the 
-cFileToSimSettingsDict function that converts the SimSettings.txt into
-a Python dictionary.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
 </div>
 </div>
 
@@ -143,7 +160,7 @@ a Python dictionary.</td>
   <ul>
 <li><a class="reference internal" href="#">Simulation Starter Functions</a><ul>
 <li><a class="reference internal" href="#module-SMODTstarter">SMODT Starter</a></li>
-<li><a class="reference internal" href="#mcmc-process-manager">MCMC Process Manager</a></li>
+<li><a class="reference internal" href="#module-SimulationManager">Simulation Manager</a></li>
 </ul>
 </li>
 </ul>

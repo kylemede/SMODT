@@ -22,7 +22,7 @@ while true; do
 			if [ -f $1 ]; then
 				free -m >> $1
 				echo "Just logged latest usage, after pressing Ctrl+c to clean and plot type:"
-				echo "'python /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/code/pythonSide/toolboxes/memLogCleanAndPlot.py'"
+				echo "'python /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/code/pythonSide/toolboxes/ramTracker.py'"
 				sleep $2
 			fi
 

@@ -117,13 +117,14 @@ $(document).ready(function(){initNavTree('class_sim_settings_obj.html','');});
 <tr class="heading"><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad87f0805264b9b9a12db672bb3e6cb5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#ad87f0805264b9b9a12db672bb3e6cb5a">settingsLoadUp</a> (const char *filename)</td></tr>
+<tr class="memitem:ac404a81bb710c0e017517238e0e7cc35"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#ac404a81bb710c0e017517238e0e7cc35">findArgPeriOffsets</a> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a864fee89293d050ae39d3735a31c4f8c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a864fee89293d050ae39d3735a31c4f8c">Duo</a></td></tr>
 <tr class="memitem:ac084179dbf7c745af6f93004d624bec1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#ac084179dbf7c745af6f93004d624bec1">chiSquaredMax</a></td></tr>
 <tr class="memitem:a3a54bd0cacade02e1b6005c78750dca8"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a3a54bd0cacade02e1b6005c78750dca8">numSamples</a></td></tr>
 <tr class="memitem:a62949becad115d94a06ee1b2afeeea64"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a62949becad115d94a06ee1b2afeeea64">numSamples_SimAnneal</a></td></tr>
+<tr class="memitem:a834e8e7b8118dc5a316886701d656f61"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a834e8e7b8118dc5a316886701d656f61">useMultiProcessing</a></td></tr>
 <tr class="memitem:af61b6ae0356114157680d8143f8b8990"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#af61b6ae0356114157680d8143f8b8990">startTemp</a></td></tr>
 <tr class="memitem:a92fcb0edf91a35336bfa6b905b052005"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a92fcb0edf91a35336bfa6b905b052005">numSamplePrints</a></td></tr>
 <tr class="memitem:ac649328f1a9e968e6edf0ba79711f296"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#ac649328f1a9e968e6edf0ba79711f296">silent</a></td></tr>
@@ -138,13 +139,19 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a0d496ce11bd0f12bd971ceece46dc3a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a0d496ce11bd0f12bd971ceece46dc3a4">DIonly</a></td></tr>
 <tr class="memitem:aed776eaf04097ea0ac895efc22e2f7cc"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#aed776eaf04097ea0ac895efc22e2f7cc">mcONLY</a></td></tr>
 <tr class="memitem:ac2c5ae6f0a8ce3a801cfef7da4e313e2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#ac2c5ae6f0a8ce3a801cfef7da4e313e2">simAnneal</a></td></tr>
-<tr class="memitem:aeab28f68f0ad7dcfd8a4bef4322d79fb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#aeab28f68f0ad7dcfd8a4bef4322d79fb">simulate_StarStar</a></td></tr>
-<tr class="memitem:a7787a2db50306d7cfd1dd351c6a73b84"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a7787a2db50306d7cfd1dd351c6a73b84">simulate_StarPlanet</a></td></tr>
-<tr class="memitem:a803f35821d1df763f9a67f9c7d5c9ed5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a803f35821d1df763f9a67f9c7d5c9ed5">fixed_planet_period</a></td></tr>
+<tr class="memitem:a1bf8304caf8b297375f74c4588f75721"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a1bf8304caf8b297375f74c4588f75721">simulate_StarStarRV</a></td></tr>
+<tr class="memitem:ab5cdb61313bac3bef9e09fece701b289"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#ab5cdb61313bac3bef9e09fece701b289">simulate_StarPlanetRV</a></td></tr>
+<tr class="memitem:a0363107f8ccc4da42900162e2354681c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a0363107f8ccc4da42900162e2354681c">simulate_PrimaryOrbitRV</a></td></tr>
 <tr class="memitem:a820564bc8a265aa7021a6b339732b791"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a820564bc8a265aa7021a6b339732b791">calcCorrLengths</a></td></tr>
 <tr class="memitem:a35a1a1e3b77f11d078fca7430fe99542"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a35a1a1e3b77f11d078fca7430fe99542">CalcGelmanRubin</a></td></tr>
 <tr class="memitem:aeda75feb62836acd7541758aa570dfe2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#aeda75feb62836acd7541758aa570dfe2">numTimesCalcGR</a></td></tr>
 <tr class="memitem:ab3dca5cdd682f31ecb7fcebc735d7331"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#ab3dca5cdd682f31ecb7fcebc735d7331">TcStepping</a></td></tr>
+<tr class="memitem:a1d272adc3c89e604b3d2f181805e033d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a1d272adc3c89e604b3d2f181805e033d">primaryStarRVs</a></td></tr>
+<tr class="memitem:abb5bcbe47c9751932e42374439ebd9de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#abb5bcbe47c9751932e42374439ebd9de">TcEqualT</a></td></tr>
+<tr class="memitem:ae30374d61a6bb0ef154cbbcc871ac009"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#ae30374d61a6bb0ef154cbbcc871ac009">argPeriPlusRV</a></td></tr>
+<tr class="memitem:a3b577963437892f453b40d67dd625aed"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a3b577963437892f453b40d67dd625aed">argPeriPlusDI</a></td></tr>
+<tr class="memitem:a8a9aaa725ffa0cf9c18ad9762c2bea5a"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a8a9aaa725ffa0cf9c18ad9762c2bea5a">argPeriOffsetDI</a></td></tr>
+<tr class="memitem:a30e08a6073c809d789631b96d6e11901"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a30e08a6073c809d789631b96d6e11901">argPeriOffsetRV</a></td></tr>
 <tr class="memitem:a144e3a370da394273744000e0512dadf"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a144e3a370da394273744000e0512dadf">longAN_degMIN</a></td></tr>
 <tr class="memitem:a6b0ceffac32d52ed30b7aac6c76e193e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#a6b0ceffac32d52ed30b7aac6c76e193e">longAN_degMAX</a></td></tr>
 <tr class="memitem:aba42bc522016e1c6918e56607dbc1669"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sim_settings_obj.html#aba42bc522016e1c6918e56607dbc1669">eMIN</a></td></tr>
@@ -168,6 +175,23 @@ Public Attributes</h2></td></tr>
 <div class="textblock">
 <p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00006">6</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 </div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="ac404a81bb710c0e017517238e0e7cc35"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void SimSettingsObj::findArgPeriOffsets </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_sim_settings_obj_8cpp_source.html#l00506">506</a> of file <a class="el" href="_sim_settings_obj_8cpp_source.html">SimSettingsObj.cpp</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ad87f0805264b9b9a12db672bb3e6cb5a"></a>
 <div class="memitem">
 <div class="memproto">
@@ -181,10 +205,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>This function will read in the file containing the settings for a Simulated Annealing or MCMC run. This file has already been checked within the Python code that initializes a simulation, and at this point all the settings should be well formated and within realistic values ranges.</p>
 
 <p>Definition at line <a class="el" href="_sim_settings_obj_8cpp_source.html#l00014">14</a> of file <a class="el" href="_sim_settings_obj_8cpp_source.html">SimSettingsObj.cpp</a>.</p>
 
-<p>References <a class="el" href="_sim_settings_obj_8cpp_source.html#l00612">boolParser()</a>, <a class="el" href="_binary_orb_sim_starter_duo_8py_source.html#l00049">BinaryOrbSimStarterDuo::calcCorrLengths</a>, <a class="el" href="_binary_orb_sim_starter_duo_8py_source.html#l00046">BinaryOrbSimStarterDuo::data_dir</a>, <a class="el" href="_binary_orb_sim_starter_duo_8py_source.html#l00050">BinaryOrbSimStarterDuo::DIonly</a>, <a class="el" href="_binary_orb_sim_starter_duo_8py_source.html#l00040">BinaryOrbSimStarterDuo::mcONLY</a>, <a class="el" href="_binary_orb_sim_starter_duo_8py_source.html#l00043">BinaryOrbSimStarterDuo::numSamples</a>, <a class="el" href="_sim_settings_obj_8cpp_source.html#l00544">rvOffsetsParser()</a>, <a class="el" href="_binary_orb_sim_starter_duo_8py_source.html#l00051">BinaryOrbSimStarterDuo::RVonly</a>, <a class="el" href="_binary_orb_sim_starter_duo_8py_source.html#l00013">BinaryOrbSimStarterDuo::settings_and_InputDataDir</a>, <a class="el" href="_binary_orb_sim_starter_duo_8py_source.html#l00044">BinaryOrbSimStarterDuo::silent</a>, <a class="el" href="_binary_orb_sim_starter_duo_8py_source.html#l00045">BinaryOrbSimStarterDuo::verbose</a>, and <a class="el" href="_binary_orb_sim_starter_duo_8py_source.html#l00023">BinaryOrbSimStarterDuo::verboseInternal</a>.</p>
+<p>References <a class="el" href="_sim_settings_obj_8cpp_source.html#l00588">boolParser()</a>, <a class="el" href="general_tools_8cpp_source.html#l01357">generalTools::boolToStr()</a>, and <a class="el" href="_sim_settings_obj_8cpp_source.html#l00520">rvOffsetsParser()</a>.</p>
 
 <p>Referenced by <a class="el" href="looped___m_c_m_corb_simulator_8cpp_source.html#l00014">main()</a>.</p>
 
@@ -193,7 +218,7 @@ Here is the call graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><img src="class_sim_settings_obj_ad87f0805264b9b9a12db672bb3e6cb5a_cgraph.png" border="0" usemap="#class_sim_settings_obj_ad87f0805264b9b9a12db672bb3e6cb5a_cgraph" alt=""/></div>
 <map name="class_sim_settings_obj_ad87f0805264b9b9a12db672bb3e6cb5a_cgraph" id="class_sim_settings_obj_ad87f0805264b9b9a12db672bb3e6cb5a_cgraph">
-<area shape="rect" id="node3" href="_sim_settings_obj_8cpp.html#a8374ae4e122d761db087e78c43779058" title="boolParser" alt="" coords="237,5,321,32"/><area shape="rect" id="node5" href="_sim_settings_obj_8cpp.html#a4cd9aff0afb881a95ccc930b0dd6b20f" title="rvOffsetsParser" alt="" coords="221,56,336,83"/></map>
+<area shape="rect" id="node3" href="_sim_settings_obj_8cpp.html#a8374ae4e122d761db087e78c43779058" title="boolParser" alt="" coords="259,5,343,32"/><area shape="rect" id="node5" href="classgeneral_tools.html#a661b9542c218853a078db19975d98356" title="generalTools::boolToStr" alt="" coords="221,56,381,83"/><area shape="rect" id="node7" href="_sim_settings_obj_8cpp.html#a4cd9aff0afb881a95ccc930b0dd6b20f" title="rvOffsetsParser" alt="" coords="244,107,359,133"/></map>
 </div>
 </p>
 
@@ -219,7 +244,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00045">45</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00051">51</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -235,7 +260,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00044">44</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00050">50</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -251,7 +276,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00051">51</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00057">57</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -267,9 +292,69 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00050">50</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00056">56</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8a9aaa725ffa0cf9c18ad9762c2bea5a"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double SimSettingsObj::argPeriOffsetDI</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00041">41</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+
+<p>Referenced by <a class="el" href="mc_o_n_l_yorb_simulator_8cpp_source.html#l00014">main()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a30e08a6073c809d789631b96d6e11901"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double SimSettingsObj::argPeriOffsetRV</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00042">42</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+
+<p>Referenced by <a class="el" href="mc_o_n_l_yorb_simulator_8cpp_source.html#l00014">main()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3b577963437892f453b40d67dd625aed"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double SimSettingsObj::argPeriPlusDI</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00040">40</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ae30374d61a6bb0ef154cbbcc871ac009"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double SimSettingsObj::argPeriPlusRV</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00039">39</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 </div>
 </div>
@@ -315,7 +400,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00012">12</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00011">11</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="looped___m_c_m_corb_simulator_8cpp_source.html#l00014">main()</a>.</p>
 
@@ -381,20 +466,6 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a class="anchor" id="a864fee89293d050ae39d3735a31c4f8c"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool SimSettingsObj::Duo</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00011">11</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="a45020f8bdf606b7cc9f7c6c3a5e20738"></a>
 <div class="memitem">
 <div class="memproto">
@@ -405,7 +476,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00043">43</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00049">49</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -421,25 +492,9 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00042">42</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00048">48</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a803f35821d1df763f9a67f9c7d5c9ed5"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool SimSettingsObj::fixed_planet_period</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00032">32</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
-
-<p>Referenced by <a class="el" href="mc_o_n_l_yorb_simulator_8cpp_source.html#l00015">main()</a>.</p>
 
 </div>
 </div>
@@ -453,7 +508,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00049">49</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00055">55</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -469,7 +524,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00048">48</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00054">54</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -485,7 +540,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00055">55</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00061">61</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -501,7 +556,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00054">54</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00060">60</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -517,7 +572,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00041">41</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00047">47</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -533,7 +588,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00040">40</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00046">46</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -550,6 +605,8 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00027">27</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+
+<p>Referenced by <a class="el" href="_simulation_manager_8py_source.html#l00034">SimulationManager.singleProcessStarter::run()</a>.</p>
 
 </div>
 </div>
@@ -579,7 +636,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00013">13</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00012">12</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="looped___m_c_m_corb_simulator_8cpp_source.html#l00014">main()</a>.</p>
 
@@ -595,7 +652,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00014">14</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00013">13</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -627,7 +684,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00047">47</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00053">53</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -643,9 +700,25 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00046">46</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00052">52</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a1d272adc3c89e604b3d2f181805e033d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool SimSettingsObj::primaryStarRVs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00037">37</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+
+<p>Referenced by <a class="el" href="mc_o_n_l_yorb_simulator_8cpp_source.html#l00014">main()</a>.</p>
 
 </div>
 </div>
@@ -675,7 +748,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00056">56</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00062">62</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -691,7 +764,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00057">57</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00063">63</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -757,39 +830,53 @@ Here is the caller graph for this function:</div>
 
 <p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00028">28</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
-<p>Referenced by <a class="el" href="_m_c_m_c___process_manager_duo_8py_source.html#l00022">MCMC_ProcessManagerDuo.mcmcProcessManager::run()</a>.</p>
+<p>Referenced by <a class="el" href="_simulation_manager_8py_source.html#l00034">SimulationManager.singleProcessStarter::run()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a7787a2db50306d7cfd1dd351c6a73b84"></a>
+<a class="anchor" id="a0363107f8ccc4da42900162e2354681c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool SimSettingsObj::simulate_StarPlanet</td>
+          <td class="memname">bool SimSettingsObj::simulate_PrimaryOrbitRV</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00032">32</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab5cdb61313bac3bef9e09fece701b289"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool SimSettingsObj::simulate_StarPlanetRV</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00031">31</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
-<p>Referenced by <a class="el" href="mc_o_n_l_yorb_simulator_8cpp_source.html#l00015">main()</a>.</p>
+<p>Referenced by <a class="el" href="mc_o_n_l_yorb_simulator_8cpp_source.html#l00014">main()</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aeab28f68f0ad7dcfd8a4bef4322d79fb"></a>
+<a class="anchor" id="a1bf8304caf8b297375f74c4588f75721"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool SimSettingsObj::simulate_StarStar</td>
+          <td class="memname">bool SimSettingsObj::simulate_StarStarRV</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00030">30</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
-<p>Referenced by <a class="el" href="mc_o_n_l_yorb_simulator_8cpp_source.html#l00015">main()</a>.</p>
+<p>Referenced by <a class="el" href="mc_o_n_l_yorb_simulator_8cpp_source.html#l00014">main()</a>.</p>
 
 </div>
 </div>
@@ -835,7 +922,7 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00053">53</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00059">59</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
@@ -851,9 +938,25 @@ Here is the caller graph for this function:</div>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00052">52</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00058">58</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
 
 <p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="abb5bcbe47c9751932e42374439ebd9de"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool SimSettingsObj::TcEqualT</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00038">38</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+
+<p>Referenced by <a class="el" href="mc_o_n_l_yorb_simulator_8cpp_source.html#l00014">main()</a>.</p>
 
 </div>
 </div>
@@ -868,6 +971,24 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 
 <p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00036">36</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+
+<p>Referenced by <a class="el" href="mc_o_n_l_yorb_simulator_8cpp_source.html#l00014">main()</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a834e8e7b8118dc5a316886701d656f61"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool SimSettingsObj::useMultiProcessing</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="_sim_settings_obj_8h_source.html#l00014">14</a> of file <a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a>.</p>
+
+<p>Referenced by <a class="el" href="_m_c_m_corb_simulator_8cpp_source.html#l00019">main()</a>.</p>
 
 </div>
 </div>
@@ -888,8 +1009,8 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/mnt/Data1/Todai_Work/Dropbox/workspace/SMODT/code/cppSide/toolboxes/<a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a></li>
-<li>/mnt/Data1/Todai_Work/Dropbox/workspace/SMODT/code/cppSide/toolboxes/<a class="el" href="_sim_settings_obj_8cpp_source.html">SimSettingsObj.cpp</a></li>
+<li>/mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/code/cppSide/toolboxes/<a class="el" href="_sim_settings_obj_8h_source.html">SimSettingsObj.h</a></li>
+<li>/mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/code/cppSide/toolboxes/<a class="el" href="_sim_settings_obj_8cpp_source.html">SimSettingsObj.cpp</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -897,7 +1018,7 @@ Here is the caller graph for this function:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_sim_settings_obj.html">SimSettingsObj</a></li>
-    <li class="footer">Generated on Sat Feb 15 2014 21:17:11 for SMODT-documentation by
+    <li class="footer">Generated on Fri Apr 10 2015 17:12:34 for SMODT-documentation by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

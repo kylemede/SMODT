@@ -3,10 +3,9 @@ var searchData=
   ['bernouillih',['BernouilliH',['../class_c_wallenius_n_c_hypergeometric.html#a1f5161c78a2e6a0c93efa73bc6dbaa14',1,'CWalleniusNCHypergeometric::BernouilliH(int32_t x, double h, double rh, StochasticLib1 *sto)'],['../class_c_wallenius_n_c_hypergeometric.html#a1f5161c78a2e6a0c93efa73bc6dbaa14',1,'CWalleniusNCHypergeometric::BernouilliH(int32_t x, double h, double rh, StochasticLib1 *sto)']]],
   ['bernoulli',['Bernoulli',['../class_stochastic_lib1.html#aeb52dc8c9bb0bd6c5408c07f82a8793f',1,'StochasticLib1::Bernoulli(double p)'],['../class_stochastic_lib1.html#aeb52dc8c9bb0bd6c5408c07f82a8793f',1,'StochasticLib1::Bernoulli(double p)']]],
   ['bestorbit',['bestOrbit',['../class_m_c_m_corb_func_obj.html#ab7265ff9e1ad15ca05173154b3f79bd9',1,'MCMCorbFuncObj::bestOrbit()'],['../classsim_aneal_orb_func_obj.html#af7c0e0da20c34dd97017c2e3590433b4',1,'simAnealOrbFuncObj::bestOrbit()']]],
-  ['bestorbitfindernew',['bestOrbitFinderNEW',['../namespacetoolboxes_1_1general_toolbox.html#a49cb986c1e10ae0066cf606ed7a5403a',1,'toolboxes::generalToolbox']]],
+  ['bestorbitfiletolist',['bestOrbitFileToList',['../namespacetoolboxes_1_1general_toolbox.html#ac77acaa7d6f963d7a34564e49a1671c5',1,'toolboxes::generalToolbox']]],
+  ['bestorbitfinder',['bestOrbitFinder',['../namespacetoolboxes_1_1general_toolbox.html#a7e5d2258d372ec9d83e8e5eb0de91cad',1,'toolboxes::generalToolbox']]],
   ['bico',['bico',['../class_c_wallenius_n_c_hypergeometric.html#afd7f6a543ad4da0c9ad4453034e0eef6',1,'CWalleniusNCHypergeometric::bico()'],['../class_c_multi_wallenius_n_c_hypergeometric.html#a028eb3d5401aad53671ae6850838fcc0',1,'CMultiWalleniusNCHypergeometric::bico()']]],
-  ['binaryorbsimstarterduo',['BinaryOrbSimStarterDuo',['../namespace_binary_orb_sim_starter_duo.html',1,'']]],
-  ['binaryorbsimstarterduo_2epy',['BinaryOrbSimStarterDuo.py',['../_binary_orb_sim_starter_duo_8py.html',1,'']]],
   ['bino_5fa',['bino_a',['../class_stochastic_lib1.html#aae2172799f02648884f03d452efb35e5',1,'StochasticLib1']]],
   ['bino_5fbound',['bino_bound',['../class_stochastic_lib1.html#ae5998f3886fb4a4702612e13cd35b452',1,'StochasticLib1']]],
   ['bino_5fc_5fpm',['Bino_c_pm',['../class_stochastic_lib2.html#a97cb9a4e3f59a9988335ccc78c72e66e',1,'StochasticLib2']]],
@@ -50,7 +49,7 @@ var searchData=
   ['booltostr',['boolToStr',['../classgeneral_tools.html#a661b9542c218853a078db19975d98356',1,'generalTools']]],
   ['brandom',['BRandom',['../class_c_random_s_f_m_t.html#a3957e6ed1da2f37d0cfee078a48d84ae',1,'CRandomSFMT::BRandom()'],['../class_c_random_s_f_m_t.html#a3957e6ed1da2f37d0cfee078a48d84ae',1,'CRandomSFMT::BRandom()']]],
   ['breedingsuccess',['BreedingSuccess',['../rnd_2ex-evol2_8cpp.html#a951132dc0b3cd5f8967176e001bf50f6',1,'BreedingSuccess(double *ChildGenotypes, int32_t *FathersGenotypes, int32_t *MothersGenotypes, double *Selection, int Mul):&#160;ex-evol2.cpp'],['../toolboxes_2rnd_2ex-evol2_8cpp.html#a951132dc0b3cd5f8967176e001bf50f6',1,'BreedingSuccess(double *ChildGenotypes, int32_t *FathersGenotypes, int32_t *MothersGenotypes, double *Selection, int Mul):&#160;ex-evol2.cpp']]],
-  ['burnincalc3',['burnInCalc3',['../namespacetoolboxes_1_1general_toolbox.html#ac439627b4120ee91ed9f992727d5e633',1,'toolboxes::generalToolbox']]],
+  ['burnincalcfunc',['burnInCalcFunc',['../namespacetoolboxes_1_1general_toolbox.html#a400f5231ad2566ac0bd6906708a9fb17',1,'toolboxes::generalToolbox']]],
   ['burnincalcmultifile',['burnInCalcMultiFile',['../namespacetoolboxes_1_1general_toolbox.html#aa80355212c0b92808e9068eca11b3331',1,'toolboxes::generalToolbox']]],
   ['burninstripper',['burnInStripper',['../namespacetoolboxes_1_1general_toolbox.html#ac3ae8982e8976dedf8e55ff199ad5b9b',1,'toolboxes::generalToolbox']]]
 ];

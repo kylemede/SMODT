@@ -23,5 +23,6 @@ var searchData=
   ['wnc_5fo_5flast',['wnc_o_last',['../class_stochastic_lib3.html#a13d965331a60fb8bce0607bc3d188aa2',1,'StochasticLib3']]],
   ['wnchyppr_2ecpp',['wnchyppr.cpp',['../rnd_2wnchyppr_8cpp.html',1,'']]],
   ['wnchyppr_2ecpp',['wnchyppr.cpp',['../toolboxes_2rnd_2wnchyppr_8cpp.html',1,'']]],
-  ['wr',['wr',['../class_c_wallenius_n_c_hypergeometric.html#ae6fb2d9ae90aede71331e7c2887c5fec',1,'CWalleniusNCHypergeometric::wr()'],['../class_c_multi_wallenius_n_c_hypergeometric.html#a188d160594f215b923ecba589f6b1f68',1,'CMultiWalleniusNCHypergeometric::wr()']]]
+  ['wr',['wr',['../class_c_wallenius_n_c_hypergeometric.html#ae6fb2d9ae90aede71331e7c2887c5fec',1,'CWalleniusNCHypergeometric::wr()'],['../class_c_multi_wallenius_n_c_hypergeometric.html#a188d160594f215b923ecba589f6b1f68',1,'CMultiWalleniusNCHypergeometric::wr()']]],
+  ['wrapup',['wrapUp',['../namespacetoolboxes_1_1ram_tracker.html#a7a5d362fdc8140b36807a251ee61be7a',1,'toolboxes::ramTracker']]]
 ];

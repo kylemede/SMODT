@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>SMODT-documentation: /mnt/Data1/Todai_Work/Dropbox/workspace/SMODT/code/cppSide/toolboxes/orbToolboxes.h Source File</title>
+<title>SMODT-documentation: /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/code/cppSide/toolboxes/orbToolboxes.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -104,61 +104,60 @@ $(document).ready(function(){initNavTree('orb_toolboxes_8h.html','');});
 <div class="title">orbToolboxes.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="orb_toolboxes_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;orbSimStructures.h&quot;</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_r_vtools_8h.html">RVtools.h</a>&quot;</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_d_itools_8h.html">DItools.h</a>&quot;</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="general_tools_8h.html">generalTools.h</a>&quot;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_sim_settings_obj_8h.html">SimSettingsObj.h</a>&quot;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_data_obj_8h.html">DataObj.h</a>&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;rnd/sfmt.h&quot;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">// conversion factors and constants</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#a598a3330b3c21701223ee0ca14316eca">   11</a></span>&#160;<span class="preprocessor">#define PI 3.14159265359</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#a6d6e19125fe7f31962a34db2a378113d">   12</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SecPerYear  31557600.0</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#acb874917124e80c2cc3093224267270a">   13</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define GravConst  6.67300e-11</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#a604a0af0f4e0e0937d76de54094a79f7">   14</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MperAU  149598000000.0</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#abc3a507fe5d83a094e248e04cdeca200">   15</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define KGperMsun  1.98892e30</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#a7418946957d43f7beeb2ba6055489d8b">   16</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SecPerDay 86400.0</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#ab06efcd5ace405dec01fbf433aab9db1">   17</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define KGperMjupiter 1.8986e27</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#aba0b0a824fcc2e8824b4fe5de417aa7b">   18</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MjupiterPerMsun 0.000954265748</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">//TAcalcReturnType TAcalculator(TAcalcInputType TACIT);</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">//double chiSquaredCalc(double real, double error, double model);</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">//void fileWriter(outputDataType ODT);</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">//DItools DItoolsParamLoadUp(DIdataObj DIdo);</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">//VRcalcStarStar VRcalcStarStarLoadUp(RVdataObj RVdo);</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">//VRcalcStarPlanet VRcalcStarPlanetLoadUp(RVdataObj RVdo);</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">//semiMajorType semiMajorConverter(semiMajorType SMT);</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">//double earliestEpochFinder(DIdataObj DIdo, RVdataObj RVdo);</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">//string CorrelationLengthCalc(vector&lt;double&gt; data, string paramName, vector&lt;int&gt; timesBeenHere);</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">//string numSamplesStringMaker(int numSamples);</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">//void logFileWriter(string filename, string LOGlines);</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">//string filenameEndAppend(string inputString, string endAppendString);</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">//string filenamePrepend(string inputString, string prependString);</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">//string boolToStr(bool boolIN);</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">//double standardDeviation(vector&lt;double&gt; v);</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">//string timeStr(int timeElapsed);</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">//int corrLengthJumpyCalc(vector&lt;double&gt; data);</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">//double varianceCalc(vector&lt;double&gt; data, int lastPoint);</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">//eccArgPeriCalcType eccArgPeriCalc(eccArgPeriCalcType EACT);</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">//eccArgPeri2ToTcType eccArgPeri2ToTcCalc(eccArgPeri2ToTcType EATT);</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">//double atanTopBtm(double top, double btm);</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">//double meanCalc(vector&lt;double&gt; v, int lastPoint);</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">//void gelmanRubinStage1(outputDataType ODT,int numTimes);</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">//GRfuncReturnType gelmanRubinStage1func(vector&lt;double&gt; data,vector&lt;int&gt; timesBeenHere,int numTimes);</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">//string fileBasename(string str);</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">//string findDirectory(string str);</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">//string findChainNumberStr(string str);</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">//vector&lt;double&gt; fillOutDataVector(vector&lt;double&gt; data,vector&lt;int&gt; timesBeenHere);</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">//outputDataType odtStart(outputDataType ODT, int numTotalSamples);</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">//outputDataType odtFinish(outputDataType ODT);</span></div>
+<a href="orb_toolboxes_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_r_vtools_8h.html">RVtools.h</a>&quot;</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_d_itools_8h.html">DItools.h</a>&quot;</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_sim_settings_obj_8h.html">SimSettingsObj.h</a>&quot;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="_data_obj_8h.html">DataObj.h</a>&quot;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="general_tools_8h.html">generalTools.h</a>&quot;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;rnd/sfmt.h&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">// conversion factors and constants</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#a598a3330b3c21701223ee0ca14316eca">   10</a></span>&#160;<span class="preprocessor">#define PI 3.14159265359</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#a6d6e19125fe7f31962a34db2a378113d">   11</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SecPerYear  31557600.0</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#acb874917124e80c2cc3093224267270a">   12</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define GravConst  6.67300e-11</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#a604a0af0f4e0e0937d76de54094a79f7">   13</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MperAU  149598000000.0</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#abc3a507fe5d83a094e248e04cdeca200">   14</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define KGperMsun  1.98892e30</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#a7418946957d43f7beeb2ba6055489d8b">   15</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define SecPerDay 86400.0</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#ab06efcd5ace405dec01fbf433aab9db1">   16</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define KGperMjupiter 1.8986e27</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="code" href="orb_toolboxes_8h.html#aba0b0a824fcc2e8824b4fe5de417aa7b">   17</a></span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MjupiterPerMsun 0.000954265748</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">//TAcalcReturnType TAcalculator(TAcalcInputType TACIT);</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">//double chiSquaredCalc(double real, double error, double model);</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">//void fileWriter(outputDataType ODT);</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">//DItools DItoolsParamLoadUp(DIdataObj DIdo);</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">//VRcalcStarStar VRcalcStarStarLoadUp(RVdataObj RVdo);</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">//VRcalcStarPlanet VRcalcStarPlanetLoadUp(RVdataObj RVdo);</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">//semiMajorType semiMajorConverter(semiMajorType SMT);</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">//double earliestEpochFinder(DIdataObj DIdo, RVdataObj RVdo);</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">//string CorrelationLengthCalc(vector&lt;double&gt; data, string paramName, vector&lt;int&gt; timesBeenHere);</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">//string numSamplesStringMaker(int numSamples);</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">//void logFileWriter(string filename, string LOGlines);</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">//string filenameEndAppend(string inputString, string endAppendString);</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">//string filenamePrepend(string inputString, string prependString);</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">//string boolToStr(bool boolIN);</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">//double standardDeviation(vector&lt;double&gt; v);</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">//string timeStr(int timeElapsed);</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">//int corrLengthJumpyCalc(vector&lt;double&gt; data);</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">//double varianceCalc(vector&lt;double&gt; data, int lastPoint);</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">//eccArgPeriCalcType eccArgPeriCalc(eccArgPeriCalcType EACT);</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">//eccArgPeri2ToTcType eccArgPeri2ToTcCalc(eccArgPeri2ToTcType EATT);</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">//double atanTopBtm(double top, double btm);</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">//double meanCalc(vector&lt;double&gt; v, int lastPoint);</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">//void gelmanRubinStage1(outputDataType ODT,int numTimes);</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">//GRfuncReturnType gelmanRubinStage1func(vector&lt;double&gt; data,vector&lt;int&gt; timesBeenHere,int numTimes);</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">//string fileBasename(string str);</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">//string findDirectory(string str);</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">//string findChainNumberStr(string str);</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">//vector&lt;double&gt; fillOutDataVector(vector&lt;double&gt; data,vector&lt;int&gt; timesBeenHere);</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">//outputDataType odtStart(outputDataType ODT, int numTotalSamples);</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">//outputDataType odtFinish(outputDataType ODT);</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_050edd66366d13764f98250ef6db77f6.html">code</a></li><li class="navelem"><a class="el" href="dir_8fe86e63c21b60f73b595c6f0a0ad92c.html">cppSide</a></li><li class="navelem"><a class="el" href="dir_00cc5d3017c1cdbeede27fa7cc49cca0.html">toolboxes</a></li><li class="navelem"><a class="el" href="orb_toolboxes_8h.html">orbToolboxes.h</a></li>
-    <li class="footer">Generated on Sat Feb 15 2014 21:17:10 for SMODT-documentation by
+    <li class="footer">Generated on Fri Apr 10 2015 17:12:32 for SMODT-documentation by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

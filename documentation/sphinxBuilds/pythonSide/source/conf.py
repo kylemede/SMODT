@@ -21,7 +21,7 @@ import sys, os
 ## For Kyle's laptop
 #sys.path.insert(0,os.path.abspath('/run/media/kmede/SharedData/Dropbox/workspace/charis-dep'))
 ## For Kyle's desktop
-sys.path.insert(0,os.path.abspath('/mnt/Data1/Todai_Work/Dropbox/workspace/SMODT/code/pythonSide'))
+sys.path.insert(0,os.path.abspath('/mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/code/pythonSide'))
 #print '$'*75
 #print os.path.abspath('/mnt/Data1/Todai_Work/Dropbox/workspace/SMODT/code')
 #print '$'*75

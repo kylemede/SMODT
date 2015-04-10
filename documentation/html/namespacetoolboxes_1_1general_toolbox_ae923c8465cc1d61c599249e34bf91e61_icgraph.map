@@ -1,16 +1,12 @@
 <map id="G" name="G">
-<area shape="rect" id="node3" href="$namespacetoolboxes_1_1general_toolbox.html#adef6c6b46f32612a595cf0091bfac567" title="toolboxes.generalToolbox.conf\lLevelFinderNEWdataVersion" alt="" coords="254,215,453,257"/>
-<area shape="rect" id="node11" href="$namespacetoolboxes_1_1plot_toolbox.html#a072829157bb4a2842ed7d5f5d066d6d9" title="toolboxes.plotToolbox.summary\lPlotter2" alt="" coords="517,358,723,399"/>
-<area shape="rect" id="node18" href="$namespacetoolboxes_1_1plot_toolbox.html#afe0a1c08537cc0d0c92f395aafee7b15" title="toolboxes.plotToolbox.summary\lPlotter2MCMC" alt="" coords="787,173,994,214"/>
-<area shape="rect" id="node26" href="$namespacetoolboxes_1_1plot_toolbox.html#af5e6e4341617d1a198e50309e707d8c3" title="toolboxes.plotToolbox.data\lReadAndPlotNEW3" alt="" coords="264,333,443,374"/>
-<area shape="rect" id="node28" href="$_m_c_m_corb_simulator_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="328,399,379,425"/>
-<area shape="rect" id="node32" href="$classgeneral_tools.html#aa1a05fedabcf85e575767bd2bfc2bbd6" title="generalTools::timeStr" alt="" coords="280,449,427,476"/>
-<area shape="rect" id="node5" href="$namespacetoolboxes_1_1general_toolbox.html#a51ecffdf37e69a9ebd03c02a39c02b92" title="toolboxes.generalToolbox.confidence\lLevelsFinderNEW" alt="" coords="501,175,739,217"/>
-<area shape="rect" id="node7" href="$namespacetoolboxes_1_1plot_toolbox.html#a4435821771fb03137de2f50a4049155a" title="toolboxes.plotToolbox.di\lPlotterTester" alt="" coords="539,241,701,282"/>
-<area shape="rect" id="node9" href="$namespacetoolboxes_1_1plot_toolbox.html#a2930df4bb94591bfb951021009c777b4" title="toolboxes.plotToolbox.single\lParamReadAndPlotNEW2" alt="" coords="527,45,713,86"/>
-<area shape="rect" id="node23" href="$namespacetoolboxes_1_1plot_toolbox.html#a8c2a2807eefcd6f7616ac93e391d72df" title="toolboxes.plotToolbox.summary\lPlotter2MCMCfunc" alt="" coords="517,110,723,151"/>
-<area shape="rect" id="node13" href="$namespacetoolboxes_1_1plot_toolbox.html#a2bd049c4ff948688ca4cfc56cdade23a" title="toolboxes.plotToolbox.make\lCleanSummaryPlot" alt="" coords="798,358,983,399"/>
-<area shape="rect" id="node15" href="$namespacetoolboxes_1_1plot_toolbox.html#ad46eb8e5bc183f1357f1781ed7a34bdf" title="toolboxes.plotToolbox.Post\lSimCompleteAnalysisFunc" alt="" coords="1047,299,1227,341"/>
-<area shape="rect" id="node20" href="$namespacetoolboxes_1_1plot_toolbox.html#af333facbf75c9e9f905a6b41e24f9d70" title="toolboxes.plotToolbox.mcmc\lProgressPlotter" alt="" coords="1043,173,1232,214"/>
-<area shape="rect" id="node34" href="$looped___m_c_m_corb_simulator_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="595,449,645,476"/>
+<area shape="rect" id="node3" href="$namespacetoolboxes_1_1general_toolbox.html#adef710ff6f752aae93cf09d99d7fc86e" title="toolboxes.generalToolbox.data\lReader" alt="" coords="254,135,453,177"/>
+<area shape="rect" id="node17" href="$_m_c_m_corb_simulator_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="328,205,379,232"/>
+<area shape="rect" id="node19" href="$classgeneral_tools.html#aa1a05fedabcf85e575767bd2bfc2bbd6" title="generalTools::timeStr" alt="" coords="280,263,427,289"/>
+<area shape="rect" id="node5" href="$namespacetoolboxes_1_1general_toolbox.html#aa80355212c0b92808e9068eca11b3331" title="toolboxes.generalToolbox.burn\lInCalcMultiFile" alt="" coords="507,5,706,46"/>
+<area shape="rect" id="node7" href="$namespacetoolboxes_1_1general_toolbox.html#a70de23eae48582dba9b98b66187c6548" title="toolboxes.generalToolbox.conf\lLevelFinder" alt="" coords="507,70,706,111"/>
+<area shape="rect" id="node13" href="$namespacetoolboxes_1_1general_toolbox.html#a3a528fb6b8354c7758a32dc0c1c472db" title="toolboxes.generalToolbox.mcmc\lEffectivePointsCalc" alt="" coords="501,135,712,177"/>
+<area shape="rect" id="node15" href="$namespacetoolboxes_1_1general_toolbox.html#a1bac52e87842cc89c3d2c384205c95a1" title="toolboxes.generalToolbox.output\lDatafileToDict" alt="" coords="501,201,712,242"/>
+<area shape="rect" id="node9" href="$namespacetoolboxes_1_1general_toolbox.html#a31c8ac8c7050495ca24dc1a61bfb4d65" title="toolboxes.generalToolbox.confidence\lLevelsFinderLoopedDatasets" alt="" coords="760,37,997,78"/>
+<area shape="rect" id="node11" href="$namespacetoolboxes_1_1general_toolbox.html#ac4afbcb30bb56a2baa6794e206634849" title="toolboxes.generalToolbox.record\lResults" alt="" coords="773,102,984,143"/>
+<area shape="rect" id="node21" href="$looped___m_c_m_corb_simulator_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="main" alt="" coords="581,267,632,293"/>
 </map>

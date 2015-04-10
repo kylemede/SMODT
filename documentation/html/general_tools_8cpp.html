@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>SMODT-documentation: /mnt/Data1/Todai_Work/Dropbox/workspace/SMODT/code/cppSide/toolboxes/generalTools.cpp File Reference</title>
+<title>SMODT-documentation: /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/code/cppSide/toolboxes/generalTools.cpp File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -109,6 +109,8 @@ $(document).ready(function(){initNavTree('general_tools_8cpp.html','');});
 <code>#include &lt;limits&gt;</code><br/>
 <code>#include &lt;stdio.h&gt;</code><br/>
 <code>#include &lt;stdlib.h&gt;</code><br/>
+<code>#include &quot;sys/types.h&quot;</code><br/>
+<code>#include &quot;sys/sysinfo.h&quot;</code><br/>
 <code>#include &lt;vector&gt;</code><br/>
 <code>#include &lt;math.h&gt;</code><br/>
 <code>#include &lt;sstream&gt;</code><br/>
@@ -121,9 +123,9 @@ $(document).ready(function(){initNavTree('general_tools_8cpp.html','');});
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for generalTools.cpp:</div>
 <div class="dyncontent">
-<div class="center"><img src="general_tools_8cpp__incl.png" border="0" usemap="#_2mnt_2_data1_2_todai___work_2_dropbox_2workspace_2_s_m_o_d_t_2code_2cpp_side_2toolboxes_2general_tools_8cpp" alt=""/></div>
-<map name="_2mnt_2_data1_2_todai___work_2_dropbox_2workspace_2_s_m_o_d_t_2code_2cpp_side_2toolboxes_2general_tools_8cpp" id="_2mnt_2_data1_2_todai___work_2_dropbox_2workspace_2_s_m_o_d_t_2code_2cpp_side_2toolboxes_2general_tools_8cpp">
-<area shape="rect" id="node29" href="orb_toolboxes_8h.html" title="orbToolboxes.h" alt="" coords="494,125,604,152"/><area shape="rect" id="node33" href="_r_vtools_8h.html" title="RVtools.h" alt="" coords="815,200,893,227"/><area shape="rect" id="node37" href="_d_itools_8h.html" title="DItools.h" alt="" coords="569,200,643,227"/><area shape="rect" id="node41" href="general_tools_8h.html" title="generalTools.h" alt="" coords="439,200,545,227"/><area shape="rect" id="node45" href="_sim_settings_obj_8h.html" title="SimSettingsObj.h" alt="" coords="667,200,791,227"/><area shape="rect" id="node49" href="_data_obj_8h.html" title="DataObj.h" alt="" coords="333,200,413,227"/><area shape="rect" id="node53" href="toolboxes_2rnd_2sfmt_8h.html" title="rnd/sfmt.h" alt="" coords="970,200,1051,227"/><area shape="rect" id="node57" href="toolboxes_2rnd_2randomc_8h.html" title="randomc.h" alt="" coords="1024,275,1105,301"/></map>
+<div class="center"><img src="general_tools_8cpp__incl.png" border="0" usemap="#_2mnt_2_data1_2_todai___work_2_eclipse_workspace_2_s_m_o_d_t_2code_2cpp_side_2toolboxes_2general_tools_8cpp" alt=""/></div>
+<map name="_2mnt_2_data1_2_todai___work_2_eclipse_workspace_2_s_m_o_d_t_2code_2cpp_side_2toolboxes_2general_tools_8cpp" id="_2mnt_2_data1_2_todai___work_2_eclipse_workspace_2_s_m_o_d_t_2code_2cpp_side_2toolboxes_2general_tools_8cpp">
+<area shape="rect" id="node33" href="orb_toolboxes_8h.html" title="orbToolboxes.h" alt="" coords="734,125,844,152"/><area shape="rect" id="node35" href="_r_vtools_8h.html" title="RVtools.h" alt="" coords="648,200,727,227"/><area shape="rect" id="node39" href="_d_itools_8h.html" title="DItools.h" alt="" coords="752,200,825,227"/><area shape="rect" id="node43" href="_sim_settings_obj_8h.html" title="SimSettingsObj.h" alt="" coords="850,200,973,227"/><area shape="rect" id="node47" href="_data_obj_8h.html" title="DataObj.h" alt="" coords="998,200,1079,227"/><area shape="rect" id="node51" href="general_tools_8h.html" title="generalTools.h" alt="" coords="517,200,624,227"/><area shape="rect" id="node55" href="toolboxes_2rnd_2sfmt_8h.html" title="rnd/sfmt.h" alt="" coords="1155,200,1236,227"/><area shape="rect" id="node59" href="toolboxes_2rnd_2randomc_8h.html" title="randomc.h" alt="" coords="1209,275,1291,301"/></map>
 </div>
 </div>
 <p><a href="general_tools_8cpp_source.html">Go to the source code of this file.</a></p>
@@ -136,7 +138,7 @@ Include dependency graph for generalTools.cpp:</div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_050edd66366d13764f98250ef6db77f6.html">code</a></li><li class="navelem"><a class="el" href="dir_8fe86e63c21b60f73b595c6f0a0ad92c.html">cppSide</a></li><li class="navelem"><a class="el" href="dir_00cc5d3017c1cdbeede27fa7cc49cca0.html">toolboxes</a></li><li class="navelem"><a class="el" href="general_tools_8cpp.html">generalTools.cpp</a></li>
-    <li class="footer">Generated on Sat Feb 15 2014 21:17:11 for SMODT-documentation by
+    <li class="footer">Generated on Fri Apr 10 2015 17:12:33 for SMODT-documentation by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

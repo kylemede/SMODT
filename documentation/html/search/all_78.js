@@ -1,7 +1,6 @@
 var searchData=
 [
   ['x',['x',['../class_c_wallenius_n_c_hypergeometric.html#af39ef9b68884c61621df682060ca74f0',1,'CWalleniusNCHypergeometric::x()'],['../class_c_multi_wallenius_n_c_hypergeometric.html#ae4e4bd1bd6ffec0956195da6cf893f76',1,'CMultiWalleniusNCHypergeometric::x()']]],
-  ['x2',['x2',['../namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9',1,'toolboxes::DItoolbox']]],
   ['x_5fmodel',['x_model',['../structorbit_calc_return_type.html#ac7debe058663aafcf2155b602be8a29e',1,'orbitCalcReturnType']]],
   ['xfac',['xFac',['../class_c_wallenius_n_c_hypergeometric.html#aae1dee805918ccc4c402d29e47bcbd6c',1,'CWalleniusNCHypergeometric::xFac()'],['../class_c_fishers_n_c_hypergeometric.html#aae5b151837f1ab4e71266cfee752d922',1,'CFishersNCHypergeometric::xFac()']]],
   ['xi',['xi',['../class_c_multi_wallenius_n_c_hypergeometric_moments.html#a7505735dbb76e779fcd88f2759a2dac3',1,'CMultiWalleniusNCHypergeometricMoments::xi()'],['../class_c_multi_fishers_n_c_hypergeometric.html#a23d898d3b688be52155f9de80dd5da8b',1,'CMultiFishersNCHypergeometric::xi()']]],

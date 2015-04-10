@@ -23,10 +23,12 @@ SMODT Starter
 .. automodule:: SMODTstarter
    :members: main
 
-MCMC Process Manager
+Simulation Manager
 ====================================
 
-.. autoclass:: MCMC_ProcessManager.singleProcessStarter
+.. automodule:: SimulationManager
+   :members: 
+
    
-.. autofunction:: MCMC_ProcessManager.multiProcessStarter
+
    

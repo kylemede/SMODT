@@ -14,6 +14,6 @@ var searchData=
   ['rvoffsetmaxs',['RVoffsetMAXs',['../class_sim_settings_obj.html#ad9c0effcda08c0af8988572b61fdaf8d',1,'SimSettingsObj']]],
   ['rvoffsetmins',['RVoffsetMINs',['../class_sim_settings_obj.html#a9928a632f0a876d1659de142a5e7ffeb',1,'SimSettingsObj']]],
   ['rvoffsets',['RVoffsets',['../structoutput_data_type.html#a6db317a936d76134a5f5b7326e4483af',1,'outputDataType']]],
-  ['rvonly',['RVonly',['../class_sim_settings_obj.html#a73f3e97982b4db907d5d6284524aa00c',1,'SimSettingsObj::RVonly()'],['../namespace_binary_orb_sim_starter_duo.html#acaa1dccd461e3e5ec4736021e1fec5c0',1,'BinaryOrbSimStarterDuo.RVonly()']]],
+  ['rvonly',['RVonly',['../class_sim_settings_obj.html#a73f3e97982b4db907d5d6284524aa00c',1,'SimSettingsObj']]],
   ['rvs',['RVs',['../class_r_vdata_obj.html#a79a211be963d16f8936377fe1be93745',1,'RVdataObj']]]
 ];

@@ -39,3 +39,16 @@ Plotting Tools
 
 .. automodule:: toolboxes.plotToolbox
    :members:
+
+RAM tracking Tool
+===============================
+
+.. automodule:: toolboxes.ramTracker
+   :members:
+
+Artificial Data Making Tool
+===============================
+
+.. automodule:: toolboxes.artificialDataMaker
+   :members:
+

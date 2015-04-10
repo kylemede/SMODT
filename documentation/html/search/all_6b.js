@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['k',['K',['../class_r_vtools.html#abe8aca4a45f07ef83263a3020659249c',1,'RVtools']]],
   ['k_5fmax',['K_MAX',['../class_sim_settings_obj.html#aa1738202a48f79a7d1457c05f21fdc06',1,'SimSettingsObj']]],
   ['k_5fmin',['K_MIN',['../class_sim_settings_obj.html#ac90ffd529dd66e7b2d3ace9ed92a605a',1,'SimSettingsObj']]],
   ['k_5fp',['K_p',['../class_v_rcalc_star_planet.html#a203273bbadc8ce498926fec578d13e54',1,'VRcalcStarPlanet']]],

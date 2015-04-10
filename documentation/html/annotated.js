@@ -1,10 +1,9 @@
 var annotated =
 [
-    [ "BinaryOrbSimStarterDuo", "namespace_binary_orb_sim_starter_duo.html", null ],
     [ "dicts", "namespacedicts.html", "namespacedicts" ],
-    [ "MCMC_ProcessManagerDuo", "namespace_m_c_m_c___process_manager_duo.html", "namespace_m_c_m_c___process_manager_duo" ],
-    [ "orbitToolboxDuo", null, null ],
     [ "progressbar", "namespaceprogressbar.html", "namespaceprogressbar" ],
+    [ "SimulationManager", "namespace_simulation_manager.html", "namespace_simulation_manager" ],
+    [ "SMODTstarter", "namespace_s_m_o_d_tstarter.html", null ],
     [ "std", null, null ],
     [ "toolboxes", "namespacetoolboxes.html", "namespacetoolboxes" ],
     [ "CFishersNCHypergeometric", "class_c_fishers_n_c_hypergeometric.html", "class_c_fishers_n_c_hypergeometric" ],
@@ -19,7 +18,6 @@ var annotated =
     [ "DIdataObj", "class_d_idata_obj.html", "class_d_idata_obj" ],
     [ "DItools", "class_d_itools.html", "class_d_itools" ],
     [ "eccArgPeri2ToTcType", "structecc_arg_peri2_to_tc_type.html", "structecc_arg_peri2_to_tc_type" ],
-    [ "eccArgPeriCalcType", "structecc_arg_peri_calc_type.html", "structecc_arg_peri_calc_type" ],
     [ "generalTools", "classgeneral_tools.html", "classgeneral_tools" ],
     [ "GRfuncReturnType", "struct_g_rfunc_return_type.html", "struct_g_rfunc_return_type" ],
     [ "MCMCorbFuncObj", "class_m_c_m_corb_func_obj.html", "class_m_c_m_corb_func_obj" ],

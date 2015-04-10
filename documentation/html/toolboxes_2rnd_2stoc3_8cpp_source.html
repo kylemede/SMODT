@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>SMODT-documentation: /mnt/Data1/Todai_Work/Dropbox/workspace/SMODT/code/cppSide/toolboxes/rnd/stoc3.cpp Source File</title>
+<title>SMODT-documentation: /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/code/cppSide/toolboxes/rnd/stoc3.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -264,7 +264,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2stoc3_8cpp.html','');}
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;   <span class="comment">// This method is fast when n is low or when called repeatedly with</span></div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;   <span class="comment">// the same parameters.</span></div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>;                          <span class="comment">// upper x limit for table</span></div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> x2;                          <span class="comment">// upper x limit for table</span></div>
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> x;                           <span class="comment">// sample</span></div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;   <span class="keywordtype">double</span> u;                            <span class="comment">// uniform random number</span></div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;   <span class="keywordtype">int</span> success;                         <span class="comment">// table long enough</span></div>
@@ -306,7 +306,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2stoc3_8cpp.html','');}
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;   <span class="keywordtype">double</span> variance;                     <span class="comment">// variance</span></div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;   <span class="keywordtype">double</span> x;                            <span class="comment">// real sample</span></div>
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> xi;                          <span class="comment">// integer sample</span></div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>;                          <span class="comment">// limit when searching for mode</span></div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> x2;                          <span class="comment">// limit when searching for mode</span></div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;   <span class="keywordtype">double</span> u;                            <span class="comment">// uniform random</span></div>
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;   <span class="keywordtype">double</span> f, f2;                        <span class="comment">// probability function value</span></div>
 <div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;   <span class="keywordtype">double</span> s123;                         <span class="comment">// components 1,2,3 of hat width</span></div>
@@ -340,7 +340,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2stoc3_8cpp.html','');}
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;            x2 = xmin;</div>
 <div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;            <span class="keywordflow">if</span> (odds &gt; 0.294 &amp;&amp; N &lt;= 10000000) {</div>
 <div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;               x2 = <a class="code" href="class_stochastic_lib3.html#adb90248ab2200f7477638cf7242cad5f">wnc_mode</a> - 1;}                    <span class="comment">// search for mode can be limited</span></div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;            <span class="keywordflow">for</span> (xi = <a class="code" href="class_stochastic_lib3.html#adb90248ab2200f7477638cf7242cad5f">wnc_mode</a>; xi &gt;= <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>; xi--) {</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;            <span class="keywordflow">for</span> (xi = <a class="code" href="class_stochastic_lib3.html#adb90248ab2200f7477638cf7242cad5f">wnc_mode</a>; xi &gt;= x2; xi--) {</div>
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;               f = wnch.probability(xi);</div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;               <span class="keywordflow">if</span> (f &lt;= f2) <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;               <a class="code" href="class_stochastic_lib3.html#adb90248ab2200f7477638cf7242cad5f">wnc_mode</a> = xi; f2 = f;</div>
@@ -351,7 +351,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2stoc3_8cpp.html','');}
 <div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;            x2 = xmax;</div>
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;            <span class="keywordflow">if</span> (odds &lt; 3.4 &amp;&amp; N &lt;= 10000000) {</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;               x2 = <a class="code" href="class_stochastic_lib3.html#adb90248ab2200f7477638cf7242cad5f">wnc_mode</a> + 1;}                    <span class="comment">// search for mode can be limited</span></div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            <span class="keywordflow">for</span> (xi = <a class="code" href="class_stochastic_lib3.html#adb90248ab2200f7477638cf7242cad5f">wnc_mode</a>; xi &lt;= <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>; xi++) {</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            <span class="keywordflow">for</span> (xi = <a class="code" href="class_stochastic_lib3.html#adb90248ab2200f7477638cf7242cad5f">wnc_mode</a>; xi &lt;= x2; xi++) {</div>
 <div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;               f = wnch.probability(xi);</div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;               <span class="keywordflow">if</span> (f &lt;= f2) <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;               <a class="code" href="class_stochastic_lib3.html#adb90248ab2200f7477638cf7242cad5f">wnc_mode</a> = xi; f2 = f;</div>
@@ -423,7 +423,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2stoc3_8cpp.html','');}
 <div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;   <span class="comment">// sampling from Wallenius noncentral hypergeometric distribution </span></div>
 <div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;   <span class="comment">// using down-up search starting at the mean using the chop-down technique.</span></div>
 <div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;   <span class="comment">// This method is faster than the rejection method when the variance is low.</span></div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> <a class="code" href="class_stochastic_lib3.html#aa17a44f6c4c13bfe3a0086bdbe3e33d9">wall_x1</a>, <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>;                          <span class="comment">// search values</span></div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> <a class="code" href="class_stochastic_lib3.html#aa17a44f6c4c13bfe3a0086bdbe3e33d9">wall_x1</a>, x2;                          <span class="comment">// search values</span></div>
 <div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> xmin, xmax;                           <span class="comment">// x limits</span></div>
 <div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;   <span class="keywordtype">double</span>   u;                                   <span class="comment">// uniform random number to be converted</span></div>
 <div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;   <span class="keywordtype">double</span>   f;                                   <span class="comment">// probability function value</span></div>
@@ -466,7 +466,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2stoc3_8cpp.html','');}
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;            <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;               f = wnch2.probability(x2);</div>
 <div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;               u -= f;                           <span class="comment">// subtract probability until 0</span></div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;               <span class="keywordflow">if</span> (u &lt;= 0.) <span class="keywordflow">return</span> <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;               <span class="keywordflow">if</span> (u &lt;= 0.) <span class="keywordflow">return</span> x2;</div>
 <div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;               x2++;</div>
 <div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;               <span class="keywordflow">if</span> (f &lt; accura) updown &amp;= ~2;     <span class="comment">// stop searching down</span></div>
 <div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;            }</div>
@@ -1377,7 +1377,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2stoc3_8cpp.html','');}
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_050edd66366d13764f98250ef6db77f6.html">code</a></li><li class="navelem"><a class="el" href="dir_8fe86e63c21b60f73b595c6f0a0ad92c.html">cppSide</a></li><li class="navelem"><a class="el" href="dir_00cc5d3017c1cdbeede27fa7cc49cca0.html">toolboxes</a></li><li class="navelem"><a class="el" href="dir_ff8783c7d406528384c92b3cd8f9f74e.html">rnd</a></li><li class="navelem"><a class="el" href="toolboxes_2rnd_2stoc3_8cpp.html">stoc3.cpp</a></li>
-    <li class="footer">Generated on Sat Feb 15 2014 21:17:10 for SMODT-documentation by
+    <li class="footer">Generated on Fri Apr 10 2015 17:12:32 for SMODT-documentation by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

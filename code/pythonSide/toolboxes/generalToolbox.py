@@ -2628,7 +2628,7 @@ def listRandomizer(listIN, listIN2=False):
 
 def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
     """
-    $$$ Copy of exact function from generalToolbox as something odd was happening $$$$
+    Calculates the True Anomaly for a particular epoch.
     
     :param float t: Epoch [JD]
     :param float e: Eccentricity 

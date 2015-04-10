@@ -1,6 +1,5 @@
 <map id="G" name="G">
-<area shape="rect" id="node3" href="$namespacetoolboxes_1_1plot_toolbox.html#a77f390548bdb168193b49e7b57a9f612" title="toolboxes.plotToolbox.rv\lFitPlotter1Body" alt="" coords="249,5,413,46"/>
-<area shape="rect" id="node6" href="$namespacetoolboxes_1_1plot_toolbox.html#a1a902178112f12f47511ab73d6fccfe4" title="toolboxes.plotToolbox.rv\lModDatasetMakerDuo" alt="" coords="249,70,413,111"/>
-<area shape="rect" id="node10" href="$namespacetoolboxes_1_1plot_toolbox.html#af022c77ab2a89116dffd1915952135e6" title="toolboxes.plotToolbox.rv\lPlotterDuo" alt="" coords="462,129,626,170"/>
-<area shape="rect" id="node8" href="$namespacetoolboxes_1_1plot_toolbox.html#ad46eb8e5bc183f1357f1781ed7a34bdf" title="toolboxes.plotToolbox.Post\lSimCompleteAnalysisFunc" alt="" coords="675,99,855,141"/>
+<area shape="rect" id="node3" href="$namespacetoolboxes_1_1plot_toolbox.html#abdda9105d8f3b70805245f0a5256d00e" title="toolboxes.plotToolbox.rv\lModDatasetMaker" alt="" coords="249,5,413,46"/>
+<area shape="rect" id="node7" href="$namespacetoolboxes_1_1plot_toolbox.html#ac33175e93451da7a57e153a0fd6e1329" title="toolboxes.plotToolbox.rv\lPlotter" alt="" coords="462,63,626,105"/>
+<area shape="rect" id="node5" href="$namespacetoolboxes_1_1plot_toolbox.html#ad46eb8e5bc183f1357f1781ed7a34bdf" title="toolboxes.plotToolbox.Post\lSimCompleteAnalysisFunc" alt="" coords="675,34,855,75"/>
 </map>

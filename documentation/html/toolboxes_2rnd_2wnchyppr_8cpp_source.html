@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>SMODT-documentation: /mnt/Data1/Todai_Work/Dropbox/workspace/SMODT/code/cppSide/toolboxes/rnd/wnchyppr.cpp Source File</title>
+<title>SMODT-documentation: /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/code/cppSide/toolboxes/rnd/wnchyppr.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -212,7 +212,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2wnchyppr_8cpp.html',''
 <div class="line"><a name="l00106"></a><span class="lineno"><a class="code" href="toolboxes_2rnd_2wnchyppr_8cpp.html#ad64ee3ccaffc016d03891241dbfec382">  106</a></span>&#160;<span class="keywordtype">double</span> <a class="code" href="rnd_2wnchyppr_8cpp.html#ad64ee3ccaffc016d03891241dbfec382">pow2_1</a>(<span class="keywordtype">double</span> q, <span class="keywordtype">double</span> * y0 = 0) {</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;   <span class="comment">// calculate 2^q and (1-2^q) without loss of precision.</span></div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;   <span class="comment">// return value is (1-2^q). 2^q is returned in *y0</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;   <span class="keywordtype">double</span> y, y1, <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#ac12931dd507b64cbaa2e0d33db63d857">y2</a>, qn, i, ifac;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;   <span class="keywordtype">double</span> y, y1, y2, qn, i, ifac;</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;   q *= <a class="code" href="toolboxes_2rnd_2wnchyppr_8cpp.html#aa4ae7c64775070011fae8d5610ae1a12">LN2</a>;</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;   <span class="keywordflow">if</span> (fabs(q) &gt; 0.1) {</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;      y = exp(q);</div>
@@ -254,7 +254,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2wnchyppr_8cpp.html',''
 <div class="line"><a name="l00148"></a><span class="lineno"><a class="code" href="toolboxes_2rnd_2wnchyppr_8cpp.html#ade4c6ff246a39841fa5bcf1d6c29ce83">  148</a></span>&#160;<span class="keywordtype">double</span> <a class="code" href="rnd_2wnchyppr_8cpp.html#ade4c6ff246a39841fa5bcf1d6c29ce83">log1pow</a>(<span class="keywordtype">double</span> q, <span class="keywordtype">double</span> x) {</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;   <span class="comment">// calculate log((1-e^q)^x) without loss of precision</span></div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;   <span class="comment">// Uses various Taylor expansions to avoid loss of precision</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;   <span class="keywordtype">double</span> y, y1, <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#ac12931dd507b64cbaa2e0d33db63d857">y2</a>, z1, z2, qn, i, ifac;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;   <span class="keywordtype">double</span> y, y1, y2, z1, z2, qn, i, ifac;</div>
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;   <span class="keywordflow">if</span> (fabs(q) &gt; 0.1) {</div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;      y = exp(q);  y1 = 1. - y;</div>
@@ -571,7 +571,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2wnchyppr_8cpp.html',''
 <div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;   <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;      <span class="comment">// find mode</span></div>
 <div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;      <span class="keywordtype">double</span> f, f2 = 0.;  </div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;      <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> xi, <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>;</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;      <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> xi, x2;</div>
 <div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;      <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#ab5e148bc8d362cc72b85ae48031de1eb">xmin</a> = <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#a5c984a414157aa5bdb96848048ea9084">m</a> + n - <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#aedaace8767e5691fd5f130b518874e7c">N</a>;  <span class="keywordflow">if</span> (xmin &lt; 0) xmin = 0;  <span class="comment">// calculate xmin</span></div>
 <div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;      <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#aeb060acd633bff33c84b71a1d4810a3d">xmax</a> = <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#af4562c271c55e5011ecdf4035ee73810">n</a>;  <span class="keywordflow">if</span> (xmax &gt; <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#a5c984a414157aa5bdb96848048ea9084">m</a>) xmax = <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#a5c984a414157aa5bdb96848048ea9084">m</a>;          <span class="comment">// calculate xmax</span></div>
 <div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;</div>
@@ -581,7 +581,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2wnchyppr_8cpp.html',''
 <div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;        x2 = <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#ab5e148bc8d362cc72b85ae48031de1eb">xmin</a>;                                      <span class="comment">// lower limit</span></div>
 <div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="class_c_wallenius_n_c_hypergeometric.html#aa6d205a1d7ba3d88a5cb3290fe91badd">omega</a> &gt; 0.294 &amp;&amp; N &lt;= 10000000) {</div>
 <div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;          x2 = Mode - 1;}                    <span class="comment">// search for mode can be limited</span></div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;        <span class="keywordflow">for</span> (xi = Mode; xi &gt;= <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>; xi--) {</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;        <span class="keywordflow">for</span> (xi = Mode; xi &gt;= x2; xi--) {</div>
 <div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;          f = <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#aa79358e7f1a759c7a528c6294f052323">probability</a>(xi);</div>
 <div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;          <span class="keywordflow">if</span> (f &lt;= f2) <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;          Mode = xi;  f2 = f;</div>
@@ -592,7 +592,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2wnchyppr_8cpp.html',''
 <div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;        x2 = <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#aeb060acd633bff33c84b71a1d4810a3d">xmax</a>;                           <span class="comment">// upper limit</span></div>
 <div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="class_c_wallenius_n_c_hypergeometric.html#aa6d205a1d7ba3d88a5cb3290fe91badd">omega</a> &lt; 3.4 &amp;&amp; N &lt;= 10000000) {</div>
 <div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;          x2 = Mode + 1;}                    <span class="comment">// search for mode can be limited</span></div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;        <span class="keywordflow">for</span> (xi = Mode; xi &lt;= <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>; xi++) {</div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;        <span class="keywordflow">for</span> (xi = Mode; xi &lt;= x2; xi++) {</div>
 <div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;          f = <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#aa79358e7f1a759c7a528c6294f052323">probability</a>(xi);</div>
 <div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;          <span class="keywordflow">if</span> (f &lt;= f2) <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;          Mode = xi; f2 = f;</div>
@@ -808,7 +808,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2wnchyppr_8cpp.html',''
 <div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;   <span class="keywordtype">double</span> d1, d2, dcom;                <span class="comment">// divisors in probability formula</span></div>
 <div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;   <span class="keywordtype">double</span> accuracya;                   <span class="comment">// absolute accuracy</span></div>
 <div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> xi, nu;                     <span class="comment">// xi, nu = recursion values of x, n</span></div>
-<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> x1, <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>;                     <span class="comment">// xi_min, xi_max</span></div>
+<div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> x1, x2;                     <span class="comment">// xi_min, xi_max</span></div>
 <div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;</div>
 <div class="line"><a name="l00707"></a><span class="lineno">  707</span>&#160;   accuracya = 0.005f * <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#ae85dcdbbb5386c1d416f3844a5bde707">accuracy</a>;      <span class="comment">// absolute accuracy</span></div>
 <div class="line"><a name="l00708"></a><span class="lineno">  708</span>&#160;   p1 = p2 = p + 1;                    <span class="comment">// make space for p1[-1]</span></div>
@@ -823,12 +823,12 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2wnchyppr_8cpp.html',''
 <div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;         x2++;  y1 = 0.;               <span class="comment">// increase upper limit until x has been reached</span></div>
 <div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;      }</div>
 <div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;      <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;         y1 = p1[<a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>];</div>
+<div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;         y1 = p1[x2];</div>
 <div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;      }</div>
 <div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;      <span class="keywordflow">if</span> (x1 &gt; x2) <span class="keywordflow">return</span> 0.;</div>
 <div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;      <span class="keywordflow">if</span> (p2+x2-p &gt; BUFSIZE) <a class="code" href="rnd_2randomc_8h.html#a286fff8437e15b1a6ba210f84af9fce0">FatalError</a>(<span class="stringliteral">&quot;buffer overrun in function CWalleniusNCHypergeometric::recursive&quot;</span>);</div>
 <div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;</div>
-<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;      mxo = (m-<a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>)*omega;</div>
+<div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;      mxo = (m-x2)*omega;</div>
 <div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;      Nmnx = N-m-nu+x2+1;</div>
 <div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;      <span class="keywordflow">for</span> (xi = x2; xi &gt;= x1; xi--) {  <span class="comment">// backwards loop</span></div>
 <div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;         d2 = mxo + Nmnx;</div>
@@ -1255,7 +1255,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2wnchyppr_8cpp.html',''
 <div class="line"><a name="l01149"></a><span class="lineno"> 1149</span>&#160;   }</div>
 <div class="line"><a name="l01150"></a><span class="lineno"> 1150</span>&#160;</div>
 <div class="line"><a name="l01151"></a><span class="lineno"> 1151</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> x2 = n - <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#af39ef9b68884c61621df682060ca74f0">x</a>;</div>
-<div class="line"><a name="l01152"></a><span class="lineno"> 1152</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> x0 = x &lt; x2 ? x : <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>;</div>
+<div class="line"><a name="l01152"></a><span class="lineno"> 1152</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> x0 = x &lt; x2 ? x : x2;</div>
 <div class="line"><a name="l01153"></a><span class="lineno"> 1153</span>&#160;   <span class="keywordtype">int</span> em = (x == m || x2 == N-<a class="code" href="class_c_wallenius_n_c_hypergeometric.html#a5c984a414157aa5bdb96848048ea9084">m</a>);</div>
 <div class="line"><a name="l01154"></a><span class="lineno"> 1154</span>&#160;</div>
 <div class="line"><a name="l01155"></a><span class="lineno"> 1155</span>&#160;   <span class="keywordflow">if</span> (x0 == 0 &amp;&amp; n &gt; 500) {</div>
@@ -1306,7 +1306,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2wnchyppr_8cpp.html',''
 <div class="line"><a name="l01200"></a><span class="lineno"> 1200</span>&#160;   <span class="keywordtype">double</span> d1, d2, dcom;                <span class="comment">// divisors in probability formula</span></div>
 <div class="line"><a name="l01201"></a><span class="lineno"> 1201</span>&#160;   <span class="keywordtype">double</span> area;                        <span class="comment">// estimate of area needed for recursion method</span></div>
 <div class="line"><a name="l01202"></a><span class="lineno"> 1202</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> xi, nu;                     <span class="comment">// xi, nu = recursion values of x, n</span></div>
-<div class="line"><a name="l01203"></a><span class="lineno"> 1203</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> x1, <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>;                     <span class="comment">// lowest and highest x or xi</span></div>
+<div class="line"><a name="l01203"></a><span class="lineno"> 1203</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> x1, x2;                     <span class="comment">// lowest and highest x or xi</span></div>
 <div class="line"><a name="l01204"></a><span class="lineno"> 1204</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> i1, i2;                     <span class="comment">// index into table</span></div>
 <div class="line"><a name="l01205"></a><span class="lineno"> 1205</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> UseTable;                   <span class="comment">// 1 if table method used</span></div>
 <div class="line"><a name="l01206"></a><span class="lineno"> 1206</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> LengthNeeded;               <span class="comment">// Necessary table length</span></div>
@@ -1347,13 +1347,13 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2wnchyppr_8cpp.html',''
 <div class="line"><a name="l01241"></a><span class="lineno"> 1241</span>&#160;            x2++;  y1 = 0.;            <span class="comment">// increase upper limit until x has been reached</span></div>
 <div class="line"><a name="l01242"></a><span class="lineno"> 1242</span>&#160;         }</div>
 <div class="line"><a name="l01243"></a><span class="lineno"> 1243</span>&#160;         <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l01244"></a><span class="lineno"> 1244</span>&#160;            y1 = p1[<a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>];</div>
+<div class="line"><a name="l01244"></a><span class="lineno"> 1244</span>&#160;            y1 = p1[x2];</div>
 <div class="line"><a name="l01245"></a><span class="lineno"> 1245</span>&#160;         }</div>
 <div class="line"><a name="l01246"></a><span class="lineno"> 1246</span>&#160;         <span class="keywordflow">if</span> (p2 - table + x2 &gt;= MaxLength || x1 &gt; x2) {</div>
 <div class="line"><a name="l01247"></a><span class="lineno"> 1247</span>&#160;            <span class="keywordflow">goto</span> ONE_BY_ONE;           <span class="comment">// Error: table length exceeded. Use other method</span></div>
 <div class="line"><a name="l01248"></a><span class="lineno"> 1248</span>&#160;         }</div>
 <div class="line"><a name="l01249"></a><span class="lineno"> 1249</span>&#160;</div>
-<div class="line"><a name="l01250"></a><span class="lineno"> 1250</span>&#160;         mxo = (m-<a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>)*omega;</div>
+<div class="line"><a name="l01250"></a><span class="lineno"> 1250</span>&#160;         mxo = (m-x2)*omega;</div>
 <div class="line"><a name="l01251"></a><span class="lineno"> 1251</span>&#160;         Nmnx = N-m-nu+x2+1;</div>
 <div class="line"><a name="l01252"></a><span class="lineno"> 1252</span>&#160;         <span class="keywordflow">for</span> (xi = x2; xi &gt;= x1; xi--) { <span class="comment">// backwards loop</span></div>
 <div class="line"><a name="l01253"></a><span class="lineno"> 1253</span>&#160;            d2 = mxo + Nmnx;</div>
@@ -1399,14 +1399,14 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2wnchyppr_8cpp.html',''
 <div class="line"><a name="l01293"></a><span class="lineno"> 1293</span>&#160;      i2--;</div>
 <div class="line"><a name="l01294"></a><span class="lineno"> 1294</span>&#160;      <span class="keywordflow">while</span> (x2 &lt; xmax) {              <span class="comment">// loop for right tail</span></div>
 <div class="line"><a name="l01295"></a><span class="lineno"> 1295</span>&#160;         <span class="keywordflow">if</span> (i2 == MaxLength-1) {</div>
-<div class="line"><a name="l01296"></a><span class="lineno"> 1296</span>&#160;            *xlast = <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>; <span class="keywordflow">return</span> 0;     <span class="comment">// table full</span></div>
+<div class="line"><a name="l01296"></a><span class="lineno"> 1296</span>&#160;            *xlast = x2; <span class="keywordflow">return</span> 0;     <span class="comment">// table full</span></div>
 <div class="line"><a name="l01297"></a><span class="lineno"> 1297</span>&#160;         }</div>
 <div class="line"><a name="l01298"></a><span class="lineno"> 1298</span>&#160;         x2++;  i2++;</div>
 <div class="line"><a name="l01299"></a><span class="lineno"> 1299</span>&#160;         y = <a class="code" href="class_c_wallenius_n_c_hypergeometric.html#aa79358e7f1a759c7a528c6294f052323">probability</a>(x2);</div>
 <div class="line"><a name="l01300"></a><span class="lineno"> 1300</span>&#160;         table[i2] = y;</div>
 <div class="line"><a name="l01301"></a><span class="lineno"> 1301</span>&#160;         <span class="keywordflow">if</span> (y &lt; cutoff) <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l01302"></a><span class="lineno"> 1302</span>&#160;      }</div>
-<div class="line"><a name="l01303"></a><span class="lineno"> 1303</span>&#160;      *xlast = <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>;</div>
+<div class="line"><a name="l01303"></a><span class="lineno"> 1303</span>&#160;      *xlast = x2;</div>
 <div class="line"><a name="l01304"></a><span class="lineno"> 1304</span>&#160;      <span class="keywordflow">return</span> 1;</div>
 <div class="line"><a name="l01305"></a><span class="lineno"> 1305</span>&#160;   }</div>
 <div class="line"><a name="l01306"></a><span class="lineno"> 1306</span>&#160;}</div>
@@ -2105,7 +2105,7 @@ $(document).ready(function(){initNavTree('toolboxes_2rnd_2wnchyppr_8cpp.html',''
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_050edd66366d13764f98250ef6db77f6.html">code</a></li><li class="navelem"><a class="el" href="dir_8fe86e63c21b60f73b595c6f0a0ad92c.html">cppSide</a></li><li class="navelem"><a class="el" href="dir_00cc5d3017c1cdbeede27fa7cc49cca0.html">toolboxes</a></li><li class="navelem"><a class="el" href="dir_ff8783c7d406528384c92b3cd8f9f74e.html">rnd</a></li><li class="navelem"><a class="el" href="toolboxes_2rnd_2wnchyppr_8cpp.html">wnchyppr.cpp</a></li>
-    <li class="footer">Generated on Sat Feb 15 2014 21:17:10 for SMODT-documentation by
+    <li class="footer">Generated on Fri Apr 10 2015 17:12:32 for SMODT-documentation by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

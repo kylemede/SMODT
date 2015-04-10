@@ -5,11 +5,10 @@ var searchData=
   ['padding',['PADDING',['../classprogressbar_1_1multiprogressbar_1_1_progress_bar.html#aa14602d67a446231c29bb965aad80d33',1,'progressbar.multiprogressbar.ProgressBar.PADDING()'],['../classprogressbar_1_1progressbar_1_1_progress_bar.html#a1ff0543771e52e77b9a971326c75301d',1,'progressbar.progressbar.ProgressBar.PADDING()'],['../classprogressbar_1_1progressbar__backup_1_1_progress_bar.html#afed887cba9e891a3539012dd532fea5a',1,'progressbar.progressbar_backup.ProgressBar.PADDING()']]],
   ['paramchangestepsizepercent',['paramChangeStepSizePercent',['../class_m_c_m_corb_func_obj.html#a76729ad513da4e1ef7d9074e981e8d1a',1,'MCMCorbFuncObj']]],
   ['parameterschanged',['ParametersChanged',['../class_c_fishers_n_c_hypergeometric.html#a91fefae1dc0d1b58df24faca406d71b0',1,'CFishersNCHypergeometric']]],
-  ['paramsettingsdict',['paramSettingsDict',['../namespace_binary_orb_sim_starter_duo.html#ae33628cf8871e90a85bcce0be0e2376d',1,'BinaryOrbSimStarterDuo']]],
   ['paramstovaryintsary',['paramsToVaryIntsAry',['../class_m_c_m_corb_func_obj.html#ad67b1231fda9c59571cfcc77a2d58643',1,'MCMCorbFuncObj::paramsToVaryIntsAry()'],['../classsim_aneal_orb_func_obj.html#afe2a958107c4ee428b82a4bb09645a0d',1,'simAnealOrbFuncObj::paramsToVaryIntsAry()']]],
   ['pas_5fdeg_5fobserved',['PAs_deg_observed',['../class_d_idata_obj.html#a157849aeb730c25a160f86fb78f7d6bf',1,'DIdataObj::PAs_deg_observed()'],['../class_d_itools.html#a372c7594798252cefeeee023106e9e57',1,'DItools::PAs_deg_observed()']]],
   ['patches',['patches',['../namespacetoolboxes_1_1plot_toolbox.html#a943dfe4ce30f02eb2fe9fcf570b22e09',1,'toolboxes::plotToolbox']]],
-  ['period',['period',['../class_d_itools.html#a62c3a8e9a3fbdc936beb989d29fc2cb2',1,'DItools::period()'],['../struct_t_acalc_input_type.html#afe8df53cb595a9978243b047be26cb65',1,'TAcalcInputType::period()'],['../structsemi_major_type.html#ad66474cd9752cd2626fea06e3077f5a8',1,'semiMajorType::period()'],['../structecc_arg_peri2_to_tc_type.html#ae71a636e24152083de1ffd9bafd9ee7d',1,'eccArgPeri2ToTcType::period()']]],
+  ['period',['period',['../class_d_itools.html#a62c3a8e9a3fbdc936beb989d29fc2cb2',1,'DItools::period()'],['../struct_t_acalc_input_type.html#afe8df53cb595a9978243b047be26cb65',1,'TAcalcInputType::period()'],['../structsemi_major_type.html#ad66474cd9752cd2626fea06e3077f5a8',1,'semiMajorType::period()'],['../structecc_arg_peri2_to_tc_type.html#ae71a636e24152083de1ffd9bafd9ee7d',1,'eccArgPeri2ToTcType::period()'],['../class_r_vtools.html#af30c0012d78ae78bfb766b2bf960d895',1,'RVtools::period()']]],
   ['period_5fp',['period_p',['../class_v_rcalc_star_planet.html#a9c9c7f9812faf5b89b1589fe8e3c9f8a',1,'VRcalcStarPlanet']]],
   ['period_5fs',['period_s',['../class_v_rcalc_star_star.html#a336711c1f229f49e6c25bdab61c20f37',1,'VRcalcStarStar']]],
   ['period_5fsigma',['period_sigma',['../class_m_c_m_corb_func_obj.html#a902072b6d636f3cbdd363c78aaf48837',1,'MCMCorbFuncObj::period_sigma()'],['../classsim_aneal_orb_func_obj.html#a4df24e4896768abd2719f2bf4f5591cb',1,'simAnealOrbFuncObj::period_sigma()']]],
@@ -34,7 +33,7 @@ var searchData=
   ['planet_5ft_5ferror',['planet_T_error',['../class_data_obj.html#a65110fe3db651cc2702a5211d2a58a21',1,'DataObj']]],
   ['planet_5ftc',['planet_Tc',['../class_data_obj.html#aca9c2df3e683846e375d115ecd9c5ccd',1,'DataObj']]],
   ['planet_5ftc_5ferror',['planet_Tc_error',['../class_data_obj.html#a89a7077ed473fee533a3c857ad69060e',1,'DataObj']]],
-  ['plt',['plt',['../namespacetoolboxes_1_1plot_toolbox.html#abd1cd4b9d79b40677e1d44420b1c1703',1,'toolboxes::plotToolbox']]],
+  ['plt',['plt',['../namespacetoolboxes_1_1general_toolbox.html#aa3757093d71f851c89d74eca41dc0496',1,'toolboxes.generalToolbox.plt()'],['../namespacetoolboxes_1_1plot_toolbox.html#abd1cd4b9d79b40677e1d44420b1c1703',1,'toolboxes.plotToolbox.plt()'],['../namespacetoolboxes_1_1ram_tracker.html#a3aaa2deda65a4fa98024f777b784cbca',1,'toolboxes.ramTracker.plt()']]],
   ['pois_5fa',['pois_a',['../class_stochastic_lib1.html#adbdb8f7c16ec344b46cc3031bd7a076b',1,'StochasticLib1']]],
   ['pois_5fbound',['pois_bound',['../class_stochastic_lib1.html#aa9d614d1b4de2c2f5d8b4ceca1c70016',1,'StochasticLib1']]],
   ['pois_5fc_5fpm',['Pois_c_pm',['../class_stochastic_lib2.html#a3d4ccc8ec526aa52f846e6a4086a24b4',1,'StochasticLib2']]],
@@ -65,8 +64,6 @@ var searchData=
   ['pois_5fr2',['Pois_r2',['../class_stochastic_lib2.html#a88fe545c0ab46cb46fda62278591192c',1,'StochasticLib2']]],
   ['pois_5fr4',['Pois_r4',['../class_stochastic_lib2.html#a1ac78fad2a44497f77536d746f7777c0',1,'StochasticLib2']]],
   ['pois_5fr5',['Pois_r5',['../class_stochastic_lib2.html#a6746a5d641f4bc5dbde537e49dd6b91b',1,'StochasticLib2']]],
-  ['progress',['progress',['../classprogressbar_1_1multiprogressbar_1_1_progress_bar.html#a221e0dca62c0c9586ee3914696a22b43',1,'progressbar.multiprogressbar.ProgressBar.progress()'],['../classprogressbar_1_1progressbar_1_1_progress_bar.html#a73a37bde39f8710905da2fd0dfe10ffd',1,'progressbar.progressbar.ProgressBar.progress()'],['../classprogressbar_1_1progressbar__backup_1_1_progress_bar.html#a1101ea8462a882c6480662e94711f46d',1,'progressbar.progressbar_backup.ProgressBar.progress()']]],
-  ['pythoncodedir',['pythonCodeDir',['../namespace_binary_orb_sim_starter_duo.html#a2920146e97c3cf61b7136b7527afe963',1,'BinaryOrbSimStarterDuo']]],
-  ['pythonfiles',['pythonFiles',['../namespace_binary_orb_sim_starter_duo.html#a0748d51eb137347a3b7b062bf6d58596',1,'BinaryOrbSimStarterDuo']]],
-  ['pythontoolboxfiles',['pythonToolboxFiles',['../namespace_binary_orb_sim_starter_duo.html#a48a737f8b8a4c762ae91ae64b15e8c52',1,'BinaryOrbSimStarterDuo']]]
+  ['primarystarrvs',['primaryStarRVs',['../class_r_vtools.html#af518342c937f94413e88aebcf59252c8',1,'RVtools::primaryStarRVs()'],['../class_sim_settings_obj.html#a1d272adc3c89e604b3d2f181805e033d',1,'SimSettingsObj::primaryStarRVs()']]],
+  ['progress',['progress',['../classprogressbar_1_1multiprogressbar_1_1_progress_bar.html#a221e0dca62c0c9586ee3914696a22b43',1,'progressbar.multiprogressbar.ProgressBar.progress()'],['../classprogressbar_1_1progressbar_1_1_progress_bar.html#a73a37bde39f8710905da2fd0dfe10ffd',1,'progressbar.progressbar.ProgressBar.progress()'],['../classprogressbar_1_1progressbar__backup_1_1_progress_bar.html#a1101ea8462a882c6480662e94711f46d',1,'progressbar.progressbar_backup.ProgressBar.progress()']]]
 ];

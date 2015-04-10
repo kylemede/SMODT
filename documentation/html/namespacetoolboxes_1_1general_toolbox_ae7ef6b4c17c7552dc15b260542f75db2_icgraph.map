@@ -1,10 +1,4 @@
 <map id="G" name="G">
-<area shape="rect" id="node3" href="$namespacetoolboxes_1_1general_toolbox.html#a6e98c83619852b5fe5be772e61072cc5" title="toolboxes.generalToolbox.c\lFileToSimSettingsDict" alt="" coords="249,89,431,130"/>
-<area shape="rect" id="node19" href="$namespacetoolboxes_1_1general_toolbox.html#a74894f0798801eda757a12db7244d8db" title="toolboxes.generalToolbox.sys\lDataToDict" alt="" coords="243,154,437,196"/>
-<area shape="rect" id="node5" href="$namespacetoolboxes_1_1plot_toolbox.html#ad46eb8e5bc183f1357f1781ed7a34bdf" title="toolboxes.plotToolbox.Post\lSimCompleteAnalysisFunc" alt="" coords="1369,74,1549,116"/>
-<area shape="rect" id="node7" href="$namespacetoolboxes_1_1plot_toolbox.html#a77f390548bdb168193b49e7b57a9f612" title="toolboxes.plotToolbox.rv\lFitPlotter1Body" alt="" coords="486,93,650,134"/>
-<area shape="rect" id="node9" href="$namespacetoolboxes_1_1plot_toolbox.html#a400e907bda0d1c547235038271ad0f28" title="toolboxes.plotToolbox.epochs\lToPhases" alt="" coords="699,93,893,134"/>
-<area shape="rect" id="node11" href="$namespacetoolboxes_1_1plot_toolbox.html#af022c77ab2a89116dffd1915952135e6" title="toolboxes.plotToolbox.rv\lPlotterDuo" alt="" coords="1155,45,1319,86"/>
-<area shape="rect" id="node14" href="$namespacetoolboxes_1_1plot_toolbox.html#a1a902178112f12f47511ab73d6fccfe4" title="toolboxes.plotToolbox.rv\lModDatasetMakerDuo" alt="" coords="942,96,1106,137"/>
-<area shape="rect" id="node21" href="$namespacetoolboxes_1_1plot_toolbox.html#a4435821771fb03137de2f50a4049155a" title="toolboxes.plotToolbox.di\lPlotterTester" alt="" coords="487,213,649,254"/>
+<area shape="rect" id="node3" href="$namespacetoolboxes_1_1general_toolbox.html#a6e98c83619852b5fe5be772e61072cc5" title="toolboxes.generalToolbox.c\lFileToSimSettingsDict" alt="" coords="249,5,431,46"/>
+<area shape="rect" id="node5" href="$namespacetoolboxes_1_1general_toolbox.html#a74894f0798801eda757a12db7244d8db" title="toolboxes.generalToolbox.sys\lDataToDict" alt="" coords="243,70,437,111"/>
 </map>

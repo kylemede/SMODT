@@ -1,4 +1,5 @@
 <map id="G" name="G">
-<area shape="rect" id="node3" href="$_sim_settings_obj_8cpp.html#a8374ae4e122d761db087e78c43779058" title="boolParser" alt="" coords="237,5,321,32"/>
-<area shape="rect" id="node5" href="$_sim_settings_obj_8cpp.html#a4cd9aff0afb881a95ccc930b0dd6b20f" title="rvOffsetsParser" alt="" coords="221,56,336,83"/>
+<area shape="rect" id="node3" href="$_sim_settings_obj_8cpp.html#a8374ae4e122d761db087e78c43779058" title="boolParser" alt="" coords="259,5,343,32"/>
+<area shape="rect" id="node5" href="$classgeneral_tools.html#a661b9542c218853a078db19975d98356" title="generalTools::boolToStr" alt="" coords="221,56,381,83"/>
+<area shape="rect" id="node7" href="$_sim_settings_obj_8cpp.html#a4cd9aff0afb881a95ccc930b0dd6b20f" title="rvOffsetsParser" alt="" coords="244,107,359,133"/>
 </map>

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>SMODT-documentation: /mnt/Data1/Todai_Work/Dropbox/workspace/SMODT/code/cppSide/rnd/testhype.cpp Source File</title>
+<title>SMODT-documentation: /mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/code/cppSide/rnd/testhype.cpp Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -164,7 +164,7 @@ $(document).ready(function(){initNavTree('rnd_2testhype_8cpp.html','');});
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;   <span class="keywordtype">double</span> xsd;                         <span class="comment">// expected standard deviation</span></div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> delta;                      <span class="comment">// step in list</span></div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> xa, xb;                     <span class="comment">// list minimum, maximum</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> x1, <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>;                     <span class="comment">// category range</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> x1, x2;                     <span class="comment">// category range</span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;   <span class="comment">// make random seed</span></div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;   <a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a> seed = (<a class="code" href="rnd_2randomc_8h.html#ab1967d8591af1a4e48c37fd2b0f184d0">int32_t</a>)time(0);    <span class="comment">// random seed = time</span></div>
@@ -231,7 +231,7 @@ $(document).ready(function(){initNavTree('rnd_2testhype_8cpp.html','');});
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;      <span class="keywordflow">if</span> (c==DSIZE-1 &amp;&amp; max&gt;x2) x2 = max;</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      <span class="comment">// calculate expected frequency</span></div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      <span class="keywordflow">for</span> (x=x1, f=0.; x &lt;= <a class="code" href="namespacetoolboxes_1_1_d_itoolbox.html#aa4cdc75956566a7e3b951d8c468c90d9">x2</a>; x++) {</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      <span class="keywordflow">for</span> (x=x1, f=0.; x &lt;= x2; x++) {</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;         f += exp(<a class="code" href="rnd_2stoc1_8cpp.html#a1a00e98fecbda89aebeea3ae04d20748">LnFac</a>(m) - <a class="code" href="rnd_2stoc1_8cpp.html#a1a00e98fecbda89aebeea3ae04d20748">LnFac</a>(x) - <a class="code" href="rnd_2stoc1_8cpp.html#a1a00e98fecbda89aebeea3ae04d20748">LnFac</a>(m-x) + <a class="code" href="rnd_2stoc1_8cpp.html#a1a00e98fecbda89aebeea3ae04d20748">LnFac</a>(N-m) -</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;            <a class="code" href="rnd_2stoc1_8cpp.html#a1a00e98fecbda89aebeea3ae04d20748">LnFac</a>(n-x) - <a class="code" href="rnd_2stoc1_8cpp.html#a1a00e98fecbda89aebeea3ae04d20748">LnFac</a>(N-m-n+x) - (<a class="code" href="rnd_2stoc1_8cpp.html#a1a00e98fecbda89aebeea3ae04d20748">LnFac</a>(N) - <a class="code" href="rnd_2stoc1_8cpp.html#a1a00e98fecbda89aebeea3ae04d20748">LnFac</a>(n) - <a class="code" href="rnd_2stoc1_8cpp.html#a1a00e98fecbda89aebeea3ae04d20748">LnFac</a>(N-n)));</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      }</div>
@@ -256,7 +256,7 @@ $(document).ready(function(){initNavTree('rnd_2testhype_8cpp.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_050edd66366d13764f98250ef6db77f6.html">code</a></li><li class="navelem"><a class="el" href="dir_8fe86e63c21b60f73b595c6f0a0ad92c.html">cppSide</a></li><li class="navelem"><a class="el" href="dir_7f9b97dc22c63d9e55fa71521a4ba08e.html">rnd</a></li><li class="navelem"><a class="el" href="rnd_2testhype_8cpp.html">testhype.cpp</a></li>
-    <li class="footer">Generated on Sat Feb 15 2014 21:17:10 for SMODT-documentation by
+    <li class="footer">Generated on Fri Apr 10 2015 17:12:32 for SMODT-documentation by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.1.1 </li>
   </ul>

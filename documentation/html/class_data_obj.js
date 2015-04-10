@@ -26,6 +26,8 @@ var class_data_obj =
     [ "star_e_error", "class_data_obj.html#ad440e2427a331e1d283533bc693f7d71", null ],
     [ "star_inc", "class_data_obj.html#ae405cb176fbfd57f4c2a99d2939fff75", null ],
     [ "star_inc_error", "class_data_obj.html#a9067450f8d0e776accdce6908b5fef45", null ],
+    [ "star_K", "class_data_obj.html#a2048666337675a887cad9776a1766b6c", null ],
+    [ "star_K_error", "class_data_obj.html#a3a80b837b5ef97e0d38df44b7c7c0ae9", null ],
     [ "star_long_AN", "class_data_obj.html#a1e996f52e74cdbfd32bfb3263176ca40", null ],
     [ "star_Mass2", "class_data_obj.html#a4ae62df0a3b43b3caa0482e940b2cb24", null ],
     [ "star_Mass2_error", "class_data_obj.html#a2ae032b52766c4775e78906a5e67307a", null ],

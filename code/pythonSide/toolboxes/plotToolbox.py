@@ -553,6 +553,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
     :type plot4x1:   Python boolean
     """
     verbose = False
+    makeMassPlot = False
     ## find number of RV datasets
     if os.path.exists(outputDataFilename):  
         datadir = os.path.dirname(outputDataFilename)
@@ -867,7 +868,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
             periodCLevels = CLevels
             periodBest = bestDataVal
-            if NumSamples<2e7:
+            if (NumSamples<2e7)and(makeMassPlot):
                 periods = data
             #periodMedian = np.median(periodsAlls)
             s= "done plotting periodsAlls"
@@ -895,7 +896,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                     NumSamples=data.size
                 semiMajorCLevels = CLevels
                 semiMajorBest = bestDataVal
-                if NumSamples<2e7:
+                if (NumSamples<2e7)and(makeMassPlot):
                     semiMajors = data
                 #periodMedian = np.median(periodsAlls)
                 s="done plotting Semi-Majors\n"
@@ -907,7 +908,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 print s
                 log.write(s+'\n')        
         
-            if False:
+            if (NumSamples<2e7)and(makeMassPlot):
                 ## create plot for predicted total mass if possible
                 if not plot4x1:
                     startTime = timeit.default_timer()
@@ -939,26 +940,24 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                     #print 'CLevels normal = '+repr([[CLevelsA,CLevelsB],[CLevelsC,CLevelsD]])
                     bestVal = consts*((semiMajorBest**3.0)/(periodBest**2.0))
                     
-                    if NumSamples<2e7:
+                    Mtotals = consts*np.divide(np.power(semiMajors,3.0),np.power(periods,2.0)) # in Msun
+                    #print "total mass array has "+str(Mtotals.size)+" elements"
+                    #print "calculating CLevels for Mtotals"
                     
-                        Mtotals = consts*np.divide(np.power(semiMajors,3.0),np.power(periods,2.0)) # in Msun
-                        #print "total mass array has "+str(Mtotals.size)+" elements"
-                        #print "calculating CLevels for Mtotals"
-                        
-                        #print "Mtotals CLevels found to be "+repr(CLevels)
-                        subPlot = fig.add_subplot(248)
-                        xlabel = 'Total Mass [Msun]'
-                        #print "starting to plot Mtotals"
-                        chiSquareds = np.array(chiSquareds)
-                        #bestVal = Mtotals[np.where(chiSquareds==chiSquareds.min())][0]
-                        subPlot = histConverter(chiSquareds, Mtotals, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestVal)
-                        s= "done plotting Mtotals"
-                        # record the time the chain finished and print
-                        endTime = timeit.default_timer()
-                        totalTime = (endTime-startTime) # in seconds
-                        totalTimeString = genTools.timeString(totalTime)
-                        s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-                        Median = np.median(Mtotals)
+                    #print "Mtotals CLevels found to be "+repr(CLevels)
+                    subPlot = fig.add_subplot(248)
+                    xlabel = 'Total Mass [Msun]'
+                    #print "starting to plot Mtotals"
+                    chiSquareds = np.array(chiSquareds)
+                    #bestVal = Mtotals[np.where(chiSquareds==chiSquareds.min())][0]
+                    subPlot = histConverter(chiSquareds, Mtotals, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestVal)
+                    s= "done plotting Mtotals"
+                    # record the time the chain finished and print
+                    endTime = timeit.default_timer()
+                    totalTime = (endTime-startTime) # in seconds
+                    totalTimeString = genTools.timeString(totalTime)
+                    s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+                    Median = np.median(Mtotals)
                     s =s+ "\n"+"*"*25 
                     s=s+"\nBest Fit value of Mtotals = "+str(bestVal)
                     if NumSamples<2e7:

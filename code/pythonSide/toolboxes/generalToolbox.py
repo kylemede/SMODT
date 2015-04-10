@@ -86,7 +86,7 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
         if not paramSettingsDict['simAnneal']:
             resultsFile.write("The last of these samples was used to start a full MCMC of length: "+str(paramSettingsDict["numSamples"])+"\n")
     resultsFile.write("For a total number of samples = "+totalSamplesStr(paramSettingsDict["numSamples"]*paramSettingsDict['numProcesses'])[:-9]+"\n")
-    resultsFile.write("Max RAM occupied during simulation was "+str(maxRAMuse)+" MB\n")
+    resultsFile.write("Max RAM occupied during simulation was "+str(maxRAMuse)+" MB\nNot necessariy solely due to SMODT!\n")
     mode = "3D"
     if paramSettingsDict["RVonly"]:
         mode = "RVonly"
@@ -158,7 +158,7 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
                 wrstInt=i
         resultsFile.write("The least converged value was that of "+headings[wrstInt]+" = "+str(wrstVal)+'\n')
     ## Burn-in value
-    if (paramSettingsDict['CalcBurnIn'])and(paramSettingsDict["mcONLY"]==False):
+    if (paramSettingsDict["useMultiProcessing"]and(paramSettingsDict["mcONLY"]==False))and(paramSettingsDict['CalcBurnIn']and(paramSettingsDict['simAnneal']==False)):
         resultsFile.write('\n'+"-"*60+"\nBurn-In Values:\n"+"-"*60+'\n'+burnInStr)
     ## Effective Points and Correlation Length values
     if (paramSettingsDict['calcCorrLengths'])and(paramSettingsDict["mcONLY"]==False):
@@ -401,7 +401,15 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
     
 def burnInCalcMultiFile(dataFilenames,simAnneal=True):
     """
+    NOTE: SMODT was designed to start the full MCMC chain from the last point of the 
+        Sigma Tuning stage.  As this stage effectively acts as a form of burn-in period
+        the burn-in value found from the pure MCMC tends to be very short.
+
     Calculate the burn in for a set of MCMC chains following the formulation of Tegmark.
+    
+    Burn-in is defined as the first point in a chain when the chi squared is equal or less
+     than the median value of all the chains in the simulation.  Thus, there MUST 
+     be more than 1 chain to perform this calculation.
     """
     verbose=False
     
@@ -439,7 +447,7 @@ def burnInCalcMultiFile(dataFilenames,simAnneal=True):
     for filename in dataFilenames:
         if os.path.exists(filename):
             #find chain number and update logFilename with path and number
-            s = filename
+            s += "|n"+os.path.basename(filename)
             chainNumStr = s[s.find('chain_')+6:s.find('chain_')+6+1]
             datadir = os.path.dirname(filename)
             logFilename = os.path.join(datadir,'log-chain_'+chainNumStr+'.txt')
@@ -476,6 +484,9 @@ def burnInCalcFunc(chiSquareds, medianALLchains,jumpy=True):
     skew the chiSquareds trend.  ie. they will not roughly decrease as the 
     simulation runs and the burn in length will thus be more or less random and 
     useless information.
+    Burn-in is defined as the first point in a chain when the chi squared is equal or less
+     than the median value of all the chains in the simulation.  Thus, there MUST 
+     be more than 1 chain to perform this calculation.
     
     :param paramIN:     parameter array including burn in data
     :type paramIN:      array (list) of doubles

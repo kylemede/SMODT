@@ -13,9 +13,9 @@ def starter(paramSettingsDict,sleep=1):
     if False:
         print "memLogCleanerAndPlot starter found totalSamples = "+str(totSamples)
     sleepUse = sleep
-    if totSamples<100000001:
+    if totSamples<500000001:
         sleepUse = 1
-    elif (totSamples>100000000)and(totSamples<10000000000):
+    elif (totSamples>500000000)and(totSamples<50000000000):
         sleepUse = 6 
     else:
         sleepUse = 60
@@ -64,6 +64,7 @@ def memUsageLogCleaner(filename = '',sleep=1,delOrigLog=True):
             mem.append(usedPercent)
             #print repr(lineOut)
     fOut.close()
+    
     print "cleaned RAMusage log file written to: "+fnamOut
     os.remove(filename)
     if os.path.exists(filename):
@@ -82,16 +83,30 @@ def memUsageLogCleaner(filename = '',sleep=1,delOrigLog=True):
             print "repr(times) = "+repr(times)
             print "len(mem) = "+repr(len(mem))
             print "repr(mem) = "+repr(mem)
+        used= np.array(used)
+        mem = np.array(mem)
         fig = plt.figure(1, figsize=(15,10),dpi=200)
-        subPlot = fig.add_subplot(111)
+        subPlot = fig.add_subplot(211)
         subPlot.plot(times,mem)
-        subPlot.axes.set_ylabel("Percent RAM usage")
-        subPlot.axes.set_xlabel("Time from simulation start in "+strmod)
+        plt.suptitle("RAM usage Information *during* SMODT Run\nNot necessarily solely due to SMODT", fontsize=20)
+        memRange = mem.max()-mem.min()
+        yLim = [mem.min()-0.1*memRange,mem.max()+0.1*memRange]
+        subPlot.axes.set_ylim(yLim)
+        subPlot.axes.set_ylabel("Total System RAM used [%]",fontsize=15)
+        subPlot2 = fig.add_subplot(212)
+        used2 = used-used.min()
+        subPlot2.plot(times,used2)
+        usedRange = used2.max()-used2.min()
+        yLim2 = [used2.min()-0.05*usedRange,used2.max()+0.05*usedRange]
+        subPlot2.axes.set_ylim(yLim2)
+        subPlot2.axes.set_ylabel("(During - Before) RAM usage [MB]",fontsize=12)
+        subPlot2.axes.set_xlabel("Time from simulation start in "+strmod,fontsize=15)
+        maxUse = used.max()-used.min()
+        subPlot2.text(0.05,usedRange*0.8,'Max RAM used\n      '+str(maxUse),ha='left',fontsize=20)
         plotname = os.path.abspath(filename)[:-4]+"_clean.png"
         plt.savefig(plotname, orientation='landscape')
     print "RAMusage plot written to: "+plotname
-    used=np.array(used)
-    maxUse = used.max()-used.min()
+    
     print "Max RAM used during simulation was "+str(maxUse)+" MB"
     return maxUse
     

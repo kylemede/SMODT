@@ -185,7 +185,7 @@ int main(int argc ,char *argv[])
 	//### Find out how often to save accepted steps to output data array ###
 	int saveEachInt;
 	if (SSO.numSamples_SimAnneal<300001)
-		saveEachInt = 1
+		saveEachInt = 1;
 	else if ((SSO.numSamples_SimAnneal>300001)&&(SSO.numSamples_SimAnneal<30000001))
 		saveEachInt=10;
 	else if ((SSO.numSamples_SimAnneal>30000000)&&(SSO.numSamples_SimAnneal<300000000))
@@ -378,7 +378,7 @@ int main(int argc ,char *argv[])
     MCMCorbFuncObj MCMCOFO;
     //### Find out how often to save accepted steps to output data array ###
     if (SSO.numSamples<300001)
-    	saveEachInt = 1
+    	saveEachInt = 1;
     else if ((SSO.numSamples>300001)&&(SSO.numSamples<30000001))
 		saveEachInt=10;
 	else if ((SSO.numSamples>30000000)&&(SSO.numSamples<30000000))

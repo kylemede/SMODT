@@ -334,7 +334,7 @@ def simulator(paramSettingsDict):
             if paramSettingsDict['makeMCMCprogPlots']:
                 tools.plot.mcmcProgressPlotter(dataFiles,MCMCsummaryRootPlotFilename, nu=nu, plot4x1=plot4x1,TcStepping=paramSettingsDict['TcStepping'])
             #check burn-in lengths of MCMC part of simAnneal and proper MCMC chains
-            if paramSettingsDict['CalcBurnIn']:
+            if ((len(dataFiles)>1)and(paramSettingsDict["mcONLY"]==False))and(paramSettingsDict['CalcBurnIn']and(paramSettingsDict['simAnneal']==False)):
                 if False:
                     print '\nFor The Simulated Annealing files, the burn in values are:'
                     (s,burnInLengths) = tools.gen.burnInCalcMultiFile(simAnnealDataFiles,simAnneal=True)
@@ -349,7 +349,7 @@ def simulator(paramSettingsDict):
                     effectivePointsStr+= tools.gen.mcmcEffectivePointsCalc(simAnnealDataFiles,simAnneal=True)
                 print '\nCalculating the number of effective points for the MCMC chains\n'
                 effectivePointsStr+= tools.gen.mcmcEffectivePointsCalc(dataFiles,simAnneal=False)
-            if paramSettingsDict['removeBurnIn'] and paramSettingsDict['CalcBurnIn']:
+            if (len(dataFiles)>1)and(paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and(paramSettingsDict['CalcBurnIn']and (paramSettingsDict['simAnneal']==False)):
                 #########################################################################
                 ## make general parameter result summary figures AFTER BURN-IN STRIPPED!!
                 #########################################################################
@@ -410,7 +410,7 @@ def simulator(paramSettingsDict):
         origFiles.append(os.path.basename(summaryPlotFile)+"-ChiSquaredDist.png")
         if paramSettingsDict['DIonly']==False:
             origFiles.append(os.path.basename(summaryPlotFile)+"-RVoffsets.png")
-        if (paramSettingsDict['removeBurnIn']and(paramSettingsDict["mcONLY"]==False))and paramSettingsDict['CalcBurnIn']:
+        if (len(dataFiles)>1)and(paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and(paramSettingsDict['CalcBurnIn']and (paramSettingsDict['simAnneal']==False)):
             origFiles.append(os.path.basename(summaryPlotFile)+"-burnInRemoved.png")
             origFiles.append(os.path.basename(summaryPlotFile)+"-burnInRemoved-ChiSquaredDist.png")
             if paramSettingsDict['DIonly']==False:
@@ -504,7 +504,7 @@ def simulator(paramSettingsDict):
                 for filename in dataFiles:
                     print 'Deleting file: '+os.path.basename(filename)
                     os.remove(filename)     
-                if (paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and paramSettingsDict['CalcBurnIn']:
+                if (len(dataFiles)>1)and(paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and paramSettingsDict['CalcBurnIn']:
                     print '\nDeleting Burn-In removed MCMC chain data files\n'+"-"*40
                     for filename in strippedNames:
                         print 'Deleting file: '+os.path.basename(filename)
@@ -514,7 +514,7 @@ def simulator(paramSettingsDict):
             for filename in dataFiles:
                 print 'Deleting file: '+os.path.basename(filename)
                 os.remove(filename)
-            if (paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and(paramSettingsDict['CalcBurnIn']and (paramSettingsDict['simAnneal']==False)):
+            if (len(dataFiles)>1)and(paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and(paramSettingsDict['CalcBurnIn']and (paramSettingsDict['simAnneal']==False)):
                 print '\nDeleting Burn-In removed MCMC chain data files\n'+"-"*40
                 for filename in strippedNames:
                     print 'Deleting file: '+os.path.basename(filename)

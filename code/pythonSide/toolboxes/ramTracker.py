@@ -135,18 +135,24 @@ def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
         subPlot.axes.set_ylabel("Total System RAM used [%]",fontsize=15)
         timesRange = times[-1]-times[0]
         textX = times[mcmcEndCounter]
-        textY = yLim[1]-(yLim[1]-yLim[0])*0.1
-        hereStr = "<----------------- HERE "
+        textY = yLim[1]-(yLim[1]-yLim[0])*0.27
+        hereStr = "<--------- Started HERE "
         #print "\n\n0.2*timesRange = "+str(0.2*timesRange)+"\n\n"
+        a = textX
+        b = 0
         if textX>0.2*timesRange:
-            dashMult = int(textX-(timesRange*0.025+times[0]))
-            textX = timesRange*0.025+times[0]
-            hereStr = " HERE ------------"+"-"*dashMult+"----->"
-        redTextStr = ' Chains finished and\n Post-processing started\n'+hereStr
+            a = a*70
+            b = (1.0/timesRange)*9
+            dashMult = int(a+b)
+            textX = timesRange*0.01
+            hereStr = " started HERE ----"+"-"*dashMult+"->"
+        redTextStr = ' Chains Finished and\n Post-processing\n'+hereStr
         print '\nredTextStr = \n'+redTextStr
+        print 'a = '+str(a)
+        print 'b = '+str(b)
         print "dashMult = "+str(dashMult)
         print 'textY = '+str(textY)
-        subPlot.text(textX,textY,redTextStr,ha='left',fontsize=17,color="red")
+        subPlot.text(textX,textY,redTextStr,ha='left',fontsize=15,color="red")
         subPlot2 = fig.add_subplot(212)
         used2 = used-used.min()
         subPlot2.plot(times,used2)
@@ -157,7 +163,7 @@ def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
         subPlot2.axes.set_ylabel("(During - Before) RAM usage [MB]",fontsize=12)
         subPlot2.axes.set_xlabel("Time from simulation start in "+strmod,fontsize=15)
         maxUse = used.max()-used.min()
-        subPlot2.text(textX,yLim2[1]*0.78,' Max RAM used\n     '+str(maxUse)+" MB",ha='left',fontsize=20)
+        subPlot2.text(textX,yLim2[1]*0.78,' Max RAM Used\n     '+str(maxUse)+" MB",ha='left',fontsize=15)
         plotname = os.path.abspath(filename)[:-4]+"_clean.png"
         plt.savefig(plotname, orientation='landscape')
     print "RAMusage plot written to: "+plotname

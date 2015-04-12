@@ -12,22 +12,12 @@ OBJSthi = toolboxes/DItools.o THItester.o toolboxes/generalTools.o
 
 THItester: $(OBJSthi)
 	$(CC) -o THItester $(OBJSthi) $(LDFLAGS) $(LIBS)
-
 #---------------------------------------------------------------
 PROGSmc = mcONLYorbSimulator
 OBJSmc = mcONLYorbSimulator.o rnd/sfmt.o rnd/kylesGaussRand.o toolboxes/RVtools.o toolboxes/DItools.o toolboxes/generalTools.o toolboxes/SimSettingsObj.o toolboxes/DataObj.o
 
 mcONLYorbSimulator: $(OBJSmc)
 	$(CC) -o mcONLYorbSimulator $(OBJSmc) $(LDFLAGS) $(LIBS)
-	
-#---------------------------------------------------------------
-
-#PROGSsa = simAnnealOrbSimulator
-#OBJSsa = simAnnealOrbSimulator.o rnd/sfmt.o rnd/kylesGaussRand.o  toolboxes/RVtools.o toolboxes/DItools.o toolboxes/generalTools.o toolboxes/SimSettingsObj.o toolboxes/DataObj.o simAnnealOrbSimFunc.o
-	
-#simAnnealOrbSimulator: $(OBJSsa)
-#	$(CC) -o simAnnealOrbSimulator $(OBJSsa) $(LDFLAGS) $(LIBS)
-#---------------------------------------------------------------
 #---------------------------------------------------------------
 
 PROGSmcmc = MCMCorbSimulator

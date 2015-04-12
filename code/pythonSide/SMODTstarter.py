@@ -175,7 +175,6 @@ def main():
         cppFiles.append('MCMCorbSimulator.cpp') 
         cppFiles.append('MCMCorbSimFunc.cpp')  
         cppFiles.append('MCMCorbSimFunc.h') 
-        cppFiles.append('simAnnealOrbSimulator.cpp') 
         cppFiles.append('simAnnealOrbSimFunc.cpp') 
         cppFiles.append('simAnnealOrbSimFunc.h')    
     

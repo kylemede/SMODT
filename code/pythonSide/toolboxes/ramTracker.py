@@ -12,12 +12,13 @@ class RAMtracker:
     def __init__(self,paramSettingsDict,sleep=1):
         self.paramSettingsDict = paramSettingsDict
         self.sleep = sleep
-        self._memTrackProc = None
-        self._memLogFilename = None
+        (memTrackProc,memLogFilename) = self.starter()
+        self._memLogFilename = memLogFilename
+        self._memTrackProc = memTrackProc
         
-    def run(self):
-        self.starter()
-        return self #return (memTracProc,memLogFilename)
+#     def run(self):
+#         self.starter()
+#         return self #return (memTracProc,memLogFilename)
     
     def starter(self):
         """
@@ -40,16 +41,14 @@ class RAMtracker:
         else:
             self.sleep = 60
         memTrackProc = Popen([shScriptPath,memLogFilename,str(self.sleep)],stdout=FNULL)
-        self._memLogFilename = memLogFilename
-        self._memTrackProc = memTrackProc
-        #return (memTracProc,memLogFilename)
+        return (memTrackProc,memLogFilename)
 
     def chainsDonePrint(self):#,memLogFilename):
         """
         Add a print to log to locate where C++ chains finished.
         """
         f = open(self._memLogFilename,'a')
-        f.write('\n'+"*"*50+"\nMCMC chains ENDED NOW!!!!\n"+"*"*50+'\n')
+        f.write('\n'+"*"*50+"\nSMODT chains ENDED NOW!!!!\n"+"*"*50+'\n')
         
     def wrapUp(self):#,memTracProc,memLogFilename):
         """
@@ -86,11 +85,11 @@ def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
             l = line.split()[1:3]
             #print repr(l)
             totalRAM = float(l[0])
+        if ("ENDED"in line) and (mcmcEnded==False):
+            mcmcEnded=True
+            print "SMODT chains ended at iteration # "+str(mcmcEndCounter)
         if (line[0]=="-")and(totalRAM>1):
-            if ("ENDED"in line) and (mcmcEnded==False):
-                mcmcEnded=True
-                print "MCMC chains ended at iteration # "+str(mcmcEndCounter)
-            elif (mcmcEnded==False):
+            if (mcmcEnded==False):
                 mcmcEndCounter+=1
             usedRAM = float(line.split(":")[-1].split()[0])
             usedPercent = int((usedRAM/totalRAM)*100.)
@@ -106,11 +105,12 @@ def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
     fOut.close()
     
     print "cleaned RAMusage log file written to: "+fnamOut
-    os.remove(filename)
-    if os.path.exists(filename):
-        print "ERROR occurred while trying to delete :"+filename
-    else:
-        print "Original RAMusage log deleted: "+filename
+    if delOrigLog:
+        os.remove(filename)
+        if os.path.exists(filename):
+            print "ERROR occurred while trying to delete :"+filename
+        else:
+            print "Original RAMusage log deleted: "+filename
     if True:
         multmod=sleep/3600.0
         strmod= "[hrs]"
@@ -131,19 +131,24 @@ def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
         plt.suptitle("RAM usage Information *during* SMODT Run\nNot necessarily solely due to SMODT", fontsize=20)
         memRange = mem.max()-mem.min()
         yLim = [mem.min()-0.1*memRange,mem.max()+0.1*memRange]
+        if False:
+            print '\n\nadding plot line for when C++ ended using : \nx = '+repr([times[mcmcEndCounter],times[mcmcEndCounter]])+\
+                "\ny = "+repr([yLim[0],yLim[1]])+"\nmemRange = "+repr(memRange)+'\nmem = '+repr(mem)+"\n\n"
         subPlot.plot([times[mcmcEndCounter],times[mcmcEndCounter]],[yLim[0],yLim[1]],color='red')
         subPlot.axes.set_ylim(yLim)
         subPlot.axes.set_ylabel("Total System RAM used [%]",fontsize=15)
+        subPlot.text(times[mcmcEndCounter],yLim[1]*0.93,' Chains finished and\n Post-processing started\n HERE',ha='left',fontsize=15,color="red")
         subPlot2 = fig.add_subplot(212)
         used2 = used-used.min()
         subPlot2.plot(times,used2)
         usedRange = used2.max()-used2.min()
         yLim2 = [used2.min()-0.05*usedRange,used2.max()+0.05*usedRange]
+        subPlot2.plot([times[mcmcEndCounter],times[mcmcEndCounter]],[yLim2[0],yLim2[1]],color='red')
         subPlot2.axes.set_ylim(yLim2)
         subPlot2.axes.set_ylabel("(During - Before) RAM usage [MB]",fontsize=12)
         subPlot2.axes.set_xlabel("Time from simulation start in "+strmod,fontsize=15)
         maxUse = used.max()-used.min()
-        subPlot2.text(0.05,usedRange*0.8,'Max RAM used\n      '+str(maxUse),ha='left',fontsize=20)
+        subPlot2.text(times[mcmcEndCounter],yLim2[1]*0.8,' Max RAM used\n       '+str(maxUse),ha='left',fontsize=20)
         plotname = os.path.abspath(filename)[:-4]+"_clean.png"
         plt.savefig(plotname, orientation='landscape')
     print "RAMusage plot written to: "+plotname

@@ -7,7 +7,7 @@
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 chiSquaredMax =1000.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =55000
+numSamples =1000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
@@ -58,15 +58,15 @@ CopyToDrobox =false
 # Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
 CalcBurnIn =True
 # remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?
-removeBurnIn = false
+removeBurnIn = true
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 calcCorrLengths =True
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal =100000
+numSamples_SimAnneal =500000
 # Make plots of MCMC progress plots? [bool]
-makeMCMCprogPlots =false
+makeMCMCprogPlots =true
 # Make plots of Simulated Annealing progress plots? [bool]
-makeSimAnnealProgPlots =false
+makeSimAnnealProgPlots =true
 # Calculate the Gelman-Rubin statistic? [bool]
 CalcGelmanRubin =true
 # How many times do you want the Gelman-Rubin statistic calculated [int]

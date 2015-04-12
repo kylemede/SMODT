@@ -867,10 +867,10 @@ void MCMCorbFuncObj::simulator()
 			}// Done storing accepted orbit parameters
 			else
 			{
-				//****************************************************************
-				// alpha<=RHS not satisfied, increment timesBeenHere and try again
-				//****************************************************************
-				//timesBeenHere+=1;
+				//*******************************************************************************
+				// alpha<=RHS not satisfied, update arrays tracking param pass/fail and try again
+				//*******************************************************************************
+
 				accepted = "false";
 				if (paramsVariedRecentlyAry.size()<acceptCalcTime)
 				{
@@ -895,10 +895,9 @@ void MCMCorbFuncObj::simulator()
 		}//end of ALLpassed block
 		else
 		{
-			//****************************************************************************
-			// Proposed parameters did not all pass, increment timesBeenHere and try again
-			//****************************************************************************
-			//timesBeenHere+=1;
+			//*******************************************************************************************
+			// Proposed parameters did not all pass, update arrays tracking param pass/fail and try again
+			//*******************************************************************************************
 			accepted = "false";
 			if (paramsVariedRecentlyAry.size()<acceptCalcTime)
 			{

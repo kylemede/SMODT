@@ -303,7 +303,7 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
     data file.
     
     columns must be:
-     longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  timesBeenHere
+     longAN [deg]      e [N/A]       To [julian date]   Tc [julian date]  period [yrs]   inclination [deg]   argPeri [deg]   a_total [AU]  chiSquared   K [m/s]  RVoffset0...  
         
         file format must be:
         
@@ -447,7 +447,7 @@ def burnInCalcMultiFile(dataFilenames,simAnneal=True):
     for filename in dataFilenames:
         if os.path.exists(filename):
             #find chain number and update logFilename with path and number
-            s += "|n"+os.path.basename(filename)
+            s += "\n"+os.path.basename(filename)
             chainNumStr = s[s.find('chain_')+6:s.find('chain_')+6+1]
             datadir = os.path.dirname(filename)
             logFilename = os.path.join(datadir,'log-chain_'+chainNumStr+'.txt')
@@ -1057,7 +1057,7 @@ def burnInStripper(fullFilename, burnInLength, burnInStrippedFilename):
     headings = inputFile.readline()
     outputFile.write(headings)
     
-    # go through all lines in input file 
+    # go through all data lines in input file 
     line = 'asdf'
     currLength = 0
     reachedBurnIn = False
@@ -1066,33 +1066,16 @@ def burnInStripper(fullFilename, burnInLength, burnInStrippedFilename):
         if reachedBurnIn is False:
             # still haven't reached the burn-in length, so check length and write
             # to output file if this particular line is the first to reach the it
-            dataLineCols = line.split()
-            #timesBeenHere = int(dataLineCols[-1])
-            if True:#timesBeenHere>1:
-                # This loop will go through the number of times 
-                # the simulator stayed at that step/orbit
-                for i in range(0,1):#timesBeenHere): 
-                    currLength +=1
-                    if currLength>burnInLength:
-                        # create a new version of the line that has a timesBeenHere=1
-                        line = dataLineCols[0]
-                        for col in range(1,(len(dataLineCols)-1)):
-                            line = line+'    '+dataLineCols[col]
-                        line = line+'      '+str(1)+'\n'
-                        # write updated line to output file
-                        outputFile.write(line)
-                        reachedBurnIn = True
+            currLength +=1
+            if currLength>burnInLength:
+                # write updated line to output file
+                outputFile.write(line)
+                reachedBurnIn = True 
             else:
-                # Thus this line has a timesBeenHere=1, so line doesn't need to be looped or modified
-                if currLength>burnInLength:
-                    outputFile.write(line)
-                    reachedBurnIn = True 
-                else:
-                    currLength +=1                
+                currLength +=1                
         else:
             # burn-in length reached, so just write line to output file
             outputFile.write(line)
-                
     #Finished writing burn-in stripped data so close files
     inputFile.close()
     outputFile.close()
@@ -1256,17 +1239,15 @@ def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=Fal
         if i>1:
             try:
                 if line[0].isdigit():
-                    #timesBeen = float(line.split()[-1])
-                    TotalSamples+=1#timesBeen
+                    TotalSamples+=1
             except:
                 print "failure loading up TotalSamples.  Value so far = "+str(TotalSamples)
                 print "type(line[0]) = "+repr(type(line[0]))
-                #print "type(timesBeen) = "+repr(type(timesBeen))
                 print "line[0] = "+line[0]
     fp.close()
     TotalSamples = int(TotalSamples)
     if verboseInternal:
-        print '\nTotalSamples = '+str(TotalSamples)+'\n'#$$$$$$$$$$$$$$$$$$
+        print '\nTotalSamples = '+str(TotalSamples)+'\n'
     numDataLines =i-1
     # find values at start, mid and end of file
     fp = open(filename,'r')
@@ -1278,17 +1259,17 @@ def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=Fal
             lastColLoc = len(splitAry)-1
             dataValueStart = float(splitAry[columNum])
             if verboseInternal:
-                print '\nstart = '+str(dataValueStart)+'\n'#$$$$$$$$$$$$$$$$$$
+                print '\nstart = '+str(dataValueStart)+'\n'
         elif i==((numDataLines//2)+2):
             splitAry = line.split()
             dataValueMid = float(splitAry[columNum])
             if verboseInternal:
-                print '\nmid = '+str(dataValueMid)+'\n'#$$$$$$$$$$$$$$$$$$
+                print '\nmid = '+str(dataValueMid)+'\n'
         elif i==numDataLines:
             splitAry = line.split()
             dataValueEnd = float(splitAry[columNum])
             if verboseInternal:
-                print '\nend = '+str(dataValueEnd)+'\n'#$$$$$$$$$$$$$$$$$$
+                print '\nend = '+str(dataValueEnd)+'\n'
     fp.close()
     
     doesntVary = True
@@ -1344,34 +1325,31 @@ def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=Fal
                     #s = "1060"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     chiSquared = float(dataLineCols[8])
                     #s = "1062"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
-                    #timesBeenHere = float(dataLineCols[-1])
                     s2 =" chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     #if (chiSquared==0)or(dataValue==0):
                         # if verboseInternal:
                         #     print line
-                    for k in range(0,1):#int(timesBeenHere)):
-                        if firstJ=="":
-                            firstJ=j
-                        s2+="\nIn itter loop, j="+str(j)+", totalAccepted="+str(totalAccepted)+", len(dataAry)="+str(len(dataAry))
-                        if totalAccepted>len(dataAry):
-                            print "\n*** totalAccepted>len(dataAry) ***"
+                    if firstJ=="":
+                        firstJ=j
+                    s2+="\nIn itter loop, j="+str(j)+", totalAccepted="+str(totalAccepted)+", len(dataAry)="+str(len(dataAry))
+                    if totalAccepted>len(dataAry):
+                        print "\n*** totalAccepted>len(dataAry) ***"
+                        print s2
+                        break
+                    else:
+                        try:
+                            dataAry[j]=dataValue
+                        except:
                             print s2
-                            break
-                        else:
+                            print "\nfailed to load data into dataArray"+", chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)
+                        if returnChiSquareds:
                             try:
-                                dataAry[j]=dataValue
+                                chiSquareds[j]=chiSquared
                             except:
                                 print s2
-                                print "\nfailed to load data into dataArray"+", chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)
-                            if returnChiSquareds:
-                                try:
-                                    chiSquareds[j]=chiSquared
-                                except:
-                                    print s2
-                                    print "\nfailed to load chiSquared into chiSquareds array"+", chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)
-                            totalAccepted+=1
-                            j+=1
-                            s2+=".  survived itter #"+str(k)
+                                print "\nfailed to load chiSquared into chiSquareds array"+", chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)
+                        totalAccepted+=1
+                        j+=1
                     #s = "1074"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
                     if dataValue>dataMax:
                         dataMax = dataValue
@@ -1403,10 +1381,12 @@ def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=Fal
         fp.close()
     dataAry = np.array(dataAry)
     dataMedian = np.median(dataAry)
-    s=  '\nTotal number of orbits = '+str(totalAccepted)#+", len(dataAry)="+str(len(dataAry))+", i = "+str(i)+", j = "+str(j)
-    #s+=", fistJ = "+str(firstJ)+", lastJ = "+str(lastJ)
-    #s+=", lineNum = "+str(lineNum)+", numDataLines = "+str(numDataLines)+", numNoDataLines = "+str(numNoDataLines)
-    #s+="\nfirstDataLine = "+firstDataLine+"\nlastDataLine = "+lastDataLine+"\n"
+    s=  '\nTotal number of orbits = '+str(totalAccepted)
+    if verboseInternal:
+        s+=", len(dataAry)="+str(len(dataAry))+", i = "+str(i)+", j = "+str(j)
+        s+=", fistJ = "+str(firstJ)+", lastJ = "+str(lastJ)
+        s+=", lineNum = "+str(lineNum)+", numDataLines = "+str(numDataLines)+", numNoDataLines = "+str(numNoDataLines)
+        s+="\nfirstDataLine = "+firstDataLine+"\nlastDataLine = "+lastDataLine+"\n"
     s=s+'\nBest value found was '+str(bestDataVal)+", at line Number "+str(bestOrbit)+", and had a chiSquared = "+str(chiSquaredMin)
     s=s+'\nMedian value = '+str(dataMedian)
     s=s+'\n[Min,Max] values found for data were '+repr([dataMin,dataMax])
@@ -1461,9 +1441,6 @@ def outputDatafileToDict(filename):
             outDict["a_totals"] = dataReader(filename, column=7)
             outDict["chiSquareds"] = dataReader(filename, column=8)
             outDict["Ks"]= dataReader(filename, column=9)
-            # last column should be number of times been here
-            #outDict["timesBeenHere"] = dataReader(filename, column=(numDataCols-1))
-            
             RVoffsets = []
             numRVdatasets = numDataCols - 11
             for dataset in range(0,numRVdatasets):

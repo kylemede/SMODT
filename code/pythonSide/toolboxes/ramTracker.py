@@ -135,8 +135,8 @@ def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
         subPlot.axes.set_ylabel("Total System RAM used [%]",fontsize=15)
         timesRange = times[-1]-times[0]
         textX = times[mcmcEndCounter]
-        print "\n\n0.25*timesRange = "+str(0.25*timesRange)+"\n\n"
-        if textX>0.25*timesRange:
+        #print "\n\n0.2*timesRange = "+str(0.2*timesRange)+"\n\n"
+        if textX>0.2*timesRange:
             timesX = timesRange*0.025+times[0]
         subPlot.text(timesX,yLim[1]*0.925,' Chains finished and\n Post-processing started\n HERE',ha='left',fontsize=15,color="red")
         subPlot2 = fig.add_subplot(212)

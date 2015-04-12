@@ -15,11 +15,7 @@ class RAMtracker:
         (memTrackProc,memLogFilename) = self.starter()
         self._memLogFilename = memLogFilename
         self._memTrackProc = memTrackProc
-        
-#     def run(self):
-#         self.starter()
-#         return self #return (memTracProc,memLogFilename)
-    
+           
     def starter(self):
         """
         The ramTracker module will start running the ramLogger.sh script as a
@@ -137,7 +133,12 @@ def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
         subPlot.plot([times[mcmcEndCounter],times[mcmcEndCounter]],[yLim[0],yLim[1]],color='red')
         subPlot.axes.set_ylim(yLim)
         subPlot.axes.set_ylabel("Total System RAM used [%]",fontsize=15)
-        subPlot.text(times[mcmcEndCounter],yLim[1]*0.93,' Chains finished and\n Post-processing started\n HERE',ha='left',fontsize=15,color="red")
+        timesRange = times[-1]-times[0]
+        textX = times[mcmcEndCounter]
+        print "\n\n0.25*timesRange = "+str(0.25*timesRange)+"\n\n"
+        if textX>0.25*timesRange:
+            timesX = timesRange*0.025+times[0]
+        subPlot.text(timesX,yLim[1]*0.925,' Chains finished and\n Post-processing started\n HERE',ha='left',fontsize=15,color="red")
         subPlot2 = fig.add_subplot(212)
         used2 = used-used.min()
         subPlot2.plot(times,used2)
@@ -148,7 +149,7 @@ def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
         subPlot2.axes.set_ylabel("(During - Before) RAM usage [MB]",fontsize=12)
         subPlot2.axes.set_xlabel("Time from simulation start in "+strmod,fontsize=15)
         maxUse = used.max()-used.min()
-        subPlot2.text(times[mcmcEndCounter],yLim2[1]*0.8,' Max RAM used\n       '+str(maxUse),ha='left',fontsize=20)
+        subPlot2.text(timesX,yLim2[1]*0.78,' Max RAM used\n       '+str(maxUse),ha='left',fontsize=20)
         plotname = os.path.abspath(filename)[:-4]+"_clean.png"
         plt.savefig(plotname, orientation='landscape')
     print "RAMusage plot written to: "+plotname

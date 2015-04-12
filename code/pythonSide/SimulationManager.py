@@ -41,11 +41,11 @@ class singleProcessStarter(Process):
         if False:
             print 'Starting to run process for file title: '+filename
         
-        if simAnneal:
-            CplusplusCodeCALL = os.path.join(cppCodeDir,'simAnnealOrbSimulator')
-        elif loopedMCMC:
-            CplusplusCodeCALL = os.path.join(cppCodeDir,'looped_MCMCorbSimulator')
-        elif mcONLY:
+        #if simAnneal:
+        #    CplusplusCodeCALL = os.path.join(cppCodeDir,'simAnnealOrbSimulator')
+        #if loopedMCMC:
+        #    CplusplusCodeCALL = os.path.join(cppCodeDir,'looped_MCMCorbSimulator')
+        if mcONLY:
             CplusplusCodeCALL = os.path.join(cppCodeDir,'mcONLYorbSimulator')
         else:
             CplusplusCodeCALL = os.path.join(cppCodeDir,'MCMCorbSimulator')
@@ -129,12 +129,12 @@ def simulator(paramSettingsDict):
     print s
     PMlogFile.write(s)
     os.chdir(makeDir)
-    if paramSettingsDict['simAnneal']:
-        os.system('make simAnnealOrbSimulator')
-    elif paramSettingsDict['mcONLY']:
+    #if paramSettingsDict['simAnneal']:
+    #    os.system('make simAnnealOrbSimulator')
+    #elif paramSettingsDict['loopedMCMC']:
+    #    os.system('make looped_MCMCorbSimulator')
+    if paramSettingsDict['mcONLY']:
         os.system('make mcONLYorbSimulator')
-    elif paramSettingsDict['loopedMCMC']:
-        os.system('make looped_MCMCorbSimulator')
     else:
         os.system('make MCMCorbSimulator')
     os.chdir(pwd)
@@ -536,7 +536,7 @@ def simulator(paramSettingsDict):
         if cleanDataFilename!='':
             print 'Deleting file: '+cleanDataFilename
             os.remove(cleanDataFilename)
-        if (paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and (paramSettingsDict['CalcBurnIn']and (paramSettingsDict['simAnneal']==False)):
+        if ((paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and(len(dataFiles)>1))and (paramSettingsDict['CalcBurnIn']and (paramSettingsDict['simAnneal']==False)):
             print 'Deleting file: '+dataFinalFilename2
             os.remove(dataFinalFilename2)
             

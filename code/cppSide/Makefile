@@ -22,11 +22,11 @@ mcONLYorbSimulator: $(OBJSmc)
 	
 #---------------------------------------------------------------
 
-PROGSsa = simAnnealOrbSimulator
-OBJSsa = simAnnealOrbSimulator.o rnd/sfmt.o rnd/kylesGaussRand.o  toolboxes/RVtools.o toolboxes/DItools.o toolboxes/generalTools.o toolboxes/SimSettingsObj.o toolboxes/DataObj.o simAnnealOrbSimFunc.o
+#PROGSsa = simAnnealOrbSimulator
+#OBJSsa = simAnnealOrbSimulator.o rnd/sfmt.o rnd/kylesGaussRand.o  toolboxes/RVtools.o toolboxes/DItools.o toolboxes/generalTools.o toolboxes/SimSettingsObj.o toolboxes/DataObj.o simAnnealOrbSimFunc.o
 	
-simAnnealOrbSimulator: $(OBJSsa)
-	$(CC) -o simAnnealOrbSimulator $(OBJSsa) $(LDFLAGS) $(LIBS)
+#simAnnealOrbSimulator: $(OBJSsa)
+#	$(CC) -o simAnnealOrbSimulator $(OBJSsa) $(LDFLAGS) $(LIBS)
 #---------------------------------------------------------------
 #---------------------------------------------------------------
 

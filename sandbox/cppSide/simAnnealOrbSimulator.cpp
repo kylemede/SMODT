@@ -7,16 +7,28 @@
 #include <math.h>
 #include <time.h>
 //#include <fstream>
-#include "Toolboxes/orbToolboxes.h" //Both the DI and RV tools headers are called in here, so it is an all in one toolbox header call
+#include "toolboxes/orbToolboxes.h" //Both the DI and RV tools headers are called in here, so it is an all in one toolbox header call
 #include "simAnnealOrbSimFunc.h"
 
 using namespace std;
 
 int main(int argc ,char *argv[])
 {
-
+	/**
+	This is the "main" that performs the Simulated Annealing process for a
+	single chain of a multi or single chain/thread/process Simulated Annealing simulation
+	started by the Python file BinaryOrbSimStarterDuo.py and controlled with the
+	MCMC_ProcessManagerDuo.  It will perform the set up tasks, call the
+	simAnnealOrbSimFunc to perform the Simulated Annealing for the
+	chain based on the input settings.  After the chain process is complete
+	it will perform the requested wrap up and statistical calculations
+	requested then write all the output files to disk for the wrap up tasks and
+	plotting done by Python after all the chains are complete.  The
+	@author Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
+	*/
 	std::stringstream ss;
 	std::stringstream SSlog;
+	generalTools GT;
 
 	// print to indicate sim has started
 	ss<<"\n*** C++ Simulated Annealing simulation has started ***\n";
@@ -88,7 +100,7 @@ int main(int argc ,char *argv[])
 		DIdo.systemDataLoadUp(SystemDataFilename.c_str());
 		//cout<<"DIdo sys data loaded"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		// instantiate DI tools obj and load it up with same values
-		DIt = DItoolsParamLoadUp(DIdo);
+		DIt = GT.DItoolsParamLoadUp(DIdo);
 		//cout<<"DIt loaded up "<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		DIt.verbose=SSO.verbose;
 		//cout<<"DI data object loaded up"<<endl; //$$$$$$$$$$$$$$$$
@@ -102,7 +114,7 @@ int main(int argc ,char *argv[])
 		//cout<<"Done loading up RV data obj"<<endl; //$$$$$$$$$$$$$$$$$$
 	}
 	// find the earliest epoch for the time of last pariapsis min/max settings
-	double earliestEpoch = earliestEpochFinder(DIdo, RVdo);
+	double earliestEpoch = GT.earliestEpochFinder(DIdo, RVdo);
 
 	//Start seed for random number generator
 	//create very high precision seed for generator (nanosecond precision)
@@ -116,7 +128,7 @@ int main(int argc ,char *argv[])
 	startTime = time(NULL);
 
 	string starterString;
-	string numSamplesString =  numSamplesStringMaker(SSO.numSamples);
+	string numSamplesString =  GT.numSamplesStringMaker(SSO.numSamples);
 	ss<<"\nSimAnneal: $$$$$$$$$$$$$$$$$$$  STARTING THE SIMULATOR  $$$$$$$$$$$$$$$$$" <<endl;
 	ss<<"Number of sample orbits being created = " << numSamplesString <<endl;
 	starterString = ss.str();
@@ -128,7 +140,14 @@ int main(int argc ,char *argv[])
 	outputDataType ODT;
 	ODT.data_filename = outputDataFilename;
 	//cout<<"outputDataType instantiated"<<endl;//$$$$$$$$$$$$$$$$$$$$$
-
+	//### Find out how often to save accepted steps to output data array ###
+	int saveEachInt;
+	if (SSO.numSamples<100001)
+		saveEachInt=10;
+	else if ((SSO.numSamples>100000)&&(SSO.numSamples<10000000))
+		saveEachInt=100;
+	else
+		saveEachInt=1000;
 
 	//###############################################################################
 	//
@@ -147,6 +166,7 @@ int main(int argc ,char *argv[])
 	SAOFO.tempStepSizePercent = 0.025;
 	SAOFO.startTemp = SSO.startTemp;
 	SAOFO.sigmaPercent = 1.0;
+	SAOFO.saveEachInt = saveEachInt;
 
 	if (true)
 	{
@@ -156,6 +176,7 @@ int main(int argc ,char *argv[])
 		ss<<"tempStepSizePercent = "<<SAOFO.tempStepSizePercent <<endl;
 		ss<<"startTemp = "<< SAOFO.startTemp<< endl;
 		ss<<"sigmaPercent = "<< SAOFO.sigmaPercent<< endl;
+		ss<<"saveEachInt = "<<SAOFO.saveEachInt<<endl;
 		startParmsString = ss.str();
 		ss.clear();
 		ss.str(std::string());
@@ -175,41 +196,39 @@ int main(int argc ,char *argv[])
 
 
     int totalAccepted = SAOFO.ODT.es.size();
-//    if (acceptedCounter!=totalAccepted)
-//    	cout<<"Warning: (acceptedCounter) "<<acceptedCounter<< " != "<<totalAccepted<<" (totalAccepted)"<<endl;
-
     SAOFO.ODT.numSamplesAccepted = totalAccepted;
 
     string printLine3="";
     // Get all best orbit values
     //cout<<"line # 185"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ss << "\n$$$$$$$$$$$$$$$ SIMULATOR COMPLETE $$$$$$$$$$$$$$$"<<endl;
-    ss<< totalAccepted <<" orbits were accepted during simulation"<<endl;
-    ss<< "\nBest orbit found at step "<<SAOFO.bestOrbit<<" :"<<endl;
-    ss<< "chiSquaredMin = "<< SAOFO.chiSquaredMin <<endl;
-    ss<< "chiSquaredMin*one_over_nu_TOTAL = "<< SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL <<endl;
-    ss<< "mean Acceptance rate = "<<(double(totalAccepted)/double(SSO.numSamples))<<endl;
-    ss<< "LongAN = "<< SAOFO.ODT.longAN_degs[SAOFO.bestOrbit] <<endl;
-    ss<< "e = "<< SAOFO.ODT.es[SAOFO.bestOrbit] <<endl;
-    ss<< "To = "<<fixed <<SAOFO.ODT.Ts[SAOFO.bestOrbit] <<endl;
-    ss<< "Tc = "<< SAOFO.ODT.Tcs[SAOFO.bestOrbit]<<endl;
-    ss<< "period = "<< SAOFO.ODT.periods[SAOFO.bestOrbit] <<endl;
-    ss<< "inclination = "<< SAOFO.ODT.inclination_degs[SAOFO.bestOrbit] <<endl;
-    ss<< "argPeri = "<< SAOFO.ODT.argPeri_degs[SAOFO.bestOrbit] <<endl;
-    ss<< "a_total = "<< SAOFO.ODT.a_totals[SAOFO.bestOrbit] <<endl;
-
-    if (SAOFO.SSO.DIonly==false)
-    {
-    	ss<< "K = "<< SAOFO.ODT.Ks[SAOFO.bestOrbit]<<endl;
-    	for (int set=0;set<SAOFO.ODT.RVoffsets[SAOFO.bestOrbit].size();++set)
+	ss<< "\nBest orbit found at step "<<SAOFO.bestOrbit<<" :"<<endl;
+	ss<<"chiSquareMin_reduced = "<<SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<endl;
+	ss<< "chiSquaredMin = "<< SAOFO.chiSquaredMin <<endl;
+	ss<< "chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds[SAOFO.bestOrbit]<<endl;
+	ss<< "One before chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds[SAOFO.bestOrbit-1]<<endl;
+	ss<< "One after chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds[SAOFO.bestOrbit+1]<<endl;
+	ss<< "mean Acceptance rate = "<<(double(totalAccepted)/double(SAOFO.numSamples_SA))<<endl;
+	ss<< "LongAN = "<< SAOFO.ODT.longAN_degs[SAOFO.bestOrbit] <<endl;
+	ss<< "e = "<< SAOFO.ODT.es[SAOFO.bestOrbit] <<endl;
+	ss<< "To = "<< fixed <<SAOFO.ODT.Ts[SAOFO.bestOrbit] <<endl;
+	ss<< "Tc = "<< SAOFO.ODT.Tcs[SAOFO.bestOrbit]<<endl;
+	ss<< "period = "<< SAOFO.ODT.periods[SAOFO.bestOrbit] <<endl;
+	ss<< "inclination = "<< SAOFO.ODT.inclination_degs[SAOFO.bestOrbit] <<endl;
+	ss<< "argPeri = "<< SAOFO.ODT.argPeri_degs[SAOFO.bestOrbit] <<endl;
+	ss<< "a_total = "<< SAOFO.ODT.a_totals[SAOFO.bestOrbit] <<endl;
+	if (SAOFO.SSO.DIonly==false)
+	{
+		ss<< "K = "<< SAOFO.ODT.Ks[SAOFO.bestOrbit]<<endl;
+		for (int set=0;set<SAOFO.ODT.RVoffsets[SAOFO.bestOrbit].size();++set)
 			ss<<"RVoffset for dataset "<<set<<", was = "<< SAOFO.ODT.RVoffsets[SAOFO.bestOrbit][set]<<endl;
-    }
-    //cout<<"line # 207"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-	if (true)
+	}
+
+	if (false)
 	{
 		ss<< "\nLast orbit found:"<<endl;
 		ss<< "chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds.back() <<endl;
-		ss<< "chiSquaredMin*one_over_nu_TOTAL = "<< SAOFO.ODT.chiSquareds.back()*SAOFO.one_over_nu_TOTAL <<endl;
+		ss<<"chiSquareMin_reduced = "<<SAOFO.ODT.chiSquareds.back()*SAOFO.one_over_nu_TOTAL<<endl;
 		ss<< "LongAN = "<< SAOFO.ODT.longAN_degs.back()<<endl;
 		ss<< "e = "<< SAOFO.ODT.es.back()<<endl;
 		ss<< "To = "<< SAOFO.ODT.Ts.back()<<endl;
@@ -217,7 +236,7 @@ int main(int argc ,char *argv[])
 		ss<< "period = "<< SAOFO.ODT.periods.back()<<endl;
 		ss<< "inclination = "<<SAOFO.ODT.inclination_degs.back() <<endl;
 		ss<< "argPeri = "<<SAOFO.ODT.argPeri_degs.back() <<endl;
-		ss<< "a_total = "<< SAOFO.ODT.a_totals.back() <<endl;
+		ss<< "a_total = "<<SAOFO.ODT.a_totals.back() <<endl;
 		if (SAOFO.SSO.DIonly==false)
 		{
 			ss<< "K = "<< SAOFO.ODT.Ks.back()<<endl;
@@ -225,12 +244,11 @@ int main(int argc ,char *argv[])
 				ss<<"RVoffset for dataset "<<set<<", was = "<< SAOFO.ODT.RVoffsets.back()[set]<<endl;
 		}
 	}
-	//cout<<"line # 228"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-	if (false)
+	if (true)
 	{
 		ss<< "\nSecond to last orbit found:"<<endl;
 		ss<< "chiSquaredMin from vector = "<<SAOFO.ODT.chiSquareds[totalAccepted-2] <<endl;
-		ss<< "chiSquaredMin*one_over_nu_TOTAL = "<< SAOFO.ODT.chiSquareds[totalAccepted-2]*SAOFO.one_over_nu_TOTAL <<endl;
+		ss<<"chiSquareMin_reduced = "<<SAOFO.ODT.chiSquareds[totalAccepted-2]*SAOFO.one_over_nu_TOTAL<<endl;
 		ss<< "LongAN = "<< SAOFO.ODT.longAN_degs[totalAccepted-2]<<endl;
 		ss<< "e = "<< SAOFO.ODT.es[totalAccepted-2]<<endl;
 		ss<< "To = "<< SAOFO.ODT.Ts[totalAccepted-2]<<endl;
@@ -263,6 +281,8 @@ int main(int argc ,char *argv[])
 		ss<< "T_sigma = "<<fixed<<SAOFO.T_sigma<<" = sigPercent = "<<sig<<endl;
 		sig = SAOFO.a_total_sigma*(100.0/(SAOFO.SSO.a_totalMAX-SAOFO.SSO.a_totalMIN));
 		ss<< "a_total_sigma = "<<fixed<<SAOFO.a_total_sigma<<" = sigPercent = "<<sig<<endl;
+		ss<< "sqrtESinomega_sigma = "<<fixed<<SAOFO.sqrtESinomega_sigma<<" = sigPercent = "<<sig<<endl;
+		ss<< "sqrtECosomega_sigma = "<<fixed<<SAOFO.sqrtECosomega_sigma<<" = sigPercent = "<<sig<<endl;
 		if (SAOFO.SSO.DIonly==false)
 		{
 			sig = SAOFO.K_sigma*(100.0/(SAOFO.SSO.K_MAX-SAOFO.SSO.K_MIN));
@@ -279,14 +299,11 @@ int main(int argc ,char *argv[])
 			}
 		}
 	}
-	if (true)
-	{
-		ss<<"\n one_over_nu values for all three chiSquare calcs:"<<endl;
-		ss<<"one_over_nu_DI = "<< SAOFO.one_over_nu_DI <<endl;
-		ss<<"one_over_nu_RV = "<< SAOFO.one_over_nu_RV <<endl;
-		ss<<"one_over_nu_TOTAL = "<< SAOFO.one_over_nu_TOTAL <<endl;
-	}
 
+	ss<<"\n one_over_nu values for all three chiSquare calcs:"<<endl;
+	ss<<"one_over_nu_DI = "<< SAOFO.one_over_nu_DI <<endl;
+	ss<<"one_over_nu_RV = "<< SAOFO.one_over_nu_RV <<endl;
+	ss<<"one_over_nu_TOTAL = "<< SAOFO.one_over_nu_TOTAL <<endl;
 
 	//cout<<"line # 277"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	// calc how long sim took to run
@@ -319,10 +336,10 @@ int main(int argc ,char *argv[])
 	SSlog<< printLine3;
 	string LOGlines;
 	LOGlines = SSlog.str();
-	logFileWriter(SAOFO.ODT.data_filename, LOGlines);
+	GT.logFileWriter(SAOFO.ODT.data_filename, LOGlines);
 
 	// get output filename and write output data to it
-    fileWriter(SAOFO.ODT);
+    GT.fileWriter(SAOFO.ODT);
 
     cout<<"\nSimAnneal: $$$$$ Data file written, finished C++ part of simulation.$$$$$\n\n"<<endl;
 	return EXIT_SUCCESS;

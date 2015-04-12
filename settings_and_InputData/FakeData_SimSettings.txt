@@ -7,11 +7,11 @@
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 chiSquaredMax =1000.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =1000000
+numSamples =100000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing =true
+useMultiProcessing =false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -38,7 +38,7 @@ DIonly =false
 # Set to true to perform standard Monte Carlo only[bool]
 mcONLY =false
 # Set to true to perform SimulateAnnealing[bool]
-simAnneal =false
+simAnneal =true
 # Simulated Annealing starting temperature [double]
 startTemp =50.0
 # make plot of posterior distributions? [bool]
@@ -62,7 +62,7 @@ removeBurnIn = true
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 calcCorrLengths =True
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal =500000
+numSamples_SimAnneal =200000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots =true
 # Make plots of Simulated Annealing progress plots? [bool]

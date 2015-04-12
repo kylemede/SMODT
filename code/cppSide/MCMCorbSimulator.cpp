@@ -19,16 +19,16 @@ using namespace std;
 int main(int argc ,char *argv[])
 {
 	/**
-	This is the "main" that performs the MCMC process for a single chain
-	of a multi or single chain/thread/process MCMC simulation started by the
-	Python file BinaryOrbSimStarterDuo.py and controlled with the
-	MCMC_ProcessManagerDuo.  It will perform the set up tasks, call the simAnnealOrbSimFunc and
+	This is the "main" that performs the MCMC or Simulated Annealing process for a single chain
+	of a multi or single chain/thread/process simulation started by the
+	Python file SMODTstarter.py and controlled with the
+	SimulationManager.  It will perform the set up tasks, call the simAnnealOrbSimFunc and
 	MCMCorbSimFunc to perform the Simulated Annealing and MCMC stages for the
-	chain based on the input settings.  After the MCMC process is complete
+	chain based on the input settings.
+	In the case of a request to perform full MCMC, after the MCMC process is complete
 	it will perform the requested wrap up and statistical calculations
-	requested then write all the output files to disk for the wrap up tasks and
-	plotting done by Python after all the chains are complete.  The
-	@author Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
+	requested.  Finally, it will write all the output files to disk for the wrap up tasks and
+	plotting done by Python after all the chains are complete.
 	*/
 	std::stringstream ss;
 	std::stringstream SSlog;
@@ -66,13 +66,13 @@ int main(int argc ,char *argv[])
 		ss<<" so, value within settings file or default being used."<<endl;
 	}
 
-	//cout<<"Command line arguments all loaded"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	//cout<<"Command line arguments all loaded"<<endl; //$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$
 
 	// instantiate the settings object and load it up
 	SimSettingsObj SSO;
 	SSO.settingsLoadUp(settingsFilename.c_str());
 
-	//cout<< "Settings obj all loaded up"<<endl; //$$$$$$$$$$$$$$
+	//cout<< "Settings obj all loaded up"<<endl; //$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$
 
 	// instantiate and load up DI and RV data objects as needed
 	string outSettingsDir = GT.findDirectory(settingsFilename.c_str())+"/";
@@ -108,17 +108,17 @@ int main(int argc ,char *argv[])
 
 	//cout<<"\n$$$$ about to try and load up sys data"<<endl;
 	SYSdo.systemDataLoadUp(SystemDataFilename.c_str());
-	//cout<<"DI and RV data objects instantiated"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$
+	//cout<<"DI and RV data objects instantiated"<<endl; //$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$
 	if ((SSO.DIonly==true) or (SSO.RVonly==false && SSO.DIonly==false))
 	{
-		//cout<<"Starting to load up DI data obj"<<endl; //$$$$$$$$$$$$$$$$$
+		//cout<<"Starting to load up DI data obj"<<endl; //$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$
 		string DIdataFilename = outSettingsDir + SSO.DIdataFilename;
 		DIdo.dataLoadUp(DIdataFilename.c_str());
 		DIdo.systemDataLoadUp(SystemDataFilename.c_str());
 		// instantiate DI tools obj and load it up with same values
 		DIt = GT.DItoolsParamLoadUp(DIdo);
 		DIt.verbose=SSO.verbose;
-		//cout<<"DI data object loaded up"<<endl; //$$$$$$$$$$$$$$$$
+		//cout<<"DI data object loaded up"<<endl; //$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
 	}
 	if ((SSO.RVonly==true) or (SSO.RVonly==false && SSO.DIonly==false))
 	{
@@ -126,19 +126,19 @@ int main(int argc ,char *argv[])
 		string RVdataFilename = outSettingsDir + SSO.RVdataFilename;
 		RVdo.dataLoadUp(RVdataFilename.c_str());
 		RVdo.systemDataLoadUp(SystemDataFilename.c_str());
-		//cout<<"RVdo.planet_argPeri = "<<RVdo.planet_argPeri<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//cout<<"Done loading up RV data obj"<<endl; //$$$$$$$$$$$$$$$$$$
+		//cout<<"RVdo.planet_argPeri = "<<RVdo.planet_argPeri<<endl;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//cout<<"Done loading up RV data obj"<<endl; //$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$
 	}
 	// find the earliest epoch for the time of last pariapsis min/max settings
 	double earliestEpoch = GT.earliestEpochFinder(DIdo, RVdo);
-	//cout<<"\n\nearliestEpoch = "<< earliestEpoch<<"\n\n"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	//cout<<"\n\nearliestEpoch = "<< earliestEpoch<<"\n\n"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 	//Start seed for random number generator
 	//create very high precision seed for generator (nanosecond precision)
 	timespec time1;
 	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time1);
 	int time_nsec=time1.tv_nsec;
-	//cout<<"Starting time in nanoseconds for use as a random number generator seed = "<<time_nsec<<endl; //$$$$$$$$$$$$$$
+	//cout<<"Starting time in nanoseconds for use as a random number generator seed = "<<time_nsec<<endl; //$$$$$$$ DEBUGGING $$$$$$$$$$$$$$
 
 
 //	//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -172,23 +172,27 @@ int main(int argc ,char *argv[])
 //	}
 //	//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
+
+
 	// ******* STARTING SIMULATION!!!!  *************
 	time_t startTime = time(NULL);
-
 	//###############################################################################
 	//###############################################################################
 	//Instantiate the simAnneal object and load it up
 	//
 	outputDataType ODT;
 	ODT.data_filename = outputDataFilename;
-	//cout<<"outputDataType instantiated"<<endl;//$$$$$$$$$$$$$$$$$$$$$
-	//### Find out how often to save accepted steps to output data array ###
+	//cout<<"outputDataType instantiated"<<endl;//$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$
+	//### Find out how many samples to draw and how often to save accepted steps to output data array ###
+	int numSamplesUse = SSO.numSamples_SimAnneal;
+	if (SSO.simAnneal)
+		numSamplesUse = SSO.numSamples;
 	int saveEachInt;
-	if (SSO.numSamples_SimAnneal<300001)
+	if (numSamplesUse<300001)
 		saveEachInt = 1;
-	else if ((SSO.numSamples_SimAnneal>300001)&&(SSO.numSamples_SimAnneal<30000001))
+	else if ((numSamplesUse>300001)&&(numSamplesUse<30000001))
 		saveEachInt=10;
-	else if ((SSO.numSamples_SimAnneal>30000000)&&(SSO.numSamples_SimAnneal<300000000))
+	else if ((numSamplesUse>30000000)&&(numSamplesUse<300000000))
 		saveEachInt=100;
 	else
 		saveEachInt=1000;
@@ -198,7 +202,7 @@ int main(int argc ,char *argv[])
 	SAOFO.SSO.verbose = SSO.verbose;
 	SAOFO.SSO.silent = SSO.silent;
 	SAOFO.SSO.numSamplePrints = SSO.numSamplePrints;
-	SAOFO.SSO.chiSquaredMax = SSO.chiSquaredMax;//10000;
+	SAOFO.SSO.chiSquaredMax = SSO.chiSquaredMax;
 	SAOFO.DIt = DIt;
 	SAOFO.DIdo = DIdo;
 	SAOFO.RVdo = RVdo;
@@ -206,10 +210,10 @@ int main(int argc ,char *argv[])
 	SAOFO.earliestEpoch = earliestEpoch;
 	SAOFO.randSeed = time_nsec;
 	SAOFO.ODT = ODT;
-	SAOFO.numSamples_SA = SSO.numSamples_SimAnneal;
-	SAOFO.tempStepSizePercent = 0.025;
+	SAOFO.numSamples_SA = numSamplesUse;
+	SAOFO.tempStepSizePercent = 0.025;//Fixed value found by suitable through testing.
 	SAOFO.startTemp = SSO.startTemp;
-	SAOFO.sigmaPercent = 1.0;
+	SAOFO.sigmaPercent = 1.0;//Just a starting value that is currently overridden inside the simAnneal func anyway.
 	SAOFO.saveEachInt = saveEachInt;
 
 	string starterString;
@@ -222,6 +226,22 @@ int main(int argc ,char *argv[])
 	cout<< starterString;
 	SSlog<<starterString;
 
+	//Starting log message that ensures vital inputs are logged.
+	if (true)
+	{
+		string startParmsString;
+		ss<<"Number of samples = "<<SSO.numSamples<<endl;
+		ss<<"randSeed = "<< time_nsec <<endl;
+		ss<<"tempStepSizePercent = "<<SAOFO.tempStepSizePercent <<endl;
+		ss<<"startTemp = "<< SAOFO.startTemp<< endl;
+		ss<<"sigmaPercent = "<< SAOFO.sigmaPercent<< endl;
+		ss<<"saveEachInt = "<<SAOFO.saveEachInt<<endl;
+		startParmsString = ss.str();
+		ss.clear();
+		ss.str(std::string());
+		cout<< startParmsString;
+		SSlog<<startParmsString;
+	}
 	//*** Run Simulated Annealing simulation first to get starting params
 	if (SSO.silent==false)
 			cout<<"Calling SAOFO function"<<endl;
@@ -350,184 +370,328 @@ int main(int argc ,char *argv[])
 	cout<<printLine3;
 	SSlog<< printLine3;
 
-	// Write output data of Sim Anneal to file
-	string SAFO_data_filename = SAOFO.ODT.data_filename;
-	SAFO_data_filename =  GT.filenamePrepend(SAFO_data_filename, "SimAnneal_");
-	SAOFO.ODT.data_filename = SAFO_data_filename;
-	GT.fileWriter(SAOFO.ODT);
+	if (SSO.simAnneal==false)
+	{
+		// Write output data of Sim Anneal to file
+		string SAFO_data_filename = SAOFO.ODT.data_filename;
+		SAFO_data_filename =  GT.filenamePrepend(SAFO_data_filename, "SimAnneal_");
+		SAOFO.ODT.data_filename = SAFO_data_filename;
+		GT.fileWriter(SAOFO.ODT);
 
-
-	//###############################################################################
-	//###############################################################################
-	//Instantiate the MCMC object and load it up
-	//
-	outputDataType ODT2;
-	ODT2.data_filename = outputDataFilename;
-	//cout<<"outputDataType instantiated"<<endl;//$$$$$$$$$$$$$$$$$$$$$
-
-	string starterString2;
-	string numSamplesString2 =  GT.numSamplesStringMaker(SSO.numSamples);
-	ss<<"\nMCMC: $$$$$$$$$$$$$$$$$$$  MCMC Simulation Starting  $$$$$$$$$$$$$$$$$" <<endl;
-	ss<<"Number of sample orbits being created = " << numSamplesString2 <<endl;
-	starterString2 = ss.str();
-	ss.clear();
-	ss.str(std::string());
-	cout<< starterString2;
-	SSlog<<starterString2;
-
-    MCMCorbFuncObj MCMCOFO;
-    //### Find out how often to save accepted steps to output data array ###
-    if (SSO.numSamples<300001)
-    	saveEachInt = 1;
-    else if ((SSO.numSamples>300001)&&(SSO.numSamples<30000001))
-		saveEachInt=10;
-	else if ((SSO.numSamples>30000000)&&(SSO.numSamples<30000000))
-		saveEachInt=100;
-	else
-		saveEachInt=1000;
-
-    // Best fit values
-//    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[SAOFO.bestOrbit];
-//   MCMCOFO.start_e = SAOFO.ODT.es[SAOFO.bestOrbit];
-//   MCMCOFO.start_T = SAOFO.ODT.Ts[SAOFO.bestOrbit];
- //   MCMCOFO.start_Tc = SAOFO.ODT.Tcs[SAOFO.bestOrbit];
-//    MCMCOFO.start_period = SAOFO.ODT.periods[SAOFO.bestOrbit];
-//    MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs[SAOFO.bestOrbit];
-//    MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs[SAOFO.bestOrbit];
-//    MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets[SAOFO.bestOrbit];
-//    MCMCOFO.start_K = SAOFO.ODT.Ks[SAOFO.bestOrbit];
-//    MCMCOFO.start_a_total = SAOFO.ODT.a_totals[SAOFO.bestOrbit];
-
-	  // Back values
-    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs.back();
-    MCMCOFO.start_e = SAOFO.ODT.es.back();
-    MCMCOFO.start_T = SAOFO.ODT.Ts.back();
-    MCMCOFO.start_Tc = SAOFO.ODT.Tcs.back();
-    MCMCOFO.start_period = SAOFO.ODT.periods.back();
-    MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs.back();
-    MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs.back();
-    MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets.back();
-    MCMCOFO.start_K = SAOFO.ODT.Ks.back();
-    MCMCOFO.start_a_total = SAOFO.ODT.a_totals.back();
-
-	// Second from back params
-//    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[totalAccepted-2];
-//   MCMCOFO.start_e = SAOFO.ODT.es[totalAccepted-2];
-//    MCMCOFO.start_T = SAOFO.ODT.Ts[totalAccepted-2];
-//    MCMCOFO.start_Tc = SAOFO.ODT.Tcs[totalAccepted-2];
-//    MCMCOFO.start_period = SAOFO.ODT.periods[totalAccepted-2];
-//    MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs[totalAccepted-2];
-//    MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs[totalAccepted-2];
-//    MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets[totalAccepted-2];
-//    MCMCOFO.start_K = SAOFO.ODT.Ks[totalAccepted-2];
-//    MCMCOFO.start_a_total = SAOFO.ODT.a_totals[totalAccepted-2];
-
-    MCMCOFO.sigmaPercent = SAOFO.sigmaPercent_latest;
-    MCMCOFO.inclination_deg_sigma = SAOFO.inclination_deg_sigma;
-    MCMCOFO.e_sigma = SAOFO.e_sigma;
-    MCMCOFO.longAN_deg_sigma = SAOFO.longAN_deg_sigma;
-    MCMCOFO.period_sigma = SAOFO.period_sigma;
-    MCMCOFO.argPeri_deg_sigma = SAOFO.argPeri_deg_sigma;
-    MCMCOFO.T_sigma = SAOFO.T_sigma;
-    MCMCOFO.TMIN = SAOFO.TMIN;
-    MCMCOFO.TMAX = SAOFO.TMAX;
-    MCMCOFO.a_total_sigma = SAOFO.a_total_sigma;
-    MCMCOFO.K_sigma = SAOFO.K_sigma;
-    MCMCOFO.sqrtESinomega_sigma = SAOFO.sqrtESinomega_sigma;
-    MCMCOFO.sqrtECosomega_sigma = SAOFO.sqrtECosomega_sigma;
-
-    MCMCOFO.offset_sigmas = SAOFO.offset_sigmas;
-    MCMCOFO.vary_K = SAOFO.vary_K;
-    MCMCOFO.numParams = SAOFO.numParams;
-    MCMCOFO.numDIparams = SAOFO.numDIparams ;
-    MCMCOFO.numRVparams = SAOFO.numRVparams;
-    MCMCOFO.paramsToVaryIntsAry = SAOFO.paramsToVaryIntsAry;
-    MCMCOFO.one_over_nu_RV = SAOFO.one_over_nu_RV;
-    MCMCOFO.one_over_nu_DI = SAOFO.one_over_nu_DI;
-    MCMCOFO.one_over_nu_TOTAL = SAOFO.one_over_nu_TOTAL;
-
-
-    MCMCOFO.SSO = SSO;
-    //MCMCOFO.SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$
-    //MCMCOFO.SSO.verbose=true;//$$$$$$$$$$$$$$$$$$$$$$$$$
-    MCMCOFO.DIt = DIt;
-    MCMCOFO.DIdo = DIdo;
-    MCMCOFO.RVdo = RVdo;
-    MCMCOFO.SYSdo = SYSdo;
-    MCMCOFO.earliestEpoch = earliestEpoch;
-    MCMCOFO.randSeed = time_nsec;
-    MCMCOFO.ODT = ODT2;
-    MCMCOFO.saveEachInt = saveEachInt;
-
-    MCMCOFO.paramChangeStepSizePercent = 0.025;
-    //MCMCOFO.sigmaPercent = 2.45;
-
-    if (SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL>SSO.chiSquaredMax)
-    {
-    	cout<<"MCMC: ERROR: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
-    	cout<<"MCMC: ERROR: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
-    	cout<<"MCMC: ERROR: no orbit was found during Simulated Annealing below the chiSquaredMax in order to start a proper MCMC run!"<<endl;
-    	cout<<"MCMC: ERROR: Lowest reduced chi squared found was "<<SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<", and max allowed "<<SSO.chiSquaredMax<<endl;
-    	cout<<"MCMC: ERROR: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
-    	cout<<"MCMC: ERROR: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
-    	// load up a string for entire log and write it to file
-		string LOGlines;
-		LOGlines = SSlog.str();
-		GT.logFileWriter(MCMCOFO.ODT.data_filename, LOGlines);
-    }
-    else
-    {
-		//*** Run Simulated Annealing simulation first to get starting params
-		if (SSO.silent==false)
-				cout<<"Calling MCMCOFO simulator"<<endl;
-		MCMCOFO.simulator();
-		//SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		if (SSO.silent==false)
-			cout<<"Returned from MCMCOFO simulator :-)"<<endl;
-		//move output log string from simulation run to SSlog
-		SSlog<<MCMCOFO.SSlogStr;
 		//###############################################################################
 		//###############################################################################
+		//Instantiate the MCMC object and load it up
+		//
+		outputDataType ODT2;
+		ODT2.data_filename = outputDataFilename;
+		//cout<<"outputDataType instantiated"<<endl;//$$$$$$$$$$$$$$$$$$$$$
 
-		int totalAccepted2 = MCMCOFO.ODT.es.size();
-		MCMCOFO.ODT.numSamplesAccepted = totalAccepted2;
+		string starterString2;
+		string numSamplesString2 =  GT.numSamplesStringMaker(SSO.numSamples);
+		ss<<"\nMCMC: $$$$$$$$$$$$$$$$$$$  MCMC Simulation Starting  $$$$$$$$$$$$$$$$$" <<endl;
+		ss<<"Number of sample orbits being created = " << numSamplesString2 <<endl;
+		starterString2 = ss.str();
+		ss.clear();
+		ss.str(std::string());
+		cout<< starterString2;
+		SSlog<<starterString2;
 
-		string printLine4="";
-		// Get all best orbit values
-		ss << "\nMCMC: $$$$$$$$$$$$$$$ MCMC SIMULATOR COMPLETE $$$$$$$$$$$$$$$"<<endl;
-		ss<< totalAccepted2 <<" orbits were accepted during simulation"<<endl;
-		ss<< "\nBest orbit found at step "<<MCMCOFO.bestOrbit<<" :"<<endl;
-		ss<<"chiSquareMin_reduced = "<<MCMCOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<endl;
-		ss<< "chiSquaredMin = "<< MCMCOFO.chiSquaredMin <<endl;
-		ss<< "chiSquaredMin from vector = "<<MCMCOFO.ODT.chiSquareds[MCMCOFO.bestOrbit]<<endl;
-		ss<< "mean Acceptance rate = "<<(double(totalAccepted2)/double(SSO.numSamples))<<endl;
-		ss<< "LongAN = "<< MCMCOFO.ODT.longAN_degs[MCMCOFO.bestOrbit] <<endl;
-		ss<< "e = "<< MCMCOFO.ODT.es[MCMCOFO.bestOrbit] <<endl;
-		ss<< "To = "<< fixed <<MCMCOFO.ODT.Ts[MCMCOFO.bestOrbit] <<endl;
-		ss<< "Tc = "<< MCMCOFO.ODT.Tcs[MCMCOFO.bestOrbit]  <<endl;
-		ss<< "period = "<< MCMCOFO.ODT.periods[MCMCOFO.bestOrbit] <<endl;
-		ss<< "inclination = "<< MCMCOFO.ODT.inclination_degs[MCMCOFO.bestOrbit] <<endl;
-		ss<< "argPeri = "<< MCMCOFO.ODT.argPeri_degs[MCMCOFO.bestOrbit] <<endl;
-		ss<< "a_total = "<< MCMCOFO.ODT.a_totals[MCMCOFO.bestOrbit] <<endl;
-		if (MCMCOFO.SSO.DIonly==false)
+		MCMCorbFuncObj MCMCOFO;
+		//### Find out how often to save accepted steps to output data array ###
+		if (SSO.numSamples<300001)
+			saveEachInt = 1;
+		else if ((SSO.numSamples>300001)&&(SSO.numSamples<30000001))
+			saveEachInt=10;
+		else if ((SSO.numSamples>30000000)&&(SSO.numSamples<30000000))
+			saveEachInt=100;
+		else
+			saveEachInt=1000;
+
+		// Best fit values
+	//    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[SAOFO.bestOrbit];
+	//   MCMCOFO.start_e = SAOFO.ODT.es[SAOFO.bestOrbit];
+	//   MCMCOFO.start_T = SAOFO.ODT.Ts[SAOFO.bestOrbit];
+	 //   MCMCOFO.start_Tc = SAOFO.ODT.Tcs[SAOFO.bestOrbit];
+	//    MCMCOFO.start_period = SAOFO.ODT.periods[SAOFO.bestOrbit];
+	//    MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs[SAOFO.bestOrbit];
+	//    MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs[SAOFO.bestOrbit];
+	//    MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets[SAOFO.bestOrbit];
+	//    MCMCOFO.start_K = SAOFO.ODT.Ks[SAOFO.bestOrbit];
+	//    MCMCOFO.start_a_total = SAOFO.ODT.a_totals[SAOFO.bestOrbit];
+
+		  // Back values
+		MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs.back();
+		MCMCOFO.start_e = SAOFO.ODT.es.back();
+		MCMCOFO.start_T = SAOFO.ODT.Ts.back();
+		MCMCOFO.start_Tc = SAOFO.ODT.Tcs.back();
+		MCMCOFO.start_period = SAOFO.ODT.periods.back();
+		MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs.back();
+		MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs.back();
+		MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets.back();
+		MCMCOFO.start_K = SAOFO.ODT.Ks.back();
+		MCMCOFO.start_a_total = SAOFO.ODT.a_totals.back();
+
+		// Second from back params
+	//    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[totalAccepted-2];
+	//   MCMCOFO.start_e = SAOFO.ODT.es[totalAccepted-2];
+	//    MCMCOFO.start_T = SAOFO.ODT.Ts[totalAccepted-2];
+	//    MCMCOFO.start_Tc = SAOFO.ODT.Tcs[totalAccepted-2];
+	//    MCMCOFO.start_period = SAOFO.ODT.periods[totalAccepted-2];
+	//    MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs[totalAccepted-2];
+	//    MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs[totalAccepted-2];
+	//    MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets[totalAccepted-2];
+	//    MCMCOFO.start_K = SAOFO.ODT.Ks[totalAccepted-2];
+	//    MCMCOFO.start_a_total = SAOFO.ODT.a_totals[totalAccepted-2];
+
+		MCMCOFO.sigmaPercent = SAOFO.sigmaPercent_latest;
+		MCMCOFO.inclination_deg_sigma = SAOFO.inclination_deg_sigma;
+		MCMCOFO.e_sigma = SAOFO.e_sigma;
+		MCMCOFO.longAN_deg_sigma = SAOFO.longAN_deg_sigma;
+		MCMCOFO.period_sigma = SAOFO.period_sigma;
+		MCMCOFO.argPeri_deg_sigma = SAOFO.argPeri_deg_sigma;
+		MCMCOFO.T_sigma = SAOFO.T_sigma;
+		MCMCOFO.TMIN = SAOFO.TMIN;
+		MCMCOFO.TMAX = SAOFO.TMAX;
+		MCMCOFO.a_total_sigma = SAOFO.a_total_sigma;
+		MCMCOFO.K_sigma = SAOFO.K_sigma;
+		MCMCOFO.sqrtESinomega_sigma = SAOFO.sqrtESinomega_sigma;
+		MCMCOFO.sqrtECosomega_sigma = SAOFO.sqrtECosomega_sigma;
+
+		MCMCOFO.offset_sigmas = SAOFO.offset_sigmas;
+		MCMCOFO.vary_K = SAOFO.vary_K;
+		MCMCOFO.numParams = SAOFO.numParams;
+		MCMCOFO.numDIparams = SAOFO.numDIparams ;
+		MCMCOFO.numRVparams = SAOFO.numRVparams;
+		MCMCOFO.paramsToVaryIntsAry = SAOFO.paramsToVaryIntsAry;
+		MCMCOFO.one_over_nu_RV = SAOFO.one_over_nu_RV;
+		MCMCOFO.one_over_nu_DI = SAOFO.one_over_nu_DI;
+		MCMCOFO.one_over_nu_TOTAL = SAOFO.one_over_nu_TOTAL;
+
+
+		MCMCOFO.SSO = SSO;
+		//MCMCOFO.SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$
+		//MCMCOFO.SSO.verbose=true;//$$$$$$$$$$$$$$$$$$$$$$$$$
+		MCMCOFO.DIt = DIt;
+		MCMCOFO.DIdo = DIdo;
+		MCMCOFO.RVdo = RVdo;
+		MCMCOFO.SYSdo = SYSdo;
+		MCMCOFO.earliestEpoch = earliestEpoch;
+		MCMCOFO.randSeed = time_nsec;
+		MCMCOFO.ODT = ODT2;
+		MCMCOFO.saveEachInt = saveEachInt;
+
+		MCMCOFO.paramChangeStepSizePercent = 0.025;
+		//MCMCOFO.sigmaPercent = 2.45;
+
+		if (SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL>SSO.chiSquaredMax)
 		{
-			ss<< "K = "<< MCMCOFO.ODT.Ks[MCMCOFO.bestOrbit]<<endl;
-			for (int set=0;set<MCMCOFO.ODT.RVoffsets[MCMCOFO.bestOrbit].size();++set)
-				ss<<"RVoffset for dataset "<<set<<", was = "<< MCMCOFO.ODT.RVoffsets[MCMCOFO.bestOrbit][set]<<endl;
+			cout<<"MCMC: ERROR: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+			cout<<"MCMC: ERROR: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+			cout<<"MCMC: ERROR: no orbit was found during Simulated Annealing below the chiSquaredMax in order to start a proper MCMC run!"<<endl;
+			cout<<"MCMC: ERROR: Lowest reduced chi squared found was "<<SAOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<", and max allowed "<<SSO.chiSquaredMax<<endl;
+			cout<<"MCMC: ERROR: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+			cout<<"MCMC: ERROR: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"<<endl;
+			// load up a string for entire log and write it to file
+			string LOGlines;
+			LOGlines = SSlog.str();
+			GT.logFileWriter(MCMCOFO.ODT.data_filename, LOGlines);
 		}
+		else
+		{
+			//*** Run Full MCMC chain with results of the SimAnnealing and sigma tuning
+			if (SSO.silent==false)
+					cout<<"Calling MCMCOFO simulator"<<endl;
+			MCMCOFO.simulator();
+			//SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			if (SSO.silent==false)
+				cout<<"Returned from MCMCOFO simulator :-)"<<endl;
+			//move output log string from simulation run to SSlog
+			SSlog<<MCMCOFO.SSlogStr;
+			//###############################################################################
+			//###############################################################################
+
+			int totalAccepted2 = MCMCOFO.ODT.es.size();
+			MCMCOFO.ODT.numSamplesAccepted = totalAccepted2;
+
+			string printLine4="";
+			// Get all best orbit values
+			ss << "\nMCMC: $$$$$$$$$$$$$$$ MCMC SIMULATOR COMPLETE $$$$$$$$$$$$$$$"<<endl;
+			ss<< totalAccepted2 <<" orbits were accepted during simulation"<<endl;
+			ss<< "\nBest orbit found at step "<<MCMCOFO.bestOrbit<<" :"<<endl;
+			ss<<"chiSquareMin_reduced = "<<MCMCOFO.chiSquaredMin*SAOFO.one_over_nu_TOTAL<<endl;
+			ss<< "chiSquaredMin = "<< MCMCOFO.chiSquaredMin <<endl;
+			ss<< "chiSquaredMin from vector = "<<MCMCOFO.ODT.chiSquareds[MCMCOFO.bestOrbit]<<endl;
+			ss<< "mean Acceptance rate = "<<(double(totalAccepted2)/double(SSO.numSamples))<<endl;
+			ss<< "LongAN = "<< MCMCOFO.ODT.longAN_degs[MCMCOFO.bestOrbit] <<endl;
+			ss<< "e = "<< MCMCOFO.ODT.es[MCMCOFO.bestOrbit] <<endl;
+			ss<< "To = "<< fixed <<MCMCOFO.ODT.Ts[MCMCOFO.bestOrbit] <<endl;
+			ss<< "Tc = "<< MCMCOFO.ODT.Tcs[MCMCOFO.bestOrbit]  <<endl;
+			ss<< "period = "<< MCMCOFO.ODT.periods[MCMCOFO.bestOrbit] <<endl;
+			ss<< "inclination = "<< MCMCOFO.ODT.inclination_degs[MCMCOFO.bestOrbit] <<endl;
+			ss<< "argPeri = "<< MCMCOFO.ODT.argPeri_degs[MCMCOFO.bestOrbit] <<endl;
+			ss<< "a_total = "<< MCMCOFO.ODT.a_totals[MCMCOFO.bestOrbit] <<endl;
+			if (MCMCOFO.SSO.DIonly==false)
+			{
+				ss<< "K = "<< MCMCOFO.ODT.Ks[MCMCOFO.bestOrbit]<<endl;
+				for (int set=0;set<MCMCOFO.ODT.RVoffsets[MCMCOFO.bestOrbit].size();++set)
+					ss<<"RVoffset for dataset "<<set<<", was = "<< MCMCOFO.ODT.RVoffsets[MCMCOFO.bestOrbit][set]<<endl;
+			}
+
+			// calc how long sim took to run and print appropriate duration string
+			time_t endTime;
+			endTime = time(NULL);
+			int timeElapsed = endTime-startTime;
+
+
+			//cout<<"starting to print time taken string."<<endl;
+			string timeString;
+			timeString = GT.timeStr( timeElapsed);
+			//cout<<"back from timeStr func"<<endl;
+			ss<< "\nSimulator took "<<timeString<<" to complete"<<endl;
+
+			printLine4=ss.str();
+			ss.clear();
+			ss.str(std::string());
+			cout<<printLine4;
+			// load up log with all prints in SSlog stringstream
+			// then write it to file.
+			SSlog<< printLine4;
+
+			if (SSO.calcCorrLengths==true)
+			{
+				// calculate the correlation Length for each param and put it in the log
+				string corLenStr;
+				if (SSO.verbose)
+					cout<<"\nCalculating correlation length and effective number of steps for all params\n"<<endl;
+				SSlog<<"\nCalculating correlation length and effective number of steps for all params\n"<<endl;
+				startTime = time(NULL);
+				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.longAN_degs, "LongAN");
+				endTime = time(NULL);
+				timeElapsed = endTime-startTime;
+				timeString = GT.timeStr( timeElapsed);
+				if (SSO.verbose)
+					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				startTime = time(NULL);
+				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.es, "e");
+				endTime = time(NULL);
+				timeElapsed = endTime-startTime;
+				timeString = GT.timeStr( timeElapsed);
+				if (SSO.verbose)
+					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				startTime = time(NULL);
+				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Ts, "To");
+				endTime = time(NULL);
+				timeElapsed = endTime-startTime;
+				timeString = GT.timeStr( timeElapsed);
+				if (SSO.verbose)
+					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				startTime = time(NULL);
+				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Tcs, "Tc");
+				endTime = time(NULL);
+				timeElapsed = endTime-startTime;
+				timeString = GT.timeStr( timeElapsed);
+				if (SSO.verbose)
+					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				startTime = time(NULL);
+				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.periods, "period");
+				endTime = time(NULL);
+				timeElapsed = endTime-startTime;
+				timeString = GT.timeStr( timeElapsed);
+				if (SSO.verbose)
+					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				startTime = time(NULL);
+				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.inclination_degs, "inclination");
+				endTime = time(NULL);
+				timeElapsed = endTime-startTime;
+				timeString = GT.timeStr( timeElapsed);
+				if (SSO.verbose)
+					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				startTime = time(NULL);
+				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.argPeri_degs, "argPeri");
+				endTime = time(NULL);
+				timeElapsed = endTime-startTime;
+				timeString = GT.timeStr( timeElapsed);
+				if (SSO.verbose)
+					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+				startTime = time(NULL);
+				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.a_totals, "a_total");
+				endTime = time(NULL);
+				timeElapsed = endTime-startTime;
+				timeString = GT.timeStr( timeElapsed);
+				if (SSO.verbose)
+					cout<<corLenStr<<" That took "<<timeString<<" to calculate.\n";
+				SSlog<<corLenStr<<" That took "<<timeString<<" to calculate.\n";
+				if (MCMCOFO.SSO.DIonly==false)
+				{
+					startTime = time(NULL);
+					corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Ks, "K");
+					endTime = time(NULL);
+					timeElapsed = endTime-startTime;
+					timeString = GT.timeStr( timeElapsed);
+					if (SSO.verbose)
+						cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+					SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+	//				for (int set=0;set<MCMCOFO.ODT.RVoffsets[MCMCOFO.bestOrbit].size();++set)
+	//				{
+	//					string offsetStr;
+	//					ss<<"RVoffset for dataset "<<set;
+	//					offsetStr=ss.str();
+	//					ss.clear();
+	//					ss.str(std::string());
+	//					startTime = time(NULL);
+	//					corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.RVoffsets[][set], offsetStr);
+	//					endTime = time(NULL);
+	//					timeElapsed = endTime-startTime;
+	//					timeString = GT.timeStr( timeElapsed);
+	//					if (SSO.verbose)
+	//						cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+	//					SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
+	//				}
+				}
+				cout<<"\nDONE calculating correlation lengths for all params\n";
+				SSlog<<"\nDONE calculating correlation lengths for all params\n";
+			}//end corr length calc
+
+			// Write output data of MCMC to file
+			GT.fileWriter(MCMCOFO.ODT);
+			// load up a string for entire log and write it to file
+			string LOGlines;
+			LOGlines = SSlog.str();
+			GT.logFileWriter(MCMCOFO.ODT.data_filename, LOGlines);
+
+			//perform first stage of Gelman-Rubin calculation if requested
+			//NOTE: this function clears the memory of the vector, so it
+			//      must be performed AFTER all other functions that need
+			//	    those vectors.
+			if ((SSO.useMultiProcessing)&&(SSO.CalcGelmanRubin))
+				GT.gelmanRubinStage1(MCMCOFO.ODT,SSO.numTimesCalcGR);
+		}//end attempt at MCMC after finding SimAnneal went well.
+	}//end of MCMC stage
+	else//Ran just SimAnneal, so just perform basic wrap ups, no statistic calcs.
+	{
+		// Write output data of Sim Anneal to file
+		//string SAFO_data_filename = SAOFO.ODT.data_filename;
+		//SAFO_data_filename =  GT.filenamePrepend(SAFO_data_filename, "SimAnneal_");
+		//SAOFO.ODT.data_filename = SAFO_data_filename;
+		GT.fileWriter(SAOFO.ODT);
 
 		// calc how long sim took to run and print appropriate duration string
 		time_t endTime;
 		endTime = time(NULL);
 		int timeElapsed = endTime-startTime;
 
-
 		//cout<<"starting to print time taken string."<<endl;
 		string timeString;
-		timeString = GT.timeStr( timeElapsed);
+		timeString = GT.timeStr(timeElapsed);
 		//cout<<"back from timeStr func"<<endl;
 		ss<< "\nSimulator took "<<timeString<<" to complete"<<endl;
-
+		string printLine4="";
 		printLine4=ss.str();
 		ss.clear();
 		ss.str(std::string());
@@ -535,123 +699,10 @@ int main(int argc ,char *argv[])
 		// load up log with all prints in SSlog stringstream
 		// then write it to file.
 		SSlog<< printLine4;
-
-		if (SSO.calcCorrLengths==true)
-		{
-			// calculate the correlation Length for each param and put it in the log
-			string corLenStr;
-			if (SSO.verbose)
-				cout<<"\nCalculating correlation length and effective number of steps for all params\n"<<endl;
-			SSlog<<"\nCalculating correlation length and effective number of steps for all params\n"<<endl;
-			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.longAN_degs, "LongAN");
-			endTime = time(NULL);
-			timeElapsed = endTime-startTime;
-			timeString = GT.timeStr( timeElapsed);
-			if (SSO.verbose)
-				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.es, "e");
-			endTime = time(NULL);
-			timeElapsed = endTime-startTime;
-			timeString = GT.timeStr( timeElapsed);
-			if (SSO.verbose)
-				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Ts, "To");
-			endTime = time(NULL);
-			timeElapsed = endTime-startTime;
-			timeString = GT.timeStr( timeElapsed);
-			if (SSO.verbose)
-				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Tcs, "Tc");
-			endTime = time(NULL);
-			timeElapsed = endTime-startTime;
-			timeString = GT.timeStr( timeElapsed);
-			if (SSO.verbose)
-				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.periods, "period");
-			endTime = time(NULL);
-			timeElapsed = endTime-startTime;
-			timeString = GT.timeStr( timeElapsed);
-			if (SSO.verbose)
-				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.inclination_degs, "inclination");
-			endTime = time(NULL);
-			timeElapsed = endTime-startTime;
-			timeString = GT.timeStr( timeElapsed);
-			if (SSO.verbose)
-				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.argPeri_degs, "argPeri");
-			endTime = time(NULL);
-			timeElapsed = endTime-startTime;
-			timeString = GT.timeStr( timeElapsed);
-			if (SSO.verbose)
-				cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-			startTime = time(NULL);
-			corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.a_totals, "a_total");
-			endTime = time(NULL);
-			timeElapsed = endTime-startTime;
-			timeString = GT.timeStr( timeElapsed);
-			if (SSO.verbose)
-				cout<<corLenStr<<" That took "<<timeString<<" to calculate.\n";
-			SSlog<<corLenStr<<" That took "<<timeString<<" to calculate.\n";
-			if (MCMCOFO.SSO.DIonly==false)
-			{
-				startTime = time(NULL);
-				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Ks, "K");
-				endTime = time(NULL);
-				timeElapsed = endTime-startTime;
-				timeString = GT.timeStr( timeElapsed);
-				if (SSO.verbose)
-					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-//				for (int set=0;set<MCMCOFO.ODT.RVoffsets[MCMCOFO.bestOrbit].size();++set)
-//				{
-//					string offsetStr;
-//					ss<<"RVoffset for dataset "<<set;
-//					offsetStr=ss.str();
-//					ss.clear();
-//					ss.str(std::string());
-//					startTime = time(NULL);
-//					corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.RVoffsets[][set], offsetStr);
-//					endTime = time(NULL);
-//					timeElapsed = endTime-startTime;
-//					timeString = GT.timeStr( timeElapsed);
-//					if (SSO.verbose)
-//						cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-//					SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-//				}
-			}
-			cout<<"\nDONE calculating correlation lengths for all params\n";
-			SSlog<<"\nDONE calculating correlation lengths for all params\n";
-		}
-
-		// Write output data of MCMC to file
-		GT.fileWriter(MCMCOFO.ODT);
-
-		// load up a string for entire log and write it to file
 		string LOGlines;
 		LOGlines = SSlog.str();
-		GT.logFileWriter(MCMCOFO.ODT.data_filename, LOGlines);
-
-		//perform first stage of Gelman-Rubin calculation if requested
-		//NOTE: this function clears the memory of the vector, so it
-		//      must be performed AFTER all other functions that need
-		//	    those vectors.
-		if ((SSO.useMultiProcessing)&&(SSO.CalcGelmanRubin))
-			GT.gelmanRubinStage1(MCMCOFO.ODT,SSO.numTimesCalcGR);
-    }
+		GT.logFileWriter(SAOFO.ODT.data_filename, LOGlines);
+	}//Done wrap up for SimAnneal
 
 	return EXIT_SUCCESS;
 }

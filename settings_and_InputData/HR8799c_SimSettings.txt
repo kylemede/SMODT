@@ -7,11 +7,11 @@
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
 chiSquaredMax = 100
 # The number of samples orbital parameters to try/draw [int]
-numSamples = 20000000
+numSamples = 200000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints = 10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing = true
+useMultiProcessing = false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -28,7 +28,7 @@ RVdataFilename = RVdata.dat
 outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-outputData_filenameRoot = HR8799c-MCMC-circular3
+outputData_filenameRoot = HR8799c-MCMC-circular3-TEST
 #*************************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -40,7 +40,7 @@ mcONLY =false
 # Set to true to perform SimulateAnnealing[bool]
 simAnneal =false
 # Simulated Annealing starting temperature [double]
-startTemp =500.0
+startTemp =100.0
 # make plot of posterior distributions? [bool]
 makePosteriorsPlot =true
 # make plots of RV and DI/AM orbit fits [bool]
@@ -62,7 +62,7 @@ removeBurnIn = False
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 calcCorrLengths =True
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal =200000
+numSamples_SimAnneal =5000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots =false
 # Make plots of Simulated Annealing progress plots? [bool]
@@ -107,7 +107,7 @@ argPeriPlusDI = 0.0
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]
-longAN_degMIN =80.0
+longAN_degMIN =10.0
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 longAN_degMAX =160.0
 # Minimum allowed value for the Eccentricity [double]

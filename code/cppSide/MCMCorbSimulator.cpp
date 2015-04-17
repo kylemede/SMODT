@@ -637,7 +637,7 @@ int main(int argc ,char *argv[])
 					if (SSO.verbose)
 						cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 					SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-	//				for (int set=0;set<MCMCOFO.ODT.RVoffsets[MCMCOFO.bestOrbit].size();++set)
+	//				for (int dataset=0;dataset<int(ODT.RVoffsets[0].size());++dataset)
 	//				{
 	//					string offsetStr;
 	//					ss<<"RVoffset for dataset "<<set;

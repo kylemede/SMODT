@@ -11,7 +11,7 @@ numSamples =1000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing =true
+useMultiProcessing =false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 silent =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -28,7 +28,7 @@ RVdataFilename =RVdata.dat
 outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-outputData_filenameRoot = FakeData-mcmc-3D-tight-PrimaryRVs-ToEQUALTc-saveEachInt10-RAMsavingVersionTesting
+outputData_filenameRoot = FakeData-mcmc-3D-tight-PrimaryRVs-ToEQUALTc-GaussParamsTEST
 #*************************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -38,7 +38,7 @@ DIonly =false
 # Set to true to perform standard Monte Carlo only[bool]
 mcONLY =false
 # Set to true to perform SimulateAnnealing[bool]
-simAnneal =true
+simAnneal =false
 # Simulated Annealing starting temperature [double]
 startTemp =50.0
 # make plot of posterior distributions? [bool]

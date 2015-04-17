@@ -399,18 +399,20 @@ void MCMCorbFuncObj::simulator()
 				Tc_proposed = T_proposed;
 		}
 
-		//*****************************************************************************
-		// Generate Gaussian values for the sys dist and masses
-		//*****************************************************************************
-		if (false)
+		//************************************************************************************************************************************
+		// Generate Gaussian values for the sys dist and masses.  Values set to those in SystemData.txt, this will redefine them if requested.
+		//************************************************************************************************************************************
+		if (true)
 		{
-			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,0.5*SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
-			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,0.5*SYSdo.Mass1_error,SYSdo.Mass1_error);
+			//ALL error values were multiplied by 0.5 initially, although the literature and logic recommends putting the values
+			//straight in makes more sense statistically.
+			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
+			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,SYSdo.Mass1_error,SYSdo.Mass1_error);
 			// load up mass2 with correct value depending on star or planet companion
 			if (SSO.simulate_StarPlanetRV==false)
-				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,0.5*SYSdo.star_Mass2_error,SYSdo.star_Mass2_error);
+				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,SYSdo.star_Mass2_error,SYSdo.star_Mass2_error);
 			else
-				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,0.5*SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
+				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
 		}
 		//********************************************************************************
 		//calculate the proposed a_total using K3 in the case of RVonly and 3D simulations

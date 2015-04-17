@@ -377,7 +377,7 @@ void simAnealOrbFuncObj::simulator()
 	double longAN_sigmaPercent_latest = 10;//sigmaPercent_min;
 	double argPeri_sigmaPercent_latest = 10.0;//1.0;
 	double e_sigmaPercent_latest = 10;//2.0;
-	double period_sigmaPercent_latest = 15;//sigmaPercent_min*0.5;//5.0;
+	double period_sigmaPercent_latest = 20;//sigmaPercent_min*0.5;//5.0;
 	double T_sigmaPercent_latest = 10;//sigmaPercent_min*0.5;//1.0;
 	double K_sigmaPercent_latest = 10;//sigmaPercent_min;//3.0;
 	double a_total_sigmaPercent_latest = 10;//sigmaPercent_min;
@@ -711,7 +711,7 @@ void simAnealOrbFuncObj::simulator()
 				}
 			}
 			//cout<<"line # 699"<<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$
-			if (false)
+			if (true)
 			{
 				ss<<"\nLatest gaussian proposed general parameters were:"<<endl;
 				ss<<"Sys_Dist_PC_proposed = "<<Sys_Dist_PC_proposed <<", peak value is = "<< SYSdo.Sys_Dist_PC<<endl;
@@ -995,18 +995,20 @@ void simAnealOrbFuncObj::simulator()
 		}
 		//cout<<"line # 1066"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-		//*****************************************************************************
-		// Generate Gaussian values for the sys dist and masses
-		//*****************************************************************************
-		if (false)
+		//************************************************************************************************************************************
+		// Generate Gaussian values for the sys dist and masses.  Values set to those in SystemData.txt, this will redefine them if requested.
+		//************************************************************************************************************************************
+		if (true)
 		{
-			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,0.5*SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
-			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,0.5*SYSdo.Mass1_error,3.0*SYSdo.Mass1_error);
+			//ALL error values were multiplied by 0.5 initially, although the literature and logic recommends putting the values
+			//straight in makes more sense statistically.
+			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
+			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,SYSdo.Mass1_error,SYSdo.Mass1_error);
 			// load up mass2 with correct value depending on star or planet companion
 			if (SSO.simulate_StarPlanetRV==false)
-				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,0.5*SYSdo.star_Mass2_error,SYSdo.star_Mass2_error);
+				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,SYSdo.star_Mass2_error,SYSdo.star_Mass2_error);
 			else
-				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,0.5*SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
+				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
 		}
 
 		//********************************************************************************

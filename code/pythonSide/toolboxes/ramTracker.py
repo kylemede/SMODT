@@ -145,7 +145,7 @@ def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True):
             textY = yLim[1]-(yLim[1]-yLim[0])*0.27
             hereStr = "<--------- Started HERE "
             if textX>0.2*timesRange:
-                textX = textX-(timesRange)*0.213
+                textX = textX-(timesRange)*0.22
                 hereStr = " started HERE --------->"
             redTextStr = ' Chains Finished and\n Post-processing\n'+hereStr
             #print '\nredTextStr = \n'+redTextStr

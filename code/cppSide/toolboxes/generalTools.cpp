@@ -1321,7 +1321,7 @@ string generalTools::timeStr(int timeElapsed)
 	}
 	else if ( timeElapsed < 60.0 )
 	{
-		sss<< timeElapsed << " seconds"<<endl;
+		sss<< timeElapsed << " seconds";
 		if (verbose)
 			cout<<"timeElapsed determined to be seconds"<<timeElapsed<<endl;
 	}

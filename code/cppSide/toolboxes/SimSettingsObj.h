@@ -14,7 +14,8 @@ public:
 	bool useMultiProcessing;
 	int startTemp;
 	int numSamplePrints;
-	bool silent;
+	bool SILENT;
+	bool quiet;
 	bool verbose;
 	string settings_and_InputDataDir;
 	string SystemDataFilename;

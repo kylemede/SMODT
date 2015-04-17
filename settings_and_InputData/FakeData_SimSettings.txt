@@ -7,13 +7,15 @@
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 chiSquaredMax =1000.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =1000000
+numSamples =100000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
 useMultiProcessing =false
+# set to 'true' to ONLY PRINT the ABSOLUTE MINIMUM of messages about progress to the screen [bool]
+SILENT = true
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
-silent =true
+quiet =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
 verbose =false
 # Directory where input data and settings files are [string, at least 2 chars long]
@@ -142,7 +144,7 @@ K_MIN =0
 K_MAX =0
 # Minimum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMINs =[-110]
+RVoffsetMINs =[-200]
 # Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMAXs =[110]
+RVoffsetMAXs =[200]

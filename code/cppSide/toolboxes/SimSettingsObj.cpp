@@ -31,7 +31,8 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 	startTemp = 100.0;
 	numSamples_SimAnneal = 1e6;
 	numSamplePrints=10;
-	silent = true;
+	SILENT = false;
+	quiet = true;
 	verbose = false;
 	settings_and_InputDataDir = "/mnt/Data1/Todai_Work/Dropbox/workspace/SMODT/settings_and_InputData/";
 	SystemDataFilename = "SystemData.txt";
@@ -174,11 +175,17 @@ void SimSettingsObj::settingsLoadUp(const char* filename)
 					if (verboseInternal)
 						cout<<"useMultiProcessing: "<<GT.boolToStr(useMultiProcessing)<<endl;
 				}
-				else if (key.compare("silent")==0)
+				else if (key.compare("SILENT")==0)
 				{
-					silent = boolParser(val);
+					SILENT = boolParser(val);
 					if (verboseInternal)
-						cout<<"silent: "<<GT.boolToStr(silent)<<endl;
+						cout<<"SILENT: "<<GT.boolToStr(SILENT)<<endl;
+				}
+				else if (key.compare("quiet")==0)
+				{
+					quiet = boolParser(val);
+					if (verboseInternal)
+						cout<<"quiet: "<<GT.boolToStr(quiet)<<endl;
 				}
 				else if (key.compare("CalcGelmanRubin")==0)
 				{

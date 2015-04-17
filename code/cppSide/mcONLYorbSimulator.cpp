@@ -68,7 +68,8 @@ int main(int argc ,char *argv[])
 	string outSettingsDir = GT.findDirectory(settingsFilename.c_str())+"/";
 	//string SystemDataFilename = SSO.settings_and_InputDataDir + SSO.SystemDataFilename;
 	string SystemDataFilename = outSettingsDir + SSO.SystemDataFilename;
-	cout<<"SystemDataFilename = "<< SystemDataFilename <<endl;
+	if (SSO.SILENT==false)
+		cout<<"SystemDataFilename = "<< SystemDataFilename <<endl;
 	DItools DIt;
 	DIdataObj DIdo;
 	RVdataObj RVdo;
@@ -97,7 +98,8 @@ int main(int argc ,char *argv[])
 	ss.clear();
 	ss.str(std::string());
 	SSlog<<simModeStr;
-	cout<<simModeStr<<endl;
+	if (SSO.SILENT==false)
+		cout<<simModeStr<<endl;
 
 	//cout<<"\n$$$$ about to try and load up sys data"<<endl;//$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$
 	SYSdo.systemDataLoadUp(SystemDataFilename.c_str());
@@ -391,7 +393,8 @@ int main(int argc ,char *argv[])
     string startParamsNotes = ss.str();
 	ss.clear();
 	ss.str(std::string());
-	cout<<startParamsNotes;
+	if (SSO.SILENT==false)
+		cout<<startParamsNotes;
 	SSlog<< startParamsNotes;
 
 	//*****************************************************************************
@@ -426,7 +429,8 @@ int main(int argc ,char *argv[])
 			printLine = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			cout<<printLine;
+			if (SSO.SILENT==false)
+				cout<<printLine;
 			SSlog<< printLine;
         }
         //cout<<"mcONLYorbSimulator.cpp, line# "<<405<<endl;//$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
@@ -573,19 +577,21 @@ int main(int argc ,char *argv[])
 		}
         //cout<<"mcONLYorbSimulator.cpp, line# "<<469<<endl;//$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$
 
-        if ( SSO.silent==false )
+        if (( SSO.quiet==false )&&(SSO.SILENT==false))
         	cout<<"ALL random numbers loaded"<<endl;
 
         // Generate Gaussian values for the sys dist and masses
-		if (false)//$$$$$$$$$$$$$$$$$$ NOT USING YET $$$$$$$$$$$$$$$$$$$$$$
+		if (true)
 		{
-			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,0.5*SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
-			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,0.5*SYSdo.Mass1_error,3.0*SYSdo.Mass1_error);
+			//ALL error values in early testing were multiplied by 0.5 initially, although the literature and logic recommends putting the values
+			//straight in makes more sense statistically.  Truncating distribution at 3*error to avoid going deep into the tails.
+			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,SYSdo.Sys_Dist_PC_error,3.0*SYSdo.Sys_Dist_PC_error);
+			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,SYSdo.Mass1_error,3.0*SYSdo.Mass1_error);
 			// load up mass2 with correct value depending on star or planet companion
 			if (SSO.simulate_StarPlanetRV==false)
-				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,0.5*SYSdo.star_Mass2_error,SYSdo.star_Mass2_error);
+				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,SYSdo.star_Mass2_error,3.0*SYSdo.star_Mass2_error);
 			else
-				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,0.5*SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
+				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,SYSdo.planet_MsinI_error,3.0*SYSdo.planet_MsinI_error);
 		}
 		//Load these up into the DIt object
 		DIt.Sys_Dist_PC = Sys_Dist_PC_proposed ;
@@ -610,7 +616,7 @@ int main(int argc ,char *argv[])
 			DIt.a_total = SMT_out.a_total;
 		}
 
-        if ( SSO.silent==false )
+        if (( SSO.quiet==false )&&(SSO.SILENT==false))
         {
         	string printLine2;
         	ss<< "\ninclination_deg = " <<DIt.inclination_deg  <<"\n";
@@ -646,7 +652,7 @@ int main(int argc ,char *argv[])
         	//*****************************************************************************
         	// #### DO STUFF FOR DI ORBIT CALCNS #####
         	//*****************************************************************************
-        	if ( SSO.silent==false )
+        	if (( SSO.quiet==false )&&(SSO.SILENT==false))
         		cout<<"Calculating DI orbit for this round "<<endl;
 
         	// Call the orbCalc to have it apply the model to the inputs and produce outputs
@@ -661,14 +667,14 @@ int main(int argc ,char *argv[])
 				one_over_nu_DI = (1.0/((2.0*numDIepochs)-numDIparams));
 			}
 			DI_chiSquared_reduced = one_over_nu_DI*DI_chiSquared_original;
-			//SSO.silent=false;//$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$
-			if ( SSO.silent==false )
+			//SSO.quiet=false;//$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$
+			if (( SSO.quiet==false )&&(SSO.SILENT==false))
 			{
 				cout<<"DI_chiSquared_original = "<<DI_chiSquared_original<<endl;
 				cout<<"one_over_nu_DI = "<<one_over_nu_DI<<endl;
 				cout<<"DI_chiSquared_reduced = "<<DI_chiSquared_reduced<<endl;
 			}
-			//SSO.silent=true;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
+			//SSO.quiet=true;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
         }
         else
         {
@@ -680,7 +686,7 @@ int main(int argc ,char *argv[])
         if (SSO.DIonly==false)
         {
         	//cout<<"In RV block"<<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$
-        	if ( SSO.silent==false )
+        	if (( SSO.quiet==false )&&(SSO.SILENT==false))
         		cout<<"Calculating RV residuals for this round"<<endl;
         	RV_chiSquared_original = 0.0;
         	//*****************************************************************************
@@ -697,7 +703,7 @@ int main(int argc ,char *argv[])
         	// param values as needed.
         	if (SSO.simulate_StarPlanetRV==true)
 			{
-        		if ( SSO.silent==false )
+        		if (( SSO.quiet==false )&&(SSO.SILENT==false))
         			cout<<"loading up input params for star-planet rv calcs"<<endl;
         		RVdo.planet_e  = DIt.e ;
         		//cout<<"e = "<<DIt.e<<endl;//$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$
@@ -711,7 +717,7 @@ int main(int argc ,char *argv[])
 			}
         	if (SSO.simulate_StarStarRV==true)
         	{
-        		if ( SSO.silent==false )
+        		if (( SSO.quiet==false )&&(SSO.SILENT==false))
         			cout<<"loading up input params for star-star rv calcs"<<endl;
         		RVdo.star_e  = DIt.e ;
         		RVdo.star_T  = DIt.T ;
@@ -725,7 +731,7 @@ int main(int argc ,char *argv[])
         	// get residual velocities for companion planet if needed
         	if (RVdo.planet_P!=0)
         	{
-        		if ( SSO.silent==false )
+        		if (( SSO.quiet==false )&&(SSO.SILENT==false))
         			cout<<"Starting to calculate residual vel for star-planet"<<endl;
         		VRCsp = GT.VRcalcStarPlanetLoadUp(RVdo);
         		VRCsp.verbose = false;
@@ -737,7 +743,7 @@ int main(int argc ,char *argv[])
         		// run through all RV data sets and calc residuals for it
 				for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
 				{
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"Calculating P-S residuals for dataset "<<(dataset+1)<<"/"<<int(RVdo.epochs_RV.size())<<endl;
 					VRCsp.epochs_p = RVdo.epochs_RV[dataset];
 					vector<double> VRp_vector;
@@ -752,14 +758,14 @@ int main(int argc ,char *argv[])
 						K_proposed = VRCsp.K_p;
 				}
 				Kp_calculated = VRCsp.K_p;
-				if ( SSO.silent==false )
+				if (( SSO.quiet==false )&&(SSO.SILENT==false))
 					cout<<"K_p = "<<VRCsp.K_p<<endl;
         	}
 
         	// get residual velocities for companion star if needed
         	if (RVdo.star_P!=0)
         	{
-        		if ( SSO.silent==false )
+        		if (( SSO.quiet==false )&&(SSO.SILENT==false))
         			cout<<"Starting to calculate residual vel for star-star"<<endl;
         		VRCss = GT.VRcalcStarStarLoadUp(RVdo);
         		VRCss.verbose = false;
@@ -771,7 +777,7 @@ int main(int argc ,char *argv[])
         		// run through all RV data sets and calc residuals for it
         		for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
         		{
-        			if ( SSO.silent==false )
+        			if (( SSO.quiet==false )&&(SSO.SILENT==false))
         				cout<<"Calculating S-S residuals for dataset "<<(dataset+1)<<"/"<<int(RVdo.epochs_RV.size())<<endl;
         			VRCss.epochs_s = RVdo.epochs_RV[dataset];
         			vector<double> VRs_vector;
@@ -785,14 +791,14 @@ int main(int argc ,char *argv[])
 						K_proposed = VRCss.K_s;
 				}
 				Ks_calculated = VRCss.K_s;
-				if ( SSO.silent==false )
+				if (( SSO.quiet==false )&&(SSO.SILENT==false))
 					cout<<"K_s = "<<VRCss.K_s<<endl;
         	}
 
         	// go through all residual vels and calculate the RV chiSquareds
         	for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
         	{
-        		if ( SSO.silent==false )
+        		if (( SSO.quiet==false )&&(SSO.SILENT==false))
         			cout<<"\nStarting to calculate chiSquared from residuals for dataset# "<< dataset<<endl;
 				for (int epoch=0; epoch<RVdo.epochs_RV[dataset].size(); ++epoch)
 				{
@@ -809,16 +815,9 @@ int main(int argc ,char *argv[])
 						companionStarVR = VRs_vector2[dataset][epoch];
 						//cout<<"companionStarVR for epoch "<<epoch <<" is "<<companionStarVR <<endl;//$$$$$$ DEBUGGING $$$$$$$$$$
 					}
-
-					double updatedRV_inv_var = RVdo.RV_inv_var[dataset][epoch];
-					if (false)
-					{
-						cout<< "RV_inv_var = "<<RVdo.RV_inv_var[dataset][epoch] <<",planetVR  ="<< planetVR <<endl;//<<", K_p_errorPercent = " << K_p_errorPercent <<endl;
-						cout<<"updatedRV_inv_var = "<<updatedRV_inv_var <<", RV_inv_var = "<< RVdo.RV_inv_var[dataset][epoch]<<endl;
-					}
-					double  RV_chiSquared_cur = GT.chiSquaredCalc((RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]),updatedRV_inv_var,(planetVR+companionStarVR));
+					double  RV_chiSquared_cur = GT.chiSquaredCalc((RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]),RVdo.RV_inv_var[dataset][epoch],(planetVR+companionStarVR));
 					RV_chiSquared_original = RV_chiSquared_original + RV_chiSquared_cur;
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 					{
 						cout<<"\nWorking on epoch "<<epoch<<endl;
 						cout<<"RVdo.RVs[dataset][epoch] = "<<RVdo.RVs[dataset][epoch]<<", RVoffsets_proposed = "<<RVoffsets_proposed[dataset]<<", -> ("<<RVdo.RVs[dataset][epoch]<<" - "<<RVoffsets_proposed[dataset]<<")="<<(RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]) <<", planetVR= "<< planetVR<<", companionStarVR= "<< companionStarVR<<endl;
@@ -835,7 +834,7 @@ int main(int argc ,char *argv[])
 				one_over_nu_RV = (1.0/((1.0*numRVepochs)-numRVparams));
 			}
         	RV_chiSquared_reduced = one_over_nu_RV*RV_chiSquared_original;
-        	if ( SSO.silent==false )
+        	if (( SSO.quiet==false )&&(SSO.SILENT==false))
         	{
 				cout<<"\nnumRVepochs = "<< numRVepochs <<endl;
 				cout<<"one_over_nu_RV = "<< one_over_nu_RV <<endl;
@@ -861,8 +860,8 @@ int main(int argc ,char *argv[])
         	one_over_nu_TOTAL = 1.0/(2.0*numDIepochs+1.0*numRVepochs-numParams);
         TOTAL_chiSquared_reduced = one_over_nu_TOTAL*chiSquared_TOTAL_original;
 
-        //SSO.silent=false;//$$$$$$ DEBUGGING $$$$$$$$$$$$
-		if ( SSO.silent==false )
+        //SSO.quiet=false;//$$$$$$ DEBUGGING $$$$$$$$$$$$
+		if (( SSO.quiet==false )&&(SSO.SILENT==false))
 		{
 			cout<<"\nDI_chiSquared_original = "<<DI_chiSquared_original <<endl;
 			cout<<"RV_chiSquared_original = "<< RV_chiSquared_original<<endl;
@@ -874,7 +873,7 @@ int main(int argc ,char *argv[])
 			cout<<"TOTAL_chiSquared_reduced = "<< TOTAL_chiSquared_reduced <<endl;
 			//cout<< "output reduced chi squared = "<< TOTAL_chiSquared_reduced <<endl;
 		}
-		//SSO.silent=true;//$$$$$$$$$$$$$$
+		//SSO.quiet=true;//$$$$$$$$$$$$$$
 
 		//*****************************************************************************
 		// Determine if the orbit should be accepted
@@ -911,7 +910,10 @@ int main(int argc ,char *argv[])
     //*****************************************************************************
     int totalAccepted = ODT.es.size();
     if (acceptedCounter!=totalAccepted)
-    	cout<<"Warning: (acceptedCounter) "<<acceptedCounter<< " != "<<totalAccepted<<" (totalAccepted)"<<endl;
+    {
+    	if (SSO.SILENT==false)
+    		cout<<"Warning: (acceptedCounter) "<<acceptedCounter<< " != "<<totalAccepted<<" (totalAccepted)"<<endl;
+    }
 
     ODT.numSamplesAccepted = totalAccepted;
 
@@ -966,7 +968,8 @@ int main(int argc ,char *argv[])
     printLine3=ss.str();
 	ss.clear();
 	ss.str(std::string());
-	cout<<printLine3;
+	if (SSO.SILENT==false)
+		cout<<printLine3;
 	// load up log with all prints in SSlog stringstream
 	// then write it to file.
 	SSlog<< printLine3;

@@ -33,6 +33,7 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
     A function to clean up the results and make a single text file 
     summarizing them.
     """
+    verbose = False
     ######################################
     ## Prep some of the basic input values
     ######################################
@@ -165,7 +166,8 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
         resultsFile.write('\n'+"-"*60+"\nCorrelation Lengths and number of Effective Points Values:\n"+"-"*60+effectivePointsStr)
     
     resultsFile.close()
-    print "*"*60+"\n"+"Final results file written to: "+os.path.join(datadir,"RESULTS.txt")+"\n"+"*"*60
+    if verbose:
+        print "*"*60+"\n"+"Final results file written to: "+os.path.join(datadir,"RESULTS.txt")+"\n"+"*"*60
 
 def bestOrbitFileToList(filename=''):
     """
@@ -315,6 +317,7 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
         .
         .
     """
+    verbose = False
   
     lowestChiSquared = 10000000000
     incBest = 0
@@ -332,12 +335,14 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
     s= '\nBest orbit found:'
     bestOrbitFilename = os.path.join(os.path.dirname(filename),'bestOrbit.txt')
     if os.path.exists(bestOrbitFilename):
-        print "Just loading values already found and stored in file: "+bestOrbitFilename
+        if verbose:
+            print "Just loading values already found and stored in file: "+bestOrbitFilename
         list = bestOrbitFileToList(bestOrbitFilename)
         s+= "\n"+repr(list)
     else:
         # strip off the .txt part to make the plot version of the filename
-        print "\nWorking on file: "+os.path.basename(filename)
+        if verbose:
+            print "\nWorking on file: "+os.path.basename(filename)
         f = open(filename, 'r')
         plotFileTitle = f.readline()[:-5]
         headings = f.readline()
@@ -389,12 +394,14 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
     if saveToFile:
         outFilename = os.path.dirname(filename)+'/bestOrbit.txt'
         if os.path.exists(outFilename):
-            print '\nbestOrbFinder: Warning: '+outFilename+' all ready exists, so not overwriting.'
+            if verbose:
+                print '\nbestOrbFinder: Warning: '+outFilename+' all ready exists, so not overwriting.'
         else:
             f = open(outFilename, 'w')
             f.write(s)
             f.close()
-            print '\nbestOrbFinderNEW68: Best orbit values saved to: '+outFilename
+            if verbose:
+                print '\nbestOrbFinder: Best orbit values saved to: '+outFilename
             
     if returnAsList:
         return list 
@@ -1134,7 +1141,7 @@ def dataFileCombiner(filenames,outFilename):
     :param outFilenames:  new filename for combined output file
     :type outFilenames:   string of form 'blahblahout.txt'
     '''
-    
+    verbose = False
     # check filenames parameter
     if type(filenames) is not list:
         print 'the filenames input parameter must be a list of strings'
@@ -1145,12 +1152,14 @@ def dataFileCombiner(filenames,outFilename):
     else:
         # checking if it has '.txt' on the end, if not add it
         if (outFilename[-4:]!='.txt' and outFilename[-4:]!='.dat'):
-            print 'Changing output filename from '+outFilename+' to '+outFilename+'.dat'
+            if verbose:
+                print 'Changing output filename from '+outFilename+' to '+outFilename+'.dat'
             outFilename = outFilename+'.dat'
     
     numFiles = len(filenames)
     if numFiles==1:
-        print 'Only one data file, so just copying it to the a file with the output filename'
+        if verbose:
+            print 'Only one data file, so just copying it to the a file with the output filename'
         shutil.copy(filenames[0],outFilename)
     elif numFiles>1:
         # First load first file into memory
@@ -1187,7 +1196,8 @@ def dataFileCombiner(filenames,outFilename):
         # close outfile as it is now loaded up
         fOUT.close()     
     
-    print 'Done! '+str(numFiles)+' files combined and written to "'+outFilename+'"'
+    if verbose:
+        print 'Done! '+str(numFiles)+' files combined and written to "'+outFilename+'"'
 
 def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False):
     """
@@ -1796,7 +1806,7 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
     (and process managers).
     """
     verbose = False # extra prints for testing
-    silentInternal = False # Minimum prints about input/output files
+    silentInternal = True # Minimum prints about input/output files
     replaceInputFile = False # replace input file with output one?
     
 #    ## find the number of available cpus
@@ -1877,10 +1887,14 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                         valUse=returnDict['useMultiProcessing'] = strToBool(val,False)
                         if verbose:
                             print 'useMultiProcessing found to be = '+str(returnDict['useMultiProcessing'])
-                    elif 'silent'in key:
-                        valUse=returnDict['silent'] = strToBool(val,True)
+                    elif 'SILENT'in key:
+                        valUse=returnDict['SILENT'] = strToBool(val,True)
                         if verbose:
-                            print 'silent found to be = '+str(returnDict['silent'])
+                            print 'SILENT found to be = '+str(returnDict['SILENT'])
+                    elif 'quiet'in key:
+                        valUse=returnDict['quiet'] = strToBool(val,True)
+                        if verbose:
+                            print 'quiet found to be = '+str(returnDict['quiet'])
                     elif 'verbose'in key:
                         returnDict['verbose'] = strToBool(val,False)
                         if verbose:
@@ -2168,7 +2182,7 @@ def sysDataToDict(filename):
     """
     
     verbose = False # extra prints for testing
-    silentInternal = False
+    silentInternal = True
     
     # start return dict to be loaded up below
     returnDict = {}
@@ -2401,7 +2415,8 @@ def findNuFromLog(logFilename = ''):
     file written by C++ as that is where nu was calculated and written.  Saves time calculating 
     it again in Python.
     """
-    if True:
+    verbose = False
+    if verbose:
         print "\n\nFinding nu from log file: "+logFilename+'\n\n'
     log = open(logFilename,'r')
     lines = log.readlines()
@@ -2427,7 +2442,7 @@ def findNuFromLog(logFilename = ''):
             break
         
     printStr =  "Found Nu = "+str(nu)+", NuRV = "+str(nuRV)+", and NuDI = "+str(nuDI)+" on line number "+str(i)
-    if False:
+    if verbose:
         print printStr
     return [nu,nuRV,nuDI,printStr] 
 

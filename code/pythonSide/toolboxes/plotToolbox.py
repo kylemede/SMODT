@@ -187,7 +187,8 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=True
         if debug:
             print 'locs set as y ticks'
         plot.axes.set_yticklabels(['0.0','0.2','0.4','0.6','0.8','1.0'])
-        print 'Values for '+xlabel+' were found to be constant, so not making a histogram, just a simple line plot!!'
+        if verbose:
+            print 'Values for '+xlabel+' were found to be constant, so not making a histogram, just a simple line plot!!'
     # add x label
     plot.axes.set_xlabel(xlabel,fontsize=30)
     plot = fixPlotBordersAndLabels(plot)
@@ -479,6 +480,7 @@ def makeCleanSummaryPlot(outputDataFilename=''):
     then use readTrimWrite to trim all data that is more than 40 higher than that value.
     This trimmed data file will then be plotted by summaryPlotter.
     """
+    quiet = True
     verbose = True
    
     ## if no datafilename provided, make one
@@ -531,10 +533,12 @@ def makeCleanSummaryPlot(outputDataFilename=''):
         if verbose:
             print '\nCalling summaryPlotter2 to plot new trimmed data'
         summaryPlotter(newDataFilename, newPlotFilename, weight=False, confLevels=True, normalize=True, nu=1, plot4x1=False, TcStepping=False)
-        if verbose:
+        if quiet==False:
+            print '\nNew plot for trimmed data written to: '+newPlotFilename
             print '\nTrimmed data all plotted up baby!! :-D\n'
     else:
-        print "Filename provided does not exist!!  Provided path was: "+outputDataFilename
+        if quiet==False:
+            print "Filename provided does not exist!!  Provided path was: "+outputDataFilename
         
     if True:
         return newDataFilename
@@ -552,6 +556,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
     :param plot4x1:  Only make plots for K, argPeri, e, and To (or Tc if Tc stepping was used).
     :type plot4x1:   Python boolean
     """
+    quiet = True
     verbose = False
     makeMassPlot = False
     ## find number of RV datasets
@@ -565,7 +570,8 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
          
         s= '\nCreating summary plot for file:\n'+outputDataFilename
         s=s+ '\nInput plotfilename:\n'+plotFilename
-        print s
+        if verbose:
+            print s
         log.write(s+'\n')
         # record the time the chain started
         startTime = timeit.default_timer()
@@ -589,7 +595,8 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             s=s+"\nTcStepping passed in was True, so plotting Tc instead of To"
         else:
             s=s+"\nTcStepping passed in was False, so plotting To instead of Tc"
-        print s
+        if verbose:
+            print s
         log.write(s+'\n')
         f.close()
            
@@ -605,7 +612,8 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         plotFileTitle = titleTop+'\n'+titleBtm
         
         s='\nStarting to make Total Summary Plot'
-        print s
+        if verbose:
+            print s
         log.write(s+'\n')
 
         NumSamples = 0
@@ -625,7 +633,8 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             subPlot = fig.add_subplot(223)
         startTime = timeit.default_timer()
         s='\nStarting to plot hist for argPeri_degsAlls'
-        print s
+        if verbose:
+            print s
         log.write(s+'\n')
         paramColNum = 6
         xlabel = 'Argument of Perigie [deg]'
@@ -634,13 +643,13 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         endTime1 = timeit.default_timer()
         totalTime = (endTime1-startTime1) # in seconds
         totalTimeString = genTools.timeString(totalTime)
-        s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+        s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
         startTime1 = timeit.default_timer()
         subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
         endTime1 = timeit.default_timer()
         totalTime = (endTime1-startTime1) # in seconds
         totalTimeString = genTools.timeString(totalTime)
-        s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+        s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
             
         if (type(data)!=float)and(NumSamples==0):
             NumSamples=data.size
@@ -650,14 +659,16 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         endTime = timeit.default_timer()
         totalTime = (endTime-startTime) # in seconds
         totalTimeString = genTools.timeString(totalTime)
-        s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-        print s
+        s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+        if quiet==False:
+            print s
         log.write(s+'\n')
         
         if not plot4x1:
             startTime = timeit.default_timer()
             s='\nStarting to plot hist for inclination_degsAlls:'
-            print s
+            if verbose:
+                print s
             log.write(s+'\n')
             subPlot = fig.add_subplot(241)
             paramColNum = 5
@@ -667,13 +678,13 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             endTime1 = timeit.default_timer()
             totalTime = (endTime1-startTime1) # in seconds
             totalTimeString = genTools.timeString(totalTime)
-            s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+            s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
             startTime1 = timeit.default_timer()
             subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
             endTime1 = timeit.default_timer()
             totalTime = (endTime1-startTime1) # in seconds
             totalTimeString = genTools.timeString(totalTime)
-            s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+            s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
             subPlot.axes.set_ylabel('Probability',fontsize=30)
             if (type(data)!=float)and(NumSamples==0):
                 NumSamples=data.size
@@ -685,14 +696,16 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             endTime = timeit.default_timer()
             totalTime = (endTime-startTime) # in seconds
             totalTimeString = genTools.timeString(totalTime)
-            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-            print s
+            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+            if quiet==False:
+                print s
             log.write(s+'\n')
         
         if not plot4x1:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             startTime = timeit.default_timer()
             s='\nStarting to plot hist for longAN_degsAlls:'
-            print s
+            if verbose:
+                print s
             log.write(s+'\n')
             subPlot = fig.add_subplot(242)
             paramColNum = 0
@@ -712,8 +725,9 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             endTime = timeit.default_timer()
             totalTime = (endTime-startTime) # in seconds
             totalTimeString = genTools.timeString(totalTime)
-            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-            print s
+            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+            if quiet==False:
+                print s
             log.write(s+'\n')
         if True:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             # Create sub plot and fill it up for the e
@@ -723,7 +737,8 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 subPlot = fig.add_subplot(221)
             startTime = timeit.default_timer()
             s='\nStarting to plot hist for esAlls:'
-            print s
+            if verbose:
+                print s
             log.write(s+'\n')
             paramColNum = 1
             xlabel = 'e'
@@ -732,13 +747,13 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             endTime1 = timeit.default_timer()
             totalTime = (endTime1-startTime1) # in seconds
             totalTimeString = genTools.timeString(totalTime)
-            s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+            s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
             startTime1 = timeit.default_timer()
             subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
             endTime1 = timeit.default_timer()
             totalTime = (endTime1-startTime1) # in seconds
             totalTimeString = genTools.timeString(totalTime)
-            s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+            s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
             if (type(data)!=float)and(NumSamples==0):
                 NumSamples=data.size
             #eMedian = np.median(esAlls)
@@ -747,8 +762,9 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             endTime = timeit.default_timer()
             totalTime = (endTime-startTime) # in seconds
             totalTimeString = genTools.timeString(totalTime)
-            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-            print s
+            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+            if quiet==False:
+                print s
             log.write(s+'\n')
         
         
@@ -765,20 +781,21 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             xlabel = 'Time of last Periapsis [JD]'
         startTime = timeit.default_timer()
         s='\nStarting to plot hist for TsAlls:'
-        print s
+        if verbose:
+            print s
         log.write(s+'\n')
         startTime1 = timeit.default_timer()
         (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
         endTime1 = timeit.default_timer()
         totalTime = (endTime1-startTime1) # in seconds
         totalTimeString = genTools.timeString(totalTime)
-        s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+        s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
         startTime1 = timeit.default_timer()
         subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
         endTime1 = timeit.default_timer()
         totalTime = (endTime1-startTime1) # in seconds
         totalTimeString = genTools.timeString(totalTime)
-        s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+        s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
         if (CLevels[1][1]-CLevels[1][0])>50:
             # shink x axis labels as there are too may big numbers and they merge otherwise
             subPlot.tick_params(axis='x',which='major',labelsize=14)
@@ -791,8 +808,9 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         endTime = timeit.default_timer()
         totalTime = (endTime-startTime) # in seconds
         totalTimeString = genTools.timeString(totalTime)
-        s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-        print s
+        s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+        if quiet==False:
+            print s
         log.write(s+'\n')
             
         
@@ -800,20 +818,22 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         if plot4x1: 
             startTime = timeit.default_timer()
             s='\nStarting to plot hist for Ks:'
-            print s
+            if verbose:
+                print s
             log.write(s+'\n')
             subPlot = fig.add_subplot(224)
             paramColNum = 9
             xlabel = 'K [m/s]'
             startTime1 = timeit.default_timer()
-            print 'Getting data'
+            if verbose:
+                print 'Getting data'
             
             (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
             
             endTime1 = timeit.default_timer()
             totalTime = (endTime1-startTime1) # in seconds
             totalTimeString = genTools.timeString(totalTime)
-            s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+            s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
             startTime1 = timeit.default_timer()
             
             subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
@@ -821,7 +841,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             endTime1 = timeit.default_timer()
             totalTime = (endTime1-startTime1) # in seconds
             totalTimeString = genTools.timeString(totalTime)
-            s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+            s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
             if (type(data)!=float)and(NumSamples==0):
                 NumSamples=data.size
             #periodMedian = np.median(periodsAlls)
@@ -830,13 +850,15 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             endTime = timeit.default_timer()
             totalTime = (endTime-startTime) # in seconds
             totalTimeString = genTools.timeString(totalTime)
-            s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-            print s
+            s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+            if quiet==False:
+                print s
             log.write(s+'\n')
         elif (bestLongAN==0):
             startTime = timeit.default_timer()
             s='\nStarting to plot hist for Ks:'
-            print s
+            if verbose:
+                print s
             log.write(s+'\n')
             subPlot = fig.add_subplot(242)
             paramColNum = 9
@@ -851,15 +873,17 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             endTime = timeit.default_timer()
             totalTime = (endTime-startTime) # in seconds
             totalTimeString = genTools.timeString(totalTime)
-            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-            print s
+            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+            if quiet==False:
+                print s
             log.write(s+'\n')
         
         # Create sub plot and fill it up for the Period
         if not plot4x1: 
             startTime = timeit.default_timer()
             s='\nStarting to plot hist for periodsAlls:'
-            print s
+            if verbose:
+                print s
             log.write(s+'\n')
             subPlot = fig.add_subplot(246)
             paramColNum = 4
@@ -876,8 +900,9 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             endTime = timeit.default_timer()
             totalTime = (endTime-startTime) # in seconds
             totalTimeString = genTools.timeString(totalTime)
-            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-            print s
+            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+            if quiet==False:
+                print s
             log.write(s+'\n')
             
         if True:
@@ -885,7 +910,8 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             if not plot4x1: 
                 startTime = timeit.default_timer()
                 s='\nStarting to plot hist for Semi-Majors:'
-                print s
+                if verbose:
+                    print s
                 log.write(s+'\n')
                 subPlot = fig.add_subplot(247)
                 paramColNum = 7
@@ -904,8 +930,9 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 endTime = timeit.default_timer()
                 totalTime = (endTime-startTime) # in seconds
                 totalTimeString = genTools.timeString(totalTime)
-                s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-                print s
+                s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+                if quiet==False:
+                    print s
                 log.write(s+'\n')        
         
             if (NumSamples<2e7)and(makeMassPlot):
@@ -913,7 +940,8 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 if not plot4x1:
                     startTime = timeit.default_timer()
                     s='\nStarting to plot hist for Mtotals:'
-                    print s
+                    if verbose:
+                        print s
                     log.write(s+'\n')
                     # conversion factors and constants
                     SecPerYear = 31557600.0
@@ -929,14 +957,16 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                     #periodCLevels = np.array(periodCLevels)
                     # calculate the CLevels for the mass
                     #CLevels=[[]]
-                    print 'semiMajorCLevels = '+repr(semiMajorCLevels)
-                    print 'periodCLevels = '+repr(periodCLevels)
+                    if verbose:
+                        print 'semiMajorCLevels = '+repr(semiMajorCLevels)
+                        print 'periodCLevels = '+repr(periodCLevels)
                     CLevelsA = consts*((semiMajorCLevels[0][0]**3.0)/(periodCLevels[0][0]**2.0))
                     CLevelsB = consts*((semiMajorCLevels[0][1]**3.0)/(periodCLevels[0][1]**2.0))
                     CLevelsC = consts*((semiMajorCLevels[1][0]**3.0)/(periodCLevels[1][0]**2.0))
                     CLevelsD = consts*((semiMajorCLevels[1][1]**3.0)/(periodCLevels[1][1]**2.0))
                     CLevels=[[CLevelsA,CLevelsB],[CLevelsC,CLevelsD]]
-                    print 'CLevels = '+repr(CLevels)
+                    if verbose:
+                        print 'CLevels = '+repr(CLevels)
                     #print 'CLevels normal = '+repr([[CLevelsA,CLevelsB],[CLevelsC,CLevelsD]])
                     bestVal = consts*((semiMajorBest**3.0)/(periodBest**2.0))
                     
@@ -956,7 +986,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                     endTime = timeit.default_timer()
                     totalTime = (endTime-startTime) # in seconds
                     totalTimeString = genTools.timeString(totalTime)
-                    s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
+                    s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
                     Median = np.median(Mtotals)
                     s =s+ "\n"+"*"*25 
                     s=s+"\nBest Fit value of Mtotals = "+str(bestVal)
@@ -967,7 +997,8 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                     if NumSamples<2e7:
                         s=s+"\ntotal range = "+repr([np.min(Mtotals),np.max(Mtotals)])
                     s =s+"\n"+"*"*25+"\n"
-                    print s
+                    if quiet==False:
+                        print s
                     log.write(s+'\n')
 
         # This is for if you want to get a hist for the Tc and To params when doing TcStepping.  It is placed ontop of the semi-major's hist!!!!
@@ -983,7 +1014,8 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                     paramColNum = 3
                     xlabel = 'Time of Center Transit [JD]'
                     s='\nStarting to plot hist for Tcs:'
-                print s
+                if verbose:
+                    print s
                 log.write(s+'\n')
                 subPlot = fig.add_subplot(247)
                 (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
@@ -993,8 +1025,9 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 endTime = timeit.default_timer()
                 totalTime = (endTime-startTime) # in seconds
                 totalTimeString = genTools.timeString(totalTime)
-                s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-                print s
+                s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+                if quiet==False:
+                    print s
                 log.write(s+'\n')
         
         if True:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -1027,11 +1060,13 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 
                 
         # Save file if requested.
-        print '\nStarting to save param hist figure:'
+        if verbose:
+            print '\nStarting to save param hist figure:'
         if plotFilename!='':
             plt.savefig(plotFilename, dpi=300, orientation='landscape')
             s= 'Summary plot saved to: '+plotFilename
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n')
         plt.close()
         
@@ -1055,7 +1090,8 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                     startTime = timeit.default_timer()
                     subPlot = fig.add_subplot(330+dataset)
                     paramColNum = 9+dataset
-                    print 'Starting to plot '+'RV offset '+str(dataset)+":"
+                    if verbose:
+                        print 'Starting to plot '+'RV offset '+str(dataset)+":"
                     xlabel = 'RV offset '+str(dataset)+' [m/s]'
                     (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
                     subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
@@ -1068,22 +1104,26 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                     endTime = timeit.default_timer()
                     totalTime = (endTime-startTime) # in seconds
                     totalTimeString = genTools.timeString(totalTime)
-                    s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in 'silent' mode to track time
-                    print s
+                    s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+                    if quiet==False:
+                        print s
                     log.write(s+'\n') 
                      
                 # Save file 
-                print '\nStarting to save RVoffsets figure'
+                if verbose:
+                    print '\nStarting to save RVoffsets figure'
                 plotFilename2 = plotFilename[0:-4]+'-RVoffsets.png'
                 plt.savefig(plotFilename2, dpi=300, orientation='landscape')
                 s= 'RV offsets summary figure saved to '+plotFilename2
-                print s
+                if quiet==False:
+                    print s
                 log.write(s+'\n')  
                 plt.close()
             except:
                 plt.close()
                 s= 'No RV offsets to plot' 
-                print s
+                if quiet==False:
+                    print s
                 log.write(s+'\n')  
 
         ## Make a chiSquared distribution         
@@ -1106,11 +1146,13 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             subPlot.axes.set_ylabel('Probability')
             
             #subPlot.set_yscale('log')
-            print 'Starting to save chiSquared figure:'
+            if verbose:
+                print 'Starting to save chiSquared figure:'
             plotFilename3 = plotFilename[0:-4]+'-ChiSquaredDist.png'
             plt.savefig(plotFilename3, dpi=250, orientation='landscape')
             s= 'chiSquared dist summary figure saved to '+plotFilename3
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n')  
             plt.close()
             
@@ -1118,13 +1160,14 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         endTime = timeit.default_timer()
         totalTime = (endTime-startTime) # in seconds
         totalTimeString = genTools.timeString(totalTime)
-        s= '\n\nsummaryPlotter2: Plotting took '+totalTimeString+' to complete.\n'
-        print s
+        s= '\n\nsummaryPlotter: Plotting took '+totalTimeString+' to complete.\n'
+        if verbose:
+            print s
         log.write(s+'\n')
         log.write('\n'+75*'#'+'\n Leaving summaryPlotter2 \n'+75*'#'+'\n')
         log.close()
     else:
-        s= "summaryPlotter2: ERROR!!!! file doesn't exist"
+        s= "summaryPlotter: ERROR!!!! file doesn't exist"
         print s
         log.write(s+'\n')
         log.write('\n'+75*'#'+'\n Leaving summaryPlotter2 \n'+75*'#'+'\n')
@@ -1147,6 +1190,7 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
     :param plot4x1:  Only make plots for K, argPeri, e, To (or Tc if Tc stepping was used), and chiSquared.
     :type plot4x1:   Python boolean
     """
+    quiet = True
     verbose = False
     #find chain number and update logFilename with path and number
     s = outputDataFilename
@@ -1159,7 +1203,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
     if os.path.exists(outputDataFilename):   
         s=  '\nCreating summary plot for file:\n'+outputDataFilename
         s=s+'\nInput plotfilename:\n'+plotFilename
-        print s
+        if quiet==False:
+            print s
         log.write(s+'\n')
         # record the time the chain started
         startTime = timeit.default_timer()
@@ -1182,7 +1227,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
             if (len(line)>10):
                 numRVdatasets = len(dataLineCols) - 10
         s= "\nNumber of RV datasets found in progessPlotterSingleFile was "+str(numRVdatasets)+"\n"
-        print s
+        if verbose:
+            print s
         log.write(s+'\n')
         f.close()
            
@@ -1220,12 +1266,14 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
         if not plot4x1:
             fig2 = plt.figure(2, figsize=(30,55),dpi=200)
             s= '\n** a 7x1 figure will be made for all 6 orbital parameters in the output datafile **'
-            print s
+            if verbose:
+                print s
             log.write(s+'\n')
         else:
             fig2 = plt.figure(2,figsize=(30,35),dpi=200)
             s= '\n** a 4x1 figure will be made for all 6 orbital parameters in the output datafile **'
-            print s
+            if verbose:
+                print s
             log.write(s+'\n')
         
         # add figure title
@@ -1277,7 +1325,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
             subPlot2.axes.set_ylabel(xlabel)
             #argPeriMedian = np.median(argPeri_degsAlls)
             s= "done plotting argPeri_degsAlls"
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n')
         except:
             log.write("An error occured while trying to plot summary of argPeri_degs.\n This is most likely due to it being constant.")
@@ -1291,7 +1340,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
             #del inclination_degsAlls
             #gc.collect()
             s= "done plotting inclination_degsAlls"
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n')
         
         
@@ -1305,7 +1355,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
             (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             #longANMedian = np.median(data)
             s= "done plotting longAN_degsAlls"
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n')
         
         # Create sub plot and fill it up for the e
@@ -1318,7 +1369,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
         (log,subPlot2,data,beste)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
         #eMedian = np.median(esAlls)
         s= "done plotting esAlls"
-        print s
+        if quiet==False:
+            print s
         log.write(s+'\n')
             
         # Create sub plot and fill it up for the Period
@@ -1329,7 +1381,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
             (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             #periodMedian = np.median(periodsAlls)
             s= "done plotting periodsAlls"
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n')
             
         # Create sub plot and fill it up for the semi-majors
@@ -1342,7 +1395,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
             semiMajorBest = bestDataVal
             #print "\n\n"+"%"*100+"semiMajorBest = "+str(semiMajorBest)+"%"*100+"\n\n"
             s= "done plotting semi-majors"
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n')
             
         # Create sub plot and fill it up for the Semi-Major Amplitude
@@ -1356,7 +1410,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
             xlabel = 'K [m/s]'
             (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             s= "done plotting Ks"
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n')
             
         # Create sub plot and fill it up for the Time of last Periapsis OR center transit
@@ -1376,7 +1431,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
             (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
             #TMedian = np.median(TsAlls)
             s= "done plotting TsAlls"
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n')
                 
         ## NOTE: this chiSquareds plot is special, so it can't use the function to do the work
@@ -1406,18 +1462,29 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
             ax2.set_ylabel("Reduced chiSquareds")
             #################################################
             s= "done plotting ChiSquareds < "+str(maxY2)
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n')                   
             
             # Save file if requested.
             if plotFilename!='':
                 plt.savefig(plotFilename, orientation='landscape')
                 s= '\nSummary plot saved to:\n'+plotFilename
-                print s
+                if quiet==False:
+                    print s
                 log.write(s+'\n')
             plt.close()
         except:
             print "Unable to produce a Chi Squared summary distribution plot for some reason, probably not enough data."
+            print "Just going to save current version of figure without the chi squared progress plot."
+            # Save file if requested.
+            if plotFilename!='':
+                plt.savefig(plotFilename, orientation='landscape')
+                s= '\nSummary plot saved to:\n'+plotFilename
+                if quiet==False:
+                    print s
+                log.write(s+'\n')
+            plt.close()
         
         if False:
             ## separate figure for the chiSquareds ##
@@ -1437,7 +1504,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
             #subPlot2.plot(range(0,data.size),data)
             subPlot2.axes.set_ylabel(xlabel)
             s= "done plotting ChiSquareds full Ranges"
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n')
             
             subPlot2 = fig3.add_subplot(212)
@@ -1448,7 +1516,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
             subPlot2.plot(xCenters, yCenters)
             subPlot2.axes.set_ylabel(xlabel)
             s= "done plotting ChiSquareds < "+str(maxY2)
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n')
             
             # Save file if requested.
@@ -1465,7 +1534,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
                     
                 plt.savefig(plotFilename3, orientation='landscape')
                 s= '\nSummary plot saved to:\n'+plotFilename
-                print s
+                if quiet==False:
+                    print s
                 log.write(s+'\n')
             plt.close()
         
@@ -1475,7 +1545,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
             try:
                 s = "\nTrying to produce posterior histograms of the RV offsets"
                 s+="/n ** First RV value was "+str(rvFirstVal)
-                print s
+                if verbose:
+                    print s
                 log.write(s+'\n')
                 # Create empty figure to be filled up with plots
                 # Create sub plot and fill it up for the Semi-major
@@ -1488,7 +1559,8 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
                 else:
                     s= '\nprogessPlotterSingleFile: WARNING!!! Plotter not set up to handle more than 3 RV datasets and '\
                     +str(numRVdatasets)+' were found in the output datafile.'
-                    print s
+                    if quiet==False:
+                        print s
                     log.write(s+'\n')
                 
                 
@@ -1502,9 +1574,10 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
                         subPlot2 = fig2.add_subplot(311)
                     paramColNum = 10
                     xlabel = 'RV offset 1 [m/s]'
-                    (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+                    (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
                     s= "Done plotting RV offsets for dataset 1"
-                    print s
+                    if quiet==False:
+                        print s
                     log.write(s+'\n')
                 
                 if numRVdatasets>=2:
@@ -1515,9 +1588,10 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
                         subPlot2 = fig2.add_subplot(312)
                     paramColNum = 11
                     xlabel = 'RV offset 2 [m/s]'
-                    (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+                    (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
                     s= "Done plotting RV offsets for dataset 2"
-                    print s
+                    if quiet==False:
+                        print s
                     log.write(s+'\n')
                     
                 if numRVdatasets==3:
@@ -1525,9 +1599,10 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
                     subPlot2 = fig2.add_subplot(313)
                     paramColNum = 12
                     xlabel = 'RV offset 3 [m/s]'
-                    (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=True)
+                    (log,subPlot2,data,bestDataVal)=progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramColNum,xCenters,numChunks,chunkSize,ignoreConstParam=False)
                     s= "Done plotting RV offsets for dataset 3"
-                    print s
+                    if quiet==False:
+                        print s
                     log.write(s+'\n')
                         
                 # Save file 
@@ -1542,17 +1617,20 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
                     print s
                 plt.savefig(plotFilename2, orientation='landscape')
                 s= '\nRV offsets summary figure saved to:\n'+plotFilename2
-                print s
+                if quiet==False:
+                    print s
                 log.write(s+'\n')                 
                 plt.close()
             except:
                 plt.close()
                 s= '\n!!! A problem occured while trying to make RV offsets to plot !!!\n' 
-                print s
+                if quiet==False:
+                    print s
                 log.write(s+'\n')     
         else:
             s= '\nNo RV offsets to plot' 
-            print s
+            if quiet==False:
+                print s
             log.write(s+'\n') 
             
         # record the time the chain finished and print
@@ -1560,13 +1638,15 @@ def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=Fal
         totalTime = (endTime-startTime) # in seconds
         totalTimeString = genTools.timeString(totalTime)
         s= '\n\nprogessPlotterSingleFile: Plotting took '+totalTimeString+' to complete.\n'
-        print s
+        if quiet==False:
+            print s
         log.write(s+'\n')     
         log.write('\n'+75*'*'+'\n Leaving progessPlotterSingleFile \n'+75*'*'+'\n')
         log.close()
     else:
         s= "\nprogessPlotterSingleFile: ERROR!!!! file doesn't exist"
-        print s
+        if quiet==False:
+            print s
         log.write(s+'\n')
         log.write('\n'+75*'*'+'\n Leaving progessPlotterSingleFile \n'+75*'*'+'\n')
         log.close()
@@ -1653,6 +1733,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     :param sys_dist:        Distance to System in [pc]
     :type sys_dist:         float
     """
+    quiet = True
     verboseInternal = False
     colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     mas = False
@@ -1761,7 +1842,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
             #sep_dists.append(sep_dist)
         ellipseXs2.append(ellipseXs)
         ellipseYs2.append(ellipseYs)
-        if True:
+        if verboseInternal:
             print "\nThe number of epochs that had mismatched for x,y due to TH-I vs CREPP methods were #"+str(numFailed)+"/"+str(numPassed)+"\n"
     ###################### ORBIT DEBUGGING ####################################
     if False:
@@ -2254,6 +2335,7 @@ def mcmcProgressPlotter(filenames,rootPlotFilename,nu=1, plot4x1=False,TcSteppin
     :param plot4x1:  Only make plots for K, argPeri, e, To (or Tc if Tc stepping was used), and chiSquared.
     :type plot4x1:   Python boolean
     """
+    verbose = False
     # check if the passed in value for plotFilename includes '.png'
     if '.png' not in rootPlotFilename:
         rootPlotFilename = rootPlotFilename+'.png'
@@ -2277,7 +2359,8 @@ def mcmcProgressPlotter(filenames,rootPlotFilename,nu=1, plot4x1=False,TcSteppin
         # check if the passed in value for filename includes '.txt'
         if (filename[-4:]!='.txt' and filename[-4:]!='.dat'):
             filename = filename+'.dat'
-            print ".dat was added to the end of the filename as it wasn't found to be in the original version"
+            if verbose:
+                print ".dat was added to the end of the filename as it wasn't found to be in the original version"
         #find chain number and update plotFilename with path and number
         s = filename
         chainNumStr = s[s.find('chain_')+6:s.find('chain_')+6+1]
@@ -2291,7 +2374,8 @@ def mcmcProgressPlotter(filenames,rootPlotFilename,nu=1, plot4x1=False,TcSteppin
         s= '\n###### Making MCMC progress summary plots for chain '+chainNumStr+' ######\n'
         #[nu,printStr] = genTools.findNuFromLog(logFilename)
         s = s#+'\n'+printStr
-        print s
+        if verbose:
+            print s
         log.write(s+'\n')
         log.close()
         #call plotter for this file
@@ -2654,7 +2738,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     RV_epochsIN2 = RV_epochs
     s = '\n There were '+str(len(e))+' orbits provided to plot for '+str(len(RV_epochsIN2))+" RV datasets."
     #print 'there were also '+str(len(RV_errors))+" rv error sets"
-    print s
+    if verbose:
+        print s
     log.write(s+'\n')
     
     ## now convert the new epochs to phases.

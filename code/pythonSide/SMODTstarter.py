@@ -33,7 +33,7 @@ def main():
     ## The default is '' if nothing is entered as the second argument.
     ###########################################################################
     
-    print '\n\n\n'+'='*100+'\n'+'='*100+'\n'+'='*35+'  Starting Orbit Simulation   '+'='*35+'\n'+'='*100+'\n'+'='*100+'\n\n\n'
+    print '\n\n'+'='*100+'\n'+'='*100+'\n'+'='*35+'  Starting Orbit Simulation   '+'='*35+'\n'+'='*100+'\n'+'='*100+'\n\n'
     verboseInternal = False
     if verboseInternal:
         print '*'*50
@@ -110,18 +110,23 @@ def main():
         data_dir = data_dir+'/'
     finalFolder = data_dir+filename[:-4]+'/'
     if os.path.exists(finalFolder):
-        print '\n'+'$'*100+'\n'
-        print 'WARNING!! the folder:'+finalFolder+', all ready exists!'
-        print 'You can overwrite the data in it, or exit this simulation.'
+        if paramSettingsDict['SILENT']==False:
+            print '\n'+'$'*100+'\n'
+            print 'WARNING!! the folder:'+finalFolder+', all ready exists!'
+        if paramSettingsDict['SILENT']==False:
+            print 'You can overwrite the data in it, or exit this simulation.'
         YN = raw_input('\nOVERWRITE current folder (y/n):')
         if (('y' in YN) or ('Y' in YN)):
-            print '\nDELETING all contents of folder:'+finalFolder
+            if paramSettingsDict['SILENT']==False:
+                print '\nDELETING all contents of folder:'+finalFolder
             shutil.rmtree(finalFolder)
-            print 'MAKING new empty folder:'+finalFolder
+            if paramSettingsDict['SILENT']==False:
+                print 'MAKING new empty folder:'+finalFolder
             os.mkdir(finalFolder)
         elif (('n' in YN) or ('N' in YN)):
             sys.exit()
-        print '\n'+'$'*100+'\n'
+        if paramSettingsDict['SILENT']==False:
+            print '\n'+'$'*100+'\n'
     else:
         os.mkdir(finalFolder)
         

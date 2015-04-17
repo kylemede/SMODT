@@ -35,7 +35,7 @@ int main(int argc ,char *argv[])
 	generalTools GT;
 	// print to indicate sim has started
 	//ss<<"\n*** C++ MCMC simulation has started ***\n";
-	cout<<"\n\n $$$$$ Entered MCMC simulator in C++ $$$\n\n"<<endl;
+	ss<<"\n\n $$$$$ Entered MCMC simulator in C++ $$$\n\n"<<endl;
 	// pull in simulator settings filename and output data filename
 	// from command line args
 	string settingsFilename;
@@ -89,7 +89,7 @@ int main(int argc ,char *argv[])
 	ss.clear();
 	ss.str(std::string());
 	SSlog<<inputsStr;
-	if (SSO.verbose==true)
+	if ((SSO.verbose==true)&&(SSO.SILENT==false))
 		cout<< inputsStr;
 
 	// Find out what 'mode' simulator will run in then log and print it to screen
@@ -104,7 +104,8 @@ int main(int argc ,char *argv[])
 	ss.clear();
 	ss.str(std::string());
 	SSlog<<simModeStr;
-	cout<<simModeStr<<endl;
+	if (SSO.SILENT==false)
+		cout<<simModeStr<<endl;
 
 	//cout<<"\n$$$$ about to try and load up sys data"<<endl;
 	SYSdo.systemDataLoadUp(SystemDataFilename.c_str());
@@ -144,7 +145,7 @@ int main(int argc ,char *argv[])
 //	//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 //	//$$$$$$$$$$$$$$$$ SOME TESTER CODE FOR C++ GAUSSIAN RND NUMBER GENERATION $$$$$$
 //	//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-//	if (false)
+//	if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 //	{
 //		StochasticLib1 RanGen2(time_nsec);
 //
@@ -154,7 +155,7 @@ int main(int argc ,char *argv[])
 //		{
 //			//double randNumber = RanGen.UniformRandom(1.0, 100.0);
 //			double randNumber = RanGen2.NormalTrunc(0.0,10.0,50.0);
-//			if (false)
+//			if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 //				cout<<"Random number is: "<<randNumber<<endl;
 //			randNumbersAry.push_back(randNumber);
 //		}
@@ -200,7 +201,7 @@ int main(int argc ,char *argv[])
 	simAnealOrbFuncObj SAOFO;
 	SAOFO.SSO = SSO;
 	SAOFO.SSO.verbose = SSO.verbose;
-	SAOFO.SSO.silent = SSO.silent;
+	SAOFO.SSO.quiet = SSO.quiet;
 	SAOFO.SSO.numSamplePrints = SSO.numSamplePrints;
 	SAOFO.SSO.chiSquaredMax = SSO.chiSquaredMax;
 	SAOFO.DIt = DIt;
@@ -223,7 +224,10 @@ int main(int argc ,char *argv[])
 	starterString = ss.str();
 	ss.clear();
 	ss.str(std::string());
-	cout<< starterString;
+	if (SSO.SILENT==false)
+		cout<< starterString;
+	else
+		cout<<"\nMCMC: $$$$$$$$$$$$$$$$$$$  Simulated Annealing Starting  $$$$$$$$$$$$$$$$$" <<endl;
 	SSlog<<starterString;
 
 	//Starting log message that ensures vital inputs are logged.
@@ -239,15 +243,16 @@ int main(int argc ,char *argv[])
 		startParmsString = ss.str();
 		ss.clear();
 		ss.str(std::string());
-		cout<< startParmsString;
+		if (SSO.SILENT==false)
+			cout<< startParmsString;
 		SSlog<<startParmsString;
 	}
 	//*** Run Simulated Annealing simulation first to get starting params
-	if (SSO.silent==false)
+	if ((SSO.quiet==false)&&(SSO.SILENT==false))
 			cout<<"Calling SAOFO function"<<endl;
 	SAOFO.simulator();
-	//SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-	if (SSO.silent==false)
+	//SSO.quiet=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	if ((SSO.quiet==false)&&(SSO.SILENT==false))
 		cout<<"Returned from SAOFO function :-)"<<endl;
 	//move output log string from simulation run to SSlog
 	SSlog<<SAOFO.SSlogStr;
@@ -367,7 +372,8 @@ int main(int argc ,char *argv[])
 	printLine3=ss.str();
 	ss.clear();
 	ss.str(std::string());
-	cout<<printLine3;
+	if (SSO.SILENT==false)
+		cout<<printLine3;
 	SSlog<< printLine3;
 
 	if (SSO.simAnneal==false)
@@ -388,12 +394,15 @@ int main(int argc ,char *argv[])
 
 		string starterString2;
 		string numSamplesString2 =  GT.numSamplesStringMaker(SSO.numSamples);
-		ss<<"\nMCMC: $$$$$$$$$$$$$$$$$$$  MCMC Simulation Starting  $$$$$$$$$$$$$$$$$" <<endl;
+		ss<<"\nMCMC: $$$$$$$$$$$$$$$$$$$  MCMC Starting  $$$$$$$$$$$$$$$$$" <<endl;
 		ss<<"Number of sample orbits being created = " << numSamplesString2 <<endl;
 		starterString2 = ss.str();
 		ss.clear();
 		ss.str(std::string());
-		cout<< starterString2;
+		if (SSO.SILENT==false)
+			cout<< starterString2;
+		else
+			cout<<"\nMCMC: $$$$$$$$$$$$$$$$$$$  MCMC Starting  $$$$$$$$$$$$$$$$$" <<endl;
 		SSlog<<starterString2;
 
 		MCMCorbFuncObj MCMCOFO;
@@ -469,7 +478,7 @@ int main(int argc ,char *argv[])
 
 
 		MCMCOFO.SSO = SSO;
-		//MCMCOFO.SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$
+		//MCMCOFO.SSO.quiet=false;//$$$$$$$$$$$$$$$$$$$$
 		//MCMCOFO.SSO.verbose=true;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		MCMCOFO.DIt = DIt;
 		MCMCOFO.DIdo = DIdo;
@@ -499,11 +508,11 @@ int main(int argc ,char *argv[])
 		else
 		{
 			//*** Run Full MCMC chain with results of the SimAnnealing and sigma tuning
-			if (SSO.silent==false)
+			if ((SSO.quiet==false)&&(SSO.SILENT==false))
 					cout<<"Calling MCMCOFO simulator"<<endl;
 			MCMCOFO.simulator();
-			//SSO.silent=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			if (SSO.silent==false)
+			//SSO.quiet=false;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+			if ((SSO.quiet==false)&&(SSO.SILENT==false))
 				cout<<"Returned from MCMCOFO simulator :-)"<<endl;
 			//move output log string from simulation run to SSlog
 			SSlog<<MCMCOFO.SSlogStr;
@@ -547,12 +556,15 @@ int main(int argc ,char *argv[])
 			string timeString;
 			timeString = GT.timeStr( timeElapsed);
 			//cout<<"back from timeStr func"<<endl;
-			ss<< "\nSimulator took "<<timeString<<" to complete"<<endl;
+			ss<< "\nSimulated Annealing, Sigma Tuning and MCMC took "<<timeString<<" to complete"<<endl;
 
 			printLine4=ss.str();
 			ss.clear();
 			ss.str(std::string());
-			cout<<printLine4;
+			if (SSO.SILENT==false)
+				cout<<printLine4;
+			else
+				cout<<"\nSimulated Annealing, Sigma Tuning and MCMC  took "<<timeString<<" to complete"<<endl;
 			// load up log with all prints in SSlog stringstream
 			// then write it to file.
 			SSlog<< printLine4;
@@ -561,7 +573,7 @@ int main(int argc ,char *argv[])
 			{
 				// calculate the correlation Length for each param and put it in the log
 				string corLenStr;
-				if (SSO.verbose)
+				if ((SSO.verbose)&&(SSO.SILENT==false))
 					cout<<"\nCalculating correlation length and effective number of steps for all params\n"<<endl;
 				SSlog<<"\nCalculating correlation length and effective number of steps for all params\n"<<endl;
 				startTime = time(NULL);
@@ -569,7 +581,7 @@ int main(int argc ,char *argv[])
 				endTime = time(NULL);
 				timeElapsed = endTime-startTime;
 				timeString = GT.timeStr( timeElapsed);
-				if (SSO.verbose)
+				if ((SSO.verbose)&&(SSO.SILENT==false))
 					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				startTime = time(NULL);
@@ -577,7 +589,7 @@ int main(int argc ,char *argv[])
 				endTime = time(NULL);
 				timeElapsed = endTime-startTime;
 				timeString = GT.timeStr( timeElapsed);
-				if (SSO.verbose)
+				if ((SSO.verbose)&&(SSO.SILENT==false))
 					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				startTime = time(NULL);
@@ -585,14 +597,14 @@ int main(int argc ,char *argv[])
 				endTime = time(NULL);
 				timeElapsed = endTime-startTime;
 				timeString = GT.timeStr( timeElapsed);
-				if (SSO.verbose)
+				if ((SSO.verbose)&&(SSO.SILENT==false))
 					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				startTime = time(NULL);
 				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Tcs, "Tc");
 				endTime = time(NULL);
 				timeElapsed = endTime-startTime;
 				timeString = GT.timeStr( timeElapsed);
-				if (SSO.verbose)
+				if ((SSO.verbose)&&(SSO.SILENT==false))
 					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				startTime = time(NULL);
@@ -600,7 +612,7 @@ int main(int argc ,char *argv[])
 				endTime = time(NULL);
 				timeElapsed = endTime-startTime;
 				timeString = GT.timeStr( timeElapsed);
-				if (SSO.verbose)
+				if ((SSO.verbose)&&(SSO.SILENT==false))
 					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				startTime = time(NULL);
@@ -608,7 +620,7 @@ int main(int argc ,char *argv[])
 				endTime = time(NULL);
 				timeElapsed = endTime-startTime;
 				timeString = GT.timeStr( timeElapsed);
-				if (SSO.verbose)
+				if ((SSO.verbose)&&(SSO.SILENT==false))
 					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				startTime = time(NULL);
@@ -616,7 +628,7 @@ int main(int argc ,char *argv[])
 				endTime = time(NULL);
 				timeElapsed = endTime-startTime;
 				timeString = GT.timeStr( timeElapsed);
-				if (SSO.verbose)
+				if ((SSO.verbose)&&(SSO.SILENT==false))
 					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 				startTime = time(NULL);
@@ -624,7 +636,7 @@ int main(int argc ,char *argv[])
 				endTime = time(NULL);
 				timeElapsed = endTime-startTime;
 				timeString = GT.timeStr( timeElapsed);
-				if (SSO.verbose)
+				if ((SSO.verbose)&&(SSO.SILENT==false))
 					cout<<corLenStr<<" That took "<<timeString<<" to calculate.\n";
 				SSlog<<corLenStr<<" That took "<<timeString<<" to calculate.\n";
 				if (MCMCOFO.SSO.DIonly==false)
@@ -634,7 +646,7 @@ int main(int argc ,char *argv[])
 					endTime = time(NULL);
 					timeElapsed = endTime-startTime;
 					timeString = GT.timeStr( timeElapsed);
-					if (SSO.verbose)
+					if ((SSO.verbose)&&(SSO.SILENT==false))
 						cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 					SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 	//				for (int dataset=0;dataset<int(ODT.RVoffsets[0].size());++dataset)
@@ -649,12 +661,13 @@ int main(int argc ,char *argv[])
 	//					endTime = time(NULL);
 	//					timeElapsed = endTime-startTime;
 	//					timeString = GT.timeStr( timeElapsed);
-	//					if (SSO.verbose)
+	//					if ((SSO.verbose)&&(SSO.SILENT==false))
 	//						cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 	//					SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
 	//				}
 				}
-				cout<<"\nDONE calculating correlation lengths for all params\n";
+				if (SSO.SILENT==false)
+					cout<<"\nDONE calculating correlation lengths for all params\n";
 				SSlog<<"\nDONE calculating correlation lengths for all params\n";
 			}//end corr length calc
 
@@ -667,7 +680,7 @@ int main(int argc ,char *argv[])
 
 			//perform first stage of Gelman-Rubin calculation if requested
 			//NOTE: this function clears the memory of the vector, so it
-			//      must be performed AFTER all other functions that need
+			//      must be performed AFTER ALL other functions that need
 			//	    those vectors.
 			if ((SSO.useMultiProcessing)&&(SSO.CalcGelmanRubin))
 				GT.gelmanRubinStage1(MCMCOFO.ODT,SSO.numTimesCalcGR);
@@ -690,12 +703,15 @@ int main(int argc ,char *argv[])
 		string timeString;
 		timeString = GT.timeStr(timeElapsed);
 		//cout<<"back from timeStr func"<<endl;
-		ss<< "\nSimulator took "<<timeString<<" to complete"<<endl;
+		ss<< "\nSimulated Annealing and Sigma Tuning took "<<timeString<<" to complete"<<endl;
 		string printLine4="";
 		printLine4=ss.str();
 		ss.clear();
 		ss.str(std::string());
-		cout<<printLine4;
+		if (SSO.SILENT==false)
+			cout<<printLine4;
+		else
+			cout<< "\nSimulated Annealing and Sigma Tuning took "<<timeString<<" to complete"<<endl;
 		// load up log with all prints in SSlog stringstream
 		// then write it to file.
 		SSlog<< printLine4;

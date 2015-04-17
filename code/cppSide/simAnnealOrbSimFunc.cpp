@@ -24,8 +24,8 @@ void simAnealOrbFuncObj::simulator()
 	*/
 
 	generalTools GT;
-
-	cout<<"\n$$$$$ inside simAnealfunc $$$$\n"<<endl;//$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$
+	if (SSO.SILENT==false)
+		cout<<"\n$$$$$ inside simAnealfunc $$$$\n"<<endl;//$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$
 	// ** overall tuning params **
 	double sigmaPercent_min = sigmaPercent;
 	double minTemp = 0.1;
@@ -205,7 +205,7 @@ void simAnealOrbFuncObj::simulator()
 			e_latest = RVdo.planet_e;
 		else
 			e_latest = RVdo.star_e;
-		cout<<"eMAX==0, so using value in dict: "<< e_latest<<endl;
+		ss<<"eMAX==0, so using value in dict: "<< e_latest<<endl;
 	}
 	else
 	{
@@ -285,7 +285,7 @@ void simAnealOrbFuncObj::simulator()
 		else
 			ss<<"setting Tc to a constant"<<endl;
 		if (T_latest==0)
-			cout<<"Setting T to 0 and will calculate it with eccArgPeri2ToTcCalc"<<endl;
+			ss<<"Setting T to 0 and will calculate it with eccArgPeri2ToTcCalc"<<endl;
 		else
 			ss<<"Setting T to the constant value in system Data file = "<< T_latest<<endl;
 	}
@@ -338,7 +338,8 @@ void simAnealOrbFuncObj::simulator()
 	startParamsGenStr = ss.str();
 	ss.clear();
 	ss.str(std::string());
-	cout<<startParamsGenStr;
+	if (SSO.SILENT==false)
+		cout<<startParamsGenStr;
 	SSlog<< startParamsGenStr;
 
 	// set up starting offsets if needed
@@ -358,7 +359,7 @@ void simAnealOrbFuncObj::simulator()
 			{
 				numRVparams+=1;
 				offsetStart = RanGen.UniformRandom(SSO.RVoffsetMINs[dataset],SSO.RVoffsetMAXs[dataset]);
-				sig = 15.0;
+				sig = 5.0;
 				offset_sigmas.push_back((sig/100.0)*(SSO.RVoffsetMAXs[dataset]-SSO.RVoffsetMINs[dataset]));
 
 				paramsToVaryIntsAry.push_back(8+dataset);
@@ -373,9 +374,9 @@ void simAnealOrbFuncObj::simulator()
 	numParams = paramsToVaryIntsAry.size();
 
 	//These starting sigma values were found through trial and error testing, work fine, but edit as you please.
-	double inc_sigmaPercent_latest = 10;//sigmaPercent_min;
-	double longAN_sigmaPercent_latest = 10;//sigmaPercent_min;
-	double argPeri_sigmaPercent_latest = 10.0;//1.0;
+	double inc_sigmaPercent_latest = 8;//sigmaPercent_min;
+	double longAN_sigmaPercent_latest = 8;//sigmaPercent_min;
+	double argPeri_sigmaPercent_latest = 8.0;//1.0;
 	double e_sigmaPercent_latest = 10;//2.0;
 	double period_sigmaPercent_latest = 20;//sigmaPercent_min*0.5;//5.0;
 	double T_sigmaPercent_latest = 10;//sigmaPercent_min*0.5;//1.0;
@@ -440,7 +441,7 @@ void simAnealOrbFuncObj::simulator()
 	ss<<"printTime = "<< printTime<<endl;
 	ss<<"acceptCalcTime = "<<acceptCalcTime <<endl;
 	ss<<"saveEachInt = "<<saveEachInt<<endl;
-	string silentStr = GT.boolToStr(SSO.silent);
+	string silentStr = GT.boolToStr(SSO.quiet);
 	ss<<"silent = "<< silentStr <<endl;
 	string verboseStr = GT.boolToStr(SSO.verbose);
 	ss<<"verbose = "<<verboseStr<<endl;
@@ -473,7 +474,8 @@ void simAnealOrbFuncObj::simulator()
 	startParms = ss.str();
 	ss.clear();
 	ss.str(std::string());
-	cout<<startParms;
+	if (SSO.SILENT==false)
+		cout<<startParms;
 	SSlog<< startParms;
 
 	// setting initially 'proposed' states equal to initial 'latest' states
@@ -565,7 +567,8 @@ void simAnealOrbFuncObj::simulator()
 			endSimAnnealStr = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			cout<<endSimAnnealStr;
+			if (SSO.SILENT==false)
+				cout<<endSimAnnealStr;
 			SSlog<< endSimAnnealStr;
 		}
 
@@ -674,7 +677,7 @@ void simAnealOrbFuncObj::simulator()
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared*one_over_nu_DI<<", RV = "<<RV_chiSquared*one_over_nu_RV <<", Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
 			ss << "LOWEST reduced chiSquareds: DI = "<< chiSquaredMin_DI*one_over_nu_DI <<", RV = "<< chiSquaredMin_RV*one_over_nu_RV <<", Total = "<< chiSquaredMin*one_over_nu_TOTAL <<endl;
 			//cout<<"SimAnnealFunc, line #"<<679<<endl;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			if (false)
+			if (false)//$$$$$$$ DEBUGGING  $$$$$$$$$$
 			{
 				ss<<"-----------------------------------------------"<<endl;
 				ss<< "chiSquare_latest = "<<chiSquare_latest <<endl;
@@ -686,7 +689,7 @@ void simAnealOrbFuncObj::simulator()
 				ss<<"accepted = "<<accepted<<endl;
 				ss<<"----------------------------------------------"<<endl;
 			}
-			if (false)
+			if (false)//$$$$$$$ DEBUGGING  $$$$$$$$$$
 			{
 				ss<<"\ninc_sigmaPercent_latest = "<< inc_sigmaPercent_latest<<endl;
 				ss<<"longAN_sigmaPercent_latest = "<< longAN_sigmaPercent_latest<<endl;
@@ -719,7 +722,7 @@ void simAnealOrbFuncObj::simulator()
 				ss<<"planet_MsinI_proposed = "<< planet_MsinI_proposed<<", peak value is = "<<SYSdo.planet_MsinI <<endl;
 				ss<<"star_Mass2_proposed = "<<star_Mass2_proposed <<", peak value is = "<< SYSdo.star_Mass2<<endl;
 			}
-			if (false)
+			if (false)//$$$$$$$ DEBUGGING  $$$$$$$$$$
 			{
 				ss<<"\nLatest proposed parameters set as latest: "<<endl;
 				ss<<"inclination_deg_proposed = "<< inclination_deg_proposed<<endl;
@@ -800,7 +803,8 @@ void simAnealOrbFuncObj::simulator()
 			printLine = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			cout<<printLine;
+			if (SSO.SILENT==false)
+				cout<<printLine;
 			SSlog<< printLine;
 
 		}
@@ -913,7 +917,7 @@ void simAnealOrbFuncObj::simulator()
 				// sigma is a percentage of total range, so convert its current percentage to a range value
 				offset_sigmas[dataset] = (offset_sigmaPercents_latest[dataset]/100.0)*(SSO.RVoffsetMAXs[dataset]-SSO.RVoffsetMINs[dataset]);
 				RVoffsets_proposed[dataset] = RanGen.UniformRandom(RVoffsets_latest[dataset]-offset_sigmas[dataset],RVoffsets_latest[dataset]+offset_sigmas[dataset]);
-				if (false)
+				if (false)//$$$$$$$ DEBUGGING  $$$$$$$$$$
 					ss<<"dataset = " <<dataset<<", RVoffsets_proposed[dataset] = "<<RVoffsets_proposed[dataset] <<", RVoffsetMIN = "<<SSO.RVoffsetMINs[dataset]<<", MAX = "<< SSO.RVoffsetMAXs[dataset]<<endl;
 			}
 		}
@@ -1000,15 +1004,15 @@ void simAnealOrbFuncObj::simulator()
 		//************************************************************************************************************************************
 		if (true)
 		{
-			//ALL error values were multiplied by 0.5 initially, although the literature and logic recommends putting the values
-			//straight in makes more sense statistically.
-			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
-			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,SYSdo.Mass1_error,SYSdo.Mass1_error);
+			//ALL error values in early testing were multiplied by 0.5 initially, although the literature and logic recommends putting the values
+			//straight in makes more sense statistically.  Truncating distribution at 3*error to avoid going deep into the tails.
+			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,SYSdo.Sys_Dist_PC_error,3.0*SYSdo.Sys_Dist_PC_error);
+			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,SYSdo.Mass1_error,3.0*SYSdo.Mass1_error);
 			// load up mass2 with correct value depending on star or planet companion
 			if (SSO.simulate_StarPlanetRV==false)
-				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,SYSdo.star_Mass2_error,SYSdo.star_Mass2_error);
+				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,SYSdo.star_Mass2_error,3.0*SYSdo.star_Mass2_error);
 			else
-				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
+				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,SYSdo.planet_MsinI_error,3.0*SYSdo.planet_MsinI_error);
 		}
 
 		//********************************************************************************
@@ -1135,7 +1139,7 @@ void simAnealOrbFuncObj::simulator()
 						ALLpassed = false;
 						ParamThatFailed = "RVoffset";
 						ALLpassedStr = "false";
-						if (false)
+						if (false)//$$$$$$$ DEBUGGING  $$$$$$$$$$
 							ss<<"dataset = " <<dataset<<", RVoffsets_proposed[dataset] = "<<RVoffsets_proposed[dataset] <<", RVoffsetMIN = "<<SSO.RVoffsetMINs[dataset]<<", MAX = "<< SSO.RVoffsetMAXs[dataset]<<endl;
 					}
 				}
@@ -1147,7 +1151,7 @@ void simAnealOrbFuncObj::simulator()
 		if (ALLpassed==false)
 		{
 			timesNONEpassed +=1;
-			if ( SSO.silent==false )
+			if (( SSO.quiet==false )&&(SSO.SILENT==false))
 			{
 				cout<<"At least one parameter was out of range for sample draw # "<<sample<<endl;
 				cout<<"The parameter that failed was: "<<ParamThatFailed<<endl;
@@ -1182,11 +1186,11 @@ void simAnealOrbFuncObj::simulator()
 			else
 				DIt.Mass2 = planet_MsinI_proposed/sin(DIt.inclination_deg*(PI/180.0));
 
-			if ( SSO.silent==false )
+			if (( SSO.quiet==false )&&(SSO.SILENT==false))
 				cout<<"ALL DI random numbers loaded"<<endl;
 			//cout<<"ALL DI random numbers loaded"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-			if ( (SSO.silent==false)||(timesNONEpassed>100) )
+			if ( (SSO.quiet==false)||(timesNONEpassed>100) )
 			{
 				string printLine2;
 				ss<< "\ninclination_deg = " <<DIt.inclination_deg  <<endl;
@@ -1208,7 +1212,8 @@ void simAnealOrbFuncObj::simulator()
 				printLine2 = ss.str();
 				ss.clear();
 				ss.str(std::string());
-				cout<<printLine2;
+				if (SSO.SILENT==false)
+					cout<<printLine2;
 			}
 
 			//*****************************************************************************
@@ -1216,10 +1221,10 @@ void simAnealOrbFuncObj::simulator()
 			//*****************************************************************************
 			if (SSO.RVonly==false)
 			{
-				//SSO.silent=false;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
+				//SSO.quiet=false;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
 				//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$
 				// #### DO STUFF FOR DI ORBIT CALCNS #####
-				if ( SSO.silent==false )
+				if (( SSO.quiet==false )&&(SSO.SILENT==false))
 					cout<<"Calculating DI orbit for this round "<<endl;
 
 				// Call the orbCalc to have it apply the model to the inputs and produce outputs
@@ -1236,15 +1241,15 @@ void simAnealOrbFuncObj::simulator()
 					numDIepochs = DIdo.numEpochs_DI;
 					one_over_nu_DI = (1.0/((2.0*numDIepochs)-numDIparams));
 				}
-				//SSO.silent=false;//$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$
-				if ( SSO.silent==false )
+				//SSO.quiet=false;//$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$
+				if (( SSO.quiet==false )&&(SSO.SILENT==false))
 				{
 					//cout<<"line # 1314"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 					cout<<"DI_chiSquared = "<<DI_chiSquared<<endl;
 					cout<<"one_over_nu_DI = "<<one_over_nu_DI<<endl;
 					cout<<"DI_chiSquared_reduced = "<<DI_chiSquared*one_over_nu_DI<<endl;
 				}
-				//SSO.silent=true;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
+				//SSO.quiet=true;//$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$
 			}
 			//cout<<"line # 1331"<<endl; //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$
 			//*****************************************************************************
@@ -1255,7 +1260,7 @@ void simAnealOrbFuncObj::simulator()
 				RV_chiSquared = 0;
 
 				//cout<<"In RV block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$
-				if ( SSO.silent==false )
+				if (( SSO.quiet==false )&&(SSO.SILENT==false))
 					cout<<"Calculating RV residuals for this round"<<endl;
 				// ##### DO STUFF FOR RV CALCNS ######
 				vector<vector<double> > VRp_vector2;
@@ -1269,7 +1274,7 @@ void simAnealOrbFuncObj::simulator()
 				// param values as needed.
 				if (SSO.simulate_StarPlanetRV==true)
 				{
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"loading up input params for star-planet RV calcs"<<endl;
 					RVdo.planet_e  = DIt.e ;
 					RVdo.planet_T  = DIt.T ;
@@ -1283,7 +1288,7 @@ void simAnealOrbFuncObj::simulator()
 				}
 				if (SSO.simulate_StarStarRV==true)
 				{
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"loading up input params for star-star RV calcs"<<endl;
 					RVdo.star_e  = DIt.e ;
 					RVdo.star_T  = DIt.T ;
@@ -1299,10 +1304,10 @@ void simAnealOrbFuncObj::simulator()
 				if (RVdo.planet_P!=0 )
 				{
 					//cout<<"Ln1450"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"Starting to calculate RVs for star-planet"<<endl;
 					//generate latest params for planet VR calcs from Gaussians $$$$ Make this a boolean in settings files $$$$
-					if (false)
+					if (false)//$$$$$$$ DEBUGGING  $$$$$$$$$$
 					{
 						if (SSO.simulate_StarStarRV==true)
 						{
@@ -1335,7 +1340,7 @@ void simAnealOrbFuncObj::simulator()
 					for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
 					{
 
-						if ( SSO.silent==false )
+						if (( SSO.quiet==false )&&(SSO.SILENT==false))
 							cout<<"Calculating P-S RVs for dataset "<<(dataset+1)<<"/"<<int(RVdo.epochs_RV.size())<<endl;
 						VRCsp.epochs_p = RVdo.epochs_RV[dataset];
 						vector<double> VRp_vector;
@@ -1350,17 +1355,17 @@ void simAnealOrbFuncObj::simulator()
 							K_proposed = VRCsp.K_p;
 					}
 					Kp_calculated = VRCsp.K_p;
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"K_p = "<<VRCsp.K_p<<endl;
 				}
 
 				// get RVs velocities for companion star if needed
 				if (RVdo.star_P!=0 )
 				{
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"Starting to calculate RVs for star-star"<<endl;
 					//generate latest params for planet VR calcs from Gaussians  $$$$ Make this a boolean in settings files $$$$
-					if (false)
+					if (false)//$$$$$$$ DEBUGGING  $$$$$$$$$$
 					{
 						if (SSO.simulate_StarPlanetRV==true)
 						{
@@ -1385,7 +1390,7 @@ void simAnealOrbFuncObj::simulator()
 					// run through all RV data sets and calc RVs for it
 					for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
 					{
-						if ( SSO.silent==false )
+						if (( SSO.quiet==false )&&(SSO.SILENT==false))
 							cout<<"Calculating S-S RVs for dataset "<<(dataset+1)<<"/"<<int(RVdo.epochs_RV.size())<<endl;
 						VRCss.epochs_s = RVdo.epochs_RV[dataset];
 						vector<double> VRs_vector;
@@ -1399,7 +1404,7 @@ void simAnealOrbFuncObj::simulator()
 							K_proposed = VRCss.K_s;
 					}
 					Ks_calculated = VRCss.K_s;
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"K_s = "<<VRCss.K_s<<endl;
 				}
 				//****************************************************************
@@ -1407,8 +1412,7 @@ void simAnealOrbFuncObj::simulator()
 				//****************************************************************
 				for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
 				{
-
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"\nStarting to calculate chiSquared from residuals for dataset# "<< dataset<<endl;
 
 					for (int epoch=0; epoch<RVdo.epochs_RV[dataset].size(); ++epoch)
@@ -1429,7 +1433,7 @@ void simAnealOrbFuncObj::simulator()
 
 						double  RV_chiSquared_cur = GT.chiSquaredCalc((RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]),RVdo.RV_inv_var[dataset][epoch],(planetVR+companionStarVR));
 						RV_chiSquared = RV_chiSquared + RV_chiSquared_cur;
-						if ( SSO.silent==false )
+						if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						{
 							cout<<"\nWorking on epoch "<<epoch<<endl;
 							cout<<"RVdo.RVs[dataset][epoch] = "<<RVdo.RVs[dataset][epoch]<<", RVoffsets_proposed = "<<RVoffsets_proposed[dataset]<<", -> ("<<RVdo.RVs[dataset][epoch]<<" - "<<RVoffsets_proposed[dataset]<<")="<<(RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]) <<", planetVR= "<< planetVR<<", companionStarVR= "<< companionStarVR<<endl;
@@ -1464,8 +1468,8 @@ void simAnealOrbFuncObj::simulator()
 				one_over_nu_TOTAL = 1.0/(2.0*numDIepochs+1.0*numRVepochs-numParams);
 			TOTAL_chiSquared_reduced = TOTAL_chiSquared*one_over_nu_TOTAL;
 
-			//SSO.silent=false;//$$$$$$$$$$ DEBUGGING $$$$$$$$$$$
-			if ( SSO.silent==false )
+			//SSO.quiet=false;//$$$$$$$$$$ DEBUGGING $$$$$$$$$$$
+			if (( SSO.quiet==false )&&(SSO.SILENT==false))
 			{
 				cout<<"\nDI_chiSquared = "<<DI_chiSquared <<endl;
 				cout<<"RV_chiSquared = "<< RV_chiSquared<<endl;
@@ -1476,7 +1480,7 @@ void simAnealOrbFuncObj::simulator()
 				cout<<"one_over_nu_TOTAL = "<< one_over_nu_TOTAL <<endl;
 				cout<<"TOTAL_chiSquared_reduced = "<<  TOTAL_chiSquared_reduced<<endl;
 			}
-			//SSO.silent=true;//$$$$$$$$ DEBUGGING $$$$$$$$$
+			//SSO.quiet=true;//$$$$$$$$ DEBUGGING $$$$$$$$$
 
 			//*******************************************
 			// Determine if the orbit should be accepted
@@ -1531,8 +1535,8 @@ void simAnealOrbFuncObj::simulator()
 					cout<<"WARNING: alpha>RHS messup, "<< alpha<<">"<< RHS<<", but was still accepted."<<endl;
 
 				accepted = "true";
-				//if (SSO.silent==false)
-				if (false)
+				//if (SSO.quiet==false)
+				if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 				{
 					cout<<"&&&&&&&&&&&&&&&&&& VALUES PASSED ALPHA<RHS CHECK &&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
 					cout<<"sample = "<<sample<<endl;
@@ -1555,7 +1559,7 @@ void simAnealOrbFuncObj::simulator()
 				chiSquare_latest = TOTAL_chiSquared ;
 				if (sample>=switchToMCMCsample)
 				{
-					if (false)
+					if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 						cout<<"latest param accepted and in MCMC section so putting "<<paramBeingVaried<<" into paramarray and 1 into accepted array"<<endl;
 					if (paramsVariedRecentlyAry.size()<acceptCalcTime)
 					{
@@ -1607,7 +1611,7 @@ void simAnealOrbFuncObj::simulator()
 				sqrtESinomega_latest = sqrtESinomega_proposed;
 				sqrtECosomega_latest = sqrtECosomega_proposed;
 
-				if (false)
+				if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 				{
 					cout<<"\nLatest parameters set as latest: "<<endl;
 					cout<< "TOTAL_chiSquared = "<<TOTAL_chiSquared <<endl;
@@ -1632,7 +1636,7 @@ void simAnealOrbFuncObj::simulator()
 				accepted = "false";
 				if (sample>=switchToMCMCsample)
 				{
-					if (false)
+					if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 						cout<<"failed M-H block and in MCMC section so putting "<<paramBeingVaried<<" into paramarray and 0 into accepted array"<<endl;
 					if (paramsVariedRecentlyAry.size()<acceptCalcTime)
 					{
@@ -1642,7 +1646,7 @@ void simAnealOrbFuncObj::simulator()
 				}
 				else
 				{
-					if (false)
+					if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 						cout<<"failed M-H block for sample number "<< sample<<endl;
 				}
 			}
@@ -1655,7 +1659,7 @@ void simAnealOrbFuncObj::simulator()
 			accepted = "false";
 			if (sample>=switchToMCMCsample)
 			{
-				if (false)
+				if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 					cout<<"latest param not accepted and in MCMC section so putting "<<paramBeingVaried<<" into paramarray and 0 into accepted array"<<endl;
 				if (paramsVariedRecentlyAry.size()<acceptCalcTime)
 				{
@@ -1678,7 +1682,7 @@ void simAnealOrbFuncObj::simulator()
 		//**********************************
 		int randInt = RanGen.IRandomX(0,numParams-1);
 		paramBeingVaried = paramsToVaryIntsAry[randInt];
-		if (false)
+		if (false)//$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$
 			cout<<"\n randInt = "<<randInt<<"-> paramBeingVaried = "<<paramBeingVaried<<endl;
 
 		//***********************************************************
@@ -1693,7 +1697,7 @@ void simAnealOrbFuncObj::simulator()
 			//********************************************
 			if (samplesTillAcceptRateCalc==acceptCalcTime)
 			{
-				if (true)
+				if (SSO.SILENT==false)
 					ss<<"\nCalculating sigmas because samplesTillAcceptRateCalc = "<<samplesTillAcceptRateCalc<<endl;
 				samplesTillAcceptRateCalc=0;
 				for (int i=0;i<paramsToVaryIntsAry.size();i++)
@@ -1818,7 +1822,8 @@ void simAnealOrbFuncObj::simulator()
 	}//Done sample loops
 
 	// final print to let us know it was able to get to end of file
-	cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
+	if (SSO.SILENT==false)
+		cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
 	SSlog<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
 	cout<<"Leaving SimAnnealOrbSimFunc\n\n"<<endl;
 	SSlog<<"Leaving SimAnnealOrbSimFunc\n\n"<<endl;

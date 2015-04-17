@@ -138,8 +138,8 @@ def simulator(paramSettingsDict):
     else:
         os.system('make MCMCorbSimulator')
     os.chdir(pwd)
-    s =  "\n"+'*'*95+"\n"+'*'*38+' C++ code compiled '+'*'*38+"\n"+'*'*95+'\n'
-    s = s+ '\nMultiprocess: $$$$$$$$$$$$$ STARTED Multiprocess Sim $$$$$$$$$$$$$$$\n'
+    s =  '*'*95+"\n"+'*'*38+' C++ code compiled '+'*'*38+"\n"+'*'*95+'\n'
+    s = s+ '\nsimulator: $$$$$$$$$$$$$ STARTED Multiprocess Sim $$$$$$$$$$$$$$$\n'
     print s
     PMlogFile.write(s)
     
@@ -150,7 +150,7 @@ def simulator(paramSettingsDict):
     tic=timeit.default_timer()
     ## Use multiProcessStarter func to handle starting and running threads     
     dataFiles = multiProcessStarter(paramSettingsDict)
-    s= '\nMultiprocess: $$$$$$$$$$$$$ FINISHED Multiprocess Sim $$$$$$$$$$$$$$$\n' 
+    s= '\nsimulator: $$$$$$$$$$$$$ FINISHED Multiprocess Sim $$$$$$$$$$$$$$$\n' 
     # write total elapsed time to screen and log.
     toc=timeit.default_timer()
     totalTimeString2 = tools.gen.timeString(toc - tic)
@@ -163,7 +163,8 @@ def simulator(paramSettingsDict):
     ############################################################
     dataFinalFilename = os.path.join(paramSettingsDict['outputData_dir'],'outputData-ALL.dat') 
     s= '\nStarting to write original data to final combined file'
-    print s
+    if paramSettingsDict['SILENT']==False:
+        print s
     PMlogFile.write(s)
     tools.gen.dataFileCombiner(dataFiles, dataFinalFilename)
     
@@ -179,31 +180,38 @@ def simulator(paramSettingsDict):
     plot4x1 = False
     if ((paramSettingsDict["longAN_degMAX"]==0)and(paramSettingsDict["periodMAX"]==0)and(paramSettingsDict["inclination_degMAX"]==0)):
         plot4x1 = True
-    if plot4x1:
-        s='plot4x1 found to be True, so only plotting 4 key varied params.'
-    else:
-        s='plot4x1 found to be False, so plotting all params.'
+    if paramSettingsDict['SILENT']==False:
+        if plot4x1:
+            s='plot4x1 found to be True, so only plotting 4 key varied params.'
+        else:
+            s='plot4x1 found to be False, so plotting all params.'
         
     if paramSettingsDict['TcStepping']==True:
         s=s+'\nTcStepping also found to be true, so making plots of Tc instead of To'
     else:
         s=s+'\nTcStepping also found to be false, so making plots of To instead of Tc'
-    print s
+    if paramSettingsDict['SILENT']==False:
+        print s
     PMlogFile.write(s)      
 
     s= '\n**** Now combining all files into one final file ****\n'
-    print s
+    if paramSettingsDict['SILENT']==False:
+        print s
     PMlogFile.write(s)   
     
     ################################################################
     # Call the function to find the best orbit values for reference.
     ################################################################
     print '#'*50
-    bestOrbit = tools.gen.bestOrbitFinder(dataFinalFilename, printToScreen=True, saveToFile=True, returnAsList=True)
+    p = True
+    if paramSettingsDict['SILENT']:
+        p = False
+    bestOrbit = tools.gen.bestOrbitFinder(dataFinalFilename, printToScreen=p, saveToFile=True, returnAsList=True)
     logFilename = os.path.join(paramSettingsDict['outputData_dir'],'log-chain_1.txt')
     [nu,nuRV,nuDI,printStr] = tools.gen.findNuFromLog(logFilename)
     nus = [nu,nuRV,nuDI]
-    print printStr+'\n'+'#'*50
+    if paramSettingsDict['SILENT']==False:
+        print printStr+'\n'+'#'*50
     PMlogFile.write(printStr+'\n'+'#'*50+'\n')
     
     ############################################################
@@ -218,7 +226,8 @@ def simulator(paramSettingsDict):
         if True:
             tools.plot.summaryPlotter(dataFinalFilename, summaryPlotFile, weight=False, confLevels=True, nu=nu, plot4x1=plot4x1, TcStepping=paramSettingsDict['TcStepping'] )         
         if False:
-            print "\n\n"+"!"*75+'\nNOTE: Making Posteriors plot with the makeCleanSummaryPlot function instead of standard summaryPlotter2\n'+"!"*75+"\n\n"
+            if paramSettingsDict['SILENT']==False:
+                print "\n\n"+"!"*75+'\nNOTE: Making Posteriors plot with the makeCleanSummaryPlot function instead of standard summaryPlotter2\n'+"!"*75+"\n\n"
             cleanDataFilename = tools.plot.makeCleanSummaryPlot(dataFinalFilename)
     s = '\n**** Back from making summary plot if requested ***\n'
     print s
@@ -250,7 +259,8 @@ def simulator(paramSettingsDict):
     chiSquaredStrRV=''
     if True:
         s= "RVdatafilename = "+paramSettingsDict['RVdataFilename']
-        print s
+        if paramSettingsDict['SILENT']==False:
+            print s
         PMlogFile.write(s)
     if os.path.exists(RVdatafilename) and (paramSettingsDict['DIonly']==False)and(paramSettingsDict['makeOrbitPlots']):
         s = '\n**** Now starting to make a RV orbit plot ***\n'
@@ -337,10 +347,12 @@ def simulator(paramSettingsDict):
             #check burn-in lengths of MCMC part of simAnneal and proper MCMC chains
             if ((len(dataFiles)>1)and(paramSettingsDict["mcONLY"]==False))and(paramSettingsDict['CalcBurnIn']and(paramSettingsDict['simAnneal']==False)):
                 if False:
-                    print '\nFor The Simulated Annealing files, the burn in values are:'
+                    if paramSettingsDict['SILENT']==False:
+                        print '\nFor The Simulated Annealing files, the burn in values are:'
                     (s,burnInLengths) = tools.gen.burnInCalcMultiFile(simAnnealDataFiles,simAnneal=True)
                     burnInStr+=s 
-                print '\nFor The MCMC files, the burn in values are:'
+                if paramSettingsDict['SILENT']==False:
+                    print '\nFor The MCMC files, the burn in values are:'
                 (s,burnInLengths) = tools.gen.burnInCalcMultiFile(dataFiles,simAnneal=False)
                 burnInStr+=s 
             # calculate the correlation lengths of the MCMC part of the simAnneal and proper MCMC chains
@@ -499,26 +511,31 @@ def simulator(paramSettingsDict):
         if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict["mcONLY"]==False):
                 print '\n\nDeleting Simulated Annealing chain data files\n'+"-"*40
                 for filename in simAnnealDataFiles:
-                    print 'Deleting file: '+os.path.basename(filename)
+                    if paramSettingsDict['SILENT']==False:
+                        print 'Deleting file: '+os.path.basename(filename)
                     os.remove(filename)
                 print '\nDeleting MCMC chain data files\n'+"-"*40
                 for filename in dataFiles:
-                    print 'Deleting file: '+os.path.basename(filename)
+                    if paramSettingsDict['SILENT']==False:
+                        print 'Deleting file: '+os.path.basename(filename)
                     os.remove(filename)     
                 if (len(dataFiles)>1)and(paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and paramSettingsDict['CalcBurnIn']:
                     print '\nDeleting Burn-In removed MCMC chain data files\n'+"-"*40
                     for filename in strippedNames:
-                        print 'Deleting file: '+os.path.basename(filename)
+                        if paramSettingsDict['SILENT']==False:
+                            print 'Deleting file: '+os.path.basename(filename)
                         os.remove(filename)           
         else:
             print '\n\nDeleting final output chain data files\n'+"-"*40
             for filename in dataFiles:
-                print 'Deleting file: '+os.path.basename(filename)
+                if paramSettingsDict['SILENT']==False:
+                    print 'Deleting file: '+os.path.basename(filename)
                 os.remove(filename)
             if (len(dataFiles)>1)and(paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and(paramSettingsDict['CalcBurnIn']and (paramSettingsDict['simAnneal']==False)):
                 print '\nDeleting Burn-In removed MCMC chain data files\n'+"-"*40
                 for filename in strippedNames:
-                    print 'Deleting file: '+os.path.basename(filename)
+                    if paramSettingsDict['SILENT']==False:
+                        print 'Deleting file: '+os.path.basename(filename)
                     os.remove(filename)
             
     ## delete GR chain files if requested
@@ -526,18 +543,22 @@ def simulator(paramSettingsDict):
         print '\n\nDeleting final output GR chain value files\n'+"-"*40
         for chainNum in range(1,len(dataFiles)+1):
             filename = os.path.join(paramSettingsDict['outputData_dir'],"gelmanRubin-chain_"+str(chainNum)+".txt")
-            print 'Deleting file: '+os.path.basename(filename)
+            if paramSettingsDict['SILENT']==False:
+                print 'Deleting file: '+os.path.basename(filename)
             os.remove(filename) 
     ## delete combined data files if requested
     if paramSettingsDict['delCombinedDataAfter']:
         print '\nDeleting combined data files\n'+"-"*40
-        print 'Deleting file: '+dataFinalFilename
+        if paramSettingsDict['SILENT']==False:
+            print 'Deleting file: '+dataFinalFilename
         os.remove(dataFinalFilename)
         if cleanDataFilename!='':
-            print 'Deleting file: '+cleanDataFilename
+            if paramSettingsDict['SILENT']==False:
+                print 'Deleting file: '+cleanDataFilename
             os.remove(cleanDataFilename)
         if ((paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and(len(dataFiles)>1))and (paramSettingsDict['CalcBurnIn']and (paramSettingsDict['simAnneal']==False)):
-            print 'Deleting file: '+dataFinalFilename2
+            if paramSettingsDict['SILENT']==False:
+                print 'Deleting file: '+dataFinalFilename2
             os.remove(dataFinalFilename2)
             
     s= '\n**** EVERYTHING FINISHED ****\n'
@@ -549,7 +570,7 @@ def simulator(paramSettingsDict):
     ############################################################
     toc=timeit.default_timer()
     totalTimeString2 = tools.gen.timeString(toc - tic)
-    s= '\n\nMultiprocess:  Total simulation + post processing took '+totalTimeString2+' to complete.\n'
+    s= '\nsimulator:  Total simulation + post processing took '+totalTimeString2+' to complete.\n'
     print s
     PMlogFile.write(s+'\n\nCLOSING PM LOG NOW!!\n\n')
     PMlogFile.close()

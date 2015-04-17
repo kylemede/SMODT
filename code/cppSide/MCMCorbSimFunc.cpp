@@ -21,7 +21,8 @@ void MCMCorbFuncObj::simulator()
 	*/
 
 	generalTools GT;
-	cout<<"\n$$$$$ inside MCMCfunc $$$$\n"<<endl;//$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
+	if (SSO.SILENT==false)
+		cout<<"\n$$$$$ inside MCMCfunc $$$$\n"<<endl;//$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
 	// variables for the success rate print block in chain loop
 	int printTime = SSO.numSamples/SSO.numSamplePrints;
 	int printCount = 0;
@@ -73,7 +74,7 @@ void MCMCorbFuncObj::simulator()
 	ss<<"printTime = "<< printTime<<endl;
 	ss<<"acceptCalcTime = "<<acceptCalcTime <<endl;
 	ss<<"saveEachInt = "<<saveEachInt<<endl;
-	string silentStr = GT.boolToStr(SSO.silent);
+	string silentStr = GT.boolToStr(SSO.quiet);
 	ss<<"silent = "<< silentStr <<endl;
 	string verboseStr = GT.boolToStr(SSO.verbose);
 	ss<<"verbose = "<<verboseStr<<endl;
@@ -81,7 +82,8 @@ void MCMCorbFuncObj::simulator()
 	startParms = ss.str();
 	ss.clear();
 	ss.str(std::string());
-	cout<<startParms;
+	if (SSO.SILENT==false)
+		cout<<startParms;
 	SSlog<< startParms;
 
 	//start/choose generator(s)
@@ -138,7 +140,8 @@ void MCMCorbFuncObj::simulator()
 	startParms2 = ss.str();
 	ss.clear();
 	ss.str(std::string());
-	cout<<startParms2;
+	if (SSO.SILENT==false)
+		cout<<startParms2;
 	SSlog<< startParms2;
 
 	//*****************************************************************************
@@ -220,10 +223,12 @@ void MCMCorbFuncObj::simulator()
 			printLine = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			cout<<"\n#################################### MCMC #############################################"<<endl;
-			cout<<printLine;
-			if (true)
+			if (SSO.SILENT==false)
+			{
+				cout<<"\n#################################### MCMC #############################################"<<endl;
+				cout<<printLine;
 				cout<<acceptString;
+			}
 
 			string printLine2;
 			ss<<"\n----------------------------------------------"<<endl;
@@ -238,18 +243,16 @@ void MCMCorbFuncObj::simulator()
 			ss<<"a_total_proposed = "<<a_total_proposed<<endl;
 			ss<<"----------------------------------------------"<<endl;
 
-			if (true)
-			{
-				for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
-					ss<<"RV dataset "<<dataset<<", RVoffset = "<<RVoffsets_latest[dataset]<<endl;
-			}
+			for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
+				ss<<"RV dataset "<<dataset<<", RVoffset = "<<RVoffsets_latest[dataset]<<endl;
 
 			printLine2 = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			cout<<printLine2;
+			if (SSO.SILENT==false)
+				cout<<printLine2;
 
-			if (false)
+			if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 			{
 				cout<<"-----------------------------------------------"<<endl;
 				cout<< "chiSquare_latest = "<<chiSquare_latest <<endl;
@@ -264,7 +267,8 @@ void MCMCorbFuncObj::simulator()
 				ss<<"\nKp_calculated = "<<Kp_calculated<<endl;
 				ss<<"Ks_calculated = "<<Ks_calculated<<"\n"<<endl;
 			}
-			cout<<"#######################################################################################"<<endl;
+			if (SSO.SILENT==false)
+				cout<<"#######################################################################################"<<endl;
 			SSlog<< printLine;
 			SSlog<< printLine2;
 		}
@@ -320,7 +324,7 @@ void MCMCorbFuncObj::simulator()
 			{
 				dataset = paramBeingVaried-8;
 				RVoffsets_proposed[dataset] = RanGen.UniformRandom(RVoffsets_latest[dataset]-offset_sigmas[dataset],RVoffsets_latest[dataset]+offset_sigmas[dataset]);
-				if (false)
+				if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 					ss<<"dataset = " <<dataset<<", RVoffsets_proposed[dataset] = "<<RVoffsets_proposed[dataset] <<", RVoffsetMIN = "<<SSO.RVoffsetMINs[dataset]<<", MAX = "<< SSO.RVoffsetMAXs[dataset]<<endl;
 			}
 		}
@@ -404,15 +408,15 @@ void MCMCorbFuncObj::simulator()
 		//************************************************************************************************************************************
 		if (true)
 		{
-			//ALL error values were multiplied by 0.5 initially, although the literature and logic recommends putting the values
-			//straight in makes more sense statistically.
-			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,SYSdo.Sys_Dist_PC_error,SYSdo.Sys_Dist_PC_error);
-			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,SYSdo.Mass1_error,SYSdo.Mass1_error);
+			//ALL error values in early testing were multiplied by 0.5 initially, although the literature and logic recommends putting the values
+			//straight in makes more sense statistically.  Truncating distribution at 3*error to avoid going deep into the tails.
+			Sys_Dist_PC_proposed = RanGen2.NormalTrunc(SYSdo.Sys_Dist_PC,SYSdo.Sys_Dist_PC_error,3.0*SYSdo.Sys_Dist_PC_error);
+			Mass1_proposed = RanGen2.NormalTrunc(SYSdo.Mass1,SYSdo.Mass1_error,3.0*SYSdo.Mass1_error);
 			// load up mass2 with correct value depending on star or planet companion
 			if (SSO.simulate_StarPlanetRV==false)
-				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,SYSdo.star_Mass2_error,SYSdo.star_Mass2_error);
+				star_Mass2_proposed = RanGen2.NormalTrunc(SYSdo.star_Mass2,SYSdo.star_Mass2_error,3.0*SYSdo.star_Mass2_error);
 			else
-				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,SYSdo.planet_MsinI_error,SYSdo.planet_MsinI_error);
+				planet_MsinI_proposed = RanGen2.NormalTrunc(SYSdo.planet_MsinI,SYSdo.planet_MsinI_error,3.0*SYSdo.planet_MsinI_error);
 		}
 		//********************************************************************************
 		//calculate the proposed a_total using K3 in the case of RVonly and 3D simulations
@@ -524,10 +528,10 @@ void MCMCorbFuncObj::simulator()
 			else
 				DIt.Mass2 = planet_MsinI_proposed/sin(DIt.inclination_deg*(PI/180.0));
 
-			if ( SSO.silent==false )
+			if (( SSO.quiet==false )&&(SSO.SILENT==false))
 				cout<<"ALL random numbers loaded"<<endl;
 
-			if ( SSO.silent==false )
+			if (( SSO.quiet==false )&&(SSO.SILENT==false))
 			{
 				string printLine2;
 				ss<< "\ninclination_deg = " <<DIt.inclination_deg  <<"\n";
@@ -549,7 +553,7 @@ void MCMCorbFuncObj::simulator()
 			{
 				//cout<<"In DI block"<<endl;//$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$
 				// #### DO STUFF FOR DI ORBIT CALCNS #####
-				if ( SSO.silent==false )
+				if (( SSO.quiet==false )&&(SSO.SILENT==false))
 					cout<<"Calculating DI orbit for this round "<<endl;
 
 				// Call the orbCalc to have it apply the model to the inputs and produce outputs
@@ -574,7 +578,7 @@ void MCMCorbFuncObj::simulator()
 			if (SSO.DIonly==false)
 			{
 				//cout<<"In RV block"<<endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-				if ( SSO.silent==false )
+				if (( SSO.quiet==false )&&(SSO.SILENT==false))
 					cout<<"Calculating RV residuals for this round"<<endl;
 				RV_chiSquared = 0.0;
 				// ##### DO STUFF FOR RV CALCNS ######
@@ -589,7 +593,7 @@ void MCMCorbFuncObj::simulator()
 				// param values as needed.
 				if (SSO.simulate_StarPlanetRV==true)
 				{
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"loading up input params for star-planet rv calcs"<<endl;
 					RVdo.planet_e = DIt.e ;
 					RVdo.planet_T = DIt.T ;
@@ -603,7 +607,7 @@ void MCMCorbFuncObj::simulator()
 				}
 				if (SSO.simulate_StarStarRV==true)
 				{
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"loading up input params for star-star rv calcs"<<endl;
 					RVdo.star_e = DIt.e ;
 					RVdo.star_T = DIt.T ;
@@ -618,10 +622,10 @@ void MCMCorbFuncObj::simulator()
 				// get residual velocities for companion planet if needed
 				if (RVdo.planet_P!=0 )
 				{
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"Starting to calculate residual vel for star-planet"<<endl;
 					//generate latest params for planet VR calcs from Gaussians  $$$$ Make this a boolean in settings files $$$$
-					if (false)
+					if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 					{
 						if (SSO.simulate_StarStarRV==true)
 						{
@@ -650,7 +654,7 @@ void MCMCorbFuncObj::simulator()
 					// run through all RV data sets and calc residuals for it
 					for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
 					{
-						if ( SSO.silent==false )
+						if (( SSO.quiet==false )&&(SSO.SILENT==false))
 							cout<<"Calculating P-S residuals for dataset "<<(dataset+1)<<"/"<<int(RVdo.epochs_RV.size())<<endl;
 						VRCsp.epochs_p = RVdo.epochs_RV[dataset];
 						vector<double> VRp_vector;
@@ -665,17 +669,17 @@ void MCMCorbFuncObj::simulator()
 							K_proposed = VRCsp.K_p;
 					}
 					Kp_calculated = VRCsp.K_p;
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"K_p = "<<VRCsp.K_p<<endl;
 				}
 
 				// get residual velocities for companion star if needed
 				if (RVdo.star_P!=0)
 				{
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"Starting to calculate residual vel for star-star"<<endl;
 					//generate latest params for planet VR calcs from Gaussians  $$$$ Make this a boolean in settings files $$$$
-					if (false)
+					if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 					{
 						if (SSO.simulate_StarStarRV==true)
 						{
@@ -700,7 +704,7 @@ void MCMCorbFuncObj::simulator()
 					// run through all RV data sets and calc residuals for it
 					for (int dataset=0; dataset<int(RVdo.epochs_RV.size());++dataset)
 					{
-						if ( SSO.silent==false )
+						if (( SSO.quiet==false )&&(SSO.SILENT==false))
 							cout<<"Calculating S-S residuals for dataset "<<(dataset+1)<<"/"<<int(RVdo.epochs_RV.size())<<endl;
 						VRCss.epochs_s = RVdo.epochs_RV[dataset];
 						vector<double> VRs_vector;
@@ -714,7 +718,7 @@ void MCMCorbFuncObj::simulator()
 							K_proposed = VRCss.K_s;
 					}
 					Ks_calculated = VRCss.K_s;
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"K_s = "<<VRCss.K_s<<endl;
 				}
 				//****************************************************************
@@ -722,7 +726,7 @@ void MCMCorbFuncObj::simulator()
 				//****************************************************************
 				for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
 				{
-					if ( SSO.silent==false )
+					if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						cout<<"\nStarting to calculate chiSquared from residuals for dataset# "<< dataset<<endl;
 					for (int epoch=0; epoch<RVdo.epochs_RV[dataset].size(); ++epoch)
 					{
@@ -741,7 +745,7 @@ void MCMCorbFuncObj::simulator()
 						}
 						double  RV_chiSquared_cur = GT.chiSquaredCalc((RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]),RVdo.RV_inv_var[dataset][epoch],(planetVR+companionStarVR));
 						RV_chiSquared = RV_chiSquared + RV_chiSquared_cur;
-						if ( SSO.silent==false )
+						if (( SSO.quiet==false )&&(SSO.SILENT==false))
 						{
 							cout<<"\nWorking on epoch "<<epoch<<endl;
 							cout<<"RVdo.RVs[dataset][epoch] = "<<RVdo.RVs[dataset][epoch]<<", RVoffsets_proposed = "<<RVoffsets_proposed[dataset]<<", -> ("<<RVdo.RVs[dataset][epoch]<<" - "<<RVoffsets_proposed[dataset]<<")="<<(RVdo.RVs[dataset][epoch]-RVoffsets_proposed[dataset]) <<", planetVR= "<< planetVR<<", companionStarVR= "<< companionStarVR<<endl;
@@ -793,11 +797,14 @@ void MCMCorbFuncObj::simulator()
 				//proposed orbit was accepted, so load it into output array and update 'latest' values
 				//**************************************************************************************
 				if (alpha>prior_likelihood_ratio)
-					cout<<"WARNING: alpha>RHS mess up, "<< alpha<<">"<< RHS<<", but was still accepted."<<endl;
+				{
+					if (SSO.SILENT==false)
+						cout<<"WARNING: alpha>RHS mess up, "<< alpha<<">"<< RHS<<", but was still accepted."<<endl;
+				}
 
 				accepted = "true";
-				//if (SSO.silent==false)
-				if (false)
+				//if (SSO.quiet==false)
+				if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 				{
 					cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
 					cout<< "chiSquare_latest = "<<chiSquare_latest <<endl;
@@ -879,7 +886,7 @@ void MCMCorbFuncObj::simulator()
 					paramsVariedRecentlyAry.push_back(paramBeingVaried);
 					acceptedIntsRecentlyAry.push_back(0);
 				}
-				if (false)
+				if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 				{
 					cout<<"&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&"<<endl;
 					cout<< "chiSquare_latest = "<<chiSquare_latest <<endl;
@@ -921,17 +928,17 @@ void MCMCorbFuncObj::simulator()
 		//********************************************
 		if (samplesTillAcceptRateCalc==acceptCalcTime)
 		{
-			if (true)
+			if (SSO.SILENT==false)
 				ss<<"\nCalculating sigmas because samplesTillAcceptRateCalc = "<<samplesTillAcceptRateCalc<<endl;
 			samplesTillAcceptRateCalc=0;
 			for (int i=0;i<paramsToVaryIntsAry.size();i++)
 			{
-				if (true)
+				if (SSO.SILENT==false)
 					ss<<"calculating acceptance rate for param at location "<<i <<endl;
 				int paramInt = paramsToVaryIntsAry[i];
 				double totalVaried = 0;
 				double totalAccepted = 0;
-				if (true)
+				if (SSO.SILENT==false)
 					ss<<"size paramsVariedRecentlyAry = "<<paramsVariedRecentlyAry.size() <<", size acceptedIntsRecentlyAry = "<<acceptedIntsRecentlyAry.size() <<endl;
 
 				for (int j=0; j<paramsVariedRecentlyAry.size();j++)
@@ -960,7 +967,8 @@ void MCMCorbFuncObj::simulator()
 	}//Done sample loops
 
 	// final print to let us know it was able to get to end of file
-	cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
+	if (SSO.SILENT==false)
+		cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
 	SSlog<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
 	cout<<"Leaving MCMCOrbSimFunc\n\n"<<endl;
 	SSlog<<"Leaving MCMCOrbSimFunc\n\n"<<endl;

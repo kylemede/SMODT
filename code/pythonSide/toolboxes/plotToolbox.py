@@ -1149,7 +1149,9 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             if verbose:
                 print 'Starting to save chiSquared figure:'
             plotFilename3 = plotFilename[0:-4]+'-ChiSquaredDist.png'
+            print "\n!!!!!!! IGNORE THESE NEXT FONT ERRORS. TRIED TO FIX IT, BUT... !!!!!!!"
             plt.savefig(plotFilename3, dpi=250, orientation='landscape')
+            print "!!!!!!!   IGNORE THOSE FONT ERRORS. TRIED TO FIX IT, BUT... !!!!!!!"
             s= 'chiSquared dist summary figure saved to '+plotFilename3
             if quiet==False:
                 print s
@@ -1164,13 +1166,13 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         if verbose:
             print s
         log.write(s+'\n')
-        log.write('\n'+75*'#'+'\n Leaving summaryPlotter2 \n'+75*'#'+'\n')
+        log.write('\n'+75*'#'+'\n Leaving summaryPlotter \n'+75*'#'+'\n')
         log.close()
     else:
         s= "summaryPlotter: ERROR!!!! file doesn't exist"
         print s
         log.write(s+'\n')
-        log.write('\n'+75*'#'+'\n Leaving summaryPlotter2 \n'+75*'#'+'\n')
+        log.write('\n'+75*'#'+'\n Leaving summaryPlotter \n'+75*'#'+'\n')
         log.close()
         
 def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=False, logFilename='',TcStepping=False):

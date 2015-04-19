@@ -33,7 +33,7 @@ def main():
     ## The default is '' if nothing is entered as the second argument.
     ###########################################################################
     
-    print '\n\n'+'='*100+'\n'+'='*100+'\n'+'='*35+'  Starting Orbit Simulation   '+'='*35+'\n'+'='*100+'\n'+'='*100+'\n\n'
+    print '\n'+'*'*75+'\n'+'*'*22+'  Starting Orbit Simulation   '+'*'*23+'\n'+'*'*75+'\n'
     verboseInternal = False
     if verboseInternal:
         print '*'*50

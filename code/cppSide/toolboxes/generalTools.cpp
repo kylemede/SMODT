@@ -309,6 +309,7 @@ void generalTools::fileWriter(outputDataType ODT)
 	 * Note: There will be one column for each RVorigin.
 	 */
 	// check inputs filename
+	bool verbose = false;
 	if (!(ODT.data_filename.find(".txt"))&&!(ODT.data_filename.find(".dat")))
 		ODT.data_filename = ODT.data_filename+".dat";
 	// make an output file for the INS and load it up.
@@ -338,9 +339,12 @@ void generalTools::fileWriter(outputDataType ODT)
 		file<<endl;
 	}//finished writing inputs file
 	file.close () ;
-	cout<<"\n***************************************************************"<<endl;
-	cout<<"Output data file written to: "<<ODT.data_filename<<endl;
-	cout<<"***************************************************************\n"<<endl;
+	if (verbose)
+	{
+		cout<<"***************************************************************"<<endl;
+		cout<<"Output data file written to: "<<ODT.data_filename<<endl;
+		cout<<"***************************************************************"<<endl;
+	}
 }
 
 void generalTools::logFileWriter(string filename, string LOGlines)
@@ -350,7 +354,7 @@ void generalTools::logFileWriter(string filename, string LOGlines)
 	 * which is then passed into this function to be written to an output file.
 	 */
 	std::stringstream ss;
-
+	bool verbose = false;
 	int fnameLength = filename.length();
 	if (fnameLength==0)
 		cout<<"ERROR: length of filename for log was zero!"<<endl;
@@ -383,9 +387,12 @@ void generalTools::logFileWriter(string filename, string LOGlines)
 		file.open(logname.c_str(),ios::app) ;     //open the output file
 		file<<LOGlines;
 		file.close () ;
-		cout<<"\n###############################################################"<<endl;
-		cout<<"Logfile written to: "<< logname<<endl;
-		cout<<"###############################################################"<<endl;
+		if (verbose)
+		{
+			cout<<"\n###############################################################"<<endl;
+			cout<<"Logfile written to: "<< logname<<endl;
+			cout<<"###############################################################"<<endl;
+		}
 	}
 
 }

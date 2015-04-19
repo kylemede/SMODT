@@ -594,13 +594,15 @@ def corrLengthCalcVar(paramIN):
     :param paramIN:     parameter array after burn in data stripped
     :type paramIN:      array (list) of doubles
     """
-    verbose = False
+    verbose = True
+    if verbose:
+        print "Entered corrLengthCalcVar"
     try:
         varALL = np.var(paramIN)
     except:
         useless=0
     halfVarALL = varALL/2.0
-    CorrLength = 0
+    CorrLength = len(paramIN)
     
     if len(paramIN)>10e6:
         jump=1000
@@ -609,10 +611,13 @@ def corrLengthCalcVar(paramIN):
     else:
         jump = 10
     
+    varCur=varCur2=0
+    i=j= 0
+    
     if paramIN[0]==paramIN[-1]:
         if verbose:
-            print 'First and last parameters were the same, so returning a correlation length of 0.'
-        CorrLength=0
+            print 'First and last parameters were the same, so returning a correlation length of the input array.'
+        CorrLength=len(paramIN)
     else:
         for i in range(1,int(len(paramIN)/jump)):
             #check std at each jump to see if over halfstd yet
@@ -624,7 +629,12 @@ def corrLengthCalcVar(paramIN):
                 # over halfStd, so do all in last jump to find precise location
                 for j in range((i-1)*jump, i*jump):
                     try:
-                        varCur2 = np.var(paramIN[0:j])
+                        varCur2 = 0
+                        if j!=0:
+                            #print 'trying var calc 2&'
+                            #print 'size = '+repr(paramIN.size)+", j = "+str(j)
+                            varCur2 = np.var(paramIN[0:j])
+                        #print 'done trying var calc 2'
                     except:
                         useless=2
                     if varCur2>halfVarALL:
@@ -635,7 +645,8 @@ def corrLengthCalcVar(paramIN):
             print "PROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
     if verbose:
         print 'Correlation length found to be = ',CorrLength
-    
+        print "Leaving corrLengthCalcVar"
+    print "varCur = "+str(varCur)+", varCur2 = "+str(varCur2)+", CorrLength = "+str(CorrLength)+", i = "+str(i)+", j = "+str(j) 
     return CorrLength
 
 
@@ -768,7 +779,7 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
     If simAnneal=True, it will assume that only the last 25% of the chains are suitible for 
     calculating the correlation lengths.
     """
-    verbose=False
+    verbose=True
     
     # push dataFilenames in to a list if not one already
     if type(dataFilenames)!=list:
@@ -793,7 +804,7 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             log.write('\n'+75*'+'+'\n Inside MCMCeffectivePointsCalc \n'+75*'+'+'\n')
             
             ## find conff levels of data that is always outputed from sims
-            s= '\nlongANs have:'
+            s= 'longANs have:'
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=0, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -806,13 +817,13 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))+'\n'
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= '\nes have'
+            s= 'es have:'
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=1, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -825,13 +836,13 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))+'\n'
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= '\nTs have:'
+            s= 'Ts have:'
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=2, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -844,13 +855,13 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))+'\n'
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= '\nTcs have:'
+            s= 'Tcs have:'
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=3, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -863,13 +874,13 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))+'\n'
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= '\nperiods have:'
+            s= 'periods have:'
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=4, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -882,13 +893,13 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))+'\n'
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= '\ninclinations have:'
+            s= 'inclinations have:'
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=5, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -901,13 +912,13 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))+'\n'
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= '\nargPeris have:'
+            s= 'argPeris have:'
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=6, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -920,13 +931,13 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))+'\n'
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= "\na_totals have:"
+            s= "a_totals have:"
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=7, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -939,13 +950,13 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))+'\n'
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
                 print s
             
-            s= "\nKs have:"
+            s= "Ks have:"
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=9, returnData=True, returnChiSquareds=False)
             if simAnneal:
                 data = data[startMCMCsample:]
@@ -958,7 +969,7 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             else:
                 s=s+'\nCorrelation length found to be = '+str(CorrLength)
             if CorrLength>0:
-                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))+'\n'
             log.write(s+'\n')
             summaryStr+='\n'+s
             if verbose:
@@ -973,19 +984,19 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             numDataCols = len(dataLineCols)
             f.close()
             if numDataCols==10:
-                s= 'There were 10 columns of data found in the datafile, thus no RVoffsets were recorded'
+                s= '\nThere were 10 columns of data found in the datafile, thus no RVoffsets were recorded'
                 log.write(s+'\n')
                 summaryStr+='\n'+s
                 if verbose:
                     print s
             elif numDataCols>10:
-                s= 'There were '+str(numDataCols)+' columns of data, thus '+str(numDataCols - 10)+ ' columns must be RV offsets' 
+                s= '\nThere were '+str(numDataCols)+' columns of data, thus '+str(numDataCols - 10)+ ' columns must be RV offsets' 
                 log.write(s+'\n')
                 if verbose:
                     print s
                 numRVdatasets = numDataCols - 10
                 for dataset in range(0,numRVdatasets):
-                    s= '\ndataset # '+str(dataset+1)+' RV offsets have:'
+                    s= 'dataset # '+str(dataset+1)+' RV offsets have:'
                     (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=dataset+10, returnData=True, returnChiSquareds=False)
                     if simAnneal:
                         data = data[startMCMCsample:]
@@ -998,7 +1009,7 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
                     else:
                         s=s+'\nCorrelation length found to be = '+str(CorrLength)
                     if CorrLength>0:
-                        s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))
+                        s = s+',  and Number of Effective Points = '+str(data.size)+"/"+str(CorrLength)+" = "+str(int(data.size/CorrLength))+'\n'
                     log.write(s+'\n')
                     summaryStr+='\n'+s
                     if verbose:
@@ -1024,7 +1035,9 @@ def effectivePointsCalcFunc(data):
     
     # This is the total variance in eccentricity in your chain.  It should
     # roughly be the (squared) 1 sigma error in eccentricity.
-    
+    verbose = False
+    if verbose:
+        print 'in effectivePointsCalcFunc'
     if type(data)!=np.ndarray:
         data = np.array(data)
     var_obs = np.var(data)  
@@ -1046,6 +1059,8 @@ def effectivePointsCalcFunc(data):
             break
     
     #print str(N_eff) + ' effective points in the MCMC chain.'
+    if verbose:
+        print 'leaving effectivePointsCalcFunc'
     return N_eff
     
 def burnInStripper(fullFilename, burnInLength, burnInStrippedFilename):

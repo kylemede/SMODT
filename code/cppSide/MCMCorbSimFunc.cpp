@@ -970,7 +970,7 @@ void MCMCorbFuncObj::simulator()
 	if (SSO.SILENT==false)
 		cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
 	SSlog<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
-	cout<<"Leaving MCMCOrbSimFunc\n\n"<<endl;
+	cout<<"Leaving MCMCOrbSimFunc"<<endl;
 	SSlog<<"Leaving MCMCOrbSimFunc\n\n"<<endl;
 
 	//move all log prints to log string

@@ -219,7 +219,7 @@ int main(int argc ,char *argv[])
 
 	string starterString;
 	string numSamplesString =  GT.numSamplesStringMaker(SAOFO.numSamples_SA);
-	ss<<"\nMCMC: $$$$$$$$$$$$$$$$$$$  Simulated Annealing Starting  $$$$$$$$$$$$$$$$$" <<endl;
+	ss<<"\nMCMC: $$$$$$$$$$$$$$$$$$  Simulated Annealing Starting  $$$$$$$$$$$$$$$" <<endl;
 	ss<<"Number of sample orbits being created = " << numSamplesString <<endl;
 	starterString = ss.str();
 	ss.clear();
@@ -227,7 +227,7 @@ int main(int argc ,char *argv[])
 	if (SSO.SILENT==false)
 		cout<< starterString;
 	else
-		cout<<"\nMCMC: $$$$$$$$$$$$$$$$$$$  Simulated Annealing Starting  $$$$$$$$$$$$$$$$$" <<endl;
+		cout<<"\nMCMC: $$$$$$$$$$$$$$$$$$  Simulated Annealing Starting  $$$$$$$$$$$$$$$" <<endl;
 	SSlog<<starterString;
 
 	//Starting log message that ensures vital inputs are logged.
@@ -394,7 +394,7 @@ int main(int argc ,char *argv[])
 
 		string starterString2;
 		string numSamplesString2 =  GT.numSamplesStringMaker(SSO.numSamples);
-		ss<<"\nMCMC: $$$$$$$$$$$$$$$$$$$  MCMC Starting  $$$$$$$$$$$$$$$$$" <<endl;
+		ss<<"\nMCMC: $$$$$$$$$$$$$$$$$$$$$$$$$  MCMC Starting  $$$$$$$$$$$$$$$$$$$$$$$" <<endl;
 		ss<<"Number of sample orbits being created = " << numSamplesString2 <<endl;
 		starterString2 = ss.str();
 		ss.clear();
@@ -402,7 +402,7 @@ int main(int argc ,char *argv[])
 		if (SSO.SILENT==false)
 			cout<< starterString2;
 		else
-			cout<<"\nMCMC: $$$$$$$$$$$$$$$$$$$  MCMC Starting  $$$$$$$$$$$$$$$$$" <<endl;
+			cout<<"\nMCMC: $$$$$$$$$$$$$$$$$$$$$$$$$  MCMC Starting  $$$$$$$$$$$$$$$$$$$$$$$" <<endl;
 		SSlog<<starterString2;
 
 		MCMCorbFuncObj MCMCOFO;

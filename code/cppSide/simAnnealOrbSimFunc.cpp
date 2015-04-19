@@ -38,7 +38,9 @@ void simAnealOrbFuncObj::simulator()
 	double percentMCMCSigmaDrop = 80.0;
 
 	// variables for the success rate print block in chain loop
-	int printTime = numSamples_SA/SSO.numSamplePrints;
+	int printTime =-1;
+	if (SSO.numSamplePrints>0)
+		printTime = numSamples_SA/SSO.numSamplePrints;
 	int printCount = 0;
 	int printsDone = 0;
 	std::stringstream ss;
@@ -567,7 +569,7 @@ void simAnealOrbFuncObj::simulator()
 			endSimAnnealStr = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			if (SSO.SILENT==false)
+			if (SSO.numSamplePrints>0)
 				cout<<endSimAnnealStr;
 			SSlog<< endSimAnnealStr;
 		}
@@ -803,7 +805,7 @@ void simAnealOrbFuncObj::simulator()
 			printLine = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			if (SSO.SILENT==false)
+			if (SSO.numSamplePrints>0)
 				cout<<printLine;
 			SSlog<< printLine;
 

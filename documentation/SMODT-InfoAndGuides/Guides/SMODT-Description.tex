@@ -299,10 +299,6 @@ So, by just using equations (\ref{eq:ramUse-a} \& \ref{eq:ramUse-b}) the value o
 Here we will go over the large array of settings in the settings file and the possible modes to run the simulator in.  In this section ALL of the settings will be briefly described in the order they appear in the `SimSettings.txt' file, and the more intricate details of the settings most important to changing how the 3 data modes are discussed in Section (\ref{sec:simDataModes}).
 
 
-
-
-
-
 {\bf \color{blue} General Settings: }\\
 {\bf chiSquaredMax}\\
 This will set the maximum allowed reduced $\chi^2$ allowed during simple Monte Carlo runs.  During Simulated Annealing it also poses a use to allow the starting parameters to jump to a new set if the chain has yet to find a solution under that value, in this case trial and error are needed but a value around 300 might work at the start and reduced as the parameters are constrained.  That situation can occur if you have a low starting temperature, or the initial parameters are unfortunately in a very bad section of the parameter space.  Thus, the jumping routine helps get out of those ruts and this parameter determines if it is in said rut.
@@ -316,7 +312,10 @@ The number of times a print block will be displayed to the screen of the vital u
 {\bf useMultiProcessing}\\
 Turn on multi-processing?  If set to true, then there will be multiple chains started.  The current code will start \# chains = total number of virtual cores available - 1, leaving one core free to make sure the computer OS still runs smooth. ie. on an computer with a 8 virtual cores (4 cores with 2 threads each), 7 cores will run a chain at 100\% capacity and 1 will be left remaining to do anything else.  If the user wishes, they can go into the code and change the single line that controls the number of cores used to suite their needs.  Please note that each core will be running at $\sim$100\%, and thus create a lot of heat.  So, make sure you have a sufficiently capable cooler to avoid CPU failure.
 
-{\bf silent}\\
+{\bf SILENT}\\
+Just print the minimum information that the main stages have started and completed, with how long they took and where the final results were stored.
+
+{\bf quiet}\\
 There are two levels of extra information printing above that of the print block controlled with "numSamplePrints", or any error prints due to problems.  The higher level one is "silent", with some extra prints that will occur for each sample and is useful for some debugging.
 
 {\bf verbose}\\

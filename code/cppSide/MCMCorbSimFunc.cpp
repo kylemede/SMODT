@@ -24,7 +24,9 @@ void MCMCorbFuncObj::simulator()
 	if (SSO.SILENT==false)
 		cout<<"\n$$$$$ inside MCMCfunc $$$$\n"<<endl;//$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$
 	// variables for the success rate print block in chain loop
-	int printTime = SSO.numSamples/SSO.numSamplePrints;
+	int printTime = -1;
+	if (SSO.numSamplePrints>0)
+		printTime = SSO.numSamples/SSO.numSamplePrints;
 	int printCount = 0;
 	int printsDone = 0;
 	std::stringstream ss;
@@ -267,7 +269,7 @@ void MCMCorbFuncObj::simulator()
 				ss<<"\nKp_calculated = "<<Kp_calculated<<endl;
 				ss<<"Ks_calculated = "<<Ks_calculated<<"\n"<<endl;
 			}
-			if (SSO.SILENT==false)
+			if (SSO.numSamplePrints>0)
 				cout<<"#######################################################################################"<<endl;
 			SSlog<< printLine;
 			SSlog<< printLine2;

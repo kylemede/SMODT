@@ -12,8 +12,10 @@ numSamples =1000000
 numSamplePrints =10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
 useMultiProcessing =true
+# set to 'true' to ONLY PRINT the ABSOLUTE MINIMUM of messages about progress to the screen [bool]
+SILENT = false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
-silent =True
+quiet =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
 verbose =false
 # Directory where input data and settings files are [string, at least 2 chars long]

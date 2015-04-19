@@ -313,7 +313,7 @@ The number of times a print block will be displayed to the screen of the vital u
 Turn on multi-processing?  If set to true, then there will be multiple chains started.  The current code will start \# chains = total number of virtual cores available - 1, leaving one core free to make sure the computer OS still runs smooth. ie. on an computer with a 8 virtual cores (4 cores with 2 threads each), 7 cores will run a chain at 100\% capacity and 1 will be left remaining to do anything else.  If the user wishes, they can go into the code and change the single line that controls the number of cores used to suite their needs.  Please note that each core will be running at $\sim$100\%, and thus create a lot of heat.  So, make sure you have a sufficiently capable cooler to avoid CPU failure.
 
 {\bf SILENT}\\
-Just print the minimum information that the main stages have started and completed, with how long they took and where the final results were stored.
+Just print the minimum information that the main stages have started and completed, with how long they took and where the final results were stored.  The periodic update prints during the mcONLY, SimAnneal and/or MCMC are controlled by the ``numSamplePrints" bool described above, set that to ``0" to turn them off.
 
 {\bf quiet}\\
 There are two levels of extra information printing above that of the print block controlled with "numSamplePrints", or any error prints due to problems.  The higher level one is "silent", with some extra prints that will occur for each sample and is useful for some debugging.

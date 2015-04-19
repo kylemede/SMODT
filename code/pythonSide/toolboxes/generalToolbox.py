@@ -646,7 +646,7 @@ def corrLengthCalcVar(paramIN):
     if verbose:
         print 'Correlation length found to be = ',CorrLength
         print "Leaving corrLengthCalcVar"
-    print "varCur = "+str(varCur)+", varCur2 = "+str(varCur2)+", CorrLength = "+str(CorrLength)+", i = "+str(i)+", j = "+str(j) 
+    print "varCur = "+str(varCur)+", varCur2 = "+str(varCur2)+", CorrLength = "+str(CorrLength)+", i*jump = "+str(i*jump)+", j = "+str(j) 
     return CorrLength
 
 

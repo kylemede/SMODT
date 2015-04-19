@@ -7,9 +7,9 @@
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 chiSquaredMax =1000.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =50000
+numSamples =100000
 # The number of times to print status updates to the screen/terminal during the run [int]
-numSamplePrints =0
+numSamplePrints =1
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
 useMultiProcessing =false
 # set to 'true' to ONLY PRINT the ABSOLUTE MINIMUM of messages about progress to the screen [bool]

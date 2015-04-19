@@ -805,8 +805,7 @@ void simAnealOrbFuncObj::simulator()
 			printLine = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			if (SSO.numSamplePrints>0)
-				cout<<printLine;
+			cout<<printLine;
 			SSlog<< printLine;
 
 		}

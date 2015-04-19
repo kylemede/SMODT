@@ -225,12 +225,9 @@ void MCMCorbFuncObj::simulator()
 			printLine = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			if (SSO.SILENT==false)
-			{
-				cout<<"\n#################################### MCMC #############################################"<<endl;
-				cout<<printLine;
-				cout<<acceptString;
-			}
+			cout<<"\n#################################### MCMC #############################################"<<endl;
+			cout<<printLine;
+			cout<<acceptString;
 
 			string printLine2;
 			ss<<"\n----------------------------------------------"<<endl;
@@ -251,8 +248,7 @@ void MCMCorbFuncObj::simulator()
 			printLine2 = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			if (SSO.SILENT==false)
-				cout<<printLine2;
+			cout<<printLine2;
 
 			if (false)//$$$$$$$$$$$$ DEBUGGING  $$$$$$
 			{

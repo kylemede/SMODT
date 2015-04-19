@@ -161,7 +161,9 @@ int main(int argc ,char *argv[])
 	//cout<<"outputDataType instantiated"<<endl;//$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
 
 	// variables for the success rate print block in chain loop
-    int printTime = SSO.numSamples/SSO.numSamplePrints;
+    int printTime = -1;
+    if (SSO.numSamplePrints>0)
+    	printTime = SSO.numSamples/SSO.numSamplePrints;
     int printCount = 0;
     int printsDone = 0;
     int acceptedCounter = 0;
@@ -429,8 +431,7 @@ int main(int argc ,char *argv[])
 			printLine = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			if (SSO.SILENT==false)
-				cout<<printLine;
+			cout<<printLine;
 			SSlog<< printLine;
         }
         //cout<<"mcONLYorbSimulator.cpp, line# "<<405<<endl;//$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$

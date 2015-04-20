@@ -1825,10 +1825,10 @@ void simAnealOrbFuncObj::simulator()
 	}//Done sample loops
 
 	// final print to let us know it was able to get to end of file
-	if (SSO.SILENT==false)
-		cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
-	SSlog<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
-	cout<<"Leaving SimAnnealOrbSimFunc"<<endl;
+	//if (SSO.SILENT==false)
+	//	cout<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
+	//SSlog<<"\n\n FINAL SAMPLE NUMBER = "<<sample<<endl;
+	//cout<<"Leaving SimAnnealOrbSimFunc"<<endl;
 	SSlog<<"Leaving SimAnnealOrbSimFunc\n\n"<<endl;
 
 	//move all log prints to log string

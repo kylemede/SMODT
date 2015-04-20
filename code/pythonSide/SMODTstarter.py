@@ -115,7 +115,7 @@ def main():
             print 'WARNING!! the folder:'+finalFolder+', all ready exists!'
         if paramSettingsDict['SILENT']==False:
             print 'You can overwrite the data in it, or exit this simulation.'
-        YN = raw_input('\nOVERWRITE current folder (y/n):')
+        YN = raw_input('OVERWRITE current folder (y/n):')
         if (('y' in YN) or ('Y' in YN)):
             if paramSettingsDict['SILENT']==False:
                 print '\nDELETING all contents of folder:'+finalFolder
@@ -213,7 +213,7 @@ def main():
             shutil.copy(f,outputfilename2)
         
     ## finally, make print that sim is starting and then start it.
-    print '\n** Starting '+str(numProcesses)+' processes of '+numSamplesString+' samples each ** \n'
+    print '\n******* Starting '+str(numProcesses)+' processes of '+numSamplesString+' samples each ******** \n'
 #     if mcONLY:
 #         mcSimStarter(paramSettingsDict)
 #     else:

@@ -1127,8 +1127,8 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 log.write(s+'\n')  
 
         ## Make a chiSquared distribution         
-        if True:
-            fig = plt.figure(2, figsize=(35,15) ,dpi=350)
+        if False:
+            fig = plt.figure(2, figsize=(35,15) ,dpi=300)
             subPlot = fig.add_subplot(111)
             xlabel = 'chiSquare - chiSquare_MIN'
             CLevels = [[0,0],[0,0]]
@@ -1149,9 +1149,9 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             if verbose:
                 print 'Starting to save chiSquared figure:'
             plotFilename3 = plotFilename[0:-4]+'-ChiSquaredDist.png'
-            #print "\n!!!!!!! IGNORE THESE NEXT FONT ERRORS. TRIED TO FIX IT, BUT... !!!!!!!"
+            print "\n!!!!!!! IGNORE THESE NEXT FONT ERRORS (if they occurr). TRIED TO FIX IT, BUT... !!!!!!!"
             plt.savefig(plotFilename3, dpi=300, orientation='landscape')
-            #print "!!!!!!!   IGNORE THOSE FONT ERRORS. TRIED TO FIX IT, BUT... !!!!!!!"
+            print "!!!!!!!   IGNORE THOSE FONT ERRORS (if they occurr). TRIED TO FIX IT, BUT... !!!!!!!"
             s= 'chiSquared dist summary figure saved to '+plotFilename3
             if quiet==False:
                 print s

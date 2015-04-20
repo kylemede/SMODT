@@ -736,8 +736,11 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	 * with any suggestions for fixing the memory saving sections in this function.
 	 */
 	bool verbose = false;
-	cout<<"\nStarting stage 1 of Gelman-Rubin calculation"<<endl;
-	cout<<"Calculating the Lc, mean and var for each parameter "<<numTimes<<" times."<<endl;
+	if (verbose)
+	{
+		cout<<"\nStarting stage 1 of Gelman-Rubin calculation"<<endl;
+		cout<<"Calculating the Lc, mean and var for each parameter "<<numTimes<<" times."<<endl;
+	}
 
 	// find folder to write output file into
 	string folder;

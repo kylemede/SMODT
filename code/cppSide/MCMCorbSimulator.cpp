@@ -227,7 +227,7 @@ int main(int argc ,char *argv[])
 	if (SSO.SILENT==false)
 		cout<< starterString;
 	else
-		cout<<"\nMCMC: $$$$$$$$$$$$$$$$$$  Simulated Annealing Starting  $$$$$$$$$$$$$$$" <<endl;
+		cout<<"MCMC: $$$$$$$$$$$$$$$$$$  Simulated Annealing Starting  $$$$$$$$$$$$$$$" <<endl;
 	SSlog<<starterString;
 
 	//Starting log message that ensures vital inputs are logged.
@@ -402,7 +402,7 @@ int main(int argc ,char *argv[])
 		if (SSO.SILENT==false)
 			cout<< starterString2;
 		else
-			cout<<"\nMCMC: $$$$$$$$$$$$$$$$$$$$$$$$$  MCMC Starting  $$$$$$$$$$$$$$$$$$$$$$$" <<endl;
+			cout<<"MCMC: $$$$$$$$$$$$$$$$$$$$$$$$$  MCMC Starting  $$$$$$$$$$$$$$$$$$$$$$$" <<endl;
 		SSlog<<starterString2;
 
 		MCMCorbFuncObj MCMCOFO;
@@ -551,12 +551,11 @@ int main(int argc ,char *argv[])
 			endTime = time(NULL);
 			int timeElapsed = endTime-startTime;
 
-
 			//cout<<"starting to print time taken string."<<endl;
 			string timeString;
 			timeString = GT.timeStr( timeElapsed);
 			//cout<<"back from timeStr func"<<endl;
-			ss<< "\nSimulated Annealing, Sigma Tuning and MCMC took "<<timeString<<" to complete"<<endl;
+			ss<< "Simulated Annealing, Sigma Tuning and MCMC took "<<timeString<<" to complete"<<endl;
 
 			printLine4=ss.str();
 			ss.clear();
@@ -566,108 +565,6 @@ int main(int argc ,char *argv[])
 			// load up log with all prints in SSlog stringstream
 			// then write it to file.
 			SSlog<< printLine4;
-
-			if (SSO.calcCorrLengths==true)
-			{
-				// calculate the correlation Length for each param and put it in the log
-				string corLenStr;
-				if ((SSO.verbose)&&(SSO.SILENT==false))
-					cout<<"\nCalculating correlation length and effective number of steps for all params\n"<<endl;
-				SSlog<<"\nCalculating correlation length and effective number of steps for all params\n"<<endl;
-				startTime = time(NULL);
-				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.longAN_degs, "LongAN");
-				endTime = time(NULL);
-				timeElapsed = endTime-startTime;
-				timeString = GT.timeStr( timeElapsed);
-				if ((SSO.verbose)&&(SSO.SILENT==false))
-					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				startTime = time(NULL);
-				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.es, "e");
-				endTime = time(NULL);
-				timeElapsed = endTime-startTime;
-				timeString = GT.timeStr( timeElapsed);
-				if ((SSO.verbose)&&(SSO.SILENT==false))
-					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				startTime = time(NULL);
-				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Ts, "To");
-				endTime = time(NULL);
-				timeElapsed = endTime-startTime;
-				timeString = GT.timeStr( timeElapsed);
-				if ((SSO.verbose)&&(SSO.SILENT==false))
-					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				startTime = time(NULL);
-				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Tcs, "Tc");
-				endTime = time(NULL);
-				timeElapsed = endTime-startTime;
-				timeString = GT.timeStr( timeElapsed);
-				if ((SSO.verbose)&&(SSO.SILENT==false))
-					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				startTime = time(NULL);
-				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.periods, "period");
-				endTime = time(NULL);
-				timeElapsed = endTime-startTime;
-				timeString = GT.timeStr( timeElapsed);
-				if ((SSO.verbose)&&(SSO.SILENT==false))
-					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				startTime = time(NULL);
-				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.inclination_degs, "inclination");
-				endTime = time(NULL);
-				timeElapsed = endTime-startTime;
-				timeString = GT.timeStr( timeElapsed);
-				if ((SSO.verbose)&&(SSO.SILENT==false))
-					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				startTime = time(NULL);
-				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.argPeri_degs, "argPeri");
-				endTime = time(NULL);
-				timeElapsed = endTime-startTime;
-				timeString = GT.timeStr( timeElapsed);
-				if ((SSO.verbose)&&(SSO.SILENT==false))
-					cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-				startTime = time(NULL);
-				corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.a_totals, "a_total");
-				endTime = time(NULL);
-				timeElapsed = endTime-startTime;
-				timeString = GT.timeStr( timeElapsed);
-				if ((SSO.verbose)&&(SSO.SILENT==false))
-					cout<<corLenStr<<" That took "<<timeString<<" to calculate.\n";
-				SSlog<<corLenStr<<" That took "<<timeString<<" to calculate.\n";
-				if (MCMCOFO.SSO.DIonly==false)
-				{
-					startTime = time(NULL);
-					corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.Ks, "K");
-					endTime = time(NULL);
-					timeElapsed = endTime-startTime;
-					timeString = GT.timeStr( timeElapsed);
-					if ((SSO.verbose)&&(SSO.SILENT==false))
-						cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-					SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-	//				for (int dataset=0;dataset<int(ODT.RVoffsets[0].size());++dataset)
-	//				{
-	//					string offsetStr;
-	//					ss<<"RVoffset for dataset "<<set;
-	//					offsetStr=ss.str();
-	//					ss.clear();
-	//					ss.str(std::string());
-	//					startTime = time(NULL);
-	//					corLenStr = GT.CorrelationLengthCalc(MCMCOFO.ODT.RVoffsets[][set], offsetStr);
-	//					endTime = time(NULL);
-	//					timeElapsed = endTime-startTime;
-	//					timeString = GT.timeStr( timeElapsed);
-	//					if ((SSO.verbose)&&(SSO.SILENT==false))
-	//						cout<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-	//					SSlog<<corLenStr<<"That took "<<timeString<<" to calculate.\n";
-	//				}
-				}
-				if (SSO.SILENT==false)
-					cout<<"\nDONE calculating correlation lengths for all params\n";
-				SSlog<<"\nDONE calculating correlation lengths for all params\n";
-			}//end corr length calc
 
 			// Write output data of MCMC to file
 			GT.fileWriter(MCMCOFO.ODT);
@@ -681,7 +578,10 @@ int main(int argc ,char *argv[])
 			//      must be performed AFTER ALL other functions that need
 			//	    those vectors.
 			if ((SSO.useMultiProcessing)&&(SSO.CalcGelmanRubin))
+			{
+				cout<<"MCMC: $$$$  Starting to calculate Gelman-Rubin statistic, stage 1  $$$$"<<endl;
 				GT.gelmanRubinStage1(MCMCOFO.ODT,SSO.numTimesCalcGR);
+			}
 		}//end attempt at MCMC after finding SimAnneal went well.
 	}//end of MCMC stage
 	else//Ran just SimAnneal, so just perform basic wrap ups, no statistic calcs.

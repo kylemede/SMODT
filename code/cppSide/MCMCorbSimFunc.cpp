@@ -227,7 +227,8 @@ void MCMCorbFuncObj::simulator()
 			ss.str(std::string());
 			cout<<"\n#################################### MCMC #############################################"<<endl;
 			cout<<printLine;
-			cout<<acceptString;
+			if (SSO.SILENT==false)
+				cout<<acceptString;
 
 			string printLine2;
 			ss<<"\n----------------------------------------------"<<endl;
@@ -240,10 +241,11 @@ void MCMCorbFuncObj::simulator()
 			ss<<"Tc_proposed = "<<fixed <<Tc_proposed  <<endl;
 			ss<<"K_proposed = "<<K_proposed<<endl;
 			ss<<"a_total_proposed = "<<a_total_proposed<<endl;
-			ss<<"----------------------------------------------"<<endl;
-
 			for (int dataset=0; dataset<RVdo.epochs_RV.size();++dataset)
 				ss<<"RV dataset "<<dataset<<", RVoffset = "<<RVoffsets_latest[dataset]<<endl;
+			ss<<"----------------------------------------------"<<endl;
+
+
 
 			printLine2 = ss.str();
 			ss.clear();
@@ -260,7 +262,7 @@ void MCMCorbFuncObj::simulator()
 				cout<<"accepted = "<<accepted<<endl;
 				cout<<"----------------------------------------------"<<endl;
 			}
-			if (true)
+			if (false)
 			{
 				ss<<"\nKp_calculated = "<<Kp_calculated<<endl;
 				ss<<"Ks_calculated = "<<Ks_calculated<<"\n"<<endl;

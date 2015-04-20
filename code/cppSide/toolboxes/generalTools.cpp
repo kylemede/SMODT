@@ -736,11 +736,9 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	 * with any suggestions for fixing the memory saving sections in this function.
 	 */
 	bool verbose = false;
-	if (true)
-	{
-		cout<<"\nStarting stage 1 of Gelman-Rubin calculation"<<endl;
-		cout<<" Calculating the Lc, mean and var for each parameter "<<numTimes<<" times."<<endl;
-	}
+	cout<<"\nStarting stage 1 of Gelman-Rubin calculation"<<endl;
+	cout<<"Calculating the Lc, mean and var for each parameter "<<numTimes<<" times."<<endl;
+
 	// find folder to write output file into
 	string folder;
 	folder = findDirectory(ODT.data_filename);
@@ -760,7 +758,7 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	file<<endl;
 
 	// Clear memory for RVoffsets not used in GR calcs
-	if (true)
+	if (verbose)
 	{
 		cout<<"clearing memory for RV offset and chiSquareds vectors!!!"<<endl;
 		cout << "- size  before   = " << ODT.RVoffsets.size()     << endl;
@@ -775,13 +773,15 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	//Check other vectors to see if they can also be deleted, if so kill them off
 	if (ODT.longAN_degs[0]==ODT.longAN_degs.back())
 	{
-		cout<<"Clearing memory for longAN_degs"<<endl;
+		if (verbose)
+			cout<<"Clearing memory for longAN_degs"<<endl;
 		ODT.longAN_degs.clear();
 		vector<double>().swap(ODT.longAN_degs);
 	}
 	if (ODT.es[0]==ODT.es.back())
 	{
-		cout<<"Clearing memory for es"<<endl;
+		if (verbose)
+			cout<<"Clearing memory for es"<<endl;
 		ODT.es.clear();
 		vector<double>().swap(ODT.es);
 	}
@@ -795,42 +795,48 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	//and no need to calculate the GR values of both.  Kill Tc and just do it for To
 	if ((ODT.Tcs[0]==ODT.Ts.back())||((ODT.Tcs[0]==ODT.Ts[0])&&(ODT.Ts.back()==ODT.Ts.back())))
 	{
-		cout<<"Clearing memory for Tcs"<<endl;
+		if (verbose)
+			cout<<"Clearing memory for Tcs"<<endl;
 		ODT.Tcs.clear();
 		vector<double>().swap(ODT.Tcs);
 	}
 	if (ODT.periods[0]==ODT.periods.back())
 	{
-		cout<<"Clearing memory for periods"<<endl;
+		if (verbose)
+			cout<<"Clearing memory for periods"<<endl;
 		ODT.periods.clear();
 		vector<double>().swap(ODT.periods);
 	}
 	if (ODT.inclination_degs[0]==ODT.inclination_degs.back())
 	{
-		cout<<"Clearing memory for inclination_degs"<<endl;
+		if (verbose)
+			cout<<"Clearing memory for inclination_degs"<<endl;
 		ODT.inclination_degs.clear();
 		vector<double>().swap(ODT.inclination_degs);
 	}
 	if (ODT.argPeri_degs[0]==ODT.argPeri_degs.back())
 	{
-		cout<<"Clearing memory for argPeri_degs"<<endl;
+		if (verbose)
+			cout<<"Clearing memory for argPeri_degs"<<endl;
 		ODT.argPeri_degs.clear();
 		vector<double>().swap(ODT.argPeri_degs);
 	}
 	if (ODT.a_totals[0]==ODT.a_totals.back())
 	{
-		cout<<"Clearing memory for a_totals"<<endl;
+		if (verbose)
+			cout<<"Clearing memory for a_totals"<<endl;
 		ODT.a_totals.clear();
 		vector<double>().swap(ODT.a_totals);
 	}
 	if (ODT.Ks[0]==ODT.Ks.back())
 	{
-		cout<<"Clearing memory for Ks"<<endl;
+		if (verbose)
+			cout<<"Clearing memory for Ks"<<endl;
 		ODT.Ks.clear();
 		vector<double>().swap(ODT.Ks);
 	}
 
-	if (true)
+	if (verbose)
 	{
 		cout << "- size  after   = " << ODT.RVoffsets.size()     << endl;
 		cout << "- capacity after = " << ODT.RVoffsets.capacity() << endl;
@@ -841,7 +847,8 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	GRfuncReturnType GRFRT_longAN_degs;
 	if (ODT.longAN_degs.size()>1)
 	{
-		cout<<"Starting to calculate GR values for longAN_degs"<<endl;
+		if (verbose)
+			cout<<"Starting to calculate GR values for longAN_degs"<<endl;
 		// load up string vectors for each parameters var,mean
 		GRFRT_longAN_degs = gelmanRubinStage1func(ODT.longAN_degs,numTimes);
 		//clear memory from input data vector
@@ -855,7 +862,8 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	GRfuncReturnType GRFRT_es;
 	if (ODT.es.size()>1)
 	{
-		cout<<"Starting to calculate GR values for es"<<endl;
+		if (verbose)
+			cout<<"Starting to calculate GR values for es"<<endl;
 		GRFRT_es = gelmanRubinStage1func(ODT.es,numTimes);
 		ODT.es.clear();
 		vector<double>().swap(ODT.es);
@@ -868,7 +876,8 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	GRfuncReturnType GRFRT_Ts;
 	if (ODT.Ts.size()>1)
 	{
-		cout<<"Starting to calculate GR values for Ts"<<endl;
+		if (verbose)
+			cout<<"Starting to calculate GR values for Ts"<<endl;
 		GRFRT_Ts = gelmanRubinStage1func(ODT.Ts,numTimes);
 		ODT.Ts.clear();
 		vector<double>().swap(ODT.Ts);
@@ -880,7 +889,8 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	GRfuncReturnType GRFRT_Tcs;
 	if (ODT.Tcs.size()>1)
 	{
-		cout<<"Starting to calculate GR values for Tcs"<<endl;
+		if (verbose)
+			cout<<"Starting to calculate GR values for Tcs"<<endl;
 		GRFRT_Tcs = gelmanRubinStage1func(ODT.Tcs,numTimes);
 		ODT.Tcs.clear();
 		vector<double>().swap(ODT.Tcs);
@@ -892,7 +902,8 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	GRfuncReturnType GRFRT_periods;
 	if (ODT.periods.size()>1)
 	{
-		cout<<"Starting to calculate GR values for periods"<<endl;
+		if (verbose)
+			cout<<"Starting to calculate GR values for periods"<<endl;
 		GRFRT_periods = gelmanRubinStage1func(ODT.periods,numTimes);
 		ODT.periods.clear();
 		vector<double>().swap(ODT.periods);
@@ -905,7 +916,8 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	GRfuncReturnType GRFRT_inclination_degs;
 	if (ODT.inclination_degs.size()>1)
 	{
-		cout<<"Starting to calculate GR values for inclination_degs"<<endl;
+		if (verbose)
+			cout<<"Starting to calculate GR values for inclination_degs"<<endl;
 		GRFRT_inclination_degs = gelmanRubinStage1func(ODT.inclination_degs,numTimes);
 		ODT.inclination_degs.clear();
 		vector<double>().swap(ODT.inclination_degs);
@@ -918,7 +930,8 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	GRfuncReturnType GRFRT_argPeri_degs;
 	if (ODT.argPeri_degs.size()>1)
 	{
-		cout<<"Starting to calculate GR values for argPeri_degs"<<endl;
+		if (verbose)
+			cout<<"Starting to calculate GR values for argPeri_degs"<<endl;
 		GRFRT_argPeri_degs = gelmanRubinStage1func(ODT.argPeri_degs,numTimes);
 		ODT.argPeri_degs.clear();
 		vector<double>().swap(ODT.argPeri_degs);
@@ -931,7 +944,8 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	GRfuncReturnType GRFRT_a_totals;
 	if (ODT.a_totals.size()>1)
 	{
-		cout<<"Starting to calculate GR values for a_totals"<<endl;
+		if (verbose)
+			cout<<"Starting to calculate GR values for a_totals"<<endl;
 		GRFRT_a_totals = gelmanRubinStage1func(ODT.a_totals,numTimes);
 		ODT.a_totals.clear();
 		vector<double>().swap(ODT.a_totals);
@@ -944,7 +958,8 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	GRfuncReturnType GRFRT_Ks;
 	if (ODT.Ks.size()>1)
 	{
-		cout<<"Starting to calculate GR values for Ks"<<endl;
+		if (verbose)
+			cout<<"Starting to calculate GR values for Ks"<<endl;
 		GRFRT_Ks = gelmanRubinStage1func(ODT.Ks,numTimes);
 		ODT.Ks.clear();
 		vector<double>().swap(ODT.Ks);
@@ -1004,9 +1019,12 @@ void generalTools::gelmanRubinStage1(outputDataType ODT,int numTimes)
 	}
 	file.close();
 	//cout<<"Finished calculating the mean and variance values for each param for stage one of the Gelman-Rubin calculation :-)"<<endl;
-	cout<<"\n***************************************************************"<<endl;
-	cout<<"Writing file to: "<<outputFilename<<endl;
-	cout<<"***************************************************************\n"<<endl;
+	if (verbose)
+	{
+		cout<<"\n***************************************************************"<<endl;
+		cout<<"Writing file to: "<<outputFilename<<endl;
+		cout<<"***************************************************************\n"<<endl;
+	}
 }
 
 GRfuncReturnType generalTools::gelmanRubinStage1func(vector<double> data,int numTimes)

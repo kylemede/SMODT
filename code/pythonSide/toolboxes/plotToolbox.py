@@ -1076,7 +1076,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 # Create empty figure to be filled up with plots
                 # Create sub plot and fill it up for the Semi-major
                 if numRVdatasets<9:
-                    fig = plt.figure(2, figsize=(42,50) ,dpi=250)
+                    fig = plt.figure(2, figsize=(42,50) ,dpi=300)
                 else:
                     s= 'summaryPlotter2: WARNING!!! Plotter not set up to handle more than 9 RV datasets and '\
                     +str(numRVdatasets)+' were found in the output datafile.'
@@ -1128,7 +1128,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
 
         ## Make a chiSquared distribution         
         if True:
-            fig = plt.figure(2, figsize=(35,15) ,dpi=250)
+            fig = plt.figure(2, figsize=(35,15) ,dpi=300)
             subPlot = fig.add_subplot(111)
             xlabel = 'chiSquare - chiSquare_MIN'
             CLevels = [[0,0],[0,0]]
@@ -1142,15 +1142,15 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             ax2 = subPlot.twiny()
             ax2.set_xlim(((1.0/nu)*x1),((1.0/nu)*x2))
             ax2.figure.canvas.draw()
-            ax2.set_xlabel("reduced(chiSquare - chiSquare_MIN)")
-            subPlot.axes.set_ylabel('Probability')
+            ax2.set_xlabel("reduced(chiSquare - chiSquare_MIN)",fontsize=30)
+            subPlot.axes.set_ylabel('Probability',fontsize=30)
             
             #subPlot.set_yscale('log')
             if verbose:
                 print 'Starting to save chiSquared figure:'
             plotFilename3 = plotFilename[0:-4]+'-ChiSquaredDist.png'
             print "\n!!!!!!! IGNORE THESE NEXT FONT ERRORS. TRIED TO FIX IT, BUT... !!!!!!!"
-            plt.savefig(plotFilename3, dpi=250, orientation='landscape')
+            plt.savefig(plotFilename3, dpi=300, orientation='landscape')
             print "!!!!!!!   IGNORE THOSE FONT ERRORS. TRIED TO FIX IT, BUT... !!!!!!!"
             s= 'chiSquared dist summary figure saved to '+plotFilename3
             if quiet==False:

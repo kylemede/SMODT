@@ -563,8 +563,6 @@ int main(int argc ,char *argv[])
 			ss.str(std::string());
 			if (SSO.SILENT==false)
 				cout<<printLine4;
-			else
-				cout<<"\nSimulated Annealing, Sigma Tuning and MCMC  took "<<timeString<<" to complete"<<endl;
 			// load up log with all prints in SSlog stringstream
 			// then write it to file.
 			SSlog<< printLine4;
@@ -710,8 +708,6 @@ int main(int argc ,char *argv[])
 		ss.str(std::string());
 		if (SSO.SILENT==false)
 			cout<<printLine4;
-		else
-			cout<< "\nSimulated Annealing and Sigma Tuning took "<<timeString<<" to complete"<<endl;
 		// load up log with all prints in SSlog stringstream
 		// then write it to file.
 		SSlog<< printLine4;

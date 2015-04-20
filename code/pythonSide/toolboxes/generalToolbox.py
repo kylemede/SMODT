@@ -594,7 +594,7 @@ def corrLengthCalcVar(paramIN):
     :param paramIN:     parameter array after burn in data stripped
     :type paramIN:      array (list) of doubles
     """
-    verbose = True
+    verbose = False
     if verbose:
         print "Entered corrLengthCalcVar"
     try:
@@ -627,26 +627,26 @@ def corrLengthCalcVar(paramIN):
                 useless=1
             if varCur>halfVarALL:
                 # over halfStd, so do all in last jump to find precise location
-                for j in range((i-1)*jump, i*jump):
-                    try:
-                        varCur2 = 0
-                        if j!=0:
+                for j in range((i-1)*jump, i*jump+1):
+                    if (j<len(paramIN))and(j!=0):
+                        try:
+                            varCur2 = 0
                             #print 'trying var calc 2&'
                             #print 'size = '+repr(paramIN.size)+", j = "+str(j)
                             varCur2 = np.var(paramIN[0:j])
-                        #print 'done trying var calc 2'
-                    except:
-                        useless=2
-                    if varCur2>halfVarALL:
-                        CorrLength = j+1
-                        break
+                            #print 'done trying var calc 2'
+                        except:
+                            useless=2
+                        if varCur2>halfVarALL:
+                            CorrLength = j+1
+                            break
                 break
         if CorrLength == len(paramIN):
             print "PROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
     if verbose:
         print 'Correlation length found to be = ',CorrLength
         print "Leaving corrLengthCalcVar"
-    print "varCur = "+str(varCur)+", varCur2 = "+str(varCur2)+", CorrLength = "+str(CorrLength)+", i*jump = "+str(i*jump)+", j = "+str(j) 
+        print "halfVarALL = "+str(halfVarALL)+", varCur = "+str(varCur)+", varCur2 = "+str(varCur2)+", CorrLength = "+str(CorrLength)+", i*jump = "+str(i*jump)+", j = "+str(j)+", len(paramIN) = "+str(len(paramIN))
     return CorrLength
 
 
@@ -733,8 +733,9 @@ def gelmanRubinStage2(dataFilenames):
         ToutputFile.write(headers+'\n')
         ## calculate the Gelman-Rubin stat for each itteration.
         numItterations = len(Lcs)
-        print "numItterations = "+str(numItterations) #$$$$$$$$$$$$$$$$
-        print "numChains = "+str(numChains) #$$$$$$$$$$$$$$$$
+        if verbose:
+            print "numItterations = "+str(numItterations) #$$$$$$$$$$$$$$$$
+            print "numChains = "+str(numChains) #$$$$$$$$$$$$$$$$
         GRs = []
         if numChains>1: 
             unBiasConversion = float(numChains)/float(numChains-1.0)
@@ -756,22 +757,31 @@ def gelmanRubinStage2(dataFilenames):
                 B = Lc*unBiasConversion*np.var(means,axis=0)
                 W = np.mean(vars,axis=0)
                 weightedVar = ((Lc-1.0)/Lc)*W+(1.0/Lc)*B
-                R = np.sqrt(weightedVar/W)
+                R = np.NAN
+                if (W>0)and(weightedVar>0):
+                    R = np.sqrt(weightedVar/W)
+                    if verbose:
+                        print "weightedVar = "+str(weightedVar)+", W = "+str(W)+", B = "+str(B)+", Lc = "+str(Lc)     
+                               
                 lineStr=lineStr+'  '+str(R)
                 # calculate 'T' from pg 26 of Ford2006
                 # it is an "estimate of the effective number of independent draws"
                 # and therefore good to compare to the correlation length
-                T = Lc*numChains*np.min([weightedVar/B,1.0])
+                T = np.NAN
+                if (B!=0)and(weightedVar>0):
+                    T = Lc*numChains*np.min([weightedVar/B,1.0])
                 lineStr2=lineStr2+'  '+str(T)
           
             # line loaded up with all the R values, so write it to output file
             GRoutputFile.write(lineStr+'\n')
             ToutputFile.write(lineStr2+'\n')
-            
-        print 'Output file with all Gelman-Rubin values for each parameter at each itteration written to: \n'+GRoutputFilename
+        
         GRoutputFile.close()
-        print 'Output file with all T values for each parameter at each itteration written to: \n'+ToutputFilename
         ToutputFile.close()
+        if verbose:
+            print 'Output file with all Gelman-Rubin values for each parameter at each itteration written to: \n'+GRoutputFilename
+            print 'Output file with all T values for each parameter at each itteration written to: \n'+ToutputFilename
+
             
 def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
     """
@@ -779,7 +789,7 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
     If simAnneal=True, it will assume that only the last 25% of the chains are suitible for 
     calculating the correlation lengths.
     """
-    verbose=True
+    verbose=False
     
     # push dataFilenames in to a list if not one already
     if type(dataFilenames)!=list:
@@ -1068,7 +1078,9 @@ def burnInStripper(fullFilename, burnInLength, burnInStrippedFilename):
     A function to read and strip the burn-in from a file and write
     an output file with the burn-in stripped off the data.
     """
-    print "\nStarting to strip burn-in off file: "+os.path.basename(fullFilename)
+    verbose = False
+    if verbose:
+        print "\nStarting to strip burn-in off file:\n"+os.path.basename(fullFilename)
     # open input file
     inputFile = open(fullFilename, 'r')
     # prepare output file
@@ -1102,7 +1114,8 @@ def burnInStripper(fullFilename, burnInLength, burnInStrippedFilename):
     inputFile.close()
     outputFile.close()
     
-    print 'The burn-in was stripped off and final data written to '+burnInStrippedFilename
+    if verbose:
+        print 'The burn-in was stripped off and final data written to:\n'+burnInStrippedFilename
 
 def chiSquaredCalc(real, error, model):
     """ 

@@ -9,9 +9,9 @@ chiSquaredMax =1000.0
 # The number of samples orbital parameters to try/draw [int]
 numSamples =100000
 # The number of times to print status updates to the screen/terminal during the run [int]
-numSamplePrints =1
+numSamplePrints =0
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing =false
+useMultiProcessing =true
 # set to 'true' to ONLY PRINT the ABSOLUTE MINIMUM of messages about progress to the screen [bool]
 SILENT = true
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
@@ -64,11 +64,11 @@ removeBurnIn = true
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 calcCorrLengths =True
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal =200000
+numSamples_SimAnneal =100000
 # Make plots of MCMC progress plots? [bool]
-makeMCMCprogPlots =true
+makeMCMCprogPlots =false
 # Make plots of Simulated Annealing progress plots? [bool]
-makeSimAnnealProgPlots =true
+makeSimAnnealProgPlots =false
 # Calculate the Gelman-Rubin statistic? [bool]
 CalcGelmanRubin =true
 # How many times do you want the Gelman-Rubin statistic calculated [int]

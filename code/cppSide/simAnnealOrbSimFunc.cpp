@@ -519,7 +519,8 @@ void simAnealOrbFuncObj::simulator()
 			ss << "Latest acceptance rate = "<<std::setprecision(8)<<latestAcceptRate<<endl;
 			ss << "sigmaPercent_min = "<<sigmaPercent_min<<" , sigmaPercent_latest = "<<sigmaPercent_latest<<endl;
 			sigmaPercent_min=sigmaPercent_min_simAnneal;
-			ss << "Latest param being varied = "<<paramBeingVaried<<endl;
+			if (SSO.quiet==false)
+				ss << "Latest param being varied = "<<paramBeingVaried<<endl;
 			ss << "Largest allowed reduced chiSquareds: DI =   N/A, RV =   N/A, Total = "<<SSO.chiSquaredMax  <<endl;
 			ss << "latest reduced chiSquareds: DI = "<< DI_chiSquared*one_over_nu_DI<<", RV = "<<RV_chiSquared*one_over_nu_RV <<", Total = "<< TOTAL_chiSquared*one_over_nu_TOTAL<<endl;
 			ss << "LOWEST reduced chiSquareds: DI = "<< chiSquaredMin_DI*one_over_nu_DI <<", RV = "<< chiSquaredMin_RV*one_over_nu_RV <<", Total = "<< chiSquaredMin*one_over_nu_TOTAL <<endl;
@@ -671,7 +672,7 @@ void simAnealOrbFuncObj::simulator()
 			ss << int(acceptedCounter)<<"/"<<sample<<" Successful, "<<len<<" saved. "<<printsDone<<"/"<<SSO.numSamplePrints<<" completed at ";
 			ss << asctime (timeinfo);
 			ss <<"Finished "<< tempStepNumber<<"/"<< numTempSteps<< " temp steps, Current Temp = "<<temp<<", sigmaPercent_min = "<<sigmaPercent_min<<endl;
-			ss << "Number saved so far = "<<numSaved<<endl;
+			//ss << "Number saved so far = "<<numSaved<<endl;
 			ss << "Latest acceptance rate = "<<latestAcceptRate<<endl<<endl;
 			ss << "Latest param being varied = "<<paramBeingVaried<<endl;
 			ss << "Times NONE of params passed = "<<timesNONEpassed<<endl;
@@ -716,7 +717,7 @@ void simAnealOrbFuncObj::simulator()
 				}
 			}
 			//cout<<"line # 699"<<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$
-			if (true)
+			if (false)//$$$$$$$ DEBUGGING  $$$$$$$$$$
 			{
 				ss<<"\nLatest gaussian proposed general parameters were:"<<endl;
 				ss<<"Sys_Dist_PC_proposed = "<<Sys_Dist_PC_proposed <<", peak value is = "<< SYSdo.Sys_Dist_PC<<endl;
@@ -748,7 +749,7 @@ void simAnealOrbFuncObj::simulator()
 					cout<<"RVoffsets_proposed for dataset "<<dataset <<" = "<<RVoffsets_proposed[dataset] <<endl;
 			}
 			//cout<<"SimAnnealFunc, line #"<<751<<endl;//$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$
-			if (true)
+			if (false)
 			{
 				ss<<"\nLatest parameters set as latest: "<<endl;
 				ss<<"inclination_deg_latest = "<< inclination_deg_latest<<endl;
@@ -794,14 +795,15 @@ void simAnealOrbFuncObj::simulator()
 			else
 				ss<<"\n****\n NO SAMPLES ACCEPTED YET!!!\n****"<<endl;
 			//cout<<"SimAnnealFunc, line #"<<797<<endl;//$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$
-			if (true)
+			if (false)
 			{
 				ss<<"\nKp_calculated = "<<Kp_calculated<<endl;
 				ss<<"Ks_calculated = "<<Ks_calculated<<"\n"<<endl;
 			}
 			//cout<<"SimAnnealFunc, line #"<<803<<endl;//$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$
 			ss<<"#######################################################################################"<<endl;
-			ss<<acceptString;
+			if (SSO.SILENT==false)
+				ss<<acceptString;
 			printLine = ss.str();
 			ss.clear();
 			ss.str(std::string());

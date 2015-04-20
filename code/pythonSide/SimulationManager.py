@@ -221,7 +221,7 @@ def simulator(paramSettingsDict):
     summaryPlotFile = os.path.join(paramSettingsDict['outputData_dir'],'summaryPlot')
     cleanDataFilename=''
     if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
-        s= '**** Now starting to plot the posterior distributions of the final data file ****'
+        s= '**** Starting to plot the posterior distributions of the final data file ****'
         print s
         PMlogFile.write(s)
         if True:
@@ -241,7 +241,7 @@ def simulator(paramSettingsDict):
     DIdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['DIdataFilename'])
     chiSquaredStrDI=''
     if os.path.exists(DIdatafilename)and ((paramSettingsDict['RVonly']==False)and(paramSettingsDict['makeOrbitPlots'])):
-        s = '**** Now starting to make a DI orbit plot ****'
+        s = '**** Starting to make a DI orbit plot ****'
         print s
         PMlogFile.write(s)
         DIdataDict = tools.di.DIdataToDict(DIdatafilename)
@@ -266,7 +266,7 @@ def simulator(paramSettingsDict):
             print s
         PMlogFile.write(s)
     if os.path.exists(RVdatafilename) and (paramSettingsDict['DIonly']==False)and(paramSettingsDict['makeOrbitPlots']):
-        s = '**** Now starting to make a RV orbit plot ****'
+        s = '**** Starting to make a RV orbit plot ****'
         print s
         PMlogFile.write(s)
         RVdataDict = tools.rv.RVdataToDict(RVdatafilename)
@@ -333,7 +333,7 @@ def simulator(paramSettingsDict):
     # set up files and make plots for simAnneal data as well if MCMC is being ran
     if paramSettingsDict['mcONLY']==False:
         if paramSettingsDict['makeSimAnnealProgPlots'] or paramSettingsDict['makeMCMCprogPlots']:
-            s= '**** Now starting to make a parameter progress summary plots for each chain ****'
+            s= '**** Starting to make a parameter progress summary plots for each chain ****'
             print s
             PMlogFile.write(s)
         if paramSettingsDict['simAnneal']==False:
@@ -380,7 +380,7 @@ def simulator(paramSettingsDict):
                 dataFinalFilename2 = os.path.join(paramSettingsDict['outputData_dir'],'outputData-ALL-burnInRemoved.dat') 
                 tools.gen.dataFileCombiner(strippedNames, dataFinalFilename2)
                 summaryPlotFile2 = os.path.join(paramSettingsDict['outputData_dir'],'summaryPlot-burnInRemoved')
-                s= '**** Now starting to plot the posterior distributions of data in final file AFTER BURN-IN REMOVED  ****'
+                s= '**** Starting to plot the posterior distributions of data in final file AFTER BURN-IN REMOVED  ****'
                 print s
                 PMlogFile.write(s)
                 cleanDataFilename=''
@@ -527,7 +527,7 @@ def simulator(paramSettingsDict):
                     if paramSettingsDict['SILENT']==False:
                         print 'Deleting file: '+os.path.basename(filename)
                     os.remove(filename)
-                print '************ Deleting MCMC chain data files ************'
+                print '************ Deleting MCMC chain data files *************'
                 if paramSettingsDict['SILENT']==False:
                     print "-"*40
                 for filename in dataFiles:
@@ -571,7 +571,7 @@ def simulator(paramSettingsDict):
             os.remove(filename) 
     ## delete combined data files if requested
     if paramSettingsDict['delCombinedDataAfter']:
-        print '************* Deleting combined data files *************'
+        print '************* Deleting combined data files **************'
         if paramSettingsDict['SILENT']==False:
             print "-"*40
         if paramSettingsDict['SILENT']==False:

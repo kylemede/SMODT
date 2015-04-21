@@ -52,7 +52,7 @@ delChainsAfter =true
 # Delete combined data files after simulation is complete? [bool]
 delCombinedDataAfter =true
 # Copy output non-data files to a Dropbox folder? [bool]
-CopyToDrobox =false
+CopyToDrobox =true
 
 ############################
 # Settings for MCMC mode ###

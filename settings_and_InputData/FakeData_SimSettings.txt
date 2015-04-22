@@ -7,11 +7,11 @@
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 chiSquaredMax =1000.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =100000
+numSamples =2000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =0
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing =false
+useMultiProcessing =true
 # set to 'true' to ONLY PRINT the ABSOLUTE MINIMUM of messages about progress to the screen [bool]
 SILENT = true
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
@@ -30,7 +30,7 @@ RVdataFilename =RVdata.dat
 outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-outputData_filenameRoot = FakeData-mcmc-3D-tight-PrimaryRVs-ToEQUALTc-test4
+outputData_filenameRoot = FakeData-mcmc-3D-tight-PrimaryRVs-PlotUpdateTest
 #*************************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -64,7 +64,7 @@ removeBurnIn = true
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 calcCorrLengths =True
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal =100000
+numSamples_SimAnneal =1000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots =false
 # Make plots of Simulated Annealing progress plots? [bool]

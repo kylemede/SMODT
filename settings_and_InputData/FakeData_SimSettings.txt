@@ -7,7 +7,7 @@
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 chiSquaredMax =1000.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =1000000
+numSamples =100000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =10
 # Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
@@ -113,28 +113,28 @@ longAN_degMIN =69
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]#210
 longAN_degMAX =71
 # Minimum allowed value for the Eccentricity [double]
-eMIN =0.49
+eMIN =0.495
 # Maximum allowed value for the Eccentricity　[double]
-eMAX =0.51
+eMAX =0.505
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMIN =3.2
+a_totalMIN =3.3
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMAX =3.5
+a_totalMAX =3.4
 # Minimum allowed value for the Period [double][yrs]#0.05
-periodMIN =4.9
+periodMIN =4.99
 # Maximum allowed value for the Period [double][yrs]#0.064
-periodMAX =5.1
+periodMAX =5.01
 # Minimum allowed value for the Inclination [double][deg]#86
-inclination_degMIN =39
+inclination_degMIN =39.7
 # Maximum allowed value for the Inclination [double][deg]#88.5
-inclination_degMAX =41
+inclination_degMAX =40.3
 # Minimum allowed value for the Argument of Perigee [double][deg]#250
 argPeri_degMIN =49
 # Maximum allowed value for the Argument of Perigee [double][deg]
 argPeri_degMAX =51
 # Minimuim value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(0 indicates to use value in SystemData.txt always, -1 indicates to use [earliestsEpoch-period,earliestEpoch])
-T_Min =2456999
+T_Min =2456997
 # Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(0 indicates to use value in SystemData.txt always, -1 indicates to use [earliestsEpoch-period,earliestEpoch])
 T_Max =2457002
@@ -144,7 +144,7 @@ K_MIN =0
 K_MAX =0
 # Minimum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMINs =[-10]
+RVoffsetMINs =[-15]
 # Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMAXs =[10]
+RVoffsetMAXs =[15]

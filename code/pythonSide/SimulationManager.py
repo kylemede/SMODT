@@ -278,7 +278,7 @@ def simulator(paramSettingsDict):
             chiSquaredStrRV = tools.plot.rvPlotter(bestOrbit[1],bestOrbit[2],bestOrbit[3],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7], \
                   sysDataDict,RVdataDict,paramSettingsDict,K=bestOrbit[8],RVoffsets=bestOrbit[9],\
                   nuRV=nuRV,plotFilename=rvPlotFilename+'-FullOrbit', show=False, plotFullOrbit=True)              
-            if True:
+            if False:
                 # data range limited orbit
                 tools.plot.rvPlotter(bestOrbit[1],bestOrbit[2],bestOrbit[3],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7], \
                         sysDataDict,RVdataDict,paramSettingsDict,K=bestOrbit[8],RVoffsets=bestOrbit[9],\

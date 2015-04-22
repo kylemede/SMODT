@@ -2652,7 +2652,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     Thus, providing K allows the user to ignore this parameter. 
     """
     verbose = False
-    
+    addLegend = False
+    plotErrorBars = False
+    makeTrendPlot = False
+    makeDataResidualPlot = False
     ## make string with input values for possible printing
     s= '\nInputs to rvPlotter were:'+'\n'
     s=s+ 'e = '+repr(e)+'\n'
@@ -3131,10 +3134,11 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             if verbose:
                 print s
             #plot error bars
-            for epoch in range(0,len(phases3[orb][dataset])):
-                xs = [phases3[orb][dataset][epoch],phases3[orb][dataset][epoch]]
-                ys = [residuals3[orb][dataset][epoch]-abs(RV_errors[dataset][epoch]),residuals3[orb][dataset][epoch]+abs(RV_errors[dataset][epoch])]
-                residualsPlot.plot(xs,ys,c='k')
+            if plotErrorBars:
+                for epoch in range(0,len(phases3[orb][dataset])):
+                    xs = [phases3[orb][dataset][epoch],phases3[orb][dataset][epoch]]
+                    ys = [residuals3[orb][dataset][epoch]-abs(RV_errors[dataset][epoch]),residuals3[orb][dataset][epoch]+abs(RV_errors[dataset][epoch])]
+                    residualsPlot.plot(xs,ys,c='k')
                
     chiSquaredStr = chiSquaredStr+'\nchiSquared_reduced for ALL data is = '+str(chi_squared_RV_reduced)
     s= chiSquaredStr
@@ -3208,10 +3212,11 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         fitPlot.plot(orbitPhases2[orb],orbitVRs2[orb],c='r',linewidth=2.0)
         for dataset in range(0,len(RVs)):
             fitPlot.scatter(phases3[orb][dataset],RVsOUTupdated3[orb][dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
-            for epoch in range(0,len(phases3[orb][dataset])):
-                xs = [phases3[orb][dataset][epoch],phases3[orb][dataset][epoch]]
-                ys = [RVsOUTupdated3[orb][dataset][epoch]-abs(RV_errors[dataset][epoch]),RVsOUTupdated3[orb][dataset][epoch]+abs(RV_errors[dataset][epoch])]
-                fitPlot.plot(xs,ys,c='k',linewidth=2.0)
+            if plotErrorBars:
+                for epoch in range(0,len(phases3[orb][dataset])):
+                    xs = [phases3[orb][dataset][epoch],phases3[orb][dataset][epoch]]
+                    ys = [RVsOUTupdated3[orb][dataset][epoch]-abs(RV_errors[dataset][epoch]),RVsOUTupdated3[orb][dataset][epoch]+abs(RV_errors[dataset][epoch])]
+                    fitPlot.plot(xs,ys,c='k',linewidth=2.0)
             
     paramsLegndStr = 'e = '+str(e[0])
     paramsLegndStr +='\ninc = '+str(inc[0])
@@ -3232,7 +3237,6 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     log.write(paramsLegndStr+'\n')
     
     ## code to add a legend to the plot, but might need to be tweaked depending on your plot and param values.
-    addLegend=False
     if plotFullOrbit and addLegend:
         # in bottom right
         #residualsPlot.text(fitXLimsUSE[1]-abs(fitXLimsUSE[1]*0.002),abs(fitYLimsUSE[1]*0.5),paramsLegndStr,ha='left')
@@ -3260,89 +3264,90 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     # show plot
     if show:
         plt.show()
-        
     plt.close()
     
     ## Another plot to show the residuals over JD time to look for any remaining trend
-    fig2 = plt.figure(2,figsize=(10,10))
-    residualsPlotTrend = fig2.add_subplot(212)
-    RVsPlotTrend = fig2.add_subplot(211)
-    RVsPlotTrend.set_title("RVs TREND")
-    residualsPlotTrend.set_title("Residuals Plot TREND")
-    residualsPlotTrend.axes.set_xlabel("Epoch [JD]",fontsize=30)
-    residualsPlotTrend=fixPlotBordersAndLabels(residualsPlotTrend)
-    RVsPlotTrend=fixPlotBordersAndLabels(RVsPlotTrend)
-    rng = genTools.findArrayMax(RV_epochsIN2)-genTools.findArrayMin(RV_epochsIN2)
-    rngUse= [genTools.findArrayMin(RV_epochsIN2)-rng*0.05,genTools.findArrayMax(RV_epochsIN2)+rng*0.05]
-    for orb in range(0,len(argPeri_deg)):
-        for dataset in range(0,len(RVs)):
-                residualsPlotTrend.scatter(RV_epochsIN2[dataset],residuals3[orb][dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
-                RVsPlotTrend.scatter(RV_epochsIN2[dataset],RVsOUT[dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
-                #plot error bars
-                for epoch in range(0,len(RV_epochsIN2[dataset])):
-                    xs = [RV_epochsIN2[dataset][epoch],RV_epochsIN2[dataset][epoch]]
-                    ys = [residuals3[orb][dataset][epoch]-abs(RV_errors[dataset][epoch]),residuals3[orb][dataset][epoch]+abs(RV_errors[dataset][epoch])]
-                    residualsPlotTrend.plot(xs,ys,c='k')
-                    xs = [RV_epochsIN2[dataset][epoch],RV_epochsIN2[dataset][epoch]]
-                    ys = [RVsOUT[dataset][epoch]-abs(RV_errors[dataset][epoch]),RVsOUT[dataset][epoch]+abs(RV_errors[dataset][epoch])]
-                    RVsPlotTrend.plot(xs,ys,c='k')
-    residualsPlotTrend.plot(rngUse,[0,0],c='r',linewidth=2.0)
-    residualsPlotTrend.axes.set_ylim(yLim2)
-    RVsPlotTrend.plot(rngUse,[0,0],c='r',linewidth=2.0)
-    RVsPlotTrend.axes.set_ylim([genTools.findArrayMin(RVsOUT)-genTools.findArrayMax(RV_errors),genTools.findArrayMax(RVsOUT)+genTools.findArrayMax(RV_errors)])
-    
-    residualsPlotTrend.axes.set_xlim(rngUse)
-    RVsPlotTrend.axes.set_xlim(rngUse)
-    
-    # save plot to file
-    if plotFilename!='':
-        plotFilename2 = plotFilename[:-4]+"_TREND.png"
-        plt.savefig(plotFilename2, dpi=300, orientation='landscape')
-        s= '\nFigure saved to:\n'+plotFilename2
-        if verbose:
-            print s
-        log.write(s+'\n')
-    else: 
-        s= '\nWARNING: NO plotFilename provided, so NOT saving it to disk.'
-        if verbose:
-            print s
-        log.write(s+'\n')
-    # show plot
-    if show:
-        plt.show()
+    if makeTrendPlot:
+        fig2 = plt.figure(2,figsize=(10,10))
+        residualsPlotTrend = fig2.add_subplot(212)
+        RVsPlotTrend = fig2.add_subplot(211)
+        RVsPlotTrend.set_title("RVs TREND")
+        residualsPlotTrend.set_title("Residuals Plot TREND")
+        residualsPlotTrend.axes.set_xlabel("Epoch [JD]",fontsize=30)
+        residualsPlotTrend=fixPlotBordersAndLabels(residualsPlotTrend)
+        RVsPlotTrend=fixPlotBordersAndLabels(RVsPlotTrend)
+        rng = genTools.findArrayMax(RV_epochsIN2)-genTools.findArrayMin(RV_epochsIN2)
+        rngUse= [genTools.findArrayMin(RV_epochsIN2)-rng*0.05,genTools.findArrayMax(RV_epochsIN2)+rng*0.05]
+        for orb in range(0,len(argPeri_deg)):
+            for dataset in range(0,len(RVs)):
+                    residualsPlotTrend.scatter(RV_epochsIN2[dataset],residuals3[orb][dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
+                    RVsPlotTrend.scatter(RV_epochsIN2[dataset],RVsOUT[dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
+                    #plot error bars
+                    if plotErrorBars:
+                        for epoch in range(0,len(RV_epochsIN2[dataset])):
+                            xs = [RV_epochsIN2[dataset][epoch],RV_epochsIN2[dataset][epoch]]
+                            ys = [residuals3[orb][dataset][epoch]-abs(RV_errors[dataset][epoch]),residuals3[orb][dataset][epoch]+abs(RV_errors[dataset][epoch])]
+                            residualsPlotTrend.plot(xs,ys,c='k')
+                            xs = [RV_epochsIN2[dataset][epoch],RV_epochsIN2[dataset][epoch]]
+                            ys = [RVsOUT[dataset][epoch]-abs(RV_errors[dataset][epoch]),RVsOUT[dataset][epoch]+abs(RV_errors[dataset][epoch])]
+                            RVsPlotTrend.plot(xs,ys,c='k')
+        residualsPlotTrend.plot(rngUse,[0,0],c='r',linewidth=2.0)
+        residualsPlotTrend.axes.set_ylim(yLim2)
+        RVsPlotTrend.plot(rngUse,[0,0],c='r',linewidth=2.0)
+        RVsPlotTrend.axes.set_ylim([genTools.findArrayMin(RVsOUT)-genTools.findArrayMax(RV_errors),genTools.findArrayMax(RVsOUT)+genTools.findArrayMax(RV_errors)])
         
-    plt.close()
+        residualsPlotTrend.axes.set_xlim(rngUse)
+        RVsPlotTrend.axes.set_xlim(rngUse)
+        
+        # save plot to file
+        if plotFilename!='':
+            plotFilename2 = plotFilename[:-4]+"_TREND.png"
+            plt.savefig(plotFilename2, dpi=300, orientation='landscape')
+            s= '\nFigure saved to:\n'+plotFilename2
+            if verbose:
+                print s
+            log.write(s+'\n')
+        else: 
+            s= '\nWARNING: NO plotFilename provided, so NOT saving it to disk.'
+            if verbose:
+                print s
+            log.write(s+'\n')
+        # show plot
+        if show:
+            plt.show()
+        plt.close()
     
     ### New residuals gaussian plot
-    residuals3_trimmed = []
-    for orb in range(0,len(argPeri_deg)):
-        residuals2_trimmed = []
-        for dataset in range(0,len(RVs)):
-            residual_trimmed = []
-            for epoch in range(0,len(residuals3[orb][dataset])):
-                residual_trimmed.append(residuals3[orb][dataset][epoch]/RV_errors[dataset][epoch])
-        residuals2_trimmed.append(residual_trimmed)
-    residuals3_trimmed.append(residuals2_trimmed)
-    #print "len(RV_epochsIN2) = "+str(RV_epochsIN2)+"\n"+"len(residuals3) = "+str(residuals3)+"\n"+"len(residual_trimmed) = "+str(residual_trimmed)+"\n"+"len(residuals2_trimmed) = "+str(residuals2_trimmed)+"\n"+"len(residuals3_trimmed) = "+str(residuals3_trimmed)+"\n"   #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    fig3 = plt.figure(3,figsize=(10,10))
-    residualsGaussian = fig3.add_subplot(111)
-    residualsGaussian.hist(residuals3_trimmed,normed=1)
-    residualsGaussian=fixPlotBordersAndLabels(residualsGaussian)
-    x = np.linspace(-5,5,100)
-    y = np.exp(-x**2/2)/np.sqrt(2*pi)
-    residualsGaussian.plot(x,y, linewidth=2)
-    # save plot to file
-    if plotFilename!='':
-        plotFilename3 = plotFilename[:-4]+"_DataDist.png"
-        plt.savefig(plotFilename3, dpi=300, orientation='landscape')
-        s= '\nFigure saved to:\n'+plotFilename3
-        if verbose:
-            print s
-        log.write(s+'\n')
-    # show plot and then close it
-    if show:
-        plt.show()
-    plt.close()
+    if makeDataResidualPlot:
+        residuals3_trimmed = []
+        for orb in range(0,len(argPeri_deg)):
+            residuals2_trimmed = []
+            for dataset in range(0,len(RVs)):
+                residual_trimmed = []
+                for epoch in range(0,len(residuals3[orb][dataset])):
+                    residual_trimmed.append(residuals3[orb][dataset][epoch]/RV_errors[dataset][epoch])
+            residuals2_trimmed.append(residual_trimmed)
+        residuals3_trimmed.append(residuals2_trimmed)
+        #print "len(RV_epochsIN2) = "+str(RV_epochsIN2)+"\n"+"len(residuals3) = "+str(residuals3)+"\n"+"len(residual_trimmed) = "+str(residual_trimmed)+"\n"+"len(residuals2_trimmed) = "+str(residuals2_trimmed)+"\n"+"len(residuals3_trimmed) = "+str(residuals3_trimmed)+"\n"   #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        fig3 = plt.figure(3,figsize=(10,10))
+        residualsGaussian = fig3.add_subplot(111)
+        residualsGaussian.hist(residuals3_trimmed,normed=1)
+        residualsGaussian=fixPlotBordersAndLabels(residualsGaussian)
+        x = np.linspace(-5,5,100)
+        y = np.exp(-x**2/2)/np.sqrt(2*pi)
+        residualsGaussian.plot(x,y, linewidth=2)
+        # save plot to file
+        if plotFilename!='':
+            plotFilename3 = plotFilename[:-4]+"_DataDist.png"
+            plt.savefig(plotFilename3, dpi=300, orientation='landscape')
+            s= '\nFigure saved to:\n'+plotFilename3
+            if verbose:
+                print s
+            log.write(s+'\n')
+        # show plot and then close it
+        if show:
+            plt.show()
+        plt.close()
     
 
     if True:

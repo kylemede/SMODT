@@ -164,7 +164,7 @@ def logCleanAndPlot(filename = '',sleep=1,delOrigLog=True,verbose=False):
             yLim2 = [used2.min()-0.05*usedRange,used2.max()+0.05*usedRange]
             subPlot2.plot([times[mcmcEndCounter],times[mcmcEndCounter]],[yLim2[0],yLim2[1]],color='red')
             subPlot2.axes.set_ylim(yLim2)
-            subPlot2.axes.set_ylabel("(During - Before) RAM usage [MB]",fontsize=12)
+            subPlot2.axes.set_ylabel("(During - Before) RAM usage [MB]",fontsize=13)
             subPlot2.axes.set_xlabel("Time from simulation start in "+strmod,fontsize=15)
             maxUse = used.max()-used.min()
             subPlot2.text(textX,yLim2[1]*0.78,' Max RAM Used\n     '+str(maxUse)+" MB",ha='left',fontsize=15)

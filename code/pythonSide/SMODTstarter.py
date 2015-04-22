@@ -95,7 +95,8 @@ def main():
     
     # convert number of samples into easy to read string for file naming
     numSamplesTOTAL = numSamples*numProcesses
-    numSamplesString = tools.gen.totalSamplesStr(numSamplesTOTAL)
+    numSamplesString = tools.gen.samplesStr(numSamplesTOTAL)
+    numSamplesStrPerChain = tools.gen.samplesStr(numSamples,total=False)
     
     # add num sample string to filename
     if (filenameRoot[-1]!='-')and(filenameRoot[-1]!='_'):
@@ -213,7 +214,7 @@ def main():
             shutil.copy(f,outputfilename2)
         
     ## finally, make print that sim is starting and then start it.
-    print '\n******* Starting '+str(numProcesses)+' processes of '+numSamplesString+' samples each ******** \n'
+    print '\n******* Starting '+str(numProcesses)+' processes of '+numSamplesStrPerChain+' samples each ******** \n'
 #     if mcONLY:
 #         mcSimStarter(paramSettingsDict)
 #     else:

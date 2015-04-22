@@ -17,15 +17,18 @@ This toolbox is a collection of the calculator type functions that were used in 
 places throughout the code to conduct various types of binary star system simulations.
 """   
 
-def totalSamplesStr(numSamplesTOTAL):
-    if numSamplesTOTAL>=int(1e9):
-        numSamplesString = str(int(numSamplesTOTAL/int(1e9)))+'-Billion-in_Total'
-    elif numSamplesTOTAL>=int(1e6):
-        numSamplesString = str(int(numSamplesTOTAL/int(1e6)))+'-Million-in_Total'
-    elif numSamplesTOTAL>=int(1e3):
-        numSamplesString = str(int(numSamplesTOTAL/int(1e3)))+'-Thousand-in_Total'
+def samplesStr(numSamples,total=True):
+    if numSamples>=int(1e9):
+        numSamplesString = str(int(numSamples/int(1e9)))+'-Billion'
+    elif numSamples>=int(1e6):
+        numSamplesString = str(int(numSamples/int(1e6)))+'-Million'
+    elif numSamples>=int(1e3):
+        numSamplesString = str(int(numSamples/int(1e3)))+'-Thousand'
     else:
-        numSamplesString = str(int(numSamplesTOTAL))+'-in_Total'
+        numSamplesString = str(int(numSamples))
+        
+    if total:
+        numSamplesString +='-in_Total'
     return numSamplesString
 
 def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrRV,effectivePointsStr,burnInStr):
@@ -86,7 +89,7 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
         resultsFile.write("Followed by Sigma Tuning for: "+str(paramSettingsDict["numSamples_SimAnneal"]*0.30)+"\n")
         if not paramSettingsDict['simAnneal']:
             resultsFile.write("The last of these samples was used to start a full MCMC of length: "+str(paramSettingsDict["numSamples"])+"\n")
-    resultsFile.write("For a total number of samples = "+totalSamplesStr(paramSettingsDict["numSamples"]*paramSettingsDict['numProcesses'])[:-9]+"\n")
+    resultsFile.write("For a total number of samples = "+samplesStr(paramSettingsDict["numSamples"]*paramSettingsDict['numProcesses'])[:-9]+"\n")
     resultsFile.write("Max RAM occupied during simulation was "+str(maxRAMuse)+" MB\nNot necessariy solely due to SMODT!\n")
     mode = "3D"
     if paramSettingsDict["RVonly"]:

@@ -36,6 +36,7 @@ def calc_orbit():
     G = 6.673e-8 #cgs
     
     #Orbital Elements
+    TimeLastPeri = 2457000.0 #JD
     e = 0.5
     period = 5. # years
     Omega = 70*np.pi/180 # Longitude of ascending node
@@ -56,6 +57,7 @@ def calc_orbit():
     print "ArgPeri = "+str(omega*180.0/np.pi)+" deg"
     print "a_total = "+str(a_AU)+" AU"
     print "inclination = "+str(i*180.0/np.pi)+" deg"
+    print "Time of Last Periapsis = "+str(TimeLastPeri)+" JD"
     print "Mass 1 = "+str(M_primary)+" Msun"
     print "Mass 2 = "+str(M_primary/massratio)+" Msun"
     print "System distance = "+str(distance)+" PC "
@@ -179,7 +181,7 @@ def calc_orbit():
     data[:, 7] = vel_B[:, 2] #8. radial velocity of primary (km/s)
     
     data2 = np.zeros((pos_A.shape[0],5))
-    data2[:,0] = data[:, 1]*365.24+2457000.0 #JD 
+    data2[:,0] = data[:, 1]*365.24+TimeLastPeri #JD 
     data2[:,1] = pos_A[:, 1]*km_to_arcsec - pos_B[:, 1]*km_to_arcsec #Ythi=Xplot=RA  separation between two bodies based on primary being at 0,0 ["]
     data2[:,2] = pos_A[:, 0]*km_to_arcsec - pos_B[:, 0]*km_to_arcsec #Xthi=Yplot=Dec  separation between two bodies based on primary being at 0,0 ["]
     data2[:,3] = vel_B[:, 2]*1000.0 # RV of primary compared to center of mass origin[ m/s]

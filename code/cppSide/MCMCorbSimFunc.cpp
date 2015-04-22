@@ -406,7 +406,7 @@ void MCMCorbFuncObj::simulator()
 		//************************************************************************************************************************************
 		// Generate Gaussian values for the sys dist and masses.  Values set to those in SystemData.txt, this will redefine them if requested.
 		//************************************************************************************************************************************
-		if (true)
+		if (false)
 		{
 			//ALL error values in early testing were multiplied by 0.5 initially, although the literature and logic recommends putting the values
 			//straight in makes more sense statistically.  Truncating distribution at 3*error to avoid going deep into the tails.

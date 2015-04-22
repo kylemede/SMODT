@@ -1,4 +1,5 @@
 import numpy as np
+import os
 from PyAstronomy import pyasl
 import DItoolbox as diTools
 
@@ -22,6 +23,10 @@ def calc_orbit():
     I just computed a Kepler orbit's positions and velocities and rotated them.
     "
     """
+    #Computer Directory
+    #baseSaveDir='/mnt/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
+    baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
+    
     #model settings
     Npts = 50
     storePrimaryRVs = True
@@ -210,7 +215,7 @@ def calc_orbit():
         data3[:,5] = data2[:,4]
         data3[:,6] = errorRVsecondary
         
-    #output data3 has format
+    #output data3 has format ->SMODT format with DI and RV combined into one file
     #1. JD
     #2. Position Angle [deg]
     #3. Position Angle ERROR [deg]
@@ -218,10 +223,10 @@ def calc_orbit():
     #5. Separation Angle ERROR ["]
     #6. RV of primary (or secondary) rel to CofM [m/s]
     #7. RV ERROR [m/s]
-
-    np.savetxt('/mnt/Data1/Todai_Work/Data/data_SMODT/mockdata.dat', data, fmt="%.10g")
-    np.savetxt('/mnt/Data1/Todai_Work/Data/data_SMODT/mockdata-SMODTformat.dat', data3, fmt="%.10g")
-
+    
+    np.savetxt(os.path.join(baseSaveDir,'mockdata.dat'), data, fmt="%.10g")
+    np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat.dat'), data3, fmt="%.10g")
+    print 'Output data files written to:\n'+baseSaveDir
 
 if __name__ == "__main__":
     calc_orbit()

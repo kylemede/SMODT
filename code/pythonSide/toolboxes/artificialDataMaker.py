@@ -28,7 +28,7 @@ def calc_orbit():
     baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
     
     #model settings
-    Npts = 50
+    Npts = 1000
     storePrimaryRVs = True
 
     #System settings
@@ -224,8 +224,25 @@ def calc_orbit():
     #6. RV of primary (or secondary) rel to CofM [m/s]
     #7. RV ERROR [m/s]
     
-    np.savetxt(os.path.join(baseSaveDir,'mockdata.dat'), data, fmt="%.10g")
-    np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat.dat'), data3, fmt="%.10g")
+    ## split these up into two separate files
+    dataDI = np.empty((pos_A.shape[0],5))
+    dataDI[:,0] = data3[:,0]
+    dataDI[:,1] = data3[:,1]
+    dataDI[:,2] = data3[:,2]
+    dataDI[:,3] = data3[:,3]
+    dataDI[:,4] = data3[:,4]
+    dataRV = np.empty((pos_A.shape[0],3))
+    dataRV[:,0] = data3[:,0]
+    dataRV[:,1] = data3[:,5]
+    dataRV[:,2] = data3[:,6]
+    
+    ##write files to disk
+    if False:
+        np.savetxt(os.path.join(baseSaveDir,'mockdata.dat'), data, fmt="%.10g")
+        np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat.dat'), data3, fmt="%.10g")
+    if True:
+        np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat-DI.dat'), dataDI, fmt="%.10g")
+        np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat-RV.dat'), dataRV, fmt="%.10g")
     print 'Output data files written to:\n'+baseSaveDir
 
 if __name__ == "__main__":

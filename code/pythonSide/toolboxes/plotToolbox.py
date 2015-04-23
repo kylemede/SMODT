@@ -2704,10 +2704,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         print "Tc = "+repr(Tc)
         print "TcUse = "+repr(TcUse)
     Tc = TcUse
-    if True:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ HACK!!!!! $$$$$$$$$$$$$$$$
+    if len(TcPhases)!=0:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ HACK!!!!! $$$$$$$$$$$$$$$$
         Tc=TcPhases
-    if len(TcPhases)==0:
-        TcPhases = Tc
     
     if type(K)!=list:
         K = [K]

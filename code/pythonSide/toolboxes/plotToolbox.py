@@ -3121,10 +3121,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     fig = plt.figure(1,figsize=(20,10))
     plt.suptitle(plotFileTitle, fontsize=10)
     residualsPlot = fig.add_subplot(212)
-    residualsPlot.set_position([0.1,0.15,0.85,0.2])##$$$$$$$$
+    residualsPlot.set_position([0.1,0.12,0.85,0.23])##$$$$$$$$
     #residualsPlot.set_title("Residuals Plot")
     residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=30)
-    residualsPlot.axes.set_ylabel("Residual",fontsize=15)
+    residualsPlot.axes.set_ylabel("Residual",fontsize=25)
     #colorsList = ['b','m','k','g','y','o','p']
     colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     
@@ -3165,7 +3165,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     
     ## make plot of fit to data
     fitPlot = fig.add_subplot(211)
-    fitPlot.set_position([0.1,0.35,0.85,0.5])#$$$$$$$$$$$$
+    fitPlot.set_position([0.1,0.35,0.85,0.55])#$$$$$$$$$$$$
     fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
     fitXmin = genTools.findArrayMin(orbitPhases2)
     if xmin<fitXmin:

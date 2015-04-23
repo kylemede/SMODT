@@ -30,7 +30,7 @@ RVdataFilename =RVdata.dat
 outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-outputData_filenameRoot = FakeData-mcmc-RVonly-verytight-PrimaryRVs-noGaussDraws-PERFECTfitPlotTest
+outputData_filenameRoot = FakeData-mcmc-RVonly-veryverytight-PrimaryRVs-noGaussDraws-PERFECTfitPlotTest
 #*************************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =true
@@ -109,42 +109,42 @@ argPeriPlusDI = 0.0
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]#130
-longAN_degMIN =69
+longAN_degMIN =69.9999
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]#210
-longAN_degMAX =71
+longAN_degMAX =70.00001
 # Minimum allowed value for the Eccentricity [double]
-eMIN =0.495
+eMIN =0.49999
 # Maximum allowed value for the Eccentricity　[double]
-eMAX =0.505
+eMAX =0.50001
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMIN =3.3
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMAX =3.4
 # Minimum allowed value for the Period [double][yrs]#0.05
-periodMIN =4.99
+periodMIN =4.9999
 # Maximum allowed value for the Period [double][yrs]#0.064
-periodMAX =5.01
+periodMAX =5.0001
 # Minimum allowed value for the Inclination [double][deg]#86
-inclination_degMIN =39.7
+inclination_degMIN =39.9999
 # Maximum allowed value for the Inclination [double][deg]#88.5
-inclination_degMAX =40.3
+inclination_degMAX =40.00001
 # Minimum allowed value for the Argument of Perigee [double][deg]#250
-argPeri_degMIN =49
+argPeri_degMIN =49.99999
 # Maximum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMAX =51
+argPeri_degMAX =50.00001
 # Minimuim value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(0 indicates to use value in SystemData.txt always, -1 indicates to use [earliestsEpoch-period,earliestEpoch])
-T_Min =2456997
+T_Min =2456999.9999
 # Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(0 indicates to use value in SystemData.txt always, -1 indicates to use [earliestsEpoch-period,earliestEpoch])
-T_Max =2457002
+T_Max =2457000.00001
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
 K_MIN =0
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]
 K_MAX =0
 # Minimum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMINs =[-15]
+RVoffsetMINs =[-1]
 # Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-RVoffsetMAXs =[15]
+RVoffsetMAXs =[1]

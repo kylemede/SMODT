@@ -2687,16 +2687,23 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         Tc = [Tc]
     # correct Tc if somehow still zero
     TcUse = []
+    TcPhases = []
     for i in range(0,len(Tc)):
         if Tc[i]==0:
             (To,Tcent) = genTools.eccArgPeri2ToTcCalc(e[i], period[i], argPeri_deg[i], T[i], Tc=0)    
             TcUse.append(Tcent)
+        elif Tc[i]==T[i]:#$$$$$$$$$$$$$$$$$$$$$$$$$
+            print "Tc==T, so calculate Tc for phases TESTING!!"
+            (To,Tcent) = genTools.eccArgPeri2ToTcCalc(e[i], period[i], argPeri_deg[i], T[i], Tc=0)    
+            TcPhases.append(Tcent)
         else:
             TcUse.append(Tc[i])
     if verbose:
         print "Tc = "+repr(Tc)
         print "TcUse = "+repr(TcUse)
     Tc = TcUse
+    if len(TcPhases)==0:
+        TcPhases = Tc
     
     if type(K)!=list:
         K = [K]
@@ -2754,8 +2761,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         if verbose:
             print s
         log.write(s+'\n')
-        phases2 = epochsToPhases(RV_epochsIN2,Tc[orb],period[orb], verbose=False, halfOrbit=True) 
-        #phases2 = epochsToPhases(RV_epochsIN2,T[orb],period[orb], verbose=False, halfOrbit=True)         
+        phases2 = epochsToPhases(RV_epochsIN2,TcPhases[orb],period[orb], verbose=False, halfOrbit=True)     
         phases3.append(phases2)   
     #print "phases3 = "+repr(phases3)
     
@@ -3811,7 +3817,7 @@ def epochsToPhases(epochs2,T_center,P_yrs, verbose=False, halfOrbit=False):
                     phase = phase+1.0
             phases.append(phase)
             if verbose:
-                print '\nepochOut = ',epoch
+                print '\nepoch = ',epoch
                 print 'period [days] = ',P_days
                 print 'phase = ',phase
         phases2.append(phases)

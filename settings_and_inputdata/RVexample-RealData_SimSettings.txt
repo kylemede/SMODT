@@ -1,0 +1,151 @@
+#These are all the general settings for the simulation
+# For RV example using TauBoo planet data.
+
+########################
+### General Settings ###
+########################
+# This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
+chiSquaredMax =30.0
+# The number of samples orbital parameters to try/draw [int]
+numSamples =1000000
+# The number of times to print status updates to the screen/terminal during the run [int]
+numSamplePrints =10
+# Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
+useMultiProcessing =true
+# set to 'true' to ONLY PRINT the ABSOLUTE MINIMUM of messages about progress to the screen [bool]
+SILENT = false
+# set to 'false' to receive extra prints from the main simulations progress for testing [bool]
+quiet =true
+# set to 'true' to receive prints from the functions called by main for testing [bool]
+verbose =false
+# Directory where input data and settings files are [string, at least 2 chars long]
+settings_and_InputDataDir =/mnt/Data1/Todai_Work/EclipseWorkspace/SMODT/settings_and_InputData
+# Name of file where system data is [string, at least 2 chars long]
+SystemDataFilename = SystemData.txt
+# Name of file where Direct Imaging data is [string, at least 2 chars long]
+DIdataFilename = DIdata.dat
+# Name of file where Radial Velocity data is [string, at least 2 chars long]
+RVdataFilename = RVdata.dat
+# Directory where you want the output data folder to go [string, at least 2 chars long]
+outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
+# General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
+#*************************************************************************************************************************
+outputData_filenameRoot = RVexample-circular-test
+#*************************************************************************************************************************
+# Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
+RVonly =true
+# Only perform Direct Imaging simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
+DIonly =false
+## if both mcONLY and simAnneal are set to false, then MCMC will be used!
+# Set to true to perform standard Monte Carlo only[bool]
+mcONLY =false
+# Set to true to perform SimulateAnnealing[bool]
+simAnneal =false
+# Simulated Annealing starting temperature [double]
+startTemp =150.0
+# make plot of posterior distributions? [bool]
+makePosteriorsPlot =true
+# make plots of RV and DI/AM orbit fits [bool]
+makeOrbitPlots =true
+# Delete chain files after simulation is complete? [bool]
+delChainsAfter =true
+# Delete combined data files after simulation is complete? [bool]
+delCombinedDataAfter =true
+# Copy output non-data files to a Dropbox folder? [bool]
+CopyToDrobox =false
+
+############################
+# Settings for MCMC mode ###
+############################
+# Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
+CalcBurnIn =false
+# remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?
+removeBurnIn = False
+# Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
+calcCorrLengths =false
+# number of samples to draw for simAnneal stage [int] 
+numSamples_SimAnneal =1000000
+# Make plots of MCMC progress plots? [bool]
+makeMCMCprogPlots =false
+# Make plots of Simulated Annealing progress plots? [bool]
+makeSimAnnealProgPlots =false
+# Calculate the Gelman-Rubin statistic? [bool]
+CalcGelmanRubin =false
+# How many times do you want the Gelman-Rubin statistic calculated [int]
+numTimesCalcGR =100
+# Delete Gelman Rubin chain files after?  Still keeps resulting single 'GRvalues.txt' file though. [bool]
+delGRchainFiles = false
+# Set to true to perform the 100 mod dataset MCMC loop $$ NOTE, this MIGHT NOT WORK as I haven't checked it still works... [bool]
+loopedMCMC =False
+
+#####################################
+# Special Settings for the models ###
+#####################################
+## Settings for possible RV cases:
+# If RV data is of a companion star, set simulate_StarStar=true
+# If RV data is of a companion planet, set simulate_StarPlanet=true
+# Both of these can NOT be true, one MUST be false at least.
+# If a second companion exists with a known orbit, its values MUST 
+# be set in the 'SystemData.txt' file to ensure it is included in 
+# residual velocity calculations.
+simulate_StarStarRV =false
+simulate_StarPlanetRV =true 
+# fit to the primary's RV orbit [bool]
+simulate_PrimaryOrbitRV = false
+# Are the RVs in the RVdata.dat for the Primary star? [bool]
+primaryStarRVs = true
+# Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
+TcStepping = false
+# take the time of center transit (inferior conjunction) into account? [bool]
+TcEqualT = false
+# force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
+argPeriPlusRV = 0.0
+##################################################
+## Special settings DI model:
+# force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
+argPeriPlusDI = 0.0
+
+###################################################
+# Ranges for acceptable random number inputs ######
+###################################################
+# Minimum allowed value for the Longitude of the Ascending Node [double][deg]
+longAN_degMIN = 0
+# Maximum allowed value for the Longitude of the Ascending Node [double][deg]
+longAN_degMAX = 0.0
+# Minimum allowed value for the Eccentricity [double]
+eMIN = 0.0000
+# Maximum allowed value for the Eccentricity　[double]
+eMAX = 0.0
+# Minimum allowed value for the Period [double][yrs]
+periodMIN = 0
+# Maximum allowed value for the Period [double][yrs]
+periodMAX =0
+# Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
+a_totalMIN = 0
+# Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
+a_totalMAX = 0
+# Minimum allowed value for the Inclination [double][deg]
+inclination_degMIN = 0
+# Maximum allowed value for the Inclination [double][deg]
+inclination_degMAX = 0.0
+# Minimum allowed value for the Argument of Perigee [double][deg]
+argPeri_degMIN = 0.0
+# Maximum allowed value for the Argument of Perigee [double][deg]
+argPeri_degMAX = 0.0
+# Minimum value for the Time of Last Periapsis [JD]
+#(0 indicates to use value in SystemData.txt always, -1 indicates to use [earliestsEpoch-period,earliestEpoch])
+T_Min =2455650.0
+# Maximum value for the Time of Last Periapsis [JD]
+#(0 indicates to use value in SystemData.txt always, -1 indicates to use [earliestsEpoch-period,earliestEpoch])
+T_Max =2455653.5
+# Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
+K_MIN =420
+# Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]
+K_MAX =510
+# Minimum values of Radial Velocity Offsets.  
+# Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
+RVoffsetMINs =[140]
+# Maximum values of Radial Velocity Offsets.  
+# Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
+RVoffsetMAXs =[180]
+

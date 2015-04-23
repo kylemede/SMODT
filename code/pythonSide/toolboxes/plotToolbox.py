@@ -2651,7 +2651,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     #3: primaryRVs parameter in call will set the semi-major value used to a_1 rather than a_2 if K=0, else K provided will be used. 
     Thus, providing K allows the user to ignore this parameter. 
     """
-    verbose = True
+    verbose = False
     addLegend = False
     plotErrorBars = False
     makeTrendPlot = False
@@ -2704,6 +2704,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         print "Tc = "+repr(Tc)
         print "TcUse = "+repr(TcUse)
     Tc = TcUse
+    if True:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ HACK!!!!! $$$$$$$$$$$$$$$$
+        Tc=TcPhases
     if len(TcPhases)==0:
         TcPhases = Tc
     
@@ -2763,7 +2765,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         if verbose:
             print s
         log.write(s+'\n')
-        phases2 = epochsToPhases(RV_epochsIN2,TcPhases[orb],period[orb], verbose=False, halfOrbit=True)     
+        phases2 = epochsToPhases(RV_epochsIN2,Tc[orb],period[orb], verbose=False, halfOrbit=True)     
         phases3.append(phases2)   
     #print "phases3 = "+repr(phases3)
     
@@ -3127,13 +3129,13 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         
     ############################################################
     ## Create figure, axes and start plotting/drawing everything
-    fig = plt.figure(1,figsize=(10,10))
+    fig = plt.figure(1,figsize=(20,10))
     plt.suptitle(plotFileTitle, fontsize=10)
     residualsPlot = fig.add_subplot(212)
-    residualsPlot.set_position([0.15,0.05,0.9,0.2])##$$$$$$$$
-    residualsPlot.set_title("Residuals Plot")
+    residualsPlot.set_position([0.15,0.15,0.8,0.2])##$$$$$$$$
+    #residualsPlot.set_title("Residuals Plot")
     residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=30)
-    residualsPlot.axes.set_ylabel("Residual [m/s]",fontsize=30)
+    residualsPlot.axes.set_ylabel("Residual",fontsize=15)
     #colorsList = ['b','m','k','g','y','o','p']
     colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     
@@ -3174,7 +3176,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     
     ## make plot of fit to data
     fitPlot = fig.add_subplot(211)
-    fitPlot.set_position([0.15,0.25,0.9,0.5])#$$$$$$$$$$$$
+    fitPlot.set_position([0.15,0.35,0.8,0.5])#$$$$$$$$$$$$
     fitXmin = genTools.findArrayMin(orbitPhases2)
     if xmin<fitXmin:
         fitXmin = xmin
@@ -3283,7 +3285,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     
     ## Another plot to show the residuals over JD time to look for any remaining trend
     if makeTrendPlot:
-        fig2 = plt.figure(2,figsize=(10,10))
+        fig2 = plt.figure(2,figsize=(20,10))
         residualsPlotTrend = fig2.add_subplot(212)
         RVsPlotTrend = fig2.add_subplot(211)
         RVsPlotTrend.set_title("RVs TREND")
@@ -3367,7 +3369,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
 
     if True:
         ## Create figure for writting the sorta legend to
-        fig = plt.figure(1,figsize=(10,10))
+        fig = plt.figure(1,figsize=(10,5))
         #main = fig.add_subplot(111)
         fig.text(0.05,0.05,paramsLegndStr,ha='left')
         if plotFilename!='':

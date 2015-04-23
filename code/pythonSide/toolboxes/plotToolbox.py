@@ -2651,7 +2651,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     #3: primaryRVs parameter in call will set the semi-major value used to a_1 rather than a_2 if K=0, else K provided will be used. 
     Thus, providing K allows the user to ignore this parameter. 
     """
-    verbose = False
+    verbose = True
     addLegend = False
     plotErrorBars = False
     makeTrendPlot = False
@@ -3129,13 +3129,14 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     fig = plt.figure(1,figsize=(10,10))
     plt.suptitle(plotFileTitle, fontsize=10)
     residualsPlot = fig.add_subplot(212)
+    residualsPlot.set_position([0.15,0.05,0.9,0.2])##$$$$$$$$
     residualsPlot.set_title("Residuals Plot")
     residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=30)
     residualsPlot.axes.set_ylabel("Residual [m/s]",fontsize=30)
     #colorsList = ['b','m','k','g','y','o','p']
     colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     
-    #plot data and fit, plus build up the chiSquaredStr
+    #plot RESIDUAL data and fit, plus build up the chiSquaredStr
     for orb in range(0,len(argPeri_deg)):
         chiSquaredStr = ''
         for dataset in range(0,len(RVs)):
@@ -3172,6 +3173,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     
     ## make plot of fit to data
     fitPlot = fig.add_subplot(211)
+    fitPlot.set_position([0.15,0.25,0.9,0.5])#$$$$$$$$$$$$
     fitXmin = genTools.findArrayMin(orbitPhases2)
     if xmin<fitXmin:
         fitXmin = xmin

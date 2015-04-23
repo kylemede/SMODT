@@ -114,9 +114,10 @@ def main():
         if paramSettingsDict['SILENT']==False:
             print '\n'+'$'*100+'\n'
             print 'WARNING!! the folder:'+finalFolder+', all ready exists!'
-        if paramSettingsDict['SILENT']==False:
             print 'You can overwrite the data in it, or exit this simulation.'
-        YN = raw_input('OVERWRITE current folder (y/n):')
+            YN = raw_input('OVERWRITE current folder (y/n):')
+        else:
+            YN = 'y'
         if (('y' in YN) or ('Y' in YN)):
             if paramSettingsDict['SILENT']==False:
                 print '\nDELETING all contents of folder:'+finalFolder
@@ -139,18 +140,24 @@ def main():
     if paramSettingsDict['CopyToDrobox']:
         finalFolder2 = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/',filename[:-4]+'/')
         if os.path.exists(finalFolder2):
-            print '\n'+'$'*100+'\n'
-            print 'WARNING!! the folder:'+finalFolder2+', all ready exists!'
-            print 'You can overwrite the data in it, or exit this simulation.'
-            YN = raw_input('\nOVERWRITE current folder (y/n):')
+            if paramSettingsDict['SILENT']==False:
+                print '\n'+'$'*100+'\n'
+                print 'WARNING!! the folder:'+finalFolder2+', all ready exists!'
+                print 'You can overwrite the data in it, or exit this simulation.'
+                YN = raw_input('\nOVERWRITE current folder (y/n):')
+            else:
+                YN = 'y'
             if (('y' in YN) or ('Y' in YN)):
-                print '\nDELETING all contents of folder:'+finalFolder2
+                if paramSettingsDict['SILENT']==False:
+                    print '\nDELETING all contents of folder:'+finalFolder2
                 shutil.rmtree(finalFolder2)
-                print 'MAKING new empty folder:'+finalFolder2
+                if paramSettingsDict['SILENT']==False:
+                    print 'MAKING new empty folder:'+finalFolder2
                 os.mkdir(finalFolder2)
             elif (('n' in YN) or ('N' in YN)):
                 sys.exit()
-            print '\n'+'$'*100+'\n'
+            if paramSettingsDict['SILENT']==False:
+                print '\n'+'$'*100+'\n'
         else:
             os.mkdir(finalFolder2)
         # make a directory inside the data folder for the code used during this simulation

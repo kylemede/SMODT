@@ -97,7 +97,7 @@ primaryStarRVs = true
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 TcStepping = false
 # take the time of center transit (inferior conjunction) into account? [bool]
-TcEqualT = true
+TcEqualT = True
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
 argPeriPlusRV = 0.0
 ##################################################

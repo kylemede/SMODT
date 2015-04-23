@@ -2687,25 +2687,16 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         Tc = [Tc]
     # correct Tc if somehow still zero
     TcUse = []
-    TcPhases = []
     for i in range(0,len(Tc)):
         if Tc[i]==0:
             (To,Tcent) = genTools.eccArgPeri2ToTcCalc(e[i], period[i], argPeri_deg[i], T[i], Tc=0)    
             TcUse.append(Tcent)
-        elif Tc[i]==T[i]:#$$$$$$$$$$$$$$$$$$$$$$$$$
-            print "Tc==T, so calculate Tc for phases TESTING!!"
-            (To,Tcent) = genTools.eccArgPeri2ToTcCalc(e[i], period[i], argPeri_deg[i], T[i], Tc=0)    
-            TcPhases.append(Tcent)
-            print 'T = '+str(To)+", Tc calculated = "+str(Tcent)
-            TcUse.append(Tc[i])
         else:
             TcUse.append(Tc[i])
     if verbose:
         print "Tc = "+repr(Tc)
         print "TcUse = "+repr(TcUse)
     Tc = TcUse
-    if len(TcPhases)!=0:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ HACK!!!!! $$$$$$$$$$$$$$$$
-        Tc=TcPhases
     
     if type(K)!=list:
         K = [K]
@@ -3130,7 +3121,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     fig = plt.figure(1,figsize=(20,10))
     plt.suptitle(plotFileTitle, fontsize=10)
     residualsPlot = fig.add_subplot(212)
-    residualsPlot.set_position([0.15,0.15,0.8,0.2])##$$$$$$$$
+    residualsPlot.set_position([0.1,0.15,0.85,0.2])##$$$$$$$$
     #residualsPlot.set_title("Residuals Plot")
     residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=30)
     residualsPlot.axes.set_ylabel("Residual",fontsize=15)
@@ -3174,7 +3165,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     
     ## make plot of fit to data
     fitPlot = fig.add_subplot(211)
-    fitPlot.set_position([0.15,0.35,0.8,0.5])#$$$$$$$$$$$$
+    fitPlot.set_position([0.1,0.35,0.85,0.5])#$$$$$$$$$$$$
     fitXmin = genTools.findArrayMin(orbitPhases2)
     if xmin<fitXmin:
         fitXmin = xmin

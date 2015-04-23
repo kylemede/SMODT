@@ -2696,6 +2696,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             print "Tc==T, so calculate Tc for phases TESTING!!"
             (To,Tcent) = genTools.eccArgPeri2ToTcCalc(e[i], period[i], argPeri_deg[i], T[i], Tc=0)    
             TcPhases.append(Tcent)
+            print 'T = '+str(To)+", Tc calculated = "+str(Tcent)
         else:
             TcUse.append(Tc[i])
     if verbose:
@@ -2765,6 +2766,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         phases3.append(phases2)   
     #print "phases3 = "+repr(phases3)
     
+    #subtract RVoffsets
     RVsIN = RVs
     RVsOUT = []
     numEpochsTotal = 0
@@ -3117,7 +3119,12 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         orbitVRs2.append(orbitVRs)
         #print 'phases: ',repr(orbitPhases)
         #print 'VRs: ',repr(orbitVRs)
+    
+    ######################################################################################################################################
+    ## Start Plotting!!
+    ######################################################################################################################################
         
+    ############################################################
     ## Create figure, axes and start plotting/drawing everything
     fig = plt.figure(1,figsize=(10,10))
     plt.suptitle(plotFileTitle, fontsize=10)
@@ -3134,7 +3141,6 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         for dataset in range(0,len(RVs)):
             chiSquaredStr = chiSquaredStr+'\nchiSquared_reduced for dataset '+str(dataset)+' is = '+str(chi_squared_RV_reducedCur2[dataset])
             residualsPlot.scatter(phases3[orb][dataset],residuals3[orb][dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
-            
             s= '\n\n*** RMS of residuals '+str(dataset)+'= '+str(np.sqrt(np.mean(np.array(residuals3[orb][dataset])**2)))+' ***\n\n'
             log.write(s+'\n')
             if verbose:

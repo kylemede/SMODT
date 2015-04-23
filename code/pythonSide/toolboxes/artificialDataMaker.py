@@ -75,11 +75,17 @@ def calc_orbit():
     ke = pyasl.KeplerEllipse(a1, period, e=e, Omega=0.)
 
     t = (np.arange(Npts) - 1)/(Npts - 2.)*period
+    #print "\nbefore:\n"+repr(t)+"\n"
+    ## Extend t to include 4 extra points at the end that overlap the beginning of the orbit
+    t2 = np.empty((t.shape[0]+4))
+    t2[0:t.size]=t
+    t2[t.size:]=t[2]*np.arange(5)[1:]+t[-1]
+    t=t2
+    #print "\nafter:\n"+repr(t)+"\n"
     pos_A = ke.xyzPos(t)
     pos_B = -pos_A/massratio
     
     # Velocities in km/s using centered differencing
-
     vel_A = pos_A.copy()
     vel_A = (pos_A[2:] - pos_A[:-2])/(t[2] - t[0])/(86400*365.24)
     if False:

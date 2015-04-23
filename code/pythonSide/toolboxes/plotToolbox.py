@@ -3817,7 +3817,7 @@ def epochsToPhases(epochs2,T_center,P_yrs, verbose=False, halfOrbit=False):
                 elif phase<-0.5:
                     phase = phase+1.0
             phases.append(phase)
-            if False:
+            if verbose:
                 print '\nepoch = ',epoch
                 print 'period [days] = ',P_days
                 print 'phase = ',phase

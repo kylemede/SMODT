@@ -28,7 +28,7 @@ def calc_orbit():
     baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
     
     #model settings
-    Npts = 1000
+    Npts = 100
     storePrimaryRVs = True
 
     #System settings

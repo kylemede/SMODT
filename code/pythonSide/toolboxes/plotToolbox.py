@@ -2754,7 +2754,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         if verbose:
             print s
         log.write(s+'\n')
-        phases2 = epochsToPhases(RV_epochsIN2,Tc[orb],period[orb], verbose=False, halfOrbit=True)     
+        phases2 = epochsToPhases(RV_epochsIN2,Tc[orb],period[orb], verbose=True, halfOrbit=True)     
         phases3.append(phases2)   
     #print "phases3 = "+repr(phases3)
     
@@ -3166,6 +3166,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     ## make plot of fit to data
     fitPlot = fig.add_subplot(211)
     fitPlot.set_position([0.1,0.35,0.85,0.5])#$$$$$$$$$$$$
+    fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
     fitXmin = genTools.findArrayMin(orbitPhases2)
     if xmin<fitXmin:
         fitXmin = xmin
@@ -3816,7 +3817,7 @@ def epochsToPhases(epochs2,T_center,P_yrs, verbose=False, halfOrbit=False):
                 elif phase<-0.5:
                     phase = phase+1.0
             phases.append(phase)
-            if verbose:
+            if False:
                 print '\nepoch = ',epoch
                 print 'period [days] = ',P_days
                 print 'phase = ',phase

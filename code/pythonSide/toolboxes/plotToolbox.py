@@ -3821,6 +3821,8 @@ def epochsToPhases(epochs2,T_center,P_yrs, verbose=False, halfOrbit=False):
                 print '\nepoch = ',epoch
                 print 'period [days] = ',P_days
                 print 'phase = ',phase
+                if True:
+                    print str(epoch)+" - "+str(int((epoch-T_center)/P_days)*P_days)+" - "+str(T_center)+" = "+str(phaseTimeDiff)
         phases2.append(phases)
     
     if notAlist:

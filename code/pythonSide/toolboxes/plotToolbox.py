@@ -2697,6 +2697,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             (To,Tcent) = genTools.eccArgPeri2ToTcCalc(e[i], period[i], argPeri_deg[i], T[i], Tc=0)    
             TcPhases.append(Tcent)
             print 'T = '+str(To)+", Tc calculated = "+str(Tcent)
+            TcUse.append(Tc[i])
         else:
             TcUse.append(Tc[i])
     if verbose:

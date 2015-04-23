@@ -64,7 +64,7 @@ removeBurnIn = false
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 calcCorrLengths =false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal =1000000
+numSamples_SimAnneal =100000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots =false
 # Make plots of Simulated Annealing progress plots? [bool]

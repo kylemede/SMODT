@@ -385,7 +385,7 @@ void MCMCorbFuncObj::simulator()
 				// calculate the To value from proposed values (omega, e, P & Tc)
 				eccArgPeri2ToTcType EATT;
 				EATT.period = period_proposed;
-				EATT.argPeri_deg = argPeri_deg_proposed+SSO.argPeriOffsetRV;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+				EATT.argPeri_deg = argPeri_deg_proposed;//+SSO.argPeriOffsetRV;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 				EATT.e = e_proposed;
 				EATT.To = T_proposed;
 				EATT.Tc=Tc_proposed;

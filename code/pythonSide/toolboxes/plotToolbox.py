@@ -2963,7 +2963,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                     a_s = a1_s
                     if primaryRVs==False:
                         a_s = a2_s
-                    (v_r_c,K_s) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],star_es[orb],T[orb],star_Ps[orb],star_argPeris[orb],a_s,T_center=star_Tcs[orb],i=star_incs[orb], K=star_Ks[orb], verbose=False)
+                    (v_r_c,K_s) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],star_es[orb],star_Ts[orb],star_Ps[orb],star_argPeris[orb],a_s,T_center=star_Tcs[orb],i=star_incs[orb], K=star_Ks[orb], verbose=False)
                 # calculate the velocity residual due to the planet around primary
                 if (planet_Ps[orb]==0):
                     (v_r_p,K_p)=(0,0)

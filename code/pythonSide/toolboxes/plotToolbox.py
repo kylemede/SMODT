@@ -2754,7 +2754,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         if verbose:
             print s
         log.write(s+'\n')
-        phases2 = epochsToPhases(RV_epochsIN2,Tc[orb],period[orb], verbose=True, halfOrbit=True)     
+        phases2 = epochsToPhases(RV_epochsIN2,Tc[orb],period[orb], verbose=False, halfOrbit=True)     
         phases3.append(phases2)   
     #print "phases3 = "+repr(phases3)
     

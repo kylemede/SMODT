@@ -207,7 +207,10 @@ def simulator(paramSettingsDict):
     p = True
     if paramSettingsDict['SILENT']:
         p = False
+
     bestOrbit = tools.gen.bestOrbitFinder(dataFinalFilename, printToScreen=p, saveToFile=True, returnAsList=True)
+    if False:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        bestOrbit = [70.0, 0.5, 2457000., 2457000., 5.0, 40.0, 50.0, 3.34718746581, 0, [0], 0]#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     logFilename = os.path.join(paramSettingsDict['outputData_dir'],'log-chain_1.txt')
     [nu,nuRV,nuDI,printStr] = tools.gen.findNuFromLog(logFilename)
     nus = [nu,nuRV,nuDI]

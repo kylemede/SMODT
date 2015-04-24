@@ -26,10 +26,10 @@ def calc_orbit():
     #Computer Directory
     #baseSaveDir='/mnt/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
     baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
-    
-    #model settings
-    Npts = 10000
+    NumDataPointsOut = 10
+    downSample = True
     storePrimaryRVs = True
+    percentError = 0.01 #error is set to a percentage of the median
 
     #System settings
     massratio = 2.0
@@ -67,26 +67,29 @@ def calc_orbit():
     print "Mass 2 = "+str(M_primary/massratio)+" Msun"
     print "System distance = "+str(distance)+" PC "
     if storePrimaryRVs:
-        print "saving RVs of primary star relative to Center of Mass\n"
+        print "Saving RVs of primary star relative to Center of Mass\n"
     else:
-        print "saving RVs of companion relative to Center of Mass\n"
+        print "Saving RVs of companion relative to Center of Mass\n"
     # Positions of both components in km relative to center of mass
 
     ke = pyasl.KeplerEllipse(a1, period, e=e, Omega=0.)
-
-    t = (np.arange(Npts) - 1)/(Npts - 2.)*period
+    NptsBIG = NumDataPointsOut
+    if downSample:
+        NptsBIG = 10000
+    t = (np.arange(NptsBIG) - 1)/(NptsBIG - 2.)*period
     #print "\nbefore:\n"+repr(t)+"\n"
     ## Extend t to include 4 extra points at the end that overlap the beginning of the orbit
-    t2 = np.empty((t.shape[0]+4))
+    NumOverlapPts = NptsBIG//3
+    t2 = np.empty((t.shape[0]+NumOverlapPts))
     t2[0:t.size]=t
-    t2[t.size:]=t[2]*np.arange(5)[1:]+t[-1]
+    t2[t.size:]=t[2]*np.arange(NumOverlapPts+1)[1:]+t[-1]
     t=t2
     #print "\nafter:\n"+repr(t)+"\n"
     pos_A = ke.xyzPos(t)
     pos_B = -pos_A/massratio
     
     # Velocities in km/s using centered differencing
-    vel_A = pos_A.copy()
+    #vel_A = pos_A.copy()
     vel_A = (pos_A[2:] - pos_A[:-2])/(t[2] - t[0])/(86400*365.242)
     if False:
         vel_A2 = pos_A.copy()
@@ -101,40 +104,40 @@ def calc_orbit():
         print "(t[2] - t[0])*365.24 = "+str((t[2] - t[0])*365.242)
         print "(t[1] - t[0])*365.24 = "+str((t[1] - t[0])*365.242)
     pos_A = pos_A[1:-1]
-
-    vel_B = pos_B.copy()
+    #vel_B = pos_B.copy()
     vel_B = (pos_B[2:] - pos_B[:-2])/(t[2] - t[0])/(86400*365.242)
     pos_B = pos_B[1:-1]
-    
-    if False:
-        print repr(t[0:10])+"\n"+repr(t[-10:])
     t = t[1:-1]
-    if False:
-        print "\n"+repr(t[0:10])+"\n"+repr(t[-10:])
     
-    if False:
-        print "\n"+"*"*75+"\nbefore rotation:"
-        print "t[o] = "+str(t[0])
-        if True:
-            print "pos_A[0:10] = "+repr(pos_A[0:10])
-            print "vel_A[0:10] = "+repr(vel_A[0:10])
-        else:
-            print "pos_A[0] = "+repr(pos_A[0])
-            print "pos_B[0] = "+repr(pos_B[0])
-            print "vel_A[0] = "+repr(vel_A[0])
-            print "vel_B[0] = "+repr(vel_B[0])
-            print "\npos_A[1] = "+repr(pos_A[1])
-            print "pos_B[1] = "+repr(pos_B[1])
-            print "vel_A[1] = "+repr(vel_A[1])
-            print "vel_B[1] = "+repr(vel_B[1])
-            print "\npos_A[50] = "+repr(pos_A[50])
-            print "pos_B[50] = "+repr(pos_B[50])
-            print "vel_A[50] = "+repr(vel_A[50])
-            print "vel_B[50] = "+repr(vel_B[50])
-            print "\npos_A[-1] = "+repr(pos_A[-1])
-            print "pos_B[-1] = "+repr(pos_B[-1])
-            print "vel_A[-1] = "+repr(vel_A[-1])
-            print "vel_B[-1] = "+repr(vel_B[-1])+"\n"+"*"*75
+#     if False:
+#         print repr(t[0:10])+"\n"+repr(t[-10:])
+#     
+#     if False:
+#         print "\n"+repr(t[0:10])+"\n"+repr(t[-10:])
+#     
+#     if False:
+#         print "\n"+"*"*75+"\nbefore rotation:"
+#         print "t[o] = "+str(t[0])
+#         if True:
+#             print "pos_A[0:10] = "+repr(pos_A[0:10])
+#             print "vel_A[0:10] = "+repr(vel_A[0:10])
+#         else:
+#             print "pos_A[0] = "+repr(pos_A[0])
+#             print "pos_B[0] = "+repr(pos_B[0])
+#             print "vel_A[0] = "+repr(vel_A[0])
+#             print "vel_B[0] = "+repr(vel_B[0])
+#             print "\npos_A[1] = "+repr(pos_A[1])
+#             print "pos_B[1] = "+repr(pos_B[1])
+#             print "vel_A[1] = "+repr(vel_A[1])
+#             print "vel_B[1] = "+repr(vel_B[1])
+#             print "\npos_A[50] = "+repr(pos_A[50])
+#             print "pos_B[50] = "+repr(pos_B[50])
+#             print "vel_A[50] = "+repr(vel_A[50])
+#             print "vel_B[50] = "+repr(vel_B[50])
+#             print "\npos_A[-1] = "+repr(pos_A[-1])
+#             print "pos_B[-1] = "+repr(pos_B[-1])
+#             print "vel_A[-1] = "+repr(vel_A[-1])
+#             print "vel_B[-1] = "+repr(vel_B[-1])+"\n"+"*"*75
 
     # Construct rotation matrix (from wikipedia [http://en.wikipedia.org/wiki/Orbital_elements#Euler_angle_transformations])
     x1 = np.cos(Omega)*np.cos(omega) - np.sin(Omega)*np.cos(i)*np.sin(omega)
@@ -157,29 +160,55 @@ def calc_orbit():
     pos_B = np.dot(pos_B, rotmat)
     vel_B = np.dot(vel_B, rotmat)
     
-    if False:
-        print "\n"+"*"*75+"\nAfter rotation:"
-        print "t[o] = "+str(t[0])
-        if True:
-            print "pos_A[0:10] = "+repr(pos_A[0:10])
-            print "vel_A[0:10] = "+repr(vel_A[0:10])
-        else:
-            print "pos_A[0] = "+repr(pos_A[0])
-            print "pos_B[0] = "+repr(pos_B[0])
-            print "vel_A[0] = "+repr(vel_A[0])
-            print "vel_B[0] = "+repr(vel_B[0])
-            print "\npos_A[1] = "+repr(pos_A[1])
-            print "pos_B[1] = "+repr(pos_B[1])
-            print "vel_A[1] = "+repr(vel_A[1])
-            print "vel_B[1] = "+repr(vel_B[1])
-            print "\npos_A[50] = "+repr(pos_A[50])
-            print "pos_B[50] = "+repr(pos_B[50])
-            print "vel_A[50] = "+repr(vel_A[50])
-            print "vel_B[50] = "+repr(vel_B[50])
-            print "\npos_A[-1] = "+repr(pos_A[-1])
-            print "pos_B[-1] = "+repr(pos_B[-1])
-            print "vel_A[-1] = "+repr(vel_A[-1])
-            print "vel_B[-1] = "+repr(vel_B[-1])+"\n"+"*"*75
+    ## re-sample position, vel and time arrays to requested number of samples
+    if downSample:
+        pos_Anew = []
+        pos_Bnew = []
+        vel_Anew = []
+        vel_Bnew = []
+        tnew = []
+        for i in range(0,len(t),int(NptsBIG/NumDataPointsOut)):
+            pos_Anew.append(pos_A[i])
+            pos_Bnew.append(pos_B[i])
+            vel_Anew.append(vel_A[i])
+            #print (vel_A[i])
+            vel_Bnew.append(vel_B[i])
+            tnew.append(t[i])
+        #print repr(range(0,len(t),int(NptsBIG/NumDataPointsOut)))
+        #print 'i last = '+str(i)+", NumDataPointsOut = "+str(NumDataPointsOut)+",  int(NptsBIG/NumDataPointsOut) = "
+        #print str(int(NptsBIG/NumDataPointsOut))+", NptsBIG = "+str(NptsBIG)+", len(t) = "+str(len(t))+", len(tnew) = "+str(len(tnew))
+        #print 'len(tnew) = '+str(len(tnew))
+        #print '\nvel_A before:\n'+repr(vel_A[:5])+"\n"+repr(vel_A[-5:])
+        #print 'vel_Anew = '+repr(vel_Anew)
+        pos_A = np.array(pos_Anew)
+        pos_B = np.array(pos_Bnew)
+        vel_A = np.array(vel_Anew)
+        #print '\nvel_A after:\n'+repr(vel_A[:5])+"\n"+repr(vel_A[-5:])
+        vel_B = np.array(vel_Bnew)
+        t=np.array(tnew)
+#     if False:
+#         print "\n"+"*"*75+"\nAfter rotation:"
+#         print "t[o] = "+str(t[0])
+#         if True:
+#             print "pos_A[0:10] = "+repr(pos_A[0:10])
+#             print "vel_A[0:10] = "+repr(vel_A[0:10])
+#         else:
+#             print "pos_A[0] = "+repr(pos_A[0])
+#             print "pos_B[0] = "+repr(pos_B[0])
+#             print "vel_A[0] = "+repr(vel_A[0])
+#             print "vel_B[0] = "+repr(vel_B[0])
+#             print "\npos_A[1] = "+repr(pos_A[1])
+#             print "pos_B[1] = "+repr(pos_B[1])
+#             print "vel_A[1] = "+repr(vel_A[1])
+#             print "vel_B[1] = "+repr(vel_B[1])
+#             print "\npos_A[50] = "+repr(pos_A[50])
+#             print "pos_B[50] = "+repr(pos_B[50])
+#             print "vel_A[50] = "+repr(vel_A[50])
+#             print "vel_B[50] = "+repr(vel_B[50])
+#             print "\npos_A[-1] = "+repr(pos_A[-1])
+#             print "pos_B[-1] = "+repr(pos_B[-1])
+#             print "vel_A[-1] = "+repr(vel_A[-1])
+#             print "vel_B[-1] = "+repr(vel_B[-1])+"\n"+"*"*75
 
     data = np.zeros((pos_A.shape[0], 8))
     data[:, 0] = t*2*np.pi/period #1. phase
@@ -199,10 +228,10 @@ def calc_orbit():
     data2[:,4] = vel_A[:, 2]*1000.0 # RV of secondary compared to center of mass origin[ m/s]
     
     #calculate error
-    errorRA = np.median(np.abs(data2[:,1]))*0.05
-    errorDec = np.median(np.abs(data2[:,2]))*0.05
-    errorRVprimary = np.median(np.abs(data2[:,3]))*0.05
-    errorRVsecondary = np.median(np.abs(data2[:,4]))*0.05
+    errorRA = np.median(np.abs(data2[:,1]))*(percentError/100.0)
+    errorDec = np.median(np.abs(data2[:,2]))*(percentError/100.0)
+    errorRVprimary = np.median(np.abs(data2[:,3]))*(percentError/100.0)
+    errorRVsecondary = np.median(np.abs(data2[:,4]))*(percentError/100.0)
     
     data3 = np.empty((pos_A.shape[0],7))
     data3[:,0] = data2[:, 0]

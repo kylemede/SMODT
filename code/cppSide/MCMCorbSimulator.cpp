@@ -417,28 +417,28 @@ int main(int argc ,char *argv[])
 			saveEachInt=1000;
 
 		// Best fit values
-	//    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[SAOFO.bestOrbit];
-	//   MCMCOFO.start_e = SAOFO.ODT.es[SAOFO.bestOrbit];
-	//   MCMCOFO.start_T = SAOFO.ODT.Ts[SAOFO.bestOrbit];
-	 //   MCMCOFO.start_Tc = SAOFO.ODT.Tcs[SAOFO.bestOrbit];
-	//    MCMCOFO.start_period = SAOFO.ODT.periods[SAOFO.bestOrbit];
-	//    MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs[SAOFO.bestOrbit];
-	//    MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs[SAOFO.bestOrbit];
-	//    MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets[SAOFO.bestOrbit];
-	//    MCMCOFO.start_K = SAOFO.ODT.Ks[SAOFO.bestOrbit];
-	//    MCMCOFO.start_a_total = SAOFO.ODT.a_totals[SAOFO.bestOrbit];
+	    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[SAOFO.bestOrbit];
+	    MCMCOFO.start_e = SAOFO.ODT.es[SAOFO.bestOrbit];
+	    MCMCOFO.start_T = SAOFO.ODT.Ts[SAOFO.bestOrbit];
+	    MCMCOFO.start_Tc = SAOFO.ODT.Tcs[SAOFO.bestOrbit];
+	    MCMCOFO.start_period = SAOFO.ODT.periods[SAOFO.bestOrbit];
+	    MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs[SAOFO.bestOrbit];
+	    MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs[SAOFO.bestOrbit];
+	    MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets[SAOFO.bestOrbit];
+	    MCMCOFO.start_K = SAOFO.ODT.Ks[SAOFO.bestOrbit];
+	    MCMCOFO.start_a_total = SAOFO.ODT.a_totals[SAOFO.bestOrbit];
 
 		  // Back values
-		MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs.back();
-		MCMCOFO.start_e = SAOFO.ODT.es.back();
-		MCMCOFO.start_T = SAOFO.ODT.Ts.back();
-		MCMCOFO.start_Tc = SAOFO.ODT.Tcs.back();
-		MCMCOFO.start_period = SAOFO.ODT.periods.back();
-		MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs.back();
-		MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs.back();
-		MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets.back();
-		MCMCOFO.start_K = SAOFO.ODT.Ks.back();
-		MCMCOFO.start_a_total = SAOFO.ODT.a_totals.back();
+	//	MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs.back();
+	//	MCMCOFO.start_e = SAOFO.ODT.es.back();
+	//	MCMCOFO.start_T = SAOFO.ODT.Ts.back();
+	//	MCMCOFO.start_Tc = SAOFO.ODT.Tcs.back();
+	//	MCMCOFO.start_period = SAOFO.ODT.periods.back();
+	//	MCMCOFO.start_inc_deg = SAOFO.ODT.inclination_degs.back();
+	//	MCMCOFO.start_argPeri = SAOFO.ODT.argPeri_degs.back();
+	//	MCMCOFO.start_offsets = SAOFO.ODT.RVoffsets.back();
+	//	MCMCOFO.start_K = SAOFO.ODT.Ks.back();
+	//	MCMCOFO.start_a_total = SAOFO.ODT.a_totals.back();
 
 		// Second from back params
 	//    MCMCOFO.start_longAN = SAOFO.ODT.longAN_degs[totalAccepted-2];

@@ -324,12 +324,12 @@ void generalTools::fileWriter(outputDataType ODT)
 
 	for (int sample=0; sample<ODT.numSamplesAccepted; sample++)
 	{
-		file<< fixed<<std::setprecision(6)<<ODT.longAN_degs[sample];//
+		file<< fixed<<std::setprecision(8)<<ODT.longAN_degs[sample];//
 		file<< "      "<<ODT.es[sample];
 		file<< "    " <<ODT.Ts[sample];
 		file<< "    " <<ODT.Tcs[sample];
-		file<< "   "<< std::setprecision(15)<<ODT.periods[sample];
-		file<< "       "<< std::setprecision(5)<<ODT.inclination_degs[sample];
+		file<< "   "<< std::setprecision(20)<<ODT.periods[sample];
+		file<< "       "<< std::setprecision(7)<<ODT.inclination_degs[sample];
 		file<< "          "<< ODT.argPeri_degs[sample];
 		file<< "     "<< ODT.a_totals[sample];
 		file<< "     "<< std::setprecision(8)<<ODT.chiSquareds[sample];

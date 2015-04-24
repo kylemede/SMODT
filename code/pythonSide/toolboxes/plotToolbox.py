@@ -2654,7 +2654,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     verbose = False
     addLegend = False
     plotErrorBars = False
-    makeTrendPlot = False
+    makeTrendPlot = True
     makeDataResidualPlot = False
     ## make string with input values for possible printing
     s= '\nInputs to rvPlotter were:'+'\n'
@@ -3119,9 +3119,9 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     ############################################################
     ## Create figure, axes and start plotting/drawing everything
     fig = plt.figure(1,figsize=(20,10))
-    plt.suptitle(plotFileTitle, fontsize=10)
+    plt.suptitle(plotFileTitle, fontsize=15)
     residualsPlot = fig.add_subplot(212)
-    residualsPlot.set_position([0.1,0.12,0.85,0.23])##$$$$$$$$
+    residualsPlot.set_position([0.1,0.12,0.85,0.23])
     #residualsPlot.set_title("Residuals Plot")
     residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=30)
     residualsPlot.axes.set_ylabel("Residual",fontsize=25)
@@ -3165,7 +3165,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     
     ## make plot of fit to data
     fitPlot = fig.add_subplot(211)
-    fitPlot.set_position([0.1,0.35,0.85,0.55])#$$$$$$$$$$$$
+    fitPlot.set_position([0.1,0.35,0.85,0.55])
     fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
     fitXmin = genTools.findArrayMin(orbitPhases2)
     if xmin<fitXmin:
@@ -3229,7 +3229,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     paramsLegndStr +='\ninc = '+str(inc[0])
     paramsLegndStr +='\na = '+str(a[0])
     paramsLegndStr +='\nargPeri_deg = '+str(argPeri_deg[0])
-    paramsLegndStr +='\nperiod [days] = '+str(period[0]*365.242)
+    if period[0]>4.0:
+        paramsLegndStr +='\nperiod [Yrs] = '+str(period[0])
+    else:
+        paramsLegndStr +='\nperiod [days] = '+str(period[0]*365.242)
     paramsLegndStr +='\nTo = '+str(T[0])
     paramsLegndStr +=", Tc = "+str(Tc[0])
     for dataset in range(0,len(RVs)):
@@ -3276,10 +3279,16 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     ## Another plot to show the residuals over JD time to look for any remaining trend
     if makeTrendPlot:
         fig2 = plt.figure(2,figsize=(20,10))
+        plt.suptitle(plotFileTitle, fontsize=10)
         residualsPlotTrend = fig2.add_subplot(212)
+        residualsPlotTrend.set_position([0.1,0.12,0.85,0.23])
         RVsPlotTrend = fig2.add_subplot(211)
+        RVsPlotTrend.set_position([0.1,0.35,0.85,0.55])
+        RVsPlotTrend.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
         RVsPlotTrend.set_title("RVs TREND")
-        residualsPlotTrend.set_title("Residuals Plot TREND")
+        RVsPlotTrend.axes.set_ylabel("RV [m/s]",fontsize=30)
+        #residualsPlotTrend.set_title("Residuals Plot TREND")
+        residualsPlotTrend.axes.set_ylabel("Residual",fontsize=25)
         residualsPlotTrend.axes.set_xlabel("Epoch [JD]",fontsize=30)
         residualsPlotTrend=fixPlotBordersAndLabels(residualsPlotTrend)
         RVsPlotTrend=fixPlotBordersAndLabels(RVsPlotTrend)
@@ -3301,7 +3310,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         residualsPlotTrend.plot(rngUse,[0,0],c='r',linewidth=2.0)
         residualsPlotTrend.axes.set_ylim(yLim2)
         RVsPlotTrend.plot(rngUse,[0,0],c='r',linewidth=2.0)
-        RVsPlotTrend.axes.set_ylim([genTools.findArrayMin(RVsOUT)-genTools.findArrayMax(RV_errors),genTools.findArrayMax(RVsOUT)+genTools.findArrayMax(RV_errors)])
+        RVsPlotTrend.axes.set_ylim(fitYLimsUSE)
         
         residualsPlotTrend.axes.set_xlim(rngUse)
         RVsPlotTrend.axes.set_xlim(rngUse)

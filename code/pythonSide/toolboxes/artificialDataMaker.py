@@ -75,7 +75,7 @@ def calc_orbit():
     ke = pyasl.KeplerEllipse(a1, period, e=e, Omega=0.)
     NptsBIG = NumDataPointsOut
     if downSample:
-        NptsBIG = 500
+        NptsBIG = 10000
     t = (np.arange(NptsBIG) - 1)/(NptsBIG - 2.)*period
     #print "\nbefore:\n"+repr(t)+"\n"
     ## Extend t to include 4 extra points at the end that overlap the beginning of the orbit

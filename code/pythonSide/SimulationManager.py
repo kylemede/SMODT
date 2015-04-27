@@ -68,9 +68,9 @@ def multiProcessStarter(paramSettingsDict):
     """
     # Get copied settings filename with its directory
     outSimSettingsFilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+os.path.basename(paramSettingsDict['UpdatedSettingsFile']))
-    numProcesses = paramSettingsDict['numProcesses']
+    numChains = paramSettingsDict['numChains']
     master = []
-    for processNumber in range(numProcesses):
+    for processNumber in range(numChains):
         # create title for this thread's output data file
         ext = os.path.splitext(paramSettingsDict['outputData_filenameRoot'])[1]
         
@@ -87,11 +87,11 @@ def multiProcessStarter(paramSettingsDict):
                                          loopedMCMC=paramSettingsDict['loopedMCMC']))
         master[processNumber].start()
     # wait for completion of all process $$$$ STILL DON'T UNDERSTAND HOW THIS WORKS $$$$
-    for processNumber in range(numProcesses):
+    for processNumber in range(numChains):
         master[processNumber].join()    
     
     dataFiles = []
-    for processNumber in range(numProcesses):
+    for processNumber in range(numChains):
         dataFiles.append(master[processNumber].filename)
    
     return dataFiles

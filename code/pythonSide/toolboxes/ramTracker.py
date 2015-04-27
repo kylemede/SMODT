@@ -28,7 +28,7 @@ class RAMtracker:
             toolDir = os.path.join(self.paramSettingsDict['pythonCodeDir'],'toolboxes')
             shScriptPath = os.path.join(toolDir,'ramLogger.sh')
             memLogFilename = os.path.join(self.paramSettingsDict['outputData_dir'],"RAMusage.log")
-            totSamples = self.paramSettingsDict["numSamples"]*self.paramSettingsDict['numProcesses']
+            totSamples = self.paramSettingsDict["numSamples"]*self.paramSettingsDict['numChains']
             if False:
                 print "memLogCleanerAndPlot starter found totalSamples = "+str(totSamples)
             if totSamples<500000001:

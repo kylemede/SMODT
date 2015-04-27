@@ -82,19 +82,19 @@ def main():
     paramSettingsDict['cppCodeDir'] = cppCodeDir
     paramSettingsDict['settings_and_InputDataDir'] = settings_and_InputDataDir
     
+    numChains = 1
     if paramSettingsDict['useMultiProcessing']:
-        ## find the number of available cpus
-        import multiprocessing
-        numCores = multiprocessing.cpu_count()
-        # set to max-1
-        numProcesses = numCores-1
-    else:
-        numProcesses = 1
-        
-    paramSettingsDict['numProcesses'] = numProcesses 
+#         ## find the number of available cpus
+#         import multiprocessing
+#         numCores = multiprocessing.cpu_count()
+#         # set to max-1
+#         numProcesses = numCores-1
+#     else:
+#         numProcesses = 1
+        numChains = paramSettingsDict['numChains']
     
     # convert number of samples into easy to read string for file naming
-    numSamplesTOTAL = numSamples*numProcesses
+    numSamplesTOTAL = numSamples*numChains
     numSamplesString = tools.gen.samplesStr(numSamplesTOTAL)
     numSamplesStrPerChain = tools.gen.samplesStr(numSamples,total=False)
     
@@ -221,7 +221,7 @@ def main():
             shutil.copy(f,outputfilename2)
         
     ## finally, make print that sim is starting and then start it.
-    print '\n******* Starting '+str(numProcesses)+' processes of '+numSamplesStrPerChain+' samples each ******** \n'
+    print '\n******* Starting '+str(numChains)+' processes of '+numSamplesStrPerChain+' samples each ******** \n'
 #     if mcONLY:
 #         mcSimStarter(paramSettingsDict)
 #     else:

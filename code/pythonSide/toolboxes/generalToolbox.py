@@ -81,7 +81,7 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
     ###################################################################
     resultsFile.write("-"*60+"\n"+"Basic Information about simulation::\n"+"-"*60+"\n")
     resultsFile.write("All files for this simulation written to the directory:\n"+paramSettingsDict['outputData_dir']+"\n")
-    resultsFile.write("\nNumber of processes ran: "+str(paramSettingsDict['numProcesses'])+"\n")
+    resultsFile.write("\nNumber of processes ran: "+str(paramSettingsDict['numChains'])+"\n")
     if paramSettingsDict['mcONLY']:
         resultsFile.write("Each was a simple Monte Carlo run of length: "+str(paramSettingsDict["numSamples"])+"\n")
     else:
@@ -89,7 +89,7 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
         resultsFile.write("Followed by Sigma Tuning for: "+str(paramSettingsDict["numSamples_SimAnneal"]*0.30)+"\n")
         if not paramSettingsDict['simAnneal']:
             resultsFile.write("The last of these samples was used to start a full MCMC of length: "+str(paramSettingsDict["numSamples"])+"\n")
-    resultsFile.write("For a total number of samples = "+samplesStr(paramSettingsDict["numSamples"]*paramSettingsDict['numProcesses'])[:-9]+"\n")
+    resultsFile.write("For a total number of samples = "+samplesStr(paramSettingsDict["numSamples"]*paramSettingsDict['numChains'])[:-9]+"\n")
     resultsFile.write("Max RAM occupied during simulation was "+str(maxRAMuse)+" MB\nNot necessariy solely due to SMODT!\n")
     mode = "3D"
     if paramSettingsDict["RVonly"]:
@@ -1914,10 +1914,26 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                         returnDict['numSamples'] = valUse
                         if verbose:
                             print 'numSamples found to be = '+str(returnDict['numSamples'])
-                    elif 'useMultiProcessing'in key:
-                        valUse=returnDict['useMultiProcessing'] = strToBool(val,False)
+                    elif 'numChains'in key:
+                        valUse = int(val)
+                        if (valUse<1)or(valUse>100): 
+                            print 'Value found in settings file for numChains, '+val+\
+                                ', was out of range [1,'+str(100)+'].'
+                            print "Using default value of 1."  
+                            valUse = 1
+                        ## push through extra dict parameter 'useMultiProcessing' based on 'numChains' val
+                        if valUse>1:
+                            returnDict['useMultiProcessing']=True
+                            # create output version of this line to write to output version of settings file
+                            lineOut = 'useMultiProcessing = true \n'
+                            outLines[lineNum]=lineOut
+                        else:
+                            # create output version of this line to write to output version of settings file
+                            lineOut = 'useMultiProcessing = false \n'
+                            outLines[lineNum]=lineOut
                         if verbose:
-                            print 'useMultiProcessing found to be = '+str(returnDict['useMultiProcessing'])
+                            print 'numChains found to be = '+str(returnDict['numChains'])
+                    
                     elif 'SILENT'in key:
                         valUse=returnDict['SILENT'] = strToBool(val,True)
                         if verbose:

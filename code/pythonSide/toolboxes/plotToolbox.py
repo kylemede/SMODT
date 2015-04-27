@@ -660,7 +660,7 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename):
         perfectVals.append(4933.18419284)
         for dataset in range(1,numRVdatasets+1):
             paramList.append(9+dataset)
-            paramStrs.append('RV offset '+str(dataset)+'[m/s]')
+            paramStrs.append('RV offset '+str(dataset)+' [m/s]')
             perfectVals.append(0.0)
             
     ## make combined/stacked plot for each parameter in list

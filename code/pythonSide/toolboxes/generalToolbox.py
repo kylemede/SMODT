@@ -1921,6 +1921,7 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                                 ', was out of range [1,'+str(100)+'].'
                             print "Using default value of 1."  
                             valUse = 1
+                        returnDict['numChains'] = valUse
                         ## push through extra dict parameter 'useMultiProcessing' based on 'numChains' val
                         if valUse>1:
                             returnDict['useMultiProcessing']=True

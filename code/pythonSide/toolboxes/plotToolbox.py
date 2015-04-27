@@ -116,10 +116,11 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
         # make initial histogram and update it below
         if verbose:
             print 'making initial hist, then convert it'
-        (n,bins,rectangles)=plot.hist(data, bins=50, normed=normed, weights=theWeights,log=logY)#, fill=False)
-        print "n = "+repr(n)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        print 'bins = '+bins#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        if type(confLevels)==list:
+        (n,bins,rectangles)=plot.hist(data, bins=50, normed=normed, weights=theWeights,log=logY, fill=False)
+        #print "n = "+repr(n)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #print 'bins = '+repr(bins)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #print '\nlen(n) = '+str(len(n))+", len(bins) = "+str(len(bins))+'\n'
+        if True:#if type(confLevels)==list:
             if verbose:
                 print 'changing rectangle colors to match 68confLevels: '+repr(confLevels[0])+', and 95confLevels: '+repr(confLevels[1])
             # Update rectangle patche's colors according to Confidence Levels of the data
@@ -127,17 +128,25 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
             for rec in rectangles:
                     x=rec.get_x()
                     c = 'w'
-                    if(x>confLevels[1][0])and(x<confLevels[1][1]):
-                        c = '0.8'
-                    if (x>confLevels[0][0])and(x<confLevels[0][1]):
-                        c = '0.5'
-                    recs2.append(patches.Rectangle(xy=rec.get_xy(), width=rec.get_width(),height=rec.get_height(),facecolor=c, edgecolor='k'))#color=c))
+                    cEdge = 'w'
+                    if type(confLevels)==list:
+                        cEdge = 'k'
+                        if(x>confLevels[1][0])and(x<confLevels[1][1]):
+                            c = '0.8'
+                        if (x>confLevels[0][0])and(x<confLevels[0][1]):
+                            c = '0.5'
+                    recs2.append(patches.Rectangle(xy=rec.get_xy(), width=rec.get_width(),height=rec.get_height(),facecolor=c, edgecolor=cEdge))#color=c))
             # draw updated patches on plot
             for rec in recs2:
                     plot.add_patch(rec)
-        else:
+        if type(confLevels)!=list:
             #if not plotting colored conf levels, then just make a simple line plot with no fill
-            plot.plot(bins,n,color='k',fill=False)
+            if type(bins)!=np.ndarray:
+                bins = np.array(bins)
+            binsUse = (bins[1:]+bins[:-1])/2.0
+            #print 'binsUse = '+repr(binsUse)
+            #print 'len(binsUse) = '+str(len(binsUse))
+            plot.plot(binsUse,n,color='k',linewidth=3)
         
         if normed:
             #update the y limit and its ticks and tick labels
@@ -551,8 +560,20 @@ def makeCleanSummaryPlot(outputDataFilename=''):
         return newDataFilename
             
 
-def simpleKeyPosteriorsPlotter(outputDataFilename, plotFilename):
+def stackedPosteriorsPlotterHackStarter():
+    outputDataFilenames = []
+    outputDataFilenames.append('')
+    outputDataFilenames.append()
+    outputDataFilenames.append()
+    outputDataFilenames.append()
+    outputDataFilenames.append()
+    plotFilename = os.path.join(os.path.abspath(outputDataFilenames[0]),'stackedPosteriorsPlot')
+    stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename)
+
+def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename):
     """
+    will plot a simple posterior distribution for each parameter in the data files
+    stacked ontop of eachother for comparison between different runs.
     """
     weight=False
     confLevels=False
@@ -561,22 +582,50 @@ def simpleKeyPosteriorsPlotter(outputDataFilename, plotFilename):
     quiet = True
     verbose = False
     
-    if os.path.exists(outputDataFilename):  
-        datadir = os.path.dirname(outputDataFilename)
-        
+    if type(outputDataFilenames)!=list:
+        outputDataFilenames = [outputDataFilenames]
+    
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    ## Add a color list here and add the ability to pass it into the histConverter func for the line plot
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    
+    if os.path.exists(outputDataFilenames[0]):  
         ## get log
-        logFilename = os.path.join(datadir,'processManagerLogFile.txt')
-        log = open(logFilename,'a')
-        log.write('\n'+75*'#'+'\n Inside simpleKeyPosteriorsPlotter \n'+75*'#'+'\n')
+        datadir = os.path.dirname(outputDataFilenames[0])
+        #logFilename = os.path.join(datadir,'processManagerLogFile.txt')
+        #log = open(logFilename,'a')
+        #log.write('\n'+75*'#'+'\n Inside simpleKeyPosteriorsPlotter \n'+75*'#'+'\n')
          
-        s= '\nCreating a simple plot of some key posteriors for file:\n'+outputDataFilename
+        s= '\nCreating a simple plot of some key posteriors for files:\n'
+        for filename in outputDataFilenames:
+            s+=filename+'\n'
         s=s+ '\nInput plotfilename:\n'+plotFilename
         if verbose:
             print s
-        log.write(s+'\n')
+        #log.write(s+'\n')
         # record the time the chain started
         startTime = timeit.default_timer()
-           
+        
+        ## find number of RV datasets
+        f = open(outputDataFilenames[0],'r')
+        plotFileTitle = f.readline()[:-5]
+        headings = f.readline()
+        line = f.readline()
+        dataLineCols = line.split()
+        numRVdatasets=0
+        if (len(line)>10):
+            numRVdatasets = len(dataLineCols) - 10
+        else:
+            line = f.readline()
+            dataLineCols = line.split()
+            if (len(line)>10):
+                numRVdatasets = len(dataLineCols) - 10
+        s= "\nNumber of RV datasets found in summaryPlotter was "+str(numRVdatasets)+"\n"
+        if verbose:
+            print s
+        #log.write(s+'\n')
+        f.close()
+        
         # check if the passed in value for plotFilename includes '.png'
         if '.png' not in plotFilename:
             plotFilename = plotFilename+'.png'
@@ -584,72 +633,49 @@ def simpleKeyPosteriorsPlotter(outputDataFilename, plotFilename):
             plotFilename = plotFilename
         
         ## make an advanced title for plot from folder and filename
-        titleTop = os.path.dirname(outputDataFilename).split('/')[-1]
+        titleTop = os.path.dirname(outputDataFilenames[0]).split('/')[-1]
         titleBtm = os.path.basename(plotFilename).split('.')[0]+'  TOTAL Posterior Distributions plot'
         plotFileTitle = titleTop+'\n'+titleBtm
         
         s='\nStarting to make Simple Key Posteriors Plot'
         if verbose:
             print s
-        log.write(s+'\n')
-
-        NumSamples = 0
-        fig = plt.figure(1, figsize=(20,15) ,dpi=300) 
+        #log.write(s+'\n')
         
+        fig = plt.figure(1, figsize=(20,15) ,dpi=300) 
         ## give the figure its title
         plt.suptitle(plotFileTitle,fontsize=30)
-        
-        ## Arg
-        subPlot = fig.add_subplot(211)
-        startTime = timeit.default_timer()
-        s='\nStarting to plot hist for argPeri_degsAlls'
-        if verbose:
-            print s
-        log.write(s+'\n')
-        paramColNum = 6
-        xlabel = 'Period [Yrs]'
-        startTime1 = timeit.default_timer()
-        (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
-        chiSquareds=[]
-        endTime1 = timeit.default_timer()
-        totalTime = (endTime1-startTime1) # in seconds
-        totalTimeString = genTools.timeString(totalTime)
-        s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-        startTime1 = timeit.default_timer()
-        subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-        subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
-        endTime1 = timeit.default_timer()
-        totalTime = (endTime1-startTime1) # in seconds
-        totalTimeString = genTools.timeString(totalTime)
-        s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+    
+    #Load up parameter column number and name string arrays
+    paramList = [0,1,2,3,4,5,6,7]
+    paramStrs = ['Longitude of Periapsis [deg]','Eccentricity','Time of Last Periapsis [JD]', 'Time of Center Transit [JD]','Period [Yrs]','Inclination [deg]','Argument of Periapsis [deg]','Semi-Major Axis [AU]']
+    if numRVdatasets>1:
+        paramList.append(9)
+        paramStrs.append('Semi-Major Amplitude [m/s]')
+        for dataset in range(1,numRVdatasets+1):
+            paramList.append(9+dataset)
+            paramStrs.append('RV offset '+str(dataset)+'[m/s]')
             
-        if (type(data)!=float)and(NumSamples==0):
-            NumSamples=data.size
-        #argPeriMedian = np.median(argPeri_degsAlls)
-        s=s+ "done plotting argPeri_degsAlls:\n"
-        # record the time the chain finished and print
-        endTime = timeit.default_timer()
-        totalTime = (endTime-startTime) # in seconds
-        totalTimeString = genTools.timeString(totalTime)
-        s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-        if quiet==False:
-            print s
-        log.write(s+'\n')
-        
-        ## Periods
+    ## make combined/stacked plot for each parameter in list
+    for i in range(0,len(paramList)):
         startTime = timeit.default_timer()
-        s='\nStarting to plot hist for periodsAlls:'
+        s='\nStarting to plot combined hist for '+paramStrs[i]
         if verbose:
             print s
-        log.write(s+'\n')
-        subPlot = fig.add_subplot(212)
-        paramColNum = 4
-        xlabel = 'Period [Years]'
-        (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-        subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-        #periodMedian = np.median(periodsAlls)
-        s= "done plotting periodsAlls"
-        subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
+        #log.write(s+'\n')
+        subPlot = fig.add_subplot(340+i)
+        for outputDataFilename in outputDataFilenames:
+            if os.path.exists(outputDataFilename):          
+                (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
+                subPlot = histConverter([], data, subPlot, paramStrs[i], confLevels=False, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
+                subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
+            else:
+                s= "simpleKeyPosteriorsPlotter: ERROR!!!! file doesn't exist"
+                print s
+                #log.write(s+'\n')
+                #log.write('\n'+75*'#'+'\n Leaving simpleKeyPosteriorsPlotter \n'+75*'#'+'\n')
+                #log.close()
+                break
         # record the time the chain finished and print
         endTime = timeit.default_timer()
         totalTime = (endTime-startTime) # in seconds
@@ -657,35 +683,31 @@ def simpleKeyPosteriorsPlotter(outputDataFilename, plotFilename):
         s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
         if quiet==False:
             print s
-        log.write(s+'\n')
+        #log.write(s+'\n')
         
-        # Save file if requested.
-        if verbose:
-            print '\nStarting to save param hist figure:'
-        if plotFilename!='':
-            plt.savefig(plotFilename, dpi=300, orientation='landscape')
-            s= 'Summary plot saved to: '+plotFilename
-            if quiet==False:
-                print s
-            log.write(s+'\n')
-        plt.close()
         
-        # record the time the chain finished and print
-        endTime = timeit.default_timer()
-        totalTime = (endTime-startTime) # in seconds
-        totalTimeString = genTools.timeString(totalTime)
-        s= '\n\simpleKeyPosteriorsPlotter: Plotting took '+totalTimeString+' to complete.\n'
-        if verbose:
+    ## Save file if requested.
+    if verbose:
+        print '\nStarting to save param hist figure:'
+    if plotFilename!='':
+        plt.savefig(plotFilename, dpi=300, orientation='landscape')
+        s= 'Summary plot saved to: '+plotFilename
+        if quiet==False:
             print s
-        log.write(s+'\n')
-        log.write('\n'+75*'#'+'\n Leaving simpleKeyPosteriorsPlotter \n'+75*'#'+'\n')
-        log.close()
-    else:
-        s= "simpleKeyPosteriorsPlotter: ERROR!!!! file doesn't exist"
+        #log.write(s+'\n')
+    plt.close()
+    
+    ## record the time the chain finished and print
+    endTime = timeit.default_timer()
+    totalTime = (endTime-startTime) # in seconds
+    totalTimeString = genTools.timeString(totalTime)
+    s= '\n\simpleKeyPosteriorsPlotter: Plotting took '+totalTimeString+' to complete.\n'
+    if verbose:
         print s
-        log.write(s+'\n')
-        log.write('\n'+75*'#'+'\n Leaving simpleKeyPosteriorsPlotter \n'+75*'#'+'\n')
-        log.close()
+    #log.write(s+'\n')
+    #log.write('\n'+75*'#'+'\n Leaving simpleKeyPosteriorsPlotter \n'+75*'#'+'\n')
+    #log.close()
+    
         
 
 def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=True, normalize=True, nu=1, plot4x1=False, TcStepping=False):

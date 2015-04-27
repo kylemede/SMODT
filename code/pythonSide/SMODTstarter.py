@@ -82,8 +82,7 @@ def main():
     paramSettingsDict['cppCodeDir'] = cppCodeDir
     paramSettingsDict['settings_and_InputDataDir'] = settings_and_InputDataDir
     
-    numChains = 1
-    if paramSettingsDict['useMultiProcessing']:
+#    if paramSettingsDict['useMultiProcessing']:
 #         ## find the number of available cpus
 #         import multiprocessing
 #         numCores = multiprocessing.cpu_count()
@@ -91,7 +90,7 @@ def main():
 #         numProcesses = numCores-1
 #     else:
 #         numProcesses = 1
-        numChains = paramSettingsDict['numChains']
+    numChains = paramSettingsDict['numChains']
     
     # convert number of samples into easy to read string for file naming
     numSamplesTOTAL = numSamples*numChains

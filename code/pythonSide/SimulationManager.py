@@ -224,7 +224,7 @@ def simulator(paramSettingsDict):
     summaryPlotFile = os.path.join(paramSettingsDict['outputData_dir'],'summaryPlot')
     keyPosteriorsPlotFile = os.path.join(paramSettingsDict['outputData_dir'],'KeyPosteriorsPlot')
     cleanDataFilename=''
-    if False:
+    if True:
         if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
             s= '**** Starting to plot the posterior distributions of the final data file ****'
             print s
@@ -240,7 +240,7 @@ def simulator(paramSettingsDict):
                 print s
             PMlogFile.write(s)
     if True:
-        tools.plot.simpleKeyPosteriorsPlotter(dataFinalFilename,keyPosteriorsPlotFile)
+        tools.plot.stackedPosteriorsPlotterFunc([dataFinalFilename],keyPosteriorsPlotFile)
     
     ############################################################
     ## Make DI ellipse plot if DI data exists

@@ -70,7 +70,7 @@ def fixPlotBordersAndLabels(plot):
     plot.spines['left'].set_linewidth(2.0)
     return plot
     
-def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=True, normed=True, nu=1, bestVal=0,logY=False):
+def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=False, normed=False, nu=1, bestVal=0,logY=False):
     """
     This function is for creating a modified histogram plot to be properly normalized to a max value
     of 1.0.  There is also the option to color the histogram bars according to the 95 and 68% confidence
@@ -117,6 +117,8 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=True
         if verbose:
             print 'making initial hist, then convert it'
         (n,bins,rectangles)=plot.hist(data, bins=50, normed=normed, weights=theWeights,log=logY)#, fill=False)
+        print "n = "+repr(n)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        print 'bins = '+bins#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         if type(confLevels)==list:
             if verbose:
                 print 'changing rectangle colors to match 68confLevels: '+repr(confLevels[0])+', and 95confLevels: '+repr(confLevels[1])
@@ -133,6 +135,10 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=True
             # draw updated patches on plot
             for rec in recs2:
                     plot.add_patch(rec)
+        else:
+            #if not plotting colored conf levels, then just make a simple line plot with no fill
+            plot.plot(bins,n,color='k',fill=False)
+        
         if normed:
             #update the y limit and its ticks and tick labels
             if not logY:
@@ -141,8 +147,8 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=True
                 lim = plot.axes.get_ylim()[1]
                 for i in range(0,6):
                     locs.append((lim/6.0)*i)
-                plot.axes.set_yticks(locs)
-                plot.axes.set_yticklabels([' ','0.2','0.4','0.6','0.8','1.0'])
+                #plot.axes.set_yticks(locs)
+                #plot.axes.set_yticklabels([' ','0.2','0.4','0.6','0.8','1.0'])
         # draw a line up the median of the data
         Median = np.median(data)
         plot.plot([Median, Median],plot.axes.get_ylim(),'k',linewidth=3)
@@ -175,18 +181,19 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=True
         plot.axes.set_ylim([0.0,1.2])
         if debug:
             print 'axes limits set'
-        locs = []
-        lim = plot.axes.get_ylim()[1]
-        if debug:
-            print 'limits are '+repr(lim)
-        for i in range(0,6):
-            locs.append((lim/6.0)*i)
-        if debug:
-            print 'locs found '+repr(locs)
-        plot.axes.set_yticks(locs)
-        if debug:
-            print 'locs set as y ticks'
-        plot.axes.set_yticklabels(['0.0','0.2','0.4','0.6','0.8','1.0'])
+        if False:
+            locs = []
+            lim = plot.axes.get_ylim()[1]
+            if debug:
+                print 'limits are '+repr(lim)
+            for i in range(0,6):
+                locs.append((lim/6.0)*i)
+            if debug:
+                print 'locs found '+repr(locs)
+            plot.axes.set_yticks(locs)
+            if debug:
+                print 'locs set as y ticks'
+            plot.axes.set_yticklabels(['0.0','0.2','0.4','0.6','0.8','1.0'])
         if verbose:
             print 'Values for '+xlabel+' were found to be constant, so not making a histogram, just a simple line plot!!'
     # add x label
@@ -544,6 +551,143 @@ def makeCleanSummaryPlot(outputDataFilename=''):
         return newDataFilename
             
 
+def simpleKeyPosteriorsPlotter(outputDataFilename, plotFilename):
+    """
+    """
+    weight=False
+    confLevels=False
+    normalize=False
+    nu=1
+    quiet = True
+    verbose = False
+    
+    if os.path.exists(outputDataFilename):  
+        datadir = os.path.dirname(outputDataFilename)
+        
+        ## get log
+        logFilename = os.path.join(datadir,'processManagerLogFile.txt')
+        log = open(logFilename,'a')
+        log.write('\n'+75*'#'+'\n Inside simpleKeyPosteriorsPlotter \n'+75*'#'+'\n')
+         
+        s= '\nCreating a simple plot of some key posteriors for file:\n'+outputDataFilename
+        s=s+ '\nInput plotfilename:\n'+plotFilename
+        if verbose:
+            print s
+        log.write(s+'\n')
+        # record the time the chain started
+        startTime = timeit.default_timer()
+           
+        # check if the passed in value for plotFilename includes '.png'
+        if '.png' not in plotFilename:
+            plotFilename = plotFilename+'.png'
+        else:
+            plotFilename = plotFilename
+        
+        ## make an advanced title for plot from folder and filename
+        titleTop = os.path.dirname(outputDataFilename).split('/')[-1]
+        titleBtm = os.path.basename(plotFilename).split('.')[0]+'  TOTAL Posterior Distributions plot'
+        plotFileTitle = titleTop+'\n'+titleBtm
+        
+        s='\nStarting to make Simple Key Posteriors Plot'
+        if verbose:
+            print s
+        log.write(s+'\n')
+
+        NumSamples = 0
+        fig = plt.figure(1, figsize=(20,15) ,dpi=300) 
+        
+        ## give the figure its title
+        plt.suptitle(plotFileTitle,fontsize=30)
+        
+        ## Arg
+        subPlot = fig.add_subplot(211)
+        startTime = timeit.default_timer()
+        s='\nStarting to plot hist for argPeri_degsAlls'
+        if verbose:
+            print s
+        log.write(s+'\n')
+        paramColNum = 6
+        xlabel = 'Period [Yrs]'
+        startTime1 = timeit.default_timer()
+        (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
+        chiSquareds=[]
+        endTime1 = timeit.default_timer()
+        totalTime = (endTime1-startTime1) # in seconds
+        totalTimeString = genTools.timeString(totalTime)
+        s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+        startTime1 = timeit.default_timer()
+        subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
+        subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
+        endTime1 = timeit.default_timer()
+        totalTime = (endTime1-startTime1) # in seconds
+        totalTimeString = genTools.timeString(totalTime)
+        s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+            
+        if (type(data)!=float)and(NumSamples==0):
+            NumSamples=data.size
+        #argPeriMedian = np.median(argPeri_degsAlls)
+        s=s+ "done plotting argPeri_degsAlls:\n"
+        # record the time the chain finished and print
+        endTime = timeit.default_timer()
+        totalTime = (endTime-startTime) # in seconds
+        totalTimeString = genTools.timeString(totalTime)
+        s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+        if quiet==False:
+            print s
+        log.write(s+'\n')
+        
+        ## Periods
+        startTime = timeit.default_timer()
+        s='\nStarting to plot hist for periodsAlls:'
+        if verbose:
+            print s
+        log.write(s+'\n')
+        subPlot = fig.add_subplot(212)
+        paramColNum = 4
+        xlabel = 'Period [Years]'
+        (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+        subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
+        #periodMedian = np.median(periodsAlls)
+        s= "done plotting periodsAlls"
+        subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
+        # record the time the chain finished and print
+        endTime = timeit.default_timer()
+        totalTime = (endTime-startTime) # in seconds
+        totalTimeString = genTools.timeString(totalTime)
+        s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+        if quiet==False:
+            print s
+        log.write(s+'\n')
+        
+        # Save file if requested.
+        if verbose:
+            print '\nStarting to save param hist figure:'
+        if plotFilename!='':
+            plt.savefig(plotFilename, dpi=300, orientation='landscape')
+            s= 'Summary plot saved to: '+plotFilename
+            if quiet==False:
+                print s
+            log.write(s+'\n')
+        plt.close()
+        
+        # record the time the chain finished and print
+        endTime = timeit.default_timer()
+        totalTime = (endTime-startTime) # in seconds
+        totalTimeString = genTools.timeString(totalTime)
+        s= '\n\simpleKeyPosteriorsPlotter: Plotting took '+totalTimeString+' to complete.\n'
+        if verbose:
+            print s
+        log.write(s+'\n')
+        log.write('\n'+75*'#'+'\n Leaving simpleKeyPosteriorsPlotter \n'+75*'#'+'\n')
+        log.close()
+    else:
+        s= "simpleKeyPosteriorsPlotter: ERROR!!!! file doesn't exist"
+        print s
+        log.write(s+'\n')
+        log.write('\n'+75*'#'+'\n Leaving simpleKeyPosteriorsPlotter \n'+75*'#'+'\n')
+        log.close()
+        
+
 def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=True, normalize=True, nu=1, plot4x1=False, TcStepping=False):
     """
     This advanced plotting function will plot all the data in a 3x3 grid (or 3x1) on a single figure.  The data will be plotted
@@ -566,7 +710,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         ## get log
         logFilename = os.path.join(datadir,'processManagerLogFile.txt')
         log = open(logFilename,'a')
-        log.write('\n'+75*'#'+'\n Inside summaryPlotter2 \n'+75*'#'+'\n')
+        log.write('\n'+75*'#'+'\n Inside summaryPlotter \n'+75*'#'+'\n')
          
         s= '\nCreating summary plot for file:\n'+outputDataFilename
         s=s+ '\nInput plotfilename:\n'+plotFilename
@@ -685,7 +829,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             totalTime = (endTime1-startTime1) # in seconds
             totalTimeString = genTools.timeString(totalTime)
             s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            subPlot.axes.set_ylabel('Probability',fontsize=30)
+            subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
             if (type(data)!=float)and(NumSamples==0):
                 NumSamples=data.size
             ##################$$$$$$$$$$$$$ This extra garbage collection might not be needed but I want it for now as a code EX. ######
@@ -799,7 +943,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         if (CLevels[1][1]-CLevels[1][0])>50:
             # shink x axis labels as there are too may big numbers and they merge otherwise
             subPlot.tick_params(axis='x',which='major',labelsize=14)
-        subPlot.axes.set_ylabel('Probability',fontsize=30)
+        subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
         if (type(data)!=float)and(NumSamples==0):
             NumSamples=data.size
         #TMedian = np.median(TsAlls)
@@ -1096,7 +1240,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                     (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
                     subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
                     if ((dataset==1)or(dataset==4))or(dataset==7):
-                        subPlot.axes.set_ylabel('Probability',fontsize=50)
+                        subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=50)
                     subPlot.tick_params(axis='both',which='major',labelsize=30)
                     subPlot.axes.set_xlabel(xlabel,fontsize=50)
                     s= "\nDone plotting RV offsets for dataset "+str(dataset)
@@ -1143,7 +1287,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
             ax2.set_xlim(((1.0/nu)*x1),((1.0/nu)*x2))
             ax2.figure.canvas.draw()
             ax2.set_xlabel("reduced(chiSquare - chiSquare_MIN)",fontsize=30)
-            subPlot.axes.set_ylabel('Probability',fontsize=30)
+            subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
             
             #subPlot.set_yscale('log')
             if verbose:

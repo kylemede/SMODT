@@ -30,6 +30,7 @@ def calc_orbit():
     downSample = True
     storePrimaryRVs = True
     percentError = 0.01 #error is set to a percentage of the median
+    realizeErrors = True
 
     #System settings
     massratio = 2.0
@@ -227,11 +228,19 @@ def calc_orbit():
     data2[:,3] = vel_B[:, 2]*1000.0 # RV of primary compared to center of mass origin[ m/s]
     data2[:,4] = vel_A[:, 2]*1000.0 # RV of secondary compared to center of mass origin[ m/s]
     
-    #calculate error
+    #calculate error and use it to realize the errors if requested
     errorRA = np.median(np.abs(data2[:,1]))*(percentError/100.0)
+    if realizeErrors:
+        data2[:,1] += np.random.normal(0,errorRA)
     errorDec = np.median(np.abs(data2[:,2]))*(percentError/100.0)
+    if realizeErrors:
+        data2[:,2] += np.random.normal(0,errorDec)
     errorRVprimary = np.median(np.abs(data2[:,3]))*(percentError/100.0)
+    if realizeErrors:
+        data2[:,3] += np.random.normal(0,errorRVprimary)
     errorRVsecondary = np.median(np.abs(data2[:,4]))*(percentError/100.0)
+    if realizeErrors:
+        data2[:,4] += np.random.normal(0,errorRVsecondary)
     
     data3 = np.empty((pos_A.shape[0],7))
     data3[:,0] = data2[:, 0]

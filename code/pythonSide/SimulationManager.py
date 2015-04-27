@@ -222,21 +222,25 @@ def simulator(paramSettingsDict):
     ## make general parameter result summary figures
     ############################################################
     summaryPlotFile = os.path.join(paramSettingsDict['outputData_dir'],'summaryPlot')
+    keyPosteriorsPlotFile = os.path.join(paramSettingsDict['outputData_dir'],'KeyPosteriorsPlot')
     cleanDataFilename=''
-    if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
-        s= '**** Starting to plot the posterior distributions of the final data file ****'
-        print s
-        PMlogFile.write(s)
-        if True:
-            tools.plot.summaryPlotter(dataFinalFilename, summaryPlotFile, weight=False, confLevels=True, nu=nu, plot4x1=plot4x1, TcStepping=paramSettingsDict['TcStepping'] )         
-        if False:
-            if paramSettingsDict['SILENT']==False:
-                print "\n\n"+"!"*75+'\nNOTE: Making Posteriors plot with the makeCleanSummaryPlot function instead of standard summaryPlotter\n'+"!"*75+"\n\n"
-            cleanDataFilename = tools.plot.makeCleanSummaryPlot(dataFinalFilename)
-        s = '**** Back from making summary plot if requested ****\n'
-        if paramSettingsDict['SILENT']==False:
+    if False:
+        if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
+            s= '**** Starting to plot the posterior distributions of the final data file ****'
             print s
-        PMlogFile.write(s)
+            PMlogFile.write(s)
+            if True:
+                tools.plot.summaryPlotter(dataFinalFilename, summaryPlotFile, weight=False, confLevels=True, nu=nu, plot4x1=plot4x1, TcStepping=paramSettingsDict['TcStepping'] )         
+            if False:
+                if paramSettingsDict['SILENT']==False:
+                    print "\n\n"+"!"*75+'\nNOTE: Making Posteriors plot with the makeCleanSummaryPlot function instead of standard summaryPlotter\n'+"!"*75+"\n\n"
+                cleanDataFilename = tools.plot.makeCleanSummaryPlot(dataFinalFilename)
+            s = '**** Back from making summary plot if requested ****\n'
+            if paramSettingsDict['SILENT']==False:
+                print s
+            PMlogFile.write(s)
+    if True:
+        tools.plot.simpleKeyPosteriorsPlotter(dataFinalFilename,keyPosteriorsPlotFile)
     
     ############################################################
     ## Make DI ellipse plot if DI data exists
@@ -431,6 +435,7 @@ def simulator(paramSettingsDict):
     if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
         origFiles.append(os.path.basename(summaryPlotFile)+".png")
         origFiles.append(os.path.basename(summaryPlotFile)+"-ChiSquaredDist.png")
+        origFiles.append(os.path.basename(keyPosteriorsPlotFile)+".png")
         if paramSettingsDict['DIonly']==False:
             origFiles.append(os.path.basename(summaryPlotFile)+"-RVoffsets.png")
         if (len(dataFiles)>1)and(paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and(paramSettingsDict['CalcBurnIn']and (paramSettingsDict['simAnneal']==False)):

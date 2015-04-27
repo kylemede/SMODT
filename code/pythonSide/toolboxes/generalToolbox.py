@@ -168,6 +168,7 @@ def recordResults(paramSettingsDict,maxRAMuse,nus,chiSquaredStrDI,chiSquaredStrR
     if (paramSettingsDict['calcCorrLengths'])and(paramSettingsDict["mcONLY"]==False):
         resultsFile.write('\n'+"-"*60+"\nCorrelation Lengths and number of Effective Points Values:\n"+"-"*60+effectivePointsStr)
     
+    resultsFile.write("\n\n*******  END OF RESULTS FILE ******\n")
     resultsFile.close()
     if verbose:
         print "*"*60+"\n"+"Final results file written to: "+os.path.join(datadir,"RESULTS.txt")+"\n"+"*"*60
@@ -1930,6 +1931,7 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                             outLines[lineNum]=lineOut
                         else:
                             # create output version of this line to write to output version of settings file
+                            returnDict['useMultiProcessing']=False
                             lineOut = 'useMultiProcessing = false \n'
                             outLines[lineNum]=lineOut
                         if verbose:
@@ -2943,11 +2945,19 @@ def copytree(src, dst):
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
         if os.path.isdir(s):
-            shutil.copytree(s, d)
-            if verbose:
-                print "Copying:\n "+repr(s)+'\nto:\n'+repr(d) 
+            try:
+                shutil.copytree(s, d)
+                if verbose:
+                    print "Copying:\n "+repr(s)+'\nto:\n'+repr(d) 
+            except:
+                if verbose:
+                    print 'FAILED while copying:\n'+repr(s)+'\nto:\n'+repr(d) 
         else:
-            shutil.copy2(s, d)
-            if verbose:
-                print "Copying:\n "+repr(s)+'\nto:\n'+repr(d)
+            try:
+                shutil.copy2(s, d)
+                if verbose:
+                    print "Copying:\n "+repr(s)+'\nto:\n'+repr(d)
+            except:
+                if verbose:
+                    print 'FAILED while copying:\n'+repr(s)+'\nto:\n'+repr(d) 
             

@@ -134,7 +134,11 @@ def main():
     paramSettingsDict['outputData_dir'] = finalFolder
     
     # make a directory inside the data folder for the code used during this simulation
-    os.mkdir(finalFolder+'code-used/')
+    outputCodeUsedFolder = os.path.join(finalFolder+'code-used/')
+    outputCodeUsedFolderCPP = os.path.join(outputCodeUsedFolder+'cppSide/')
+    outputCodeUsedFolderPy = os.path.join(outputCodeUsedFolder+'pythonSide/')
+    tools.gen.copytree(pythonCodeDir, outputCodeUsedFolderPy)
+    tools.gen.copytree(cppCodeDir, outputCodeUsedFolderCPP)
     
     if paramSettingsDict['CopyToDrobox']:
         finalFolder2 = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/',filename[:-4]+'/')
@@ -160,70 +164,30 @@ def main():
         else:
             os.mkdir(finalFolder2)
         # make a directory inside the data folder for the code used during this simulation
-        os.mkdir(finalFolder2+'code-used/')
+        outputCodeUsedFolderDB = os.path.join(finalFolder2+'code-used/')
+        os.mkdir(outputCodeUsedFolderDB)
     
-    
-    # figure out what files are used in this simulation run
-    pythonFiles = ['SMODTstarter.py','dicts/HARDCODEDsettingsDict.py','SimulationManager.py']
-    pythonToolboxFiles = ['generalToolbox.py','DItoolbox.py','plotToolbox.py','RVtoolbox.py']
-    cppFiles = []
-    cppToolboxFiles = ['SimSettingsObj.cpp','RVtools.cpp', 'generalTools.h',
-                       'generalTools.cpp','DItools.cpp','DataObj.cpp','DItools.h',
-                       'DataObj.h','orbToolboxes.h','RVtools.h','SimSettingsObj.h']
-    
-    settingsFiles = [paramSettingsDict['SystemDataFilename'],paramSettingsDict["UpdatedSettingsFile"]]
-    
+    # Load up settings files used to be copied
+    settingsFiles = [os.path.join(settings_and_InputDataDir ,paramSettingsDict['SystemDataFilename'])]
+    settingsFiles.append(os.path.join(settings_and_InputDataDir,paramSettingsDict["UpdatedSettingsFile"]))
     if DIonly:
-        settingsFiles.append(paramSettingsDict['DIdataFilename'])
-    if RVonly:
-        settingsFiles.append(paramSettingsDict['RVdataFilename'])
-    if ((DIonly==False)and(RVonly==False)):
-        settingsFiles.append(paramSettingsDict['DIdataFilename'])
-        settingsFiles.append(paramSettingsDict['RVdataFilename'])
-    
-    if mcONLY:
-        cppFiles.append('mcONLYorbSimulator.cpp')
+        settingsFiles.append(os.path.join(settings_and_InputDataDir,paramSettingsDict['DIdataFilename']))
+    elif RVonly:
+        settingsFiles.append(os.path.join(settings_and_InputDataDir,paramSettingsDict['RVdataFilename']))
     else:
-        cppFiles.append('MCMCorbSimulator.cpp') 
-        cppFiles.append('MCMCorbSimFunc.cpp')  
-        cppFiles.append('MCMCorbSimFunc.h') 
-        cppFiles.append('simAnnealOrbSimFunc.cpp') 
-        cppFiles.append('simAnnealOrbSimFunc.h')    
+        settingsFiles.append(os.path.join(settings_and_InputDataDir,paramSettingsDict['DIdataFilename']))
+        settingsFiles.append(os.path.join(settings_and_InputDataDir,paramSettingsDict['RVdataFilename'])) 
     
-    # add directories and add all complete filenames to overall list
-    allFiles = []
-    for f in pythonFiles:
-        allFiles.append(os.path.join(pythonCodeDir , f))
-    for f in pythonToolboxFiles:
-        toolboxDir = os.path.join(pythonCodeDir,'toolboxes')
-        fullPathUse = os.path.join(toolboxDir , f)
-        allFiles.append(fullPathUse)
-    for f in cppToolboxFiles:
-        cppToolboxDir = os.path.join(cppCodeDir,'toolboxes')
-        fullPathUse = os.path.join(cppToolboxDir,f)
-        allFiles.append(fullPathUse)
-    for f in cppFiles:
-        allFiles.append(os.path.join(cppCodeDir , f))
+    # copy all settings files into the output data dir and also dropbox if requested
     for f in settingsFiles:
-        allFiles.append(os.path.join(settings_and_InputDataDir , f))
-        
-    # move all final files to code-used directory in output data folder
-    for f in allFiles:
-        #print '\nCopying code files to output data directory.'
         filebasename = os.path.basename(f)
-        outputfilename = finalFolder+'code-used/'+filebasename 
+        outputfilename = os.path.join(outputCodeUsedFolder,filebasename)
         shutil.copy(f,outputfilename)
-        if paramSettingsDict['CopyToDrobox']:
-            outputfilename2 = finalFolder2+'code-used/'+filebasename  
-            #print 'file being copied:'+f
-            #print 'Being copied to:'+outputfilename
-            shutil.copy(f,outputfilename2)
+    if paramSettingsDict['CopyToDrobox']:
+        tools.gen.copytree(outputCodeUsedFolder, outputCodeUsedFolderDB)
         
     ## finally, make print that sim is starting and then start it.
     print '\n******* Starting '+str(numChains)+' processes of '+numSamplesStrPerChain+' samples each ******** \n'
-#     if mcONLY:
-#         mcSimStarter(paramSettingsDict)
-#     else:
     simulator(paramSettingsDict)
 
 if __name__ == '__main__':

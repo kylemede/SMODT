@@ -151,7 +151,7 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
         if normed:
             #update the y limit and its ticks and tick labels
             if not logY:
-                plot.axes.set_ylim([0.0,plot.axes.get_ylim()[1]*1.2])
+                plot.axes.set_ylim([0.0,plot.axes.get_ylim()[1]*1.3])
                 locs = []
                 lim = plot.axes.get_ylim()[1]
                 for i in range(0,6):
@@ -160,16 +160,20 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
                 #plot.axes.set_yticklabels([' ','0.2','0.4','0.6','0.8','1.0'])
         # draw a line up the median of the data
         Median = np.median(data)
-        plot.plot([Median, Median],plot.axes.get_ylim(),'k',linewidth=3)
+        if type(confLevels)==list:
+            plot.plot([Median, Median],plot.axes.get_ylim(),'k',linewidth=3)
         #convert data and chiSquareds arrays to np arrays if needed
         if type(chiSquareds)!=np.ndarray:
             chiSquareds = np.array(chiSquareds)
         if type(data)!=np.ndarray:
             data = np.array(data)
         if bestVal==0:
-            bestVal = data[np.where(chiSquareds==chiSquareds.min())][0]
-            if debug:
-                print "using calculated bestVal = ",bestVal
+            try:
+                bestVal = data[np.where(chiSquareds==chiSquareds.min())][0]
+                if debug:
+                    print "using calculated bestVal = ",bestVal
+            except:
+                useless=True
         else:
             if debug:
                 print 'using provided bestVal = ',bestVal
@@ -184,10 +188,10 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
         if (type(data)!=float):
             data = data[0]
         # This means the data had no useful values in it, just constant 
-        plot.plot([data,data],[0.0,1.2],'b',linewidth=2)
+        plot.plot([data,data],[0.0,1.3],'b',linewidth=2)
         if debug:
             print 'empty plot made'
-        plot.axes.set_ylim([0.0,1.2])
+        plot.axes.set_ylim([0.0,1.3])
         if debug:
             print 'axes limits set'
         if False:
@@ -642,19 +646,22 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename):
             print s
         #log.write(s+'\n')
         
-        fig = plt.figure(1, figsize=(20,15) ,dpi=300) 
+        fig = plt.figure(1, figsize=(50,35) ,dpi=300) 
         ## give the figure its title
         plt.suptitle(plotFileTitle,fontsize=30)
     
     #Load up parameter column number and name string arrays
     paramList = [0,1,2,3,4,5,6,7]
-    paramStrs = ['Longitude of Periapsis [deg]','Eccentricity','Time of Last Periapsis [JD]', 'Time of Center Transit [JD]','Period [Yrs]','Inclination [deg]','Argument of Periapsis [deg]','Semi-Major Axis [AU]']
-    if numRVdatasets>1:
+    paramStrs = ['Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]']
+    perfectVals = [70.0,0.5,2457000.0,2457000.0,5.0,40.0,50.0,3.34718746581]
+    if numRVdatasets>0:
         paramList.append(9)
-        paramStrs.append('Semi-Major Amplitude [m/s]')
+        paramStrs.append('K [m/s]')
+        perfectVals.append(4933.18419284)
         for dataset in range(1,numRVdatasets+1):
             paramList.append(9+dataset)
             paramStrs.append('RV offset '+str(dataset)+'[m/s]')
+            perfectVals.append(0.0)
             
     ## make combined/stacked plot for each parameter in list
     for i in range(0,len(paramList)):
@@ -663,11 +670,11 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename):
         if verbose:
             print s
         #log.write(s+'\n')
-        subPlot = fig.add_subplot(340+i)
+        subPlot = fig.add_subplot(341+i)
         for outputDataFilename in outputDataFilenames:
             if os.path.exists(outputDataFilename):          
                 (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
-                subPlot = histConverter([], data, subPlot, paramStrs[i], confLevels=False, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
+                subPlot = histConverter([], data, subPlot, paramStrs[i], confLevels=False, weight=weight, normed=normalize, nu=nu, bestVal=perfectVals[i])
                 subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
             else:
                 s= "simpleKeyPosteriorsPlotter: ERROR!!!! file doesn't exist"
@@ -2228,6 +2235,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     #######################################################################################              
     ## Get the calculated chiSquared fit to the data for these orbital parameters
     legendStr = ''
+    SA_diffs2 = []
+    PA_diffs2 = []
     for orb in range(0,len(longAN_deg)):
         legendStr = legendStr+"\nFor orbit # "+str(orb)+' (color = '+colorsList[orb]+') :\n'
         legendStr = legendStr+"inc[orb] = "+str(inc[orb])+'\n'
@@ -2247,11 +2256,22 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         (chi_squared_total, ns, Ms, Es, thetas, Sep_Dists, SA_arcsec_measured_models, PA_deg_measured_models, xs, ys, a1s, a2s) =\
         diTools.multiEpochOrbCalc(SAs, SAerrors, PAs, PAerrors,epochs, sys_dist, inc[orb], longAN_deg[orb],\
                         e[orb], To[orb], period[orb], argPeri_deg[orb], a_total=a[orb], Mass1=1, Mass2=1, verbose=False)
+        
+        if type(SAs)!=np.ndarray:
+            SAs = np.array(SAs)
+        if type(PAs)!=np.ndarray:
+            PAs = np.array(PAs)
+        if type(SA_arcsec_measured_models)!=np.ndarray:
+            SA_arcsec_measured_models = np.array(SA_arcsec_measured_models)
+        if type(PA_deg_measured_models)!=np.ndarray:
+            PA_deg_measured_models = np.array(PA_deg_measured_models)
+        SA_diffs2.append(SAs-SA_arcsec_measured_models)
+        PA_diffs2.append(PAs-PA_deg_measured_models)        
         chiSquaredStr = "The chiSquared fit to the DI data was = "+str(chi_squared_total)+', or reduced = '+str(chi_squared_total/nuDI)
         legendStr = legendStr+chiSquaredStr+'\n'
         if verboseInternal:
             print "\n\n     TH-I: for orbit #"+str(orb)+", "+chiSquaredStr+"\n"
-    #######################################################################################        
+    #######################################################################################            
     
     ## Create figure, axes and start plotting/drawing everything
     fig = plt.figure(1,figsize=(12,12))
@@ -2456,16 +2476,36 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     ## saved cropped version to file if requested
     if plotFilename!='':
         plt.savefig(plotFilenameCropped, dpi=300, orientation='landscape')
-       
     ## put limits back to full 
     main.axes.set_xlim(xLim2)
     main.axes.set_ylim(yLim)
     # show plot
     if show:
         plt.show()
-    
     # close figure/plot
     plt.close()    
+    
+    #Create a figure for the O-C in SA and PA
+    if True:
+        fig2 = plt.figure(1,figsize=(30,20))
+        saPlot = fig2.add_subplot(211)
+        saPlot.set_xlabel('Epochs [JD]', fontsize=30)
+        saPlot.set_ylabel('SA (O-C) ["]', fontsize=30)
+        paPlot = fig2.add_subplot(212)
+        paPlot.set_xlabel('Epochs [JD]', fontsize=30)
+        paPlot.set_ylabel("PA (O-C) [deg]", fontsize=30)
+        plt.suptitle(plotFileTitle, fontsize=10)
+        for orb in range(0,len(longAN_deg)):
+            saPlot.scatter(epochs,SA_diffs2[orb],color=colorsList[int(orb/3.0)])
+            paPlot.scatter(epochs,PA_diffs2[orb],color=colorsList[int(orb/3.0)])
+        saPlot.plot(saPlot.axes.get_xlim(),[0,0],c='r',linewidth=2.0)
+        paPlot.plot(paPlot.axes.get_xlim(),[0,0],c='r',linewidth=2.0)
+        plotFilenameOC = plotFilename[:-4]+"-O-C.png"
+        ## saved cropped version to file if requested
+        if plotFilename!='':
+            plt.savefig(plotFilenameOC, dpi=300, orientation='landscape')
+        plt.close()  
+        
     
     if True:
         ## Create figure for writting the sorta legend to
@@ -3065,6 +3105,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         residuals2 = []
         planetVRs2 = []
         starVRs2 = []
+        K_s2 = []
+        K_p2 = []
         chiSquaredTot2 = 0.0
         numEpochs_RV = 0.0
         chi_squared_RV_reducedCur2 = []
@@ -3121,6 +3163,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                     if primaryRVs==False:
                         a_s = a2_s
                     (v_r_c,K_s) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],star_es[orb],star_Ts[orb],star_Ps[orb],star_argPeris[orb],a_s,T_center=star_Tcs[orb],i=star_incs[orb], K=star_Ks[orb], verbose=False)
+                    K_s2.append(K_s)
                 # calculate the velocity residual due to the planet around primary
                 if (planet_Ps[orb]==0):
                     (v_r_p,K_p)=(0,0)
@@ -3134,6 +3177,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                     if primaryRVs==False:
                         a_p = a2_p
                     (v_r_p,K_p) = rvTools.vrCalculatorSemiMajorType(epochs[epoch],planet_es[orb],planet_Ts[orb],planet_Ps[orb], planet_argPeris[orb],a_p,T_center=planet_Tcs[orb],i=planet_incs[orb], K=planet_Ks[orb], verbose=False)
+                    K_p2.append(K_p)
                     #print 'K_p being used is = ',planet_Ks[orb]
                     #print "v_r_p = ",v_r_p
                 RV =rvs[epoch]- (v_r_c+v_r_p)
@@ -3170,6 +3214,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         residuals3.append(residuals2)
         planetVRs3.append(planetVRs2) 
         starVRs3.append(starVRs2)
+    if simulate_StarStarRV:
+        KcalcUse = K_s2[0]
+    else:
+        KcalcUse = K_p2[0]
         
     ## Make an updated Radial Velocities for data accounting for planet or star RVs
     RVsOUTupdated3 = []
@@ -3264,10 +3312,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             if primaryRVs==False:
                 aUse = a2
             # calculate the velocity residual due to the companion 
-            (v_r_c,K) = rvTools.vrCalculatorSemiMajorType(t,e[orb],T[orb],period[orb],argPeri_deg[orb],aUse,T_center=Tc[orb],i=inc[orb], K=K_use, verbose=False)
+            (v_r_c,Kcalc) = rvTools.vrCalculatorSemiMajorType(t,e[orb],T[orb],period[orb],argPeri_deg[orb],aUse,T_center=Tc[orb],i=inc[orb], K=K_use, verbose=False)
             orbitVRs.append(v_r_c)
         #print 'times were '+repr(times)
-        s= 'Orbit '+str(orb)+" had a K = "+str(K)
+        s= 'Orbit '+str(orb)+" had a K = "+str(Kcalc)
         if verbose:
             print s
         log.write(s+'\n')
@@ -3401,6 +3449,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         paramsLegndStr +='\nperiod [days] = '+str(period[0]*365.242)
     paramsLegndStr +='\nTo = '+str(T[0])
     paramsLegndStr +=", Tc = "+str(Tc[0])
+    paramsLegndStr+="\nK [m/s] = "+str(KcalcUse)
     for dataset in range(0,len(RVs)):
         if dataset==0:
             paramsLegndStr+='\n'

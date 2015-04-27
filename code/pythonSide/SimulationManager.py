@@ -457,6 +457,7 @@ def simulator(paramSettingsDict):
     if os.path.exists(DIdatafilename)and ((paramSettingsDict['RVonly']==False)and(paramSettingsDict['makeOrbitPlots'])):
         origFiles.append(os.path.basename(orbitEllipsePlotFilename)+'.png')
         origFiles.append(os.path.basename(orbitEllipsePlotFilename)+'-CROPPED.png')
+        origFiles.append(os.path.basename(orbitEllipsePlotFilename)+'-O-C.png')
         origFiles.append(os.path.basename(orbitEllipsePlotFilename)+'-paramInfo.png')
     # get progress plot filenames
     if paramSettingsDict['simAnneal']:

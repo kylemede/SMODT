@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <fstream>
+#include <ctype.h>
 #include <functional> //NEW
 #include <algorithm> //NEW
 #include <numeric> //NEW
@@ -1234,8 +1235,18 @@ string generalTools::findChainNumberStr(string str)
 	 */
 	size_t found;
 	found=str.find_last_of(".");
-	string chainNumStr;
-	chainNumStr = str.substr(found-1,1);
+	string chainNumStr = "";
+
+	for (int curPos=found-5; curPos<found;curPos+=1)
+	{
+		if (false)
+			cout<<" char is:"<<str[curPos]<<" , for curPos "<<curPos<<endl;
+		if (isdigit(str[curPos]))
+			chainNumStr.push_back(str[curPos]);
+	}
+	if (false)
+		cout<<"chainNumStr found to be '"<<chainNumStr<<"'"<<endl;
+
 	return chainNumStr;
 }
 

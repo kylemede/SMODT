@@ -6,7 +6,8 @@ import DItoolbox as diTools
 def calc_orbit():
     """
     This is a test function to produce a Keplerian orbit in RA,Dec,RV to verify SMODT.
-    NOTE: the accuracy of the output values is accurate to 'one part in 10 to the 5'.
+    NOTE: the accuracy of the output values is accurate to 'one part in 10 to the 5', 
+          due to the simple center differencing used to calculate the velocities from the positions and times.
     
     From his email:
     "
@@ -29,7 +30,7 @@ def calc_orbit():
     NumDataPointsOut = 10
     downSample = True
     storePrimaryRVs = True
-    percentError = 0.01 #error is set to a percentage of the median
+    percentError = 1.0 #error is set to a percentage of the median
     realizeErrors = True
 
     #System settings
@@ -71,26 +72,24 @@ def calc_orbit():
         print "Saving RVs of primary star relative to Center of Mass\n"
     else:
         print "Saving RVs of companion relative to Center of Mass\n"
+        
     # Positions of both components in km relative to center of mass
-
     ke = pyasl.KeplerEllipse(a1, period, e=e, Omega=0.)
     NptsBIG = NumDataPointsOut
     if downSample:
         NptsBIG = 10000
     t = (np.arange(NptsBIG) - 1)/(NptsBIG - 2.)*period
-    #print "\nbefore:\n"+repr(t)+"\n"
-    ## Extend t to include 4 extra points at the end that overlap the beginning of the orbit
+   
+    ## Extend t to include a fifth of extra points at the end that overlap the beginning of the orbit
     NumOverlapPts = NptsBIG//5
     t2 = np.empty((t.shape[0]+NumOverlapPts))
     t2[0:t.size]=t
     t2[t.size:]=t[2]*np.arange(NumOverlapPts+1)[1:]+t[-1]
     t=t2
-    #print "\nafter:\n"+repr(t)+"\n"
     pos_A = ke.xyzPos(t)
     pos_B = -pos_A/massratio
     
     # Velocities in km/s using centered differencing
-    #vel_A = pos_A.copy()
     vel_A = (pos_A[2:] - pos_A[:-2])/(t[2] - t[0])/(86400*365.242)
     if False:
         vel_A2 = pos_A.copy()
@@ -105,40 +104,9 @@ def calc_orbit():
         print "(t[2] - t[0])*365.24 = "+str((t[2] - t[0])*365.242)
         print "(t[1] - t[0])*365.24 = "+str((t[1] - t[0])*365.242)
     pos_A = pos_A[1:-1]
-    #vel_B = pos_B.copy()
     vel_B = (pos_B[2:] - pos_B[:-2])/(t[2] - t[0])/(86400*365.242)
     pos_B = pos_B[1:-1]
     t = t[1:-1]
-    
-#     if False:
-#         print repr(t[0:10])+"\n"+repr(t[-10:])
-#     
-#     if False:
-#         print "\n"+repr(t[0:10])+"\n"+repr(t[-10:])
-#     
-#     if False:
-#         print "\n"+"*"*75+"\nbefore rotation:"
-#         print "t[o] = "+str(t[0])
-#         if True:
-#             print "pos_A[0:10] = "+repr(pos_A[0:10])
-#             print "vel_A[0:10] = "+repr(vel_A[0:10])
-#         else:
-#             print "pos_A[0] = "+repr(pos_A[0])
-#             print "pos_B[0] = "+repr(pos_B[0])
-#             print "vel_A[0] = "+repr(vel_A[0])
-#             print "vel_B[0] = "+repr(vel_B[0])
-#             print "\npos_A[1] = "+repr(pos_A[1])
-#             print "pos_B[1] = "+repr(pos_B[1])
-#             print "vel_A[1] = "+repr(vel_A[1])
-#             print "vel_B[1] = "+repr(vel_B[1])
-#             print "\npos_A[50] = "+repr(pos_A[50])
-#             print "pos_B[50] = "+repr(pos_B[50])
-#             print "vel_A[50] = "+repr(vel_A[50])
-#             print "vel_B[50] = "+repr(vel_B[50])
-#             print "\npos_A[-1] = "+repr(pos_A[-1])
-#             print "pos_B[-1] = "+repr(pos_B[-1])
-#             print "vel_A[-1] = "+repr(vel_A[-1])
-#             print "vel_B[-1] = "+repr(vel_B[-1])+"\n"+"*"*75
 
     # Construct rotation matrix (from wikipedia [http://en.wikipedia.org/wiki/Orbital_elements#Euler_angle_transformations])
     x1 = np.cos(Omega)*np.cos(omega) - np.sin(Omega)*np.cos(i)*np.sin(omega)
@@ -172,44 +140,13 @@ def calc_orbit():
             pos_Anew.append(pos_A[i])
             pos_Bnew.append(pos_B[i])
             vel_Anew.append(vel_A[i])
-            #print (vel_A[i])
             vel_Bnew.append(vel_B[i])
             tnew.append(t[i])
-        #print repr(range(0,len(t),int(NptsBIG/NumDataPointsOut)))
-        #print 'i last = '+str(i)+", NumDataPointsOut = "+str(NumDataPointsOut)+",  int(NptsBIG/NumDataPointsOut) = "
-        #print str(int(NptsBIG/NumDataPointsOut))+", NptsBIG = "+str(NptsBIG)+", len(t) = "+str(len(t))+", len(tnew) = "+str(len(tnew))
-        #print 'len(tnew) = '+str(len(tnew))
-        #print '\nvel_A before:\n'+repr(vel_A[:5])+"\n"+repr(vel_A[-5:])
-        #print 'vel_Anew = '+repr(vel_Anew)
         pos_A = np.array(pos_Anew)
         pos_B = np.array(pos_Bnew)
         vel_A = np.array(vel_Anew)
-        #print '\nvel_A after:\n'+repr(vel_A[:5])+"\n"+repr(vel_A[-5:])
         vel_B = np.array(vel_Bnew)
         t=np.array(tnew)
-#     if False:
-#         print "\n"+"*"*75+"\nAfter rotation:"
-#         print "t[o] = "+str(t[0])
-#         if True:
-#             print "pos_A[0:10] = "+repr(pos_A[0:10])
-#             print "vel_A[0:10] = "+repr(vel_A[0:10])
-#         else:
-#             print "pos_A[0] = "+repr(pos_A[0])
-#             print "pos_B[0] = "+repr(pos_B[0])
-#             print "vel_A[0] = "+repr(vel_A[0])
-#             print "vel_B[0] = "+repr(vel_B[0])
-#             print "\npos_A[1] = "+repr(pos_A[1])
-#             print "pos_B[1] = "+repr(pos_B[1])
-#             print "vel_A[1] = "+repr(vel_A[1])
-#             print "vel_B[1] = "+repr(vel_B[1])
-#             print "\npos_A[50] = "+repr(pos_A[50])
-#             print "pos_B[50] = "+repr(pos_B[50])
-#             print "vel_A[50] = "+repr(vel_A[50])
-#             print "vel_B[50] = "+repr(vel_B[50])
-#             print "\npos_A[-1] = "+repr(pos_A[-1])
-#             print "pos_B[-1] = "+repr(pos_B[-1])
-#             print "vel_A[-1] = "+repr(vel_A[-1])
-#             print "vel_B[-1] = "+repr(vel_B[-1])+"\n"+"*"*75
 
     data = np.zeros((pos_A.shape[0], 8))
     data[:, 0] = t*2*np.pi/period #1. phase
@@ -251,7 +188,6 @@ def calc_orbit():
             print repr((data2[i,1], errorRA, data2[i,2], errorDec))
             (u1,u2,u3,u4)=diTools.PASAtoEN(data3[i,1],data3[i,2],data3[i,3],data3[i,4])
        
-     
     if storePrimaryRVs:
         data3[:,5] = data2[:,3]
         data3[:,6] = errorRVprimary

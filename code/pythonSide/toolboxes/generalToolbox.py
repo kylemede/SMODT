@@ -1263,6 +1263,7 @@ def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=Fal
             log.write('\n'+75*'-'+'\n Inside dataReader \n'+75*'-'+'\n')
         else:
             gotLog=False
+            log=False
             
     s= '\nOpening and finding ranges for data in column # '+str(columNum)
     if gotLog:
@@ -1324,7 +1325,8 @@ def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=Fal
     dataMax = 0
     dataMin = 1e9
     if ((dataValueStart!=dataValueMid)and(dataValueStart!=dataValueEnd)):
-        log.write("Values for parameter found to be constant!!")
+        if gotLog:
+            log.write("Values for parameter found to be constant!!")
         if verboseInternal:
             print "Values for parameter found to be constant!!"
         doesntVary = False

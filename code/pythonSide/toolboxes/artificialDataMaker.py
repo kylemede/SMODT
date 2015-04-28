@@ -30,7 +30,7 @@ def calc_orbit():
     NumDataPointsOut = 10
     downSample = True
     storePrimaryRVs = True
-    percentError = 1.0 #error is set to a percentage of the median
+    percentError = 20.0 #error is set to a percentage of the median
     realizeErrors = True
 
     #System settings

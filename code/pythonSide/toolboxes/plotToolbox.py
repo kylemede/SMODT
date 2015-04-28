@@ -6,7 +6,7 @@ import os
 import pylab
 import timeit
 from math import pi
-import dicts
+#import dicts
 import generalToolbox as genTools 
 import DItoolbox as diTools
 import RVtoolbox as rvTools 
@@ -70,7 +70,7 @@ def fixPlotBordersAndLabels(plot):
     plot.spines['left'].set_linewidth(2.0)
     return plot
     
-def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=False, normed=False, nu=1, bestVal=0,logY=False):
+def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=False, normed=False, nu=1, bestVal=0,logY=False,lineColor='k'):
     """
     This function is for creating a modified histogram plot to be properly normalized to a max value
     of 1.0.  There is also the option to color the histogram bars according to the 95 and 68% confidence
@@ -146,7 +146,7 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
             binsUse = (bins[1:]+bins[:-1])/2.0
             #print 'binsUse = '+repr(binsUse)
             #print 'len(binsUse) = '+str(len(binsUse))
-            plot.plot(binsUse,n,color='k',linewidth=3)
+            plot.plot(binsUse,n,color=lineColor,linewidth=3)
         
         if normed:
             #update the y limit and its ticks and tick labels
@@ -566,13 +566,17 @@ def makeCleanSummaryPlot(outputDataFilename=''):
 
 def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
-    outputDataFilenames.append('')
-    outputDataFilenames.append()
-    outputDataFilenames.append()
-    outputDataFilenames.append()
-    outputDataFilenames.append()
-    plotFilename = os.path.join(os.path.abspath(outputDataFilenames[0]),'stackedPosteriorsPlot')
+    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-20errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
+    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-10errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
+    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-5errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
+    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-1errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
+    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-point5errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
+    #outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-point1errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
+    #outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-point01errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
+    
+    plotFilename = os.path.join(os.path.abspath('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/'),'stackedPosteriorsPlot.png')
     stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename)
+    print 'Final stacked plot file written to:\n'+plotFilename
 
 def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename):
     """
@@ -589,6 +593,7 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename):
     if type(outputDataFilenames)!=list:
         outputDataFilenames = [outputDataFilenames]
     
+    colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ## Add a color list here and add the ability to pass it into the histConverter func for the line plot
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -671,11 +676,14 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename):
             print s
         #log.write(s+'\n')
         subPlot = fig.add_subplot(341+i)
+        colorInt = 0
         for outputDataFilename in outputDataFilenames:
-            if os.path.exists(outputDataFilename):          
+            if os.path.exists(outputDataFilename):        
+                print 'Plotting parameter '+str(i)+"/"+str(len(paramList)-1)+" for file:\n"+outputDataFilename
                 (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
-                subPlot = histConverter([], data, subPlot, paramStrs[i], confLevels=False, weight=weight, normed=normalize, nu=nu, bestVal=perfectVals[i])
+                subPlot = histConverter([], data, subPlot, paramStrs[i], confLevels=False, weight=weight, normed=normalize, nu=nu, bestVal=perfectVals[i],lineColor=colorsList[colorInt])
                 subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
+                colorInt+=1
             else:
                 s= "simpleKeyPosteriorsPlotter: ERROR!!!! file doesn't exist"
                 print s
@@ -2485,22 +2493,22 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     # close figure/plot
     plt.close()    
     
-    #Create a figure for the O-C in SA and PA
+    #Create a figure for the Residuals in SA and PA
     if True:
         fig2 = plt.figure(1,figsize=(30,20))
         saPlot = fig2.add_subplot(211)
         saPlot.set_xlabel('Epochs [JD]', fontsize=30)
-        saPlot.set_ylabel('SA (O-C) ["]', fontsize=30)
+        saPlot.set_ylabel('SA Residuals ["]', fontsize=30)
         paPlot = fig2.add_subplot(212)
         paPlot.set_xlabel('Epochs [JD]', fontsize=30)
-        paPlot.set_ylabel("PA (O-C) [deg]", fontsize=30)
+        paPlot.set_ylabel("PA Residuals [deg]", fontsize=30)
         plt.suptitle(plotFileTitle, fontsize=10)
         for orb in range(0,len(longAN_deg)):
             saPlot.scatter(epochs,SA_diffs2[orb],color=colorsList[int(orb/3.0)])
             paPlot.scatter(epochs,PA_diffs2[orb],color=colorsList[int(orb/3.0)])
         saPlot.plot(saPlot.axes.get_xlim(),[0,0],c='r',linewidth=2.0)
         paPlot.plot(paPlot.axes.get_xlim(),[0,0],c='r',linewidth=2.0)
-        plotFilenameOC = plotFilename[:-4]+"-O-C.png"
+        plotFilenameOC = plotFilename[:-4]+"-Residuals.png"
         ## saved cropped version to file if requested
         if plotFilename!='':
             plt.savefig(plotFilenameOC, dpi=300, orientation='landscape')

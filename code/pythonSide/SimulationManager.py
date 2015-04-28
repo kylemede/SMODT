@@ -172,6 +172,8 @@ def simulator(paramSettingsDict):
         print s
     PMlogFile.write(s)
     tools.gen.dataFileCombiner(dataFiles, dataFinalFilename)
+    if True:
+        print "Combined output data file written to:\n"+dataFinalFilename
     
     ############################################################
     # Prepare system data dictionary for plotting functions
@@ -457,7 +459,7 @@ def simulator(paramSettingsDict):
     if os.path.exists(DIdatafilename)and ((paramSettingsDict['RVonly']==False)and(paramSettingsDict['makeOrbitPlots'])):
         origFiles.append(os.path.basename(orbitEllipsePlotFilename)+'.png')
         origFiles.append(os.path.basename(orbitEllipsePlotFilename)+'-CROPPED.png')
-        origFiles.append(os.path.basename(orbitEllipsePlotFilename)+'-O-C.png')
+        origFiles.append(os.path.basename(orbitEllipsePlotFilename)+'-Residuals.png')
         origFiles.append(os.path.basename(orbitEllipsePlotFilename)+'-paramInfo.png')
     # get progress plot filenames
     if paramSettingsDict['simAnneal']:

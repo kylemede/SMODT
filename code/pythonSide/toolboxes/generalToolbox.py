@@ -574,14 +574,16 @@ def corrLengthCalcStd(paramIN):
             useless=1
         if stdCur>halfStdALL:
             # over halfStd, so do all in last jump to find precise location
-            for j in range((i-1)*jump, i*jump):
-                try:
-                    stdCur2 = np.std(paramIN[0:j])
-                except:
-                    useless=2
-                if stdCur2>halfStdALL:
-                    CorrLength = j+1
-                    break
+            for j in range((i-1)*jump, i*jump+1):
+                if (j<len(paramIN))and(j!=0):
+                    try:
+                        stdCur2 = 0
+                        stdCur2 = np.std(paramIN[0:j])
+                    except:
+                        useless=2
+                    if stdCur2>halfStdALL:
+                        CorrLength = j+1
+                        break
             break
     if CorrLength == len(paramIN):
         print "PROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
@@ -593,7 +595,10 @@ def corrLengthCalcVar(paramIN):
     This version uses np.var
     This is the most ideal way to calculate the correlation length, instead of the std based version.
     
-    This function will calculate the correlation length and return its value.
+    This function will calculate the mean correlation length and return its value.
+    This is equal to the number of steps it takes for the variance to equal half of the total chain's variance.
+    This is done in a loop, calculating it in an end-to-end fashion with the result being the mean of those 
+    correlation lengths.  
     
     :param paramIN:     parameter array after burn in data stripped
     :type paramIN:      array (list) of doubles
@@ -618,40 +623,42 @@ def corrLengthCalcVar(paramIN):
     varCur=varCur2=0
     i=j= 0
     
+    startLoc = 1
+    corrLengths = []
     if paramIN[0]==paramIN[-1]:
         if verbose:
-            print 'First and last parameters were the same, so returning a correlation length of the input array.'
+            print 'First and last parameters were the same, so returning a length of the input array.'
         CorrLength=len(paramIN)
     else:
-        for i in range(1,int(len(paramIN)/jump)):
+        for i in range(startLoc,int(len(paramIN)/jump)):
             #check std at each jump to see if over halfstd yet
             try:
                 varCur = np.var(paramIN[0:i*jump])
             except:
                 useless=1
             if varCur>halfVarALL:
-                # over halfStd, so do all in last jump to find precise location
+                # over halfVar, so do all in last jump to find precise location
                 for j in range((i-1)*jump, i*jump+1):
                     if (j<len(paramIN))and(j!=0):
                         try:
                             varCur2 = 0
-                            #print 'trying var calc 2&'
-                            #print 'size = '+repr(paramIN.size)+", j = "+str(j)
                             varCur2 = np.var(paramIN[0:j])
-                            #print 'done trying var calc 2'
                         except:
                             useless=2
                         if varCur2>halfVarALL:
-                            CorrLength = j+1
+                            CorrLength = j+2-startLoc
+                            startLoc = j+1
+                            corrLengths.append(CorrLength)
                             break
                 break
-        if CorrLength == len(paramIN):
+        if (startLoc==1)and(CorrLength == len(paramIN)):
             print "PROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
+    meanCorrLength = np.mean(corrLengths)
     if verbose:
-        print 'Correlation length found to be = ',CorrLength
+        print 'mean Correlation length found to be = ',meanCorrLength
         print "Leaving corrLengthCalcVar"
-        print "halfVarALL = "+str(halfVarALL)+", varCur = "+str(varCur)+", varCur2 = "+str(varCur2)+", CorrLength = "+str(CorrLength)+", i*jump = "+str(i*jump)+", j = "+str(j)+", len(paramIN) = "+str(len(paramIN))
-    return CorrLength
+        print "halfVarALL = "+str(halfVarALL)+", varCur = "+str(varCur)+", varCur2 = "+str(varCur2)+", CorrLength = "+str(meanCorrLength)+", i*jump = "+str(i*jump)+", j = "+str(j)+", len(paramIN) = "+str(len(paramIN))
+    return meanCorrLength
 
 
 
@@ -817,7 +824,6 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             log = open(logFilename,'a')
             log.write('\n'+75*'+'+'\n Inside MCMCeffectivePointsCalc \n'+75*'+'+'\n')
             
-            ## find conff levels of data that is always outputed from sims
             s= 'longANs have:'
             (log,data,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=0, returnData=True, returnChiSquareds=False)
             if simAnneal:
@@ -989,7 +995,7 @@ def mcmcEffectivePointsCalc(dataFilenames,simAnneal=False):
             if verbose:
                 print s
         
-            ## figure out if there is any RV offsets in output file and find their confLevels 
+            ## figure out if there is any RV offsets in output file and find their Corr length 
             f = open(filename, 'r')
             plotFileTitle = f.readline()
             headings = f.readline()
@@ -1262,8 +1268,16 @@ def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=Fal
             log = open(logFilename,'a')
             log.write('\n'+75*'-'+'\n Inside dataReader \n'+75*'-'+'\n')
         else:
-            gotLog=False
-            log=False
+            try:
+                # maybe this is being done on a previous run, so log files in different subfolder
+                logFolder = os.path.join(datadir,'logs/')
+                logFilename = os.path.join(logFolder,os.path.basename(logFilename))
+                if os.path.exists(logFilename):
+                    log = open(logFilename,'a')
+                    log.write('\n'+75*'-'+'\n Inside dataReader \n'+75*'-'+'\n')
+            except:
+                gotLog=False
+                log=False
             
     s= '\nOpening and finding ranges for data in column # '+str(columNum)
     if gotLog:

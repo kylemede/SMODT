@@ -3118,6 +3118,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         chiSquaredTot2 = 0.0
         numEpochs_RV = 0.0
         chi_squared_RV_reducedCur2 = []
+        chi_squared_RV_Cur2 = []
         for dataset in range(0,len(RVsOUT)):
             chiSquaredTot = 0.0
             epochs = RV_epochsIN2[dataset]
@@ -3210,6 +3211,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             nuRV_cur = nuRV*(float(len(rvs))/float(numEpochsTotal))
             s=s+ "\nFor dataset"+str(dataset)+": nuRV = "+str(nuRV)+", len(rvs) = "+str(len(rvs))+", numEpochsTotal = "+str(numEpochsTotal)+", nuRV_cur = "+str(nuRV_cur)
             chi_squared_RV_reducedCur = (1.0/nuRV_cur)*chiSquaredTot
+            chi_squared_RV_Cur2.append(chiSquaredTot)
             chi_squared_RV_reducedCur2.append(chi_squared_RV_reducedCur)
             chiSquaredTot2 = chiSquaredTot2 + chiSquaredTot
             s='chiSquaredTot2 = '+str(chiSquaredTot2)+', with nuRV_cur = '+str(nuRV_cur)
@@ -3354,6 +3356,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     for orb in range(0,len(argPeri_deg)):
         chiSquaredStr = ''
         for dataset in range(0,len(RVs)):
+            chiSquaredStr = chiSquaredStr+'\ndataset '+str(dataset)+' has chiSquared = '+str(chi_squared_RV_Cur2[dataset])+", or reduced chiSquared = "+str(chi_squared_RV_reducedCur2[dataset])
             chiSquaredStr = chiSquaredStr+'\nchiSquared_reduced for dataset '+str(dataset)+' is = '+str(chi_squared_RV_reducedCur2[dataset])
             residualsPlot.scatter(phases3[orb][dataset],residuals3[orb][dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
             s= '\n\n*** RMS of residuals '+str(dataset)+'= '+str(np.sqrt(np.mean(np.array(residuals3[orb][dataset])**2)))+' ***\n\n'

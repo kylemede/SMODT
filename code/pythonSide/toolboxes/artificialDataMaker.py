@@ -168,17 +168,22 @@ def calc_orbit():
     #calculate error and use it to realize the errors if requested
     errorRA = np.median(np.abs(data2[:,1]))*(percentError/100.0)
     if realizeErrors:
-        data2[:,1] += np.random.normal(0,errorRA)
+        for i in range(pos_A.shape[0]):
+            data2[i,1]+=np.random.normal(0,errorRA)
     errorDec = np.median(np.abs(data2[:,2]))*(percentError/100.0)
     if realizeErrors:
-        data2[:,2] += np.random.normal(0,errorDec)
+        for i in range(pos_A.shape[0]):
+            data2[i,2] += np.random.normal(0,errorDec)
     errorRVprimary = np.median(np.abs(data2[:,3]))*(percentError/100.0)
     if realizeErrors:
-        data2[:,3] += np.random.normal(0,errorRVprimary)
+        for i in range(pos_A.shape[0]):
+            data2[i,3] += np.random.normal(0,errorRVprimary)
     errorRVsecondary = np.median(np.abs(data2[:,4]))*(percentError/100.0)
     if realizeErrors:
-        data2[:,4] += np.random.normal(0,errorRVsecondary)
+        for i in range(pos_A.shape[0]):
+            data2[i,4] += np.random.normal(0,errorRVsecondary)
     
+    #convert RA and Dec into the SA and PA used by SMODT
     data3 = np.empty((pos_A.shape[0],7))
     data3[:,0] = data2[:, 0]
     for i in range(0,pos_A.shape[0]):

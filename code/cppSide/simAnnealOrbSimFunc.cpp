@@ -379,7 +379,7 @@ void simAnealOrbFuncObj::simulator()
 	double inc_sigmaPercent_latest = 8;//sigmaPercent_min;
 	double longAN_sigmaPercent_latest = 8;//sigmaPercent_min;
 	double argPeri_sigmaPercent_latest = 8.0;//1.0;
-	double e_sigmaPercent_latest = 10;//2.0;
+	double e_sigmaPercent_latest = 30;//2.0;
 	double period_sigmaPercent_latest = 20;//sigmaPercent_min*0.5;//5.0;
 	double T_sigmaPercent_latest = 10;//sigmaPercent_min*0.5;//1.0;
 	double K_sigmaPercent_latest = 10;//sigmaPercent_min;//3.0;

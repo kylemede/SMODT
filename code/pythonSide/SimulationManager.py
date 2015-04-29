@@ -173,7 +173,7 @@ def simulator(paramSettingsDict):
     PMlogFile.write(s)
     tools.gen.dataFileCombiner(dataFiles, dataFinalFilename)
     if True:
-        print "Combined output data file written to:\n"+dataFinalFilename
+        print "Combined output data file written to:\n"+dataFinalFilename+'\n'
     
     ############################################################
     # Prepare system data dictionary for plotting functions
@@ -211,14 +211,21 @@ def simulator(paramSettingsDict):
         p = False
 
     bestOrbit = tools.gen.bestOrbitFinder(dataFinalFilename, printToScreen=p, saveToFile=True, returnAsList=True)
-    if False:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        bestOrbit = [70.0, 0.5, 2457000., 2457000., 5.0, 40.0, 50.0, 3.34718746581, 0, [0], 0]#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     logFilename = os.path.join(paramSettingsDict['outputData_dir'],'log-chain_1.txt')
     [nu,nuRV,nuDI,printStr] = tools.gen.findNuFromLog(logFilename)
     nus = [nu,nuRV,nuDI]
     if paramSettingsDict['SILENT']==False:
         print printStr+'\n'+'#'*50
     PMlogFile.write(printStr+'\n'+'#'*50+'\n')
+    
+    
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    if True:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        bestOrbit = [70.0, 0.5, 2457000., 2457000., 5.0, 40.0, 50.0, 3.34718746581, 0, [0], 0]#$$$$$$$$$$$$$$$$
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    
     
     ############################################################
     ## make general parameter result summary figures
@@ -524,6 +531,11 @@ def simulator(paramSettingsDict):
         DBdir = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/',fs[-1])
         print 'Copying all files in the RESULTS folder over to DropBox folder:\n '+DBdir
         tools.gen.copytree(resultsFolder, DBdir)
+        if True:
+            DBdir = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/',fs[-1])
+            print 'Copying all files in the LOGS folder over to DropBox folder:\n '+DBdir
+            tools.gen.copytree(logFolder, DBdir)
+        
             
     ############################################################
     ## Delete chain and/or combined data files?

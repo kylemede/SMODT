@@ -548,7 +548,10 @@ def corrLengthCalcStd(paramIN):
     
     This version uses np.std
     
-    This function will calculate the correlation length and return its value.
+    This function will calculate the mean correlation length and return its value.
+    This is equal to the number of steps it takes for the std to equal half of the total chain's std.
+    This is done in a loop, calculating it in an end-to-end fashion with the result being the mean of those 
+    correlation lengths.  
     
     :param paramIN:     parameter array after burn in data stripped
     :type paramIN:      array (list) of doubles
@@ -566,7 +569,9 @@ def corrLengthCalcStd(paramIN):
     else:
         jump = 10
     
-    for i in range(1,int(len(paramIN)/jump)):
+    startLoc = 1
+    corrLengths = []
+    for i in range(startLoc,int(len(paramIN)/jump)):
         #check std at each jump to see if over halfstd yet
         try:
             stdCur = np.std(paramIN[0:i*jump])
@@ -582,13 +587,15 @@ def corrLengthCalcStd(paramIN):
                     except:
                         useless=2
                     if stdCur2>halfStdALL:
-                        CorrLength = j+1
+                        CorrLength = j+2-startLoc
+                        startLoc = j+1
+                        corrLengths.append(CorrLength)
                         break
             break
     if CorrLength == len(paramIN):
         print "PROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
-        
-    return CorrLength
+    meanCorrLength = np.mean(corrLengths)
+    return meanCorrLength
 
 def corrLengthCalcVar(paramIN):
     """

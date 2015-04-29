@@ -7,7 +7,7 @@
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 chiSquaredMax =3000.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =200
+numSamples =200000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =0
 # Number of simulation chains to run in parallel, [1,100] [int].  
@@ -31,7 +31,7 @@ RVdataFilename =RVdata.dat
 outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-outputData_filenameRoot = FakeData-mcmc-3D-veryOpen-1PercentRealizedError
+outputData_filenameRoot = FakeData-mcmc-3D-veryOpen-1PercentRealizedError2
 #*************************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -43,7 +43,7 @@ mcONLY =false
 # Set to true to perform SimulateAnnealing[bool]
 simAnneal =false
 # Simulated Annealing starting temperature [double]
-startTemp =500.0
+startTemp =800.0
 # make plot of posterior distributions? [bool]
 makePosteriorsPlot =true
 # make plots of RV and DI/AM orbit fits [bool]
@@ -65,7 +65,7 @@ removeBurnIn = false
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 calcCorrLengths =true
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal =1000000
+numSamples_SimAnneal =2000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots =false
 # Make plots of Simulated Annealing progress plots? [bool]
@@ -112,7 +112,7 @@ argPeriPlusDI = 0.0
 # Minimum allowed value for the Longitude of the Ascending Node [double][deg]#130
 longAN_degMIN =1
 # Maximum allowed value for the Longitude of the Ascending Node [double][deg]#210
-longAN_degMAX =180.0
+longAN_degMAX =80.0
 # Minimum allowed value for the Eccentricity [double]
 eMIN =0.01
 # Maximum allowed value for the Eccentricity　[double]
@@ -132,13 +132,13 @@ inclination_degMAX =89
 # Minimum allowed value for the Argument of Perigee [double][deg]#250
 argPeri_degMIN =1
 # Maximum allowed value for the Argument of Perigee [double][deg]
-argPeri_degMAX =360
+argPeri_degMAX =160
 # Minimuim value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(0 indicates to use value in SystemData.txt always, -1 indicates to use [earliestsEpoch-period,earliestEpoch])
-T_Min =-1
+T_Min =2456000
 # Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(0 indicates to use value in SystemData.txt always, -1 indicates to use [earliestsEpoch-period,earliestEpoch])
-T_Max =-1
+T_Max =2458000
 # Minimum value for Semi-major amplitude of RV curve (Max RV) [m/s]
 K_MIN =0
 # Maximum value for Semi-major amplitude of RV curve (Max RV) [m/s]

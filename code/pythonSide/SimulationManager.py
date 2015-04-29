@@ -248,9 +248,9 @@ def simulator(paramSettingsDict):
             if paramSettingsDict['SILENT']==False:
                 print s
             PMlogFile.write(s)
-    if True:
-        tools.plot.stackedPosteriorsPlotterFunc([dataFinalFilename],keyPosteriorsPlotFile)
-    
+            if True:
+                tools.plot.stackedPosteriorsPlotterFunc([dataFinalFilename],keyPosteriorsPlotFile)
+            
     ############################################################
     ## Make DI ellipse plot if DI data exists
     ############################################################
@@ -444,7 +444,7 @@ def simulator(paramSettingsDict):
     if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
         origFiles.append(os.path.basename(summaryPlotFile)+".png")
         origFiles.append(os.path.basename(summaryPlotFile)+"-ChiSquaredDist.png")
-        origFiles.append(os.path.basename(keyPosteriorsPlotFile)+".png")
+        origFiles.append(os.path.basename(keyPosteriorsPlotFile)+".eps")
         if paramSettingsDict['DIonly']==False:
             origFiles.append(os.path.basename(summaryPlotFile)+"-RVoffsets.png")
         if (len(dataFiles)>1)and(paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and(paramSettingsDict['CalcBurnIn']and (paramSettingsDict['simAnneal']==False)):

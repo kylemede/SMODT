@@ -59,15 +59,15 @@ def fixPlotBordersAndLabels(plot):
     This will just increase the boarder thicknesses and label sizes to look better for printing or 
     putting in papers.
     """
-    plot.tick_params(axis='both',which='major',labelsize=20)
+    plot.tick_params(axis='both',which='major',labelsize=40)
     #plot.axhline(linewidth=2.0)
     #plot.axvline(linewidth=2.0)
-    plot.xaxis.set_tick_params(width=3)
-    plot.yaxis.set_tick_params(width=3)
-    plot.spines['right'].set_linewidth(2.0)
-    plot.spines['bottom'].set_linewidth(2.0)
-    plot.spines['top'].set_linewidth(2.0)
-    plot.spines['left'].set_linewidth(2.0)
+    plot.xaxis.set_tick_params(width=4)
+    plot.yaxis.set_tick_params(width=4)
+    plot.spines['right'].set_linewidth(3.0)
+    plot.spines['bottom'].set_linewidth(3.0)
+    plot.spines['top'].set_linewidth(3.0)
+    plot.spines['left'].set_linewidth(3.0)
     return plot
     
 def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=False, normed=False, nu=1, bestVal=0,logY=False,lineColor='k'):
@@ -161,7 +161,7 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
         # draw a line up the median of the data
         Median = np.median(data)
         if type(confLevels)==list:
-            plot.plot([Median, Median],plot.axes.get_ylim(),'k',linewidth=3)
+            plot.plot([Median, Median],plot.axes.get_ylim(),'k',linewidth=4)
         #convert data and chiSquareds arrays to np arrays if needed
         if type(chiSquareds)!=np.ndarray:
             chiSquareds = np.array(chiSquareds)
@@ -177,7 +177,11 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
         else:
             if debug:
                 print 'using provided bestVal = ',bestVal
-        plot.plot([bestVal, bestVal],plot.axes.get_ylim(),'g',linewidth=3)
+        if type(confLevels)==list:
+            cMean = 'g'
+        else:
+            cMean = 'k'
+        plot.plot([bestVal, bestVal],plot.axes.get_ylim(),cMean,linewidth=4)
         
         if verbose:
             print "min found to be "+str(np.min(data,axis=0))+", max was "+str(np.max(data,axis=0))
@@ -210,7 +214,7 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
         if verbose:
             print 'Values for '+xlabel+' were found to be constant, so not making a histogram, just a simple line plot!!'
     # add x label
-    plot.axes.set_xlabel(xlabel,fontsize=30)
+    plot.axes.set_xlabel(xlabel,fontsize=40)
     plot = fixPlotBordersAndLabels(plot)
     #plot.tick_params(axis='both',which='major',labelsize=20)
     
@@ -571,11 +575,11 @@ def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-5PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
     outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-1PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
     
-    plotFilename = os.path.join(os.path.abspath('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/'),'stackedPosteriorsPlot.png')
-    stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename)
+    plotFilename = os.path.join(os.path.abspath('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/'),'stackedPosteriorsPlot.eps')
+    stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=False)
     print 'Final stacked plot file written to:\n'+plotFilename
 
-def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename):
+def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=True):
     """
     will plot a simple posterior distribution for each parameter in the data files
     stacked ontop of eachother for comparison between different runs.
@@ -633,8 +637,8 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename):
         f.close()
         
         # check if the passed in value for plotFilename includes '.png'
-        if '.png' not in plotFilename:
-            plotFilename = plotFilename+'.png'
+        if '.eps' not in plotFilename:
+            plotFilename = plotFilename+'.eps'
         else:
             plotFilename = plotFilename
         
@@ -648,22 +652,29 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename):
             print s
         #log.write(s+'\n')
         
-        fig = plt.figure(1, figsize=(50,35) ,dpi=300) 
+        
         ## give the figure its title
-        plt.suptitle(plotFileTitle,fontsize=30)
+        #plt.suptitle(plotFileTitle,fontsize=30)
+    if ALLparams:
+        fig = plt.figure(1,figsize=(70,55)) 
+        #Load up parameter column number and name string arrays
+        paramList = [0,1,2,3,4,5,6,7]
+        paramStrs = ['Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]']
+        perfectVals = [70.0,0.5,2457000.0,2457000.0,5.0,40.0,50.0,3.34718746581]
+        if numRVdatasets>0:
+            paramList.append(9)
+            paramStrs.append('K [m/s]')
+            perfectVals.append(4933.18419284)
+            for dataset in range(1,numRVdatasets+1):
+                paramList.append(9+dataset)
+                paramStrs.append('RV offset '+str(dataset)+' [m/s]')
+                perfectVals.append(0.0)
+    else:
+        fig = plt.figure(1,figsize=(55,25)) 
+        paramList = [1,4]
+        paramStrs = ['Eccentricity','Period [Yrs]']
+        perfectVals = [0.50,5.00]
     
-    #Load up parameter column number and name string arrays
-    paramList = [0,1,2,3,4,5,6,7]
-    paramStrs = ['Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]']
-    perfectVals = [70.0,0.5,2457000.0,2457000.0,5.0,40.0,50.0,3.34718746581]
-    if numRVdatasets>0:
-        paramList.append(9)
-        paramStrs.append('K [m/s]')
-        perfectVals.append(4933.18419284)
-        for dataset in range(1,numRVdatasets+1):
-            paramList.append(9+dataset)
-            paramStrs.append('RV offset '+str(dataset)+' [m/s]')
-            perfectVals.append(0.0)
             
     ## make combined/stacked plot for each parameter in list
     for i in range(0,len(paramList)):
@@ -672,14 +683,17 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename):
         if verbose:
             print s
         #log.write(s+'\n')
-        subPlot = fig.add_subplot(341+i)
+        if ALLparams:
+            subPlot = fig.add_subplot(341+i)
+        else:
+            subPlot = fig.add_subplot(121+i)
         colorInt = 0
         for outputDataFilename in outputDataFilenames:
             if os.path.exists(outputDataFilename):        
                 print 'Plotting parameter '+str(i)+"/"+str(len(paramList)-1)+" for file:\n"+outputDataFilename
                 (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
                 subPlot = histConverter([], data, subPlot, paramStrs[i], confLevels=False, weight=weight, normed=normalize, nu=nu, bestVal=perfectVals[i],lineColor=colorsList[colorInt])
-                subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
+                subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=45)
                 colorInt+=1
             else:
                 s= "simpleKeyPosteriorsPlotter: ERROR!!!! file doesn't exist"
@@ -702,8 +716,9 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename):
     if verbose:
         print '\nStarting to save param hist figure:'
     if plotFilename!='':
-        plt.savefig(plotFilename, dpi=300, orientation='landscape')
+        plt.savefig(plotFilename,format='ps')
         s= 'Summary plot saved to: '+plotFilename
+        print s
         if quiet==False:
             print s
         #log.write(s+'\n')

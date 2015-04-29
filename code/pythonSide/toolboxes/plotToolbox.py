@@ -566,13 +566,10 @@ def makeCleanSummaryPlot(outputDataFilename=''):
 
 def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
-    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-20errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
-    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-10errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
-    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-5errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
-    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-1errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
-    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-point5errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
-    #outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-point1errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
-    #outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-PrimaryRVs-TcEqualT-point01errorPercent-comboPosteriorPlotTEST--35-Million-in_Total/outputData-ALL.dat')
+    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-20PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
+    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-10PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
+    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-5PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
+    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-1PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
     
     plotFilename = os.path.join(os.path.abspath('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/'),'stackedPosteriorsPlot.png')
     stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename)

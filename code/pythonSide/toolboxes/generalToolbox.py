@@ -556,7 +556,7 @@ def corrLengthCalcStd(paramIN):
     :param paramIN:     parameter array after burn in data stripped
     :type paramIN:      array (list) of doubles
     """
-    
+    verbose = False
     try:
         stdALL = np.std(paramIN)
     except:
@@ -564,36 +564,51 @@ def corrLengthCalcStd(paramIN):
     halfStdALL = stdALL/2.0
     CorrLength = 0
     
-    if len(paramIN)>=100000:
+    if len(paramIN)>10e6:
+        jump=1000
+    elif len(paramIN)>1e5:
         jump = 100
     else:
         jump = 10
+        
+    stdCur=stdCur2=0
+    i=j= 0
     
-    startLoc = 1
-    corrLengths = []
-    for i in range(startLoc,int(len(paramIN)/jump)):
-        #check std at each jump to see if over halfstd yet
-        try:
-            stdCur = np.std(paramIN[0:i*jump])
-        except:
-            useless=1
-        if stdCur>halfStdALL:
-            # over halfStd, so do all in last jump to find precise location
-            for j in range((i-1)*jump, i*jump+1):
-                if (j<len(paramIN))and(j!=0):
-                    try:
-                        stdCur2 = 0
-                        stdCur2 = np.std(paramIN[0:j])
-                    except:
-                        useless=2
-                    if stdCur2>halfStdALL:
-                        CorrLength = j+2-startLoc
-                        startLoc = j+1
-                        corrLengths.append(CorrLength)
-                        break
-            break
-    if CorrLength == len(paramIN):
-        print "PROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
+    if paramIN[0]==paramIN[-1]:
+        if verbose:
+            print 'First and last parameters were the same, so returning a length of the input array.'
+        CorrLength=meanCorrLength=len(paramIN)
+    else:
+        startLoc = 1
+        corrLengths = []
+        notFinished=True
+        while notFinished:
+            for i in range(startLoc,int(len(paramIN)/jump)):
+                #check std at each jump to see if over halfstd yet
+                try:
+                    stdCur = np.std(paramIN[0:i*jump])
+                except:
+                    useless=1
+                if stdCur>halfStdALL:
+                    # over halfStd, so do all in last jump to find precise location
+                    for j in range((i-1)*jump, i*jump+1):
+                        if (j<len(paramIN))and(j!=0):
+                            try:
+                                stdCur2 = 0
+                                stdCur2 = np.std(paramIN[0:j])
+                            except:
+                                useless=2
+                            if stdCur2>halfStdALL:
+                                CorrLength = j+2-startLoc
+                                startLoc = j+1
+                                corrLengths.append(CorrLength)
+                                break
+                        if j>len(paramIN):
+                            notFinished=False
+                            break
+                    break
+        if CorrLength == len(paramIN):
+            print "PROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
     meanCorrLength = np.mean(corrLengths)
     return meanCorrLength
 
@@ -618,7 +633,7 @@ def corrLengthCalcVar(paramIN):
     except:
         useless=0
     halfVarALL = varALL/2.0
-    CorrLength = len(paramIN)
+    CorrLength  = meanCorrLength = len(paramIN)
     
     if len(paramIN)>10e6:
         jump=1000
@@ -630,37 +645,55 @@ def corrLengthCalcVar(paramIN):
     varCur=varCur2=0
     i=j= 0
     
-    startLoc = 1
-    corrLengths = []
+    
     if paramIN[0]==paramIN[-1]:
         if verbose:
             print 'First and last parameters were the same, so returning a length of the input array.'
-        CorrLength=len(paramIN)
+        CorrLength=meanCorrLength=len(paramIN)
     else:
-        for i in range(startLoc,int(len(paramIN)/jump)):
-            #check std at each jump to see if over halfstd yet
-            try:
-                varCur = np.var(paramIN[0:i*jump])
-            except:
-                useless=1
-            if varCur>halfVarALL:
-                # over halfVar, so do all in last jump to find precise location
-                for j in range((i-1)*jump, i*jump+1):
-                    if (j<len(paramIN))and(j!=0):
-                        try:
-                            varCur2 = 0
-                            varCur2 = np.var(paramIN[0:j])
-                        except:
-                            useless=2
-                        if varCur2>halfVarALL:
-                            CorrLength = j+2-startLoc
-                            startLoc = j+1
-                            corrLengths.append(CorrLength)
+        startLoc = 1
+        corrLengths = []
+        notFinished=True
+        while notFinished:
+            #print "Starting for loop with startLoc = "+str(startLoc)+"/"+str(len(paramIN))
+            for i in range(startLoc,int(len(paramIN)/jump)):
+                print "i = "+str(i)
+                if i>(len(paramIN)-2):
+                    notFinished=False
+                    print "breaking at i>(len(paramIN)-2):"
+                    break
+                #check var at each jump to see if over halfvar yet
+                try:
+                    varCur = np.var(paramIN[0:i*jump])
+                except:
+                    useless=1
+                
+                if varCur>halfVarALL:
+                    # over halfVar, so do all in last jump to find precise location
+                    for j in range((i-1)*jump, i*jump+1):
+                        if (j<len(paramIN))and(j!=0):
+                            print "j = "+str(j)
+                            try:
+                                varCur2 = 0
+                                varCur2 = np.var(paramIN[0:j])
+                            except:
+                                useless=2
+                            if varCur2>halfVarALL:
+                                CorrLength = j+2-startLoc
+                                print str(startLoc)+" and "+str(CorrLength)+"/"+str(len(paramIN))
+                                startLoc = j+1
+                                corrLengths.append(CorrLength)
+                                print 'breaking at varCur2>halfVarALL'
+                                break
+                        if j>(len(paramIN)-2):
+                            notFinished=False
+                            print 'breaking at j>(len(paramIN)-2)'
                             break
-                break
+                        
         if (startLoc==1)and(CorrLength == len(paramIN)):
             print "PROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
     meanCorrLength = np.mean(corrLengths)
+    print 'corrLengths = '+repr(corrLengths)
     if verbose:
         print 'mean Correlation length found to be = ',meanCorrLength
         print "Leaving corrLengthCalcVar"

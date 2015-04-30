@@ -2408,59 +2408,71 @@ def dictToFile(d, filename):
 
 def findArrayMin(ary):
     """
-    Find the minimum value inside an array up to 4D.
+    Find the minimum value inside an array of numbers.
+    NOTE: this function should be killed and all calls to it replaced with a simple np.min().
     """
-    min = 1e9
-    
-    if type(ary)==list:
-        for subEl in ary:
-            if type(subEl)==list:
-                for subsubEl in subEl:
-                    if type(subsubEl)==list:
-                        for subsubsubEl in subsubEl:
-                            if min>subsubsubEl:
-                                min = subsubsubEl
+    min=1e9
+    try:
+        min = np.min(ary)
+    except:
+        if type(ary)==list:
+            for subEl in ary:
+                if type(subEl)==list:
+                    for subsubEl in subEl:
+                        if type(subsubEl)==list:
+                            for subsubsubEl in subsubEl:
+                                if min>subsubsubEl:
+                                    min = subsubsubEl
+                                    #print 'new min = ',min
+                        else:
+                            if min>subsubEl:
+                                min = subsubEl
                                 #print 'new min = ',min
-                    else:
-                        if min>subsubEl:
-                            min = subsubEl
-                            #print 'new min = ',min
+                else:
+                    if min>subEl:
+                        min = subEl
+        else:
+            print 'NOTE: What was provided to findArrayMax was not a list.  It was of type "'+repr(type(ary))+'"'
+            if (type(ary)==float)or(type(ary)==int):
+                min = ary
+                print 'So just returning its value = '+str(min)
             else:
-                if min>subEl:
-                    min = subEl
-                    #print 'new min = ',min
-    else:
-        print 'NOTE: What was provided to findArrayMin was not an array, so just returning value.'
-
+                print 'So just returning the value = '+str(min)
     return min
         
 def findArrayMax(ary):
     """
-    Find the minimum value inside an array up to 4D.
+    Find the maximum value inside an array of numbers.
+    NOTE: this function should be killed and all calls to it replaced with a simple np.max().
     """
-    
     max = -1e9
-    
-    if type(ary)==list:
-        for subEl in ary:
-            if type(subEl)==list:
-                for subsubEl in subEl:
-                    if type(subsubEl)==list:
-                        for subsubsubEl in subsubEl:
-                            if max<subsubsubEl:
-                                max = subsubsubEl
+    try:
+        max = np.max(ary)
+    except:
+        if type(ary)==list:
+            for subEl in ary:
+                if type(subEl)==list:
+                    for subsubEl in subEl:
+                        if type(subsubEl)==list:
+                            for subsubsubEl in subsubEl:
+                                if max<subsubsubEl:
+                                    max = subsubsubEl
+                                    #print 'new max = ',max
+                        else:
+                            if max<subsubEl:
+                                max = subsubEl
                                 #print 'new max = ',max
-                    else:
-                        if max<subsubEl:
-                            max = subsubEl
-                            #print 'new max = ',max
+                else:
+                    if max<subEl:
+                        max = subEl
+        else:
+            print 'NOTE: What was provided to findArrayMax was not a list.  It was of type "'+repr(type(ary))+'"'
+            if (type(ary)==float)or(type(ary)==int):
+                max = ary
+                print 'So just returning its value = '+str(max)
             else:
-                if max<subEl:
-                    max = subEl
-                    #print 'new max = ',max
-    else:
-        print 'NOTE: What was provided to findArrayMin was not an array, so just returning value.'
-    
+                print 'So just returning the value = '+str(max)
+
     return max
 
 def findNuFromLog(logFilename = ''):

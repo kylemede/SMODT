@@ -7,11 +7,13 @@ import pylab
 import timeit
 from math import pi
 #import dicts
+import pickle
 import generalToolbox as genTools 
 import DItoolbox as diTools
 import RVtoolbox as rvTools 
 plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
+
 
 
 def ellipse(ra,rb,ang,x0,y0,Nb=50):
@@ -59,16 +61,96 @@ def fixPlotBordersAndLabels(plot):
     This will just increase the boarder thicknesses and label sizes to look better for printing or 
     putting in papers.
     """
-    plot.tick_params(axis='both',which='major',labelsize=40)
+    plot.tick_params(axis='both',which='major',width=5,length=7,pad=12,direction='in',labelsize=45)
     #plot.axhline(linewidth=2.0)
     #plot.axvline(linewidth=2.0)
-    plot.xaxis.set_tick_params(width=4)
-    plot.yaxis.set_tick_params(width=4)
-    plot.spines['right'].set_linewidth(3.0)
-    plot.spines['bottom'].set_linewidth(3.0)
-    plot.spines['top'].set_linewidth(3.0)
-    plot.spines['left'].set_linewidth(3.0)
+    #plot.xaxis.set_tick_params(width=5,length=5,pad=2,direction='in')
+    #plot.yaxis.set_tick_params(width=5,length=5,pad=2,direction='in')
+    plot.spines['right'].set_linewidth(4.0)
+    plot.spines['bottom'].set_linewidth(4.0)
+    plot.spines['top'].set_linewidth(4.0)
+    plot.spines['left'].set_linewidth(4.0)
     return plot
+    
+def histMakeAndDump(chiSquareds,data,outFilenameRoot='',weight=False, normed=False, nu=1,logY=False,histType='bar'):
+    """
+    This will make a matplotlib histogram using the input settings, then pickle the resulting n,bins
+    objects to disk following the filenames: 
+    'outFilenameRoot'+'_n.pkl'
+    'outFilenameRoot'+'_bins.pkl'
+    
+    This function is designed to work with a follow up like histLoadAndPlot to produce publication worthy plots.
+    """
+    if weight:
+        theWeights = genTools.likelihoodsCalc(chiSquareds, nu)
+    else:
+        theWeights = np.ones(len(data))
+        
+    if len(data)<20000:
+                nbins = 50
+    elif 50000<len(data)<200000:
+        nbins=70
+    else: 
+        nbins=100        
+    fig = plt.figure(1)
+    subPlot = fig.add_subplot(111)
+    (n,bins,rectangles)=subPlot.hist(data, bins=nbins, normed=False, weights=theWeights,linewidth=7,histtype=histType,log=logY, fill=False)
+    pickle.dump(n,open(outFilenameRoot+'_n.pkl','wb'))
+    pickle.dump(bins,open(outFilenameRoot+'_bins.pkl','wb'))
+    #pickle.dump(rectangles,open(outFilenameRoot+'_recs.pkl','wb'))
+    if True:
+        print "output pickle files were:"
+        print outFilenameRoot+'_n.pkl'
+        print outFilenameRoot+'_bins.pkl'
+        #print outFilenameRoot+'_recs.pkl'
+    
+def histLoadAndPlot_StackedPosteriors(plot,pklRoot='',xLabel='X',lineColor='k',xLims=False):
+    """
+    Loads previously plotted histograms that were pickled to disk following the naming conventions:
+    'outFilenameRoot'+'_n.pkl'
+    'outFilenameRoot'+'_bins.pkl'
+    and plot them up in a way that is ready for publication.
+    
+    It is foreseen that many versions of this function will exist for different specific publication ready plots.
+    """
+    n = pickle.load(open(pklRoot+'_n.pkl','rb'))
+    bins = pickle.load(open(pklRoot+'_bins.pkl','rb'))
+    #rectangles = pickle.load(open(pklRoot+'_recs.pkl','rb'))
+    ys = []
+    xs = []
+    max = np.max(n)
+    for i in range(0,len(n)):
+        ys.append(n[i]/max)
+        ys.append(n[i]/max)
+        xs.append(bins[i])
+        xs.append(bins[i+1])
+        if i<(len(n)-1):
+            #print 'i = '+str(i)+", len(n) = "+str(len(n))
+            ys.append(n[i+1]/max)
+            xs.append(bins[i+1])
+    plot.plot(xs,ys,color=lineColor,linewidth=7)
+    plot.axes.set_ylim([0.0,1.02])
+    if xLims!=False:
+        plot.axes.set_xlim(xLims)
+    plt.locator_params(axis='x',nbins=5) # maximum number of x labels
+    plt.locator_params(axis='y',nbins=6) # maximum number of y labels
+    plot.tick_params(axis='both',which='major',width=5,length=7,pad=12,direction='in',labelsize=45)
+    plot.spines['right'].set_linewidth(4.0)
+    plot.spines['bottom'].set_linewidth(4.0)
+    plot.spines['top'].set_linewidth(4.0)
+    plot.spines['left'].set_linewidth(4.0)
+    # add axes label
+    ylbl='dp/dx\times(constant)'
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    if False:
+        plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+        plt.rc('text', usetex=True)
+        ylbl = '$\displaystyle dp/dx$\times(constant)'
+    plot.axes.set_xlabel(xLabel,fontsize=55)
+    plot.axes.set_ylabel(ylbl,fontsize=55)
+    
+    return plot
+    
     
 def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=False, normed=False, nu=1, bestVal=0,logY=False,lineColor='k'):
     """
@@ -116,50 +198,78 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
         # make initial histogram and update it below
         if verbose:
             print 'making initial hist, then convert it'
-        (n,bins,rectangles)=plot.hist(data, bins=50, normed=normed, weights=theWeights,log=logY, fill=False)
-        #print "n = "+repr(n)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #print 'bins = '+repr(bins)#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #print '\nlen(n) = '+str(len(n))+", len(bins) = "+str(len(bins))+'\n'
-        if True:#if type(confLevels)==list:
-            if verbose:
-                print 'changing rectangle colors to match 68confLevels: '+repr(confLevels[0])+', and 95confLevels: '+repr(confLevels[1])
-            # Update rectangle patche's colors according to Confidence Levels of the data
-            recs2 = []
+        if type(confLevels)==list:
+            (n,bins,rectangles)=plot.hist(data, bins=50, normed=normed, weights=theWeights,log=logY, fill=False)
+        else:
+            if len(data)<20000:
+                nbins = 50
+            elif 50000<len(data)<200000:
+                nbins=70
+            else: 
+                nbins=100
+            #data =data/np.max(data)
+            (n,bins,rectangles)=plot.hist(data, bins=nbins, normed=False, weights=theWeights,linewidth=7,color=lineColor, histtype = 'step',log=logY, fill=False)
+        # Update rectangle patche's colors according to Confidence Levels of the data
+        if verbose:
+            print 'changing rectangle colors to match 68confLevels: '+repr(confLevels[0])+', and 95confLevels: '+repr(confLevels[1])
+        recs2 = []
+        if type(confLevels)==list:
             for rec in rectangles:
                     x=rec.get_x()
                     c = 'w'
-                    cEdge = 'w'
-                    alf = 0.0
-                    if type(confLevels)==list:
-                        alsf = 1.0
-                        cEdge = 'k'
-                        if(x>confLevels[1][0])and(x<confLevels[1][1]):
-                            c = '0.8'
-                        if (x>confLevels[0][0])and(x<confLevels[0][1]):
-                            c = '0.5'
-                    recs2.append(patches.Rectangle(xy=rec.get_xy(), width=rec.get_width(),height=rec.get_height(),facecolor=c,alpha=alf, edgecolor=cEdge))#color=c))
-            # draw updated patches on plot
-            for rec in recs2:
-                    plot.add_patch(rec)
-        if type(confLevels)!=list:
-            #if not plotting colored conf levels, then just make a simple line plot with no fill
-            if type(bins)!=np.ndarray:
-                bins = np.array(bins)
-            binsUse = (bins[1:]+bins[:-1])/2.0
-            #print 'binsUse = '+repr(binsUse)
-            #print 'len(binsUse) = '+str(len(binsUse))
-            plot.plot(binsUse,n,color=lineColor,linewidth=3)
+                    cEdge = 'k'
+                    if(x>confLevels[1][0])and(x<confLevels[1][1]):
+                        c = '0.8'
+                    if (x>confLevels[0][0])and(x<confLevels[0][1]):
+                        c = '0.5'
+                    recs2.append(patches.Rectangle(xy=rec.get_xy(), width=rec.get_width(),height=rec.get_height(),facecolor=c, edgecolor=cEdge))#color=c))
+        # draw updated patches on plot
+        for rec in recs2:
+                plot.add_patch(rec)
+        if False:        
+            if type(confLevels)!=list:
+                max = np.max(n)
+                n=n/max
+                #make a line plot based on centers of bins
+                if type(bins)!=np.ndarray:
+                    bins = np.array(bins)
+                binsUse = (bins[1:]+bins[:-1])/2.0
+                plot.plot(binsUse,n,color=lineColor,linewidth=4)
+                plot.axes.set_ylim([0.0,1.1])
         
-        if normed:
+        plt.locator_params(axis='x',nbins=5) # maximum number of x labels
+        #plt.locator_params(axis='y',nbins=6) # maximum number of y labels
+        if True:
             #update the y limit and its ticks and tick labels
             if not logY:
-                plot.axes.set_ylim([0.0,plot.axes.get_ylim()[1]*1.3])
+                plot.axes.set_ylim([0.0,plot.axes.get_ylim()[1]*1.005])
+                #print 'max = '+str(np.max(n))
+                #print '1.2*max = '+str(np.max(n)*1.2)
                 locs = []
-                lim = plot.axes.get_ylim()[1]
+                lim = np.max(n)*1.2
                 for i in range(0,6):
                     locs.append((lim/6.0)*i)
-                #plot.axes.set_yticks(locs)
-                #plot.axes.set_yticklabels([' ','0.2','0.4','0.6','0.8','1.0'])
+                #print repr(plot.axes.get_yticks())
+                #print 'locs = '+repr(locs)
+                plot.axes.set_yticks(locs)
+                plot.axes.set_yticklabels([' ','0.2','0.4','0.6','0.8','1.0'])
+            if False:
+                plot.axes.set_ylim([0.0,1.1])
+                locs = [0.25,0.5,0.75,1.0]
+                locLabels = ['0.25 ','0.5 ','0.75 ','1.0 ']
+                plot.axes.set_yticks(locs)
+                plot.axes.set_yticklabels(locLabels)
+
+#         if normed:
+#             #update the y limit and its ticks and tick labels
+#             if not logY:
+#                 plot.axes.set_ylim([0.0,plot.axes.get_ylim()[1]*1.3])
+#                 locs = []
+#                 lim = plot.axes.get_ylim()[1]
+#                 for i in range(0,6):
+#                     locs.append((lim/6.0)*i)
+#                 #plot.axes.set_yticks(locs)
+#                 #plot.axes.set_yticklabels([' ','0.2','0.4','0.6','0.8','1.0'])
         # draw a line up the median of the data
         Median = np.median(data)
         if type(confLevels)==list:
@@ -180,10 +290,7 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
             if debug:
                 print 'using provided bestVal = ',bestVal
         if type(confLevels)==list:
-            cMean = 'g'
-        else:
-            cMean = 'k'
-        plot.plot([bestVal, bestVal],plot.axes.get_ylim(),cMean,linewidth=4)
+            plot.plot([bestVal, bestVal],plot.axes.get_ylim(),'g',linewidth=4)
         
         if verbose:
             print "min found to be "+str(np.min(data,axis=0))+", max was "+str(np.max(data,axis=0))
@@ -212,13 +319,12 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
             plot.axes.set_yticks(locs)
             if debug:
                 print 'locs set as y ticks'
-            plot.axes.set_yticklabels(['0.0','0.2','0.4','0.6','0.8','1.0'])
+            #plot.axes.set_yticklabels(['0.0','0.2','0.4','0.6','0.8','1.0'])
         if verbose:
             print 'Values for '+xlabel+' were found to be constant, so not making a histogram, just a simple line plot!!'
     # add x label
-    plot.axes.set_xlabel(xlabel,fontsize=40)
+    plot.axes.set_xlabel(xlabel,fontsize=55)
     plot = fixPlotBordersAndLabels(plot)
-    #plot.tick_params(axis='both',which='major',labelsize=20)
     
     return plot
 
@@ -572,10 +678,16 @@ def makeCleanSummaryPlot(outputDataFilename=''):
 
 def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
-    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-20PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
-    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-10PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
-    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-5PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
-    outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-1PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
+    if True:
+        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-20PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
+        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-10PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
+        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-5PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
+        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-1PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
+    else:
+        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-20PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat')
+        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-10PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat')
+        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-5PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat')
+        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-1PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat')
     
     plotFilename = os.path.join(os.path.abspath('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/'),'stackedPosteriorsPlot.eps')
     stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=False)
@@ -596,25 +708,18 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
     if type(outputDataFilenames)!=list:
         outputDataFilenames = [outputDataFilenames]
     
-    colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
+    colorsList =['Black','Blue','DarkGreen','Red','Purple','Fuchsia','Crimson','Aqua','Gold','OrangeRed','Plum','Chartreuse','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ## Add a color list here and add the ability to pass it into the histConverter func for the line plot
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     
     if os.path.exists(outputDataFilenames[0]):  
-        ## get log
-        datadir = os.path.dirname(outputDataFilenames[0])
-        #logFilename = os.path.join(datadir,'processManagerLogFile.txt')
-        #log = open(logFilename,'a')
-        #log.write('\n'+75*'#'+'\n Inside simpleKeyPosteriorsPlotter \n'+75*'#'+'\n')
-         
         s= '\nCreating a simple plot of some key posteriors for files:\n'
         for filename in outputDataFilenames:
             s+=filename+'\n'
         s=s+ '\nInput plotfilename:\n'+plotFilename
         if verbose:
             print s
-        #log.write(s+'\n')
         # record the time the chain started
         startTime = timeit.default_timer()
         
@@ -635,7 +740,6 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
         s= "\nNumber of RV datasets found in summaryPlotter was "+str(numRVdatasets)+"\n"
         if verbose:
             print s
-        #log.write(s+'\n')
         f.close()
         
         # check if the passed in value for plotFilename includes '.png'
@@ -644,19 +748,10 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
         else:
             plotFilename = plotFilename
         
-        ## make an advanced title for plot from folder and filename
-        titleTop = os.path.dirname(outputDataFilenames[0]).split('/')[-1]
-        titleBtm = os.path.basename(plotFilename).split('.')[0]+'  TOTAL Posterior Distributions plot'
-        plotFileTitle = titleTop+'\n'+titleBtm
-        
         s='\nStarting to make Simple Key Posteriors Plot'
         if verbose:
-            print s
-        #log.write(s+'\n')
+            print s        
         
-        
-        ## give the figure its title
-        #plt.suptitle(plotFileTitle,fontsize=30)
     if ALLparams:
         fig = plt.figure(1,figsize=(70,55)) 
         #Load up parameter column number and name string arrays
@@ -672,12 +767,23 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
                 paramStrs.append('RV offset '+str(dataset)+' [m/s]')
                 perfectVals.append(0.0)
     else:
-        fig = plt.figure(1,figsize=(55,25)) 
+        fig = plt.figure(1,figsize=(27.5,12.5)) 
+        positions = [[0.09,0.12,0.38,0.83],[0.57,0.12,0.38,0.83]]
         paramList = [1,4]
         paramStrs = ['Eccentricity','Period [Yrs]']
         perfectVals = [0.50,5.00]
+        xLims2 = [[0.41,0.59],[4.71,5.19]]
     
-            
+    ## run through all the data files and parameters requested and make root histogram files
+    for i in range(0,len(paramList)):
+        for outputDataFilename in outputDataFilenames:
+            if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i)+'_n.pkl'))==False:
+                print 'Initial Plotting for parameter '+str(i)+"/"+str(len(paramList)-1)+" for file:\n"+outputDataFilename
+                pklBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
+                #(CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
+                (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReader(outputDataFilename, paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False)
+                histMakeAndDump([],data,outFilenameRoot=pklBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
+                
     ## make combined/stacked plot for each parameter in list
     for i in range(0,len(paramList)):
         startTime = timeit.default_timer()
@@ -691,18 +797,22 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
             subPlot = fig.add_subplot(121+i)
         colorInt = 0
         for outputDataFilename in outputDataFilenames:
-            if os.path.exists(outputDataFilename):        
-                print 'Plotting parameter '+str(i)+"/"+str(len(paramList)-1)+" for file:\n"+outputDataFilename
-                (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
-                subPlot = histConverter([], data, subPlot, paramStrs[i], confLevels=False, weight=weight, normed=normalize, nu=nu, bestVal=perfectVals[i],lineColor=colorsList[colorInt])
-                subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=45)
+            if os.path.exists(outputDataFilename):
+                pklBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
+                print 'Loading and re-plotting parameter '+str(i)+"/"+str(len(paramList)-1)+" for file:\n"+outputDataFilename
+                xLim=False
+                if ALLparams==False:
+                    xLim = xLims2[i]  
+                subPlot = histLoadAndPlot_StackedPosteriors(subPlot,pklRoot=pklBaseName,xLabel=paramStrs[i],lineColor=colorsList[colorInt],xLims=xLim)
+                #subPlot = histConverter([], data, subPlot, paramStrs[i], confLevels=False, weight=weight, normed=normalize, nu=nu, bestVal=perfectVals[i],lineColor=colorsList[colorInt])
+                print 'color = '+colorsList[colorInt]
+                subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=55)
+                if ALLparams==False:
+                    subPlot.set_position(positions[i])
                 colorInt+=1
             else:
                 s= "simpleKeyPosteriorsPlotter: ERROR!!!! file doesn't exist"
                 print s
-                #log.write(s+'\n')
-                #log.write('\n'+75*'#'+'\n Leaving simpleKeyPosteriorsPlotter \n'+75*'#'+'\n')
-                #log.close()
                 break
         # record the time the chain finished and print
         endTime = timeit.default_timer()

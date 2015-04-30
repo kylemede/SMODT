@@ -129,13 +129,15 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
                     x=rec.get_x()
                     c = 'w'
                     cEdge = 'w'
+                    alf = 0.0
                     if type(confLevels)==list:
+                        alsf = 1.0
                         cEdge = 'k'
                         if(x>confLevels[1][0])and(x<confLevels[1][1]):
                             c = '0.8'
                         if (x>confLevels[0][0])and(x<confLevels[0][1]):
                             c = '0.5'
-                    recs2.append(patches.Rectangle(xy=rec.get_xy(), width=rec.get_width(),height=rec.get_height(),facecolor=c, edgecolor=cEdge))#color=c))
+                    recs2.append(patches.Rectangle(xy=rec.get_xy(), width=rec.get_width(),height=rec.get_height(),facecolor=c,alpha=alf, edgecolor=cEdge))#color=c))
             # draw updated patches on plot
             for rec in recs2:
                     plot.add_patch(rec)

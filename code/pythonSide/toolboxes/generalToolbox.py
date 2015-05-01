@@ -409,7 +409,56 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
             
     if returnAsList:
         return list 
+
+def getEveryNthOrbElements(outputDataFile,N=10):   
+    """
+    """
+    verbose=False
     
+    chiSquareds = []
+    incs = []
+    es = []
+    longANs = []
+    periods = []
+    argPeris = []
+    semiMajors = []
+    Ts = []
+    Tcs = []
+    Ks =[]
+    rvOffsets = []
+    
+    # strip off the .txt part to make the plot version of the filename
+    if verbose:
+        print "\nWorking on file: "+os.path.basename(outputDataFile)
+    f = open(outputDataFile, 'r')
+    plotFileTitle = f.readline()[:-5]
+    headings = f.readline()
+    line = 'asdf'
+    n=0
+    while line!='':
+        line = f.readline()
+        if line!='':
+            dataLineCols = line.split()
+            n+=1
+            if (n==N):
+                n=0
+                chiSquareds.append(float(dataLineCols[8]))
+                incs = float(dataLineCols[5])
+                es = float(dataLineCols[1])
+                longANs = float(dataLineCols[0])
+                periods = float(dataLineCols[4])
+                argPeris = float(dataLineCols[6])
+                semiMajors = float(dataLineCols[7])
+                Ts = float(dataLineCols[2])
+                Tcs = float(dataLineCols[3])
+                if len(dataLineCols)>10:
+                    Ks.append(float(dataLineCols[9]))
+                    rvOffsets1=[]
+                    for dataset in range(0,int(len(dataLineCols) - 10)):
+                        rvOffsets1.append(float(dataLineCols[10+dataset]))
+                    rvOffsets.append(rvOffsets1)
+    return  (chiSquareds, incs, es, longANs, periods, argPeris, semiMajors, Ts, Tcs, Ks, rvOffsets)
+
 def burnInCalcMultiFile(dataFilenames,simAnneal=True):
     """
     NOTE: SMODT was designed to start the full MCMC chain from the last point of the 
@@ -2482,6 +2531,17 @@ def findNuFromLog(logFilename = ''):
     it again in Python.
     """
     verbose = False
+    if os.path.exists(logFilename)==False:
+        if verbose:
+            print "\nNot found in dirname, so try in logs subfolder"
+        #if doesn't exist, then try to see if it is in the logs folder
+        #print os.path.dirname(logFilename)
+        logFilename2 = os.path.dirname(logFilename)+"/logs/"+os.path.basename(logFilename)
+        #print 'logFilename2 = '+logFilename2+'\n'
+        if os.path.exists(logFilename2):
+            logFilename=logFilename2
+            if verbose:
+                print 'Found log in logs subfolder'
     if verbose:
         print "\n\nFinding nu from log file: "+logFilename+'\n\n'
     log = open(logFilename,'r')

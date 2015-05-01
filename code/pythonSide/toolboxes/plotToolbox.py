@@ -552,6 +552,38 @@ def star(R, x0, y0, color='w', N=5, thin = 0.5):
         polystar[i] = [r*np.cos(angle)+x0, r*np.sin(angle)+y0]
     return Polygon(polystar, fc=color, ec='black',linewidth=1.5)    
 
+def addDIdataToPlot(subPlot,SAs,SAerrors,PAs,PAerrors,asConversion,telescopeView=False):
+    """
+    To plot a '+' for each data point with width and height matching the errors converted 
+    to x,y coords.
+    This is the new version to use for this over the older startAndErrorPolys function.
+    """
+    xmax=-1e6
+    xmin = 1e6
+    ymax=-1e6
+    ymin = 1e6
+    for i in range(0,len(SAs)):
+        h = 2.0*SAerrors[i]*math.cos(math.radians(2.0*PAerrors[i]))*asConversion
+        w = 2.0*SAerrors[i]*math.sin(math.radians(2.0*PAerrors[i]))*asConversion
+        xCent = SAs[i]*math.sin(math.radians(PAs[i]))*asConversion
+        yCent = SAs[i]*math.cos(math.radians(PAs[i]))*asConversion
+        if telescopeView:
+            xCent = -xCent
+            yCent = -yCent
+        subPlot.plot([xCent-0.5*w,xCent+0.5*w],[yCent,yCent],linewidth=4,color='k',alpha=1.0)
+        subPlot.plot([xCent,xCent],[yCent-0.5*h,yCent+0.5*h],linewidth=4,color='k',alpha=1.0)
+        # see if new min max found for x,y
+        if xmax<(xCent+0.5*w):
+            xmax = xCent+0.5*w
+        if xmin>(xCent-0.5*w):
+            xmin = xCent-0.5*w
+        if ymax<(yCent+0.5*h):
+            ymax = yCent+0.5*h
+        if ymin>(yCent-0.5*h):
+            ymin = (yCent-0.5*h)
+            
+    return (subPlot,[xmin,xmax,ymin,ymax])
+      
 def starAndErrorPolys(SAs,SAerrors,PAs,PAerrors,asConversion, transData, telescopeView=False):
     """
     Creates a rectangle patch for a given secondary star data point location.
@@ -569,38 +601,56 @@ def starAndErrorPolys(SAs,SAerrors,PAs,PAerrors,asConversion, transData, telesco
     ymax=-1e6
     ymin = 1e6
     for i in range(0,len(SAs)):
-        
-        h = 2.0*SAerrors[i]*math.cos(math.radians(2.0*PAerrors[i]))*asConversion
-        w = 2.0*SAerrors[i]*math.sin(math.radians(2.0*PAerrors[i]))*asConversion
-        xCent = SAs[i]*math.sin(math.radians(PAs[i]))*asConversion
-        yCent = SAs[i]*math.cos(math.radians(PAs[i]))*asConversion
         if False:
-            print 'data point: SA = '+str(SAs[i])+', PA = '+str(PAs[i])#$$$$$$$$$$$$$$$$$$$$$$$$$$
-            print 'location = ['+str(xCent)+', '+str(yCent)+']\n'#$$$$$$$$$$$$$$$$$$$$$$$$$$
-        if telescopeView:
-            xCent = -xCent
-            yCent = -yCent
-        xCorner = xCent-0.5*w
-        yCorner = yCent-0.5*h
-        
-        # see if new min max found for x,y
-        if xmax<(xCent+0.5*w):
-            xmax = xCent+0.5*w
-        if xmin>xCorner:
-            xmin = xCorner
-        if ymax<(yCent+0.5*h):
-            ymax = yCent+0.5*h
-        if ymin>yCorner:
-            ymin = yCorner
+            ### Older version that makes shaded boxes for each
+            h = 2.0*SAerrors[i]*math.cos(math.radians(2.0*PAerrors[i]))*asConversion
+            w = 2.0*SAerrors[i]*math.sin(math.radians(2.0*PAerrors[i]))*asConversion
+            xCent = SAs[i]*math.sin(math.radians(PAs[i]))*asConversion
+            yCent = SAs[i]*math.cos(math.radians(PAs[i]))*asConversion
+            if False:
+                print 'data point: SA = '+str(SAs[i])+', PA = '+str(PAs[i])#$$$$$$$$$$$$$$$$$$$$$$$$$$
+                print 'location = ['+str(xCent)+', '+str(yCent)+']\n'#$$$$$$$$$$$$$$$$$$$$$$$$$$
+            if telescopeView:
+                xCent = -xCent
+                yCent = -yCent
+            xCorner = xCent-0.5*w
+            yCorner = yCent-0.5*h
             
-        rect = patches.Rectangle((xCorner,yCorner),width=w,height=h,facecolor='black',edgecolor='black',alpha=1.0,linewidth=1.5)
-        t = pylab.matplotlib.transforms.Affine2D().rotate_deg_around(xCent,yCent,-PAs[i]) +transData
-        rect.set_transform(t)
-        errorBoxes.append(rect)
+            # see if new min max found for x,y
+            if xmax<(xCent+0.5*w):
+                xmax = xCent+0.5*w
+            if xmin>xCorner:
+                xmin = xCorner
+            if ymax<(yCent+0.5*h):
+                ymax = yCent+0.5*h
+            if ymin>yCorner:
+                ymin = yCorner
+                
+            rect = patches.Rectangle((xCorner,yCorner),width=w,height=h,facecolor='black',edgecolor='black',alpha=1.0,linewidth=1.5)
+            t = pylab.matplotlib.transforms.Affine2D().rotate_deg_around(xCent,yCent,-PAs[i]) +transData
+            rect.set_transform(t)
+            errorBoxes.append(rect)
+            # determin x and y locations of the observed PA and SA's for companion star/planet
+            # then make a star polygon for each, same as for M1 but much smaller
+            m2starPolygons.append(star((asConversion/1000.0)*12.0*SAs[0], xCent, yCent, color='red', N=5, thin = 0.5))
+        if True: 
+            ### New version that just makes an '+' symbol for each
+            h = 2.0*SAerrors[i]*math.cos(math.radians(2.0*PAerrors[i]))*asConversion
+            w = 2.0*SAerrors[i]*math.sin(math.radians(2.0*PAerrors[i]))*asConversion
+            xCent = SAs[i]*math.sin(math.radians(PAs[i]))*asConversion
+            yCent = SAs[i]*math.cos(math.radians(PAs[i]))*asConversion
+            if telescopeView:
+                xCent = -xCent
+                yCent = -yCent
+            xCornerVert = xCent
+            yCornerVert = yCent-0.5*h
+            xCornerHoriz = xCent-0.5*w
+            yCornerHoriz = yCent
+            
+            errorBoxes.append(patches.Rectangle((xCornerVert,yCornerVert),width=w,height=h,facecolor='black',edgecolor='black',alpha=1.0,linewidth=1.5))
+            errorBoxes.append(patches.Rectangle((xCornerHoriz,yCornerHoriz),width=w,height=h,facecolor='black',edgecolor='black',alpha=1.0,linewidth=1.5))
         
-        # determin x and y locations of the observed PA and SA's for companion star/planet
-        # then make a star polygon for each, same as for M1 but much smaller
-        m2starPolygons.append(star((asConversion/1000.0)*12.0*SAs[0], xCent, yCent, color='red', N=5, thin = 0.5))
+        
         
     return (errorBoxes, m2starPolygons,[xmin,xmax,ymin,ymax])
     
@@ -673,6 +723,15 @@ def makeCleanSummaryPlot(outputDataFilename=''):
     if True:
         return newDataFilename
             
+def densityDIplot(dataDir,sysDataDict, DIdataDict,nuDI=1):
+    """
+    """
+    orbitEllipsePlotFilename = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/','DIdensityPlot')
+    outputDataFile = os.path.join(dataDir,'outputData-ALL.dat')
+    (chiSquareds, incs, es, longANs, periods, argPeris, semiMajors, Ts, Tcs, Ks, rvOffsets) = genTools.getEveryNthOrbElements(outputDataFile,N=10)
+    print 'getEveryNthOrbElements found '+str(len(incs))+" sets"
+    orbitEllipsePlotter(longANs, es, periods, incs, argPeris, semiMajors, sysDataDict, DIdataDict,To=Ts,\
+                          plotFilename=orbitEllipsePlotFilename, xLim=False, yLim=False, show=False,nuDI=1)#,chiSquareds=chiSquareds)
 
 def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
@@ -2008,9 +2067,9 @@ def progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramCol
     
     return (log,subPlot2,data,bestDataVal)
 
-def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict, DIdataDict,\
+def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict, DIdataDict,To=0,\
                             xLabel='E ["]', yLabel='N ["]', \
-                          plotFilename='', xLim=False, yLim=False, show=True, telescopeView=False,To=0,nuDI=1 ):
+                          plotFilename='', xLim=False, yLim=False, show=True, telescopeView=False,nuDI=1):#,chiSquareds=False):
     """
     This function will plot the resulting orbit for the input parameters.
     NOTE: If a plotFilename is provided, then the resulting figure will be saved.
@@ -2441,7 +2500,11 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     
     # Draw orbits
     for orb in range(0,len(longAN_deg)):
-        main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2.5,color=colorsList[orb]) 
+        if False:
+            main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2.5,color=colorsList[orb]) 
+        else:
+            ## For density plot style
+            main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2,color='blue',alpha=0.003) 
     
     #draw semi-major
     main.plot([Xstart,Xhalf],[Ystart,Yhalf],'g-',linewidth=1)
@@ -2474,8 +2537,10 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     
     ## call function to calculate, create and return polygons for the 
     ## companion star locations and boxes for their errors
-    (errorBoxes, m2starPolygons,[xmin,xmax,ymin,ymax]) = starAndErrorPolys(SAs,SAerrors,PAs,PAerrors,asConversion, main.transData, telescopeView)
-    
+    if False:
+        (errorBoxes, m2starPolygons,[xmin,xmax,ymin,ymax]) = starAndErrorPolys(SAs,SAerrors,PAs,PAerrors,asConversion, main.transData, telescopeView)
+    else:
+        (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,SAs,SAerrors,PAs,PAerrors,asConversion,telescopeView=False)
     dataMaxMins = [xmin,xmax,ymin,ymax]
     if verboseInternal:
         print "original dataMaxMins = "+repr(dataMaxMins)
@@ -2832,13 +2897,14 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     prepend = ""
     if outputDatafile=='':
         #baseDir = "/mnt/Data1/Todai_Work/Dropbox/EclipseWorkspace/SMODT/settings_and_InputData"
-        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-RVonly-Tight-PrimaryRVs-argPeriPlus180--70-Million-in_Total/outputData-ALL.dat" 
+        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-1PercentRealizedError--14-Million-in_Total/outputData-ALL.dat" 
         baseDir = os.path.dirname(outputDatafile)
         prepend = "FakeData_"
     elif outputDatafile!="":
         baseDir = os.path.dirname(outputDatafile)
         prepend = baseDir.split("/")[-1].split("-")[0]+"_"
         print "\n\nUSING the prepend '"+prepend+"'\n\n"
+    summaryPlotFile = os.path.join(baseDir,"SummaryPlot-Manual")
     sysDatafilename = os.path.join(baseDir,"code-used/"+prepend+'SystemData.txt')
     RVdatafilename = os.path.join(baseDir,"code-used/"+prepend+'RVdata.dat')    
     inputSettingsFile = os.path.join(baseDir,"code-used/"+prepend+'SimSettings.txt')
@@ -2859,17 +2925,11 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     diPlotFilename = os.path.join(baseDir,"DIplot-Manual")
     modDatasetsFilename =  os.path.join("/mnt/Data1/Todai_Work/Data/data_Binary/data_Duo","mod"+str(numModDataSets)+"Dataset.dat")
     TvsEccPlotFilename = os.path.join("/mnt/Data1/Todai_Work/Data/data_Binary/data_Duo","TvsEccentricityPlot")
-    if outputDatafile=='':
-        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/DotaniAndButlerPre1995-planetOrbit-results/looped5000MCMC-TauBoo-RVonly-ButlerANDdonati-noPre1995data-TrendRemoved-planet-chiSquaredUpdate-withoutFlaggedPoints-nonLogEccePriors-3--700-Thousand-in_Total/outputData-ALL.dat"
-        summaryPlotFile = os.path.join("/run/media/Kyle/Data1/Todai_Work/Data/data_SMODT","SummaryPlot-Manual")
-    else:
-        os.path.abspath(outputDatafile)
-        summaryPlotFile = os.path.join(baseDir,"SummaryPlot-Manual")
     ####################################################
     ## get nu value, then calculate chiSquared cut off
     # get log
     ####################################################
-    logFilename = os.path.join(baseDir,'log-chain_1.txt')
+    logFilename = os.path.join(baseDir,'log-chain_1.txt')        
     [nu,nuRV,nuDI,printStr] = genTools.findNuFromLog(logFilename)
 
     ####################################################
@@ -2912,7 +2972,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
         ## Now manually choose what you want to plot
         ####################################################
         ##############   RV plot(s)  #######################
-        if True:
+        if False:
             ## make RV fit plot
             rvPlotter(e,T,Tc,period,inc,argPeri_deg,a, \
                       sysDataDict,RVdataDict,paramSettingsDict,K=K,RVoffsets=RVoffsets,\
@@ -2926,30 +2986,33 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
             rvModDatasetMaker(e, T, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, paramSettingsDict,\
                      RVoffsets=RVoffsets, modDatasetsFilename=modDatasetsFilename, numModDatasets=numModDataSets)
         ##############   DI plot(s)  #######################
-        if False:
+        if True:
             ## Make a DI fit plot
             DIdatafilename = os.path.join(baseDir,"code-used/"+prepend+'DIdata.dat')
             DIdataDict = diTools.DIdataToDict(DIdatafilename)
             if False:
-                longANs = [136.48,115.03,143.82]
-                argPeris = [90,90,90]
-                incs = [33.04,19.09,40.10]
-                periods = [57.82,51.27,64.21]
-                a_totals = [17.22,15.29,18.99]
-                Ts = [2454635.9,2453560.2,2454996.53]
-                es = [0.0,0.0,0.0]
-                #if 
-            else:
-                longANs = [bestOrbit[0]]
-                argPeris = [bestOrbit[6]]
-                incs = [bestOrbit[5]]
-                periods = [bestOrbit[4]]
-                a_totals = [bestOrbit[7]]
-                Ts = [bestOrbit[2]]
-                es = [bestOrbit[1]]
-           
-            orbitEllipsePlotter(longANs,es,periods,incs,argPeris,a_totals,\
-                             sysDataDict,DIdataDict,plotFilename=diPlotFilename,show=False,To=Ts, nuDI=nuDI)  
+                if False:
+                    longANs = [136.48,115.03,143.82]
+                    argPeris = [90,90,90]
+                    incs = [33.04,19.09,40.10]
+                    periods = [57.82,51.27,64.21]
+                    a_totals = [17.22,15.29,18.99]
+                    Ts = [2454635.9,2453560.2,2454996.53]
+                    es = [0.0,0.0,0.0]
+                    #if 
+                else:
+                    longANs = [bestOrbit[0]]
+                    argPeris = [bestOrbit[6]]
+                    incs = [bestOrbit[5]]
+                    periods = [bestOrbit[4]]
+                    a_totals = [bestOrbit[7]]
+                    Ts = [bestOrbit[2]]
+                    es = [bestOrbit[1]]
+               
+                orbitEllipsePlotter(longANs,es,periods,incs,argPeris,a_totals,\
+                                 sysDataDict,DIdataDict,plotFilename=diPlotFilename,show=False,To=Ts, nuDI=nuDI) 
+            if True:
+                densityDIplot(baseDir, sysDataDict, DIdataDict, nuDI=nuDI) 
     ####################################################
     # Extra non-orbit plots and statistic calculations
     ####################################################

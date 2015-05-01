@@ -248,7 +248,7 @@ def simulator(paramSettingsDict):
             if paramSettingsDict['SILENT']==False:
                 print s
             PMlogFile.write(s)
-            if True:
+            if False:
                 tools.plot.stackedPosteriorsPlotterFunc([dataFinalFilename],keyPosteriorsPlotFile)
             
     ############################################################
@@ -264,7 +264,7 @@ def simulator(paramSettingsDict):
         orbitEllipsePlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'orbitEllipsePlot')
         #update argPeri value to take offset into account
         argPeriUse = bestOrbit[6]+paramSettingsDict['argPeriOffsetDI']
-        chiSquaredStrDI = tools.plot.orbitEllipsePlotter(bestOrbit[0],bestOrbit[1],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7],To=bestOrbit[2],\
+        chiSquaredStrDI = tools.plot.orbitEllipsePlotter(bestOrbit[0],bestOrbit[1],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7],bestOrbit[2],\
                              sysDataDict,DIdataDict,plotFilename=orbitEllipsePlotFilename,show=False, nuDI=nuDI)          
         s = '****   Back from making a DI orbit plot   ****\n'
         if paramSettingsDict['SILENT']==False:

@@ -116,7 +116,7 @@ longAN_degMAX =120.0
 # Minimum allowed value for the Eccentricity [double]
 eMIN =0.3
 # Maximum allowed value for the Eccentricity　[double]
-eMAX =0.7
+eMAX =0.8
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 a_totalMIN =3.2
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
@@ -128,14 +128,14 @@ periodMAX =6.0
 # Minimum allowed value for the Inclination [double][deg]#86
 inclination_degMIN =30
 # Maximum allowed value for the Inclination [double][deg]#88.5
-inclination_degMAX =55.0
+inclination_degMAX =65.0
 # Minimum allowed value for the Argument of Perigee [double][deg]#250
 argPeri_degMIN =20
 # Maximum allowed value for the Argument of Perigee [double][deg]
 argPeri_degMAX =90
 # Minimuim value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(0 indicates to use value in SystemData.txt always, -1 indicates to use [earliestsEpoch-period,earliestEpoch])
-T_Min =2456960
+T_Min =2456900
 # Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(0 indicates to use value in SystemData.txt always, -1 indicates to use [earliestsEpoch-period,earliestEpoch])
 T_Max =2457150

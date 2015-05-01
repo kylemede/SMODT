@@ -27,11 +27,11 @@ def calc_orbit():
     #Computer Directory
     #baseSaveDir='/mnt/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
     baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
-    NumDataPointsOut = 10
-    downSample = True
+    NumDataPointsOut = 10 #must be much less than 10000.  values between 10-500 are suitable.
     storePrimaryRVs = True
-    percentError = 1.0 #error is set to a percentage of the median
+    percentError = 20.0 #error is set to a percentage of the median
     realizeErrors = True
+    overlapEnds = True # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
     massratio = 2.0
@@ -72,20 +72,27 @@ def calc_orbit():
         print "Saving RVs of primary star relative to Center of Mass\n"
     else:
         print "Saving RVs of companion relative to Center of Mass\n"
+    #settings prints
+    print 'Errors were calculated as '+str(percentError)+"% of the median value in the observables"
+    if realizeErrors:
+        print 'Data values were realized from the errors'
+    else:
+        print 'Data values are perfect with NO realization of the errors'
+    print str(NumDataPointsOut)+" epochs will be calculated and stored\n"
+        
         
     # Positions of both components in km relative to center of mass
     ke = pyasl.KeplerEllipse(a1, period, e=e, Omega=0.)
-    NptsBIG = NumDataPointsOut
-    if downSample:
-        NptsBIG = 10000
+    NptsBIG = 10000
     t = (np.arange(NptsBIG) - 1)/(NptsBIG - 2.)*period
    
     ## Extend t to include a fifth of extra points at the end that overlap the beginning of the orbit
-    NumOverlapPts = NptsBIG//5
-    t2 = np.empty((t.shape[0]+NumOverlapPts))
-    t2[0:t.size]=t
-    t2[t.size:]=t[2]*np.arange(NumOverlapPts+1)[1:]+t[-1]
-    t=t2
+    if overlapEnds:
+        NumOverlapPts = NptsBIG//7
+        t2 = np.empty((t.shape[0]+NumOverlapPts))
+        t2[0:t.size]=t
+        t2[t.size:]=t[2]*np.arange(NumOverlapPts+1)[1:]+t[-1]
+        t=t2
     pos_A = ke.xyzPos(t)
     pos_B = -pos_A/massratio
     
@@ -130,23 +137,22 @@ def calc_orbit():
     vel_B = np.dot(vel_B, rotmat)
     
     ## re-sample position, vel and time arrays to requested number of samples
-    if downSample:
-        pos_Anew = []
-        pos_Bnew = []
-        vel_Anew = []
-        vel_Bnew = []
-        tnew = []
-        for i in range(0,len(t),int(NptsBIG/NumDataPointsOut)):
-            pos_Anew.append(pos_A[i])
-            pos_Bnew.append(pos_B[i])
-            vel_Anew.append(vel_A[i])
-            vel_Bnew.append(vel_B[i])
-            tnew.append(t[i])
-        pos_A = np.array(pos_Anew)
-        pos_B = np.array(pos_Bnew)
-        vel_A = np.array(vel_Anew)
-        vel_B = np.array(vel_Bnew)
-        t=np.array(tnew)
+    pos_Anew = []
+    pos_Bnew = []
+    vel_Anew = []
+    vel_Bnew = []
+    tnew = []
+    for i in range(0,len(t),int(NptsBIG/NumDataPointsOut)):
+        pos_Anew.append(pos_A[i])
+        pos_Bnew.append(pos_B[i])
+        vel_Anew.append(vel_A[i])
+        vel_Bnew.append(vel_B[i])
+        tnew.append(t[i])
+    pos_A = np.array(pos_Anew)
+    pos_B = np.array(pos_Bnew)
+    vel_A = np.array(vel_Anew)
+    vel_B = np.array(vel_Bnew)
+    t=np.array(tnew)
 
     data = np.zeros((pos_A.shape[0], 8))
     data[:, 0] = t*2*np.pi/period #1. phase
@@ -165,7 +171,8 @@ def calc_orbit():
     data2[:,3] = vel_B[:, 2]*1000.0 # RV of primary compared to center of mass origin[ m/s]
     data2[:,4] = vel_A[:, 2]*1000.0 # RV of secondary compared to center of mass origin[ m/s]
     
-    #calculate error and use it to realize the errors if requested
+    #calculate error and use it to realize the errors in the RV data if requested
+    #calculate error and use it to realize the errors in the DI data if requested
     errorRA = np.median(np.abs(data2[:,1]))*(percentError/100.0)
     if realizeErrors:
         for i in range(pos_A.shape[0]):
@@ -188,11 +195,25 @@ def calc_orbit():
     data3[:,0] = data2[:, 0]
     for i in range(0,pos_A.shape[0]):
         # convert x,y to SA and PA with fake errors
-        (data3[i,1],data3[i,2],data3[i,3],data3[i,4]) = diTools.ENtoPASA(data2[i,1], errorRA, data2[i,2], errorDec)
-        if False:
-            print repr((data2[i,1], errorRA, data2[i,2], errorDec))
-            (u1,u2,u3,u4)=diTools.PASAtoEN(data3[i,1],data3[i,2],data3[i,3],data3[i,4])
-       
+        #NOTE: there is an error in the resulting errors from ENtoPASA, but the PASA values are good.
+        # so just make errors
+        (data3[i,1],data3[i,2],data3[i,3],data3[i,4]) = diTools.ENtoPASA(data2[i,1], errorDec, data2[i,2], errorRA)
+#         if False:
+#             print repr((data2[i,1], null, data2[i,2], null))
+#             (u1,u2,u3,u4)=diTools.PASAtoEN(data3[i,1],data3[i,2],data3[i,3],data3[i,4])
+    
+      #calculate error and use it to realize the errors in the DI data if requested
+#     errorPA = np.median(np.abs(data3[:,1]))*(percentError/100.0)
+#     if realizeErrors:
+#         for i in range(pos_A.shape[0]):
+#             data3[i,1] += np.random.normal(0,errorPA)
+#             data3[i,2] = errorPA
+#     errorSA = np.median(np.abs(data3[:,3]))*(percentError/100.0)
+#     if realizeErrors:
+#         for i in range(pos_A.shape[0]):
+#             data3[i,3]+=np.random.normal(0,errorSA)
+#             data3[i,4] = errorSA
+    
     if storePrimaryRVs:
         data3[:,5] = data2[:,3]
         data3[:,6] = errorRVprimary
@@ -224,7 +245,7 @@ def calc_orbit():
     ##write files to disk
     if False:
         np.savetxt(os.path.join(baseSaveDir,'mockdata.dat'), data, fmt="%.10g")
-        np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat.dat'), data3, fmt="%.10g")
+        #np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat.dat'), data3, fmt="%.10g")
     if True:
         np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat-DI.dat'), dataDI, fmt="%.10g")
         np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat-RV.dat'), dataRV, fmt="%.10g")

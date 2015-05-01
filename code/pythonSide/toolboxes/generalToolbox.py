@@ -413,7 +413,8 @@ def bestOrbitFinder(filename, printToScreen=True, saveToFile=True, returnAsList=
 def getEveryNthOrbElements(outputDataFile,N=10):   
     """
     """
-    verbose=False
+    verbose=True
+    
     
     chiSquareds = []
     incs = []
@@ -443,20 +444,22 @@ def getEveryNthOrbElements(outputDataFile,N=10):
             if (n==N):
                 n=0
                 chiSquareds.append(float(dataLineCols[8]))
-                incs = float(dataLineCols[5])
-                es = float(dataLineCols[1])
-                longANs = float(dataLineCols[0])
-                periods = float(dataLineCols[4])
-                argPeris = float(dataLineCols[6])
-                semiMajors = float(dataLineCols[7])
-                Ts = float(dataLineCols[2])
-                Tcs = float(dataLineCols[3])
+                incs.append(float(dataLineCols[5]))
+                es.append(float(dataLineCols[1]))
+                longANs.append(float(dataLineCols[0]))
+                periods.append(float(dataLineCols[4]))
+                argPeris.append(float(dataLineCols[6]))
+                semiMajors.append(float(dataLineCols[7]))
+                Ts.append(float(dataLineCols[2]))
+                Tcs.append(float(dataLineCols[3]))
                 if len(dataLineCols)>10:
                     Ks.append(float(dataLineCols[9]))
                     rvOffsets1=[]
                     for dataset in range(0,int(len(dataLineCols) - 10)):
                         rvOffsets1.append(float(dataLineCols[10+dataset]))
                     rvOffsets.append(rvOffsets1)
+    if verbose:
+        print "Returning "+str(len(incs))+" sets of orbital elements"
     return  (chiSquareds, incs, es, longANs, periods, argPeris, semiMajors, Ts, Tcs, Ks, rvOffsets)
 
 def burnInCalcMultiFile(dataFilenames,simAnneal=True):

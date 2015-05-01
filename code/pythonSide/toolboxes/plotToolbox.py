@@ -567,20 +567,29 @@ def addDIdataToPlot(subPlot,SAs,SAerrors,PAs,PAerrors,asConversion,telescopeView
         w = 2.0*SAerrors[i]*math.sin(math.radians(2.0*PAerrors[i]))*asConversion
         xCent = SAs[i]*math.sin(math.radians(PAs[i]))*asConversion
         yCent = SAs[i]*math.cos(math.radians(PAs[i]))*asConversion
+        if False:
+            print 'data point: SA = '+str(SAs[i])+', PA = '+str(PAs[i])#$$$$$$$$$$$$$$$$$$$$$$$$$$
+            print 'location = ['+str(xCent)+', '+str(yCent)+']\n'#$$$$$$$$$$$$$$$$$$$$$$$$$$
         if telescopeView:
             xCent = -xCent
             yCent = -yCent
-        subPlot.plot([xCent-0.5*w,xCent+0.5*w],[yCent,yCent],linewidth=4,color='k',alpha=1.0)
-        subPlot.plot([xCent,xCent],[yCent-0.5*h,yCent+0.5*h],linewidth=4,color='k',alpha=1.0)
+            
+        left = xCent-0.5*w
+        right = xCent+0.5*w
+        top = yCent+0.5*h
+        btm = yCent-0.5*h
+        
+        subPlot.plot([left,right],[yCent,yCent],linewidth=4,color='k',alpha=1.0)
+        subPlot.plot([xCent,xCent],[btm,top],linewidth=4,color='k',alpha=1.0)
         # see if new min max found for x,y
-        if xmax<(xCent+0.5*w):
-            xmax = xCent+0.5*w
-        if xmin>(xCent-0.5*w):
-            xmin = xCent-0.5*w
-        if ymax<(yCent+0.5*h):
-            ymax = yCent+0.5*h
-        if ymin>(yCent-0.5*h):
-            ymin = (yCent-0.5*h)
+        if xmax<right:
+            xmax = right
+        if xmin>left:
+            xmin = left
+        if ymax<top:
+            ymax = top
+        if ymin>btm:
+            ymin = btm
             
     return (subPlot,[xmin,xmax,ymin,ymax])
       
@@ -604,53 +613,36 @@ def starAndErrorPolys(SAs,SAerrors,PAs,PAerrors,asConversion, transData, telesco
         if False:
             ### Older version that makes shaded boxes for each
             h = 2.0*SAerrors[i]*math.cos(math.radians(2.0*PAerrors[i]))*asConversion
-            w = 2.0*SAerrors[i]*math.sin(math.radians(2.0*PAerrors[i]))*asConversion
-            xCent = SAs[i]*math.sin(math.radians(PAs[i]))*asConversion
-            yCent = SAs[i]*math.cos(math.radians(PAs[i]))*asConversion
-            if False:
-                print 'data point: SA = '+str(SAs[i])+', PA = '+str(PAs[i])#$$$$$$$$$$$$$$$$$$$$$$$$$$
-                print 'location = ['+str(xCent)+', '+str(yCent)+']\n'#$$$$$$$$$$$$$$$$$$$$$$$$$$
-            if telescopeView:
-                xCent = -xCent
-                yCent = -yCent
-            xCorner = xCent-0.5*w
-            yCorner = yCent-0.5*h
-            
-            # see if new min max found for x,y
-            if xmax<(xCent+0.5*w):
-                xmax = xCent+0.5*w
-            if xmin>xCorner:
-                xmin = xCorner
-            if ymax<(yCent+0.5*h):
-                ymax = yCent+0.5*h
-            if ymin>yCorner:
-                ymin = yCorner
-                
-            rect = patches.Rectangle((xCorner,yCorner),width=w,height=h,facecolor='black',edgecolor='black',alpha=1.0,linewidth=1.5)
-            t = pylab.matplotlib.transforms.Affine2D().rotate_deg_around(xCent,yCent,-PAs[i]) +transData
-            rect.set_transform(t)
-            errorBoxes.append(rect)
-            # determin x and y locations of the observed PA and SA's for companion star/planet
-            # then make a star polygon for each, same as for M1 but much smaller
-            m2starPolygons.append(star((asConversion/1000.0)*12.0*SAs[0], xCent, yCent, color='red', N=5, thin = 0.5))
-        if True: 
-            ### New version that just makes an '+' symbol for each
-            h = 2.0*SAerrors[i]*math.cos(math.radians(2.0*PAerrors[i]))*asConversion
-            w = 2.0*SAerrors[i]*math.sin(math.radians(2.0*PAerrors[i]))*asConversion
-            xCent = SAs[i]*math.sin(math.radians(PAs[i]))*asConversion
-            yCent = SAs[i]*math.cos(math.radians(PAs[i]))*asConversion
-            if telescopeView:
-                xCent = -xCent
-                yCent = -yCent
-            xCornerVert = xCent
-            yCornerVert = yCent-0.5*h
-            xCornerHoriz = xCent-0.5*w
-            yCornerHoriz = yCent
-            
-            errorBoxes.append(patches.Rectangle((xCornerVert,yCornerVert),width=w,height=h,facecolor='black',edgecolor='black',alpha=1.0,linewidth=1.5))
-            errorBoxes.append(patches.Rectangle((xCornerHoriz,yCornerHoriz),width=w,height=h,facecolor='black',edgecolor='black',alpha=1.0,linewidth=1.5))
+        w = 2.0*SAerrors[i]*math.sin(math.radians(2.0*PAerrors[i]))*asConversion
+        xCent = SAs[i]*math.sin(math.radians(PAs[i]))*asConversion
+        yCent = SAs[i]*math.cos(math.radians(PAs[i]))*asConversion
+        if False:
+            print 'data point: SA = '+str(SAs[i])+', PA = '+str(PAs[i])#$$$$$$$$$$$$$$$$$$$$$$$$$$
+            print 'location = ['+str(xCent)+', '+str(yCent)+']\n'#$$$$$$$$$$$$$$$$$$$$$$$$$$
+        if telescopeView:
+            xCent = -xCent
+            yCent = -yCent
+        xCorner = xCent-0.5*w
+        yCorner = yCent-0.5*h
         
+        # see if new min max found for x,y
+        if xmax<(xCent+0.5*w):
+            xmax = xCent+0.5*w
+        if xmin>xCorner:
+            xmin = xCorner
+        if ymax<(yCent+0.5*h):
+            ymax = yCent+0.5*h
+        if ymin>yCorner:
+            ymin = yCorner
+            
+        rect = patches.Rectangle((xCorner,yCorner),width=w,height=h,facecolor='black',edgecolor='black',alpha=1.0,linewidth=1.5)
+        t = pylab.matplotlib.transforms.Affine2D().rotate_deg_around(xCent,yCent,-PAs[i]) +transData
+        rect.set_transform(t)
+        errorBoxes.append(rect)
         
+        # determin x and y locations of the observed PA and SA's for companion star/planet
+        # then make a star polygon for each, same as for M1 but much smaller
+        m2starPolygons.append(star((asConversion/1000.0)*12.0*SAs[0], xCent, yCent, color='red', N=5, thin = 0.5))
         
     return (errorBoxes, m2starPolygons,[xmin,xmax,ymin,ymax])
     
@@ -726,12 +718,29 @@ def makeCleanSummaryPlot(outputDataFilename=''):
 def densityDIplot(dataDir,sysDataDict, DIdataDict,nuDI=1):
     """
     """
+    alf = 0.002
+    N = 1000
+    print 'Starting to make a density plot for the DI data fit'
+    # record the time the chain started
+    startTime = timeit.default_timer()
     orbitEllipsePlotFilename = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/','DIdensityPlot')
     outputDataFile = os.path.join(dataDir,'outputData-ALL.dat')
-    (chiSquareds, incs, es, longANs, periods, argPeris, semiMajors, Ts, Tcs, Ks, rvOffsets) = genTools.getEveryNthOrbElements(outputDataFile,N=10)
+    (chiSquareds, incs, es, longANs, periods, argPeris, semiMajors, Ts, Tcs, Ks, rvOffsets) = genTools.getEveryNthOrbElements(outputDataFile,N=N)
     print 'getEveryNthOrbElements found '+str(len(incs))+" sets"
-    orbitEllipsePlotter(longANs, es, periods, incs, argPeris, semiMajors, sysDataDict, DIdataDict,To=Ts,\
-                          plotFilename=orbitEllipsePlotFilename, xLim=False, yLim=False, show=False,nuDI=1)#,chiSquareds=chiSquareds)
+    print 'np.median(longANs) = '+str(np.median(longANs))
+    print 'np.median(es) = '+str(np.median(es))
+    print 'np.median(periods) = '+str(np.median(periods))
+    print 'np.median(incs) = '+str(np.median(incs))
+    print 'np.median(argPeris) = '+str(np.median(argPeris))
+    print 'np.median(Ts) = '+str(np.median(Ts))
+    print 'np.median(semiMajors) = '+str(np.median(semiMajors))
+    orbitEllipsePlotter(longANs, es, periods, incs, argPeris, semiMajors, Ts,sysDataDict, DIdataDict,\
+                          plotFilename=orbitEllipsePlotFilename, xLim=False, yLim=False, show=False,nuDI=1,alf=alf)
+    print 'Finished making the density plot for the DI data fit'
+    endTime = timeit.default_timer()
+    totalTime = (endTime-startTime) # in seconds
+    totalTimeString = genTools.timeString(totalTime)
+    print 'That took '+totalTimeString+' to complete.\n'
 
 def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
@@ -765,7 +774,9 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
     quiet = True
     verbose = False
     plotFormat = 'eps'
-    latex=True
+    latex=False
+    if ALLparams==False:
+        latex=True
     
     plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
@@ -946,8 +957,6 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
         if verbose:
             print s
         log.write(s+'\n')
-        # record the time the chain started
-        startTime = timeit.default_timer()
         
         ## find number of RV datasets
         f = open(outputDataFilename,'r')
@@ -2067,9 +2076,9 @@ def progessPlotterSingleFileFunc(log,subPlot2,outputDataFilename,xlabel,paramCol
     
     return (log,subPlot2,data,bestDataVal)
 
-def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict, DIdataDict,To=0,\
+def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataDict, DIdataDict,\
                             xLabel='E ["]', yLabel='N ["]', \
-                          plotFilename='', xLim=False, yLim=False, show=True, telescopeView=False,nuDI=1):#,chiSquareds=False):
+                          plotFilename='', xLim=False, yLim=False, show=True, telescopeView=False,nuDI=1,alf=1.0):#,chiSquareds=False):
     """
     This function will plot the resulting orbit for the input parameters.
     NOTE: If a plotFilename is provided, then the resulting figure will be saved.
@@ -2173,9 +2182,12 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     orbitPAs = []
     #sep_dists = []
     for orb in range(0,len(longAN_deg)):
+        print "Producing ellipse for orb # "+str(orb)+"/"+str(len(longAN_deg))
         ellipseXs = []
         ellipseYs = []
         numSteps = 1000.0
+        if len(longAN_deg)>100:
+            numSteps = 500.0
         periodIncrement = (period[orb]*365.25)/numSteps
         t = 1.0 
         numFailed = 0
@@ -2435,17 +2447,20 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     #######################################################################################              
     ## Get the calculated chiSquared fit to the data for these orbital parameters
     legendStr = ''
+    chiSquaredStr=''
     SA_diffs2 = []
     PA_diffs2 = []
     for orb in range(0,len(longAN_deg)):
-        legendStr = legendStr+"\nFor orbit # "+str(orb)+' (color = '+colorsList[orb]+') :\n'
-        legendStr = legendStr+"inc[orb] = "+str(inc[orb])+'\n'
-        legendStr = legendStr+"longAN_deg[orb] = "+str(longAN_deg[orb])+'\n'
-        legendStr = legendStr+"e[orb] = "+str(e[orb])+'\n'
-        legendStr = legendStr+"To[orb] = "+str(To[orb])+'\n'
-        legendStr = legendStr+"period[orb] = "+str(period[orb])+'\n'
-        legendStr = legendStr+"argPeri_deg[orb] = "+str(argPeri_deg[orb])+'\n'
-        legendStr = legendStr+"a[orb] = "+str(a[orb])+'\n'
+        print 'Finding residuals for orbit # '+str(orb)+"/"+str(len(longAN_deg))
+        if len(longAN_deg)<len(colorsList):
+            legendStr = legendStr+"\nFor orbit # "+str(orb)+' (color = '+colorsList[orb]+') :\n'
+            legendStr = legendStr+"inc[orb] = "+str(inc[orb])+'\n'
+            legendStr = legendStr+"longAN_deg[orb] = "+str(longAN_deg[orb])+'\n'
+            legendStr = legendStr+"e[orb] = "+str(e[orb])+'\n'
+            legendStr = legendStr+"To[orb] = "+str(To[orb])+'\n'
+            legendStr = legendStr+"period[orb] = "+str(period[orb])+'\n'
+            legendStr = legendStr+"argPeri_deg[orb] = "+str(argPeri_deg[orb])+'\n'
+            legendStr = legendStr+"a[orb] = "+str(a[orb])+'\n'
         if False:
             (chi_squared_total, ns, Ms, Es, thetas, Sep_Dists, SA_arcsec_measured_models, PA_deg_measured_models, xs, ys, a1s, a2s) =\
             diTools.multiEpochOrbCalc(SAs, SAerrors, PAs, PAerrors,epochs, sys_dist, inc[orb], longAN_deg[orb],\
@@ -2466,15 +2481,16 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         if type(PA_deg_measured_models)!=np.ndarray:
             PA_deg_measured_models = np.array(PA_deg_measured_models)
         SA_diffs2.append(SAs-SA_arcsec_measured_models)
-        PA_diffs2.append(PAs-PA_deg_measured_models)        
-        chiSquaredStr = "The chiSquared fit to the DI data was = "+str(chi_squared_total)+', or reduced = '+str(chi_squared_total/nuDI)
-        legendStr = legendStr+chiSquaredStr+'\n'
+        PA_diffs2.append(PAs-PA_deg_measured_models)       
+        if len(longAN_deg)<len(colorsList): 
+            chiSquaredStr = "The chiSquared fit to the DI data was = "+str(chi_squared_total)+', or reduced = '+str(chi_squared_total/nuDI)
+            legendStr = legendStr+chiSquaredStr+'\n'
         if verboseInternal:
             print "\n\n     TH-I: for orbit #"+str(orb)+", "+chiSquaredStr+"\n"
     #######################################################################################            
     
     ## Create figure, axes and start plotting/drawing everything
-    fig = plt.figure(1,figsize=(12,12))
+    fig = plt.figure(1,figsize=(14,12))
     main = fig.add_subplot(111)
     main.set_xlabel(xLabel, fontsize=30)
     main.set_ylabel(yLabel, fontsize=30)
@@ -2503,8 +2519,9 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         if False:
             main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2.5,color=colorsList[orb]) 
         else:
+            print 'Plotting ellipse for orbit # '+str(orb)+"/"+str(len(longAN_deg))
             ## For density plot style
-            main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2,color='blue',alpha=0.003) 
+            main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2,color='blue',alpha=alf) 
     
     #draw semi-major
     main.plot([Xstart,Xhalf],[Ystart,Yhalf],'g-',linewidth=1)
@@ -2637,13 +2654,13 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
     main.plot([xLim[0],xLim[1]],[0,0],c='black',linewidth=2)
     main.plot([0,0],[yLim[0],yLim[1]],c='black',linewidth=2)
     
-    # draw the error boxes for the companion start locations in the data
-    for errorBox in errorBoxes:
-        main.add_patch(errorBox)
-        
-    # Draw red star patches for each of the companion's locations from the data
-    for star2 in m2starPolygons:
-        main.add_patch(star2)
+    if False:
+        # draw the error boxes for the companion start locations in the data
+        for errorBox in errorBoxes:
+            main.add_patch(errorBox)
+        # Draw red star patches for each of the companion's locations from the data
+        for star2 in m2starPolygons:
+            main.add_patch(star2)
         
     # add a legend
     #main.legend(('longAN_deg = '+str(longAN_deg),'e = '+str(e), 'period = '+str(period), 'inc = '+str(inc), 'argPeri_deg = '+str(argPeri_deg), 'a = '+str(a)), loc=0, markerscale=0.0000000000000001)
@@ -2702,8 +2719,13 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, sysDataDict,
         paPlot.set_ylabel("PA Residuals [deg]", fontsize=30)
         plt.suptitle(plotFileTitle, fontsize=10)
         for orb in range(0,len(longAN_deg)):
-            saPlot.scatter(epochs,SA_diffs2[orb],color=colorsList[int(orb/3.0)])
-            paPlot.scatter(epochs,PA_diffs2[orb],color=colorsList[int(orb/3.0)])
+            if len(longAN_deg)>len(colorsList):
+                print 'Plotting residuals for orbit # '+str(orb)+"/"+str(len(longAN_deg))
+                saPlot.scatter(epochs,SA_diffs2[orb],color='blue',alpha=alf)
+                paPlot.scatter(epochs,PA_diffs2[orb],color='blue',alpha=alf)
+            else:
+                saPlot.scatter(epochs,SA_diffs2[orb],color=colorsList[int(orb/3.0)])
+                paPlot.scatter(epochs,PA_diffs2[orb],color=colorsList[int(orb/3.0)])
         saPlot.plot(saPlot.axes.get_xlim(),[0,0],c='r',linewidth=2.0)
         paPlot.plot(paPlot.axes.get_xlim(),[0,0],c='r',linewidth=2.0)
         plotFilenameOC = plotFilename[:-4]+"-Residuals.png"
@@ -2897,7 +2919,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     prepend = ""
     if outputDatafile=='':
         #baseDir = "/mnt/Data1/Todai_Work/Dropbox/EclipseWorkspace/SMODT/settings_and_InputData"
-        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-1PercentRealizedError--14-Million-in_Total/outputData-ALL.dat" 
+        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-5PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat" 
         baseDir = os.path.dirname(outputDatafile)
         prepend = "FakeData_"
     elif outputDatafile!="":
@@ -2910,7 +2932,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     inputSettingsFile = os.path.join(baseDir,"code-used/"+prepend+'SimSettings.txt')
     if os.path.exists(inputSettingsFile)==False:
         inputSettingsFile = os.path.join(baseDir,"code-used/"+prepend+'SimSettings_DuoVersion.txt')
-    print "inputSettingsFile found to be "+inputSettingsFile
+    #print "inputSettingsFile found to be "+inputSettingsFile
     ####################################################
     # Get data dicts
     ####################################################
@@ -2952,9 +2974,9 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     if True:    
         bestOrbit = []  
         try:
-            print '#'*50
+            #print '#'*50
             bestOrbit = genTools.bestOrbitFinder(outputDatafile, printToScreen=False, saveToFile=False, returnAsList=True)
-            print '#'*50
+            #print '#'*50
             longAN = bestOrbit[0]
             e = bestOrbit[1]
             period = bestOrbit[4]

@@ -104,7 +104,7 @@ def histMakeAndDump(chiSquareds,data,outFilenameRoot='',weight=False, normed=Fal
         print outFilenameRoot+'_bins.pkl'
         #print outFilenameRoot+'_recs.pkl'
     
-def histLoadAndPlot_StackedPosteriors(plot,pklRoot='',xLabel='X',lineColor='k',xLims=False):
+def histLoadAndPlot_StackedPosteriors(plot,pklRoot='',xLabel='X',lineColor='k',xLims=False,latex=False):
     """
     Loads previously plotted histograms that were pickled to disk following the naming conventions:
     'outFilenameRoot'+'_n.pkl'
@@ -118,36 +118,34 @@ def histLoadAndPlot_StackedPosteriors(plot,pklRoot='',xLabel='X',lineColor='k',x
     #rectangles = pickle.load(open(pklRoot+'_recs.pkl','rb'))
     ys = []
     xs = []
-    max = np.max(n)
+    maxN = np.max(n)
     for i in range(0,len(n)):
-        ys.append(n[i]/max)
-        ys.append(n[i]/max)
+        ys.append(n[i]/maxN)
+        ys.append(n[i]/maxN)
         xs.append(bins[i])
         xs.append(bins[i+1])
         if i<(len(n)-1):
             #print 'i = '+str(i)+", len(n) = "+str(len(n))
-            ys.append(n[i+1]/max)
+            ys.append(n[i+1]/maxN)
             xs.append(bins[i+1])
-    plot.plot(xs,ys,color=lineColor,linewidth=7)
+    plot.plot(xs,ys,color=lineColor,linewidth=3)
     plot.axes.set_ylim([0.0,1.02])
     if xLims!=False:
         plot.axes.set_xlim(xLims)
     plt.locator_params(axis='x',nbins=5) # maximum number of x labels
     plt.locator_params(axis='y',nbins=6) # maximum number of y labels
-    plot.tick_params(axis='both',which='major',width=5,length=7,pad=12,direction='in',labelsize=45)
-    plot.spines['right'].set_linewidth(4.0)
-    plot.spines['bottom'].set_linewidth(4.0)
-    plot.spines['top'].set_linewidth(4.0)
-    plot.spines['left'].set_linewidth(4.0)
+    plot.tick_params(axis='both',which='major',width=3,length=4,pad=6,direction='in',labelsize=25)
+    plot.spines['right'].set_linewidth(2.0)
+    plot.spines['bottom'].set_linewidth(2.0)
+    plot.spines['top'].set_linewidth(2.0)
+    plot.spines['left'].set_linewidth(2.0)
     # add axes label
-    ylbl='dp/dx\times(constant)'
-    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-    if False:
-        plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-        plt.rc('text', usetex=True)
-        ylbl = '$\displaystyle dp/dx$\times(constant)'
-    plot.axes.set_xlabel(xLabel,fontsize=55)
-    plot.axes.set_ylabel(ylbl,fontsize=55)
+    if latex:
+        plot.axes.set_ylabel(r'$\displaystyle dp/dx\times(constant)$',fontsize=25)
+    else:
+        plot.axes.set_ylabel('dp/dx(*constant)',fontsize=25)
+    plot.axes.set_xlabel(xLabel,fontsize=20)
+    
     
     return plot
     
@@ -689,9 +687,12 @@ def stackedPosteriorsPlotterHackStarter():
         outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-5PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat')
         outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-1PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat')
     
-    plotFilename = os.path.join(os.path.abspath('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/'),'stackedPosteriorsPlot.eps')
+    plotFilename = os.path.join(os.path.abspath('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/'),'stackedPosteriorsPlot')
     stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=False)
-    print 'Final stacked plot file written to:\n'+plotFilename
+    #print 'Final stacked plot file written to:\n'+plotFilename
+    if True:
+        print 'converted to PDF as well'
+        os.system("epstopdf "+plotFilename+'.eps')
 
 def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=True):
     """
@@ -704,6 +705,12 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
     nu=1
     quiet = True
     verbose = False
+    plotFormat = 'eps'
+    latex=True
+    
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    if latex:
+        plt.rc('text', usetex=True)
     
     if type(outputDataFilenames)!=list:
         outputDataFilenames = [outputDataFilenames]
@@ -742,11 +749,13 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
             print s
         f.close()
         
-        # check if the passed in value for plotFilename includes '.png'
-        if '.eps' not in plotFilename:
-            plotFilename = plotFilename+'.eps'
+        # check if the passed in value for plotFilename includes format extension
+        if '.'+plotFormat not in plotFilename:
+            plotFilename = plotFilename+"."+plotFormat
+            print 'updating plotFilename to : '+plotFilename
         else:
             plotFilename = plotFilename
+            print 'plotfilename was found to already have the format extension'
         
         s='\nStarting to make Simple Key Posteriors Plot'
         if verbose:
@@ -767,8 +776,8 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
                 paramStrs.append('RV offset '+str(dataset)+' [m/s]')
                 perfectVals.append(0.0)
     else:
-        fig = plt.figure(1,figsize=(27.5,12.5)) 
-        positions = [[0.09,0.12,0.38,0.83],[0.57,0.12,0.38,0.83]]
+        fig = plt.figure(1,figsize=(9.625,4.375)) 
+        positions = [[0.12,0.15,0.36,0.8],[0.60,0.15,0.36,0.8]]
         paramList = [1,4]
         paramStrs = ['Eccentricity','Period [Yrs]']
         perfectVals = [0.50,5.00]
@@ -803,10 +812,10 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
                 xLim=False
                 if ALLparams==False:
                     xLim = xLims2[i]  
-                subPlot = histLoadAndPlot_StackedPosteriors(subPlot,pklRoot=pklBaseName,xLabel=paramStrs[i],lineColor=colorsList[colorInt],xLims=xLim)
+                subPlot = histLoadAndPlot_StackedPosteriors(subPlot,pklRoot=pklBaseName,xLabel=paramStrs[i],lineColor=colorsList[colorInt],xLims=xLim,latex=latex)
                 #subPlot = histConverter([], data, subPlot, paramStrs[i], confLevels=False, weight=weight, normed=normalize, nu=nu, bestVal=perfectVals[i],lineColor=colorsList[colorInt])
-                print 'color = '+colorsList[colorInt]
-                subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=55)
+                #print 'color = '+colorsList[colorInt]
+                #subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=55)
                 if ALLparams==False:
                     subPlot.set_position(positions[i])
                 colorInt+=1
@@ -828,7 +837,7 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
     if verbose:
         print '\nStarting to save param hist figure:'
     if plotFilename!='':
-        plt.savefig(plotFilename,format='ps')
+        plt.savefig(plotFilename,format=plotFormat)
         s= 'Summary plot saved to: '+plotFilename
         print s
         if quiet==False:

@@ -196,11 +196,15 @@ def calc_orbit():
     for i in range(0,pos_A.shape[0]):
         # convert x,y to SA and PA with fake errors
         #NOTE: there is an error in the resulting errors from ENtoPASA, but the PASA values are good.
-        # so just make errors
         (data3[i,1],data3[i,2],data3[i,3],data3[i,4]) = diTools.ENtoPASA(data2[i,1], errorDec, data2[i,2], errorRA)
 #         if False:
 #             print repr((data2[i,1], null, data2[i,2], null))
 #             (u1,u2,u3,u4)=diTools.PASAtoEN(data3[i,1],data3[i,2],data3[i,3],data3[i,4])
+    #Averaging out the errors in PASA due to issue with ENtoPASA
+    errorPAMean = np.mean(data3[:,2])
+    data3[:,2] = errorPAMean
+    errorSAMean = np.mean(data3[:,4])
+    data3[:,4] = errorSAMean
     
       #calculate error and use it to realize the errors in the DI data if requested
 #     errorPA = np.median(np.abs(data3[:,1]))*(percentError/100.0)

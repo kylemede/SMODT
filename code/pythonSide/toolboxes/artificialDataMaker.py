@@ -29,9 +29,9 @@ def calc_orbit():
     baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
     NumDataPointsOut = 10 #must be much less than 10000.  values between 10-500 are suitable.
     storePrimaryRVs = True
-    percentError = 20.0 #error is set to a percentage of the median
+    percentError = 5.0 #error is set to a percentage of the median
     realizeErrors = True
-    overlapEnds = True # will ensure some points near end overlap the beginning of the orbit.
+    overlapEnds = False # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
     massratio = 2.0
@@ -174,10 +174,15 @@ def calc_orbit():
     #calculate error and use it to realize the errors in the RV data if requested
     #calculate error and use it to realize the errors in the DI data if requested
     errorRA = np.median(np.abs(data2[:,1]))*(percentError/100.0)
+    print 'errorRA = '+str(errorRA)
+    errorDec = np.median(np.abs(data2[:,2]))*(percentError/100.0)
+    print 'errorDec = '+str(errorDec)
+    errorRA = np.max([errorRA,errorDec])
+    errorDec = np.max([errorRA,errorDec])
+    print 'Using larger of two DI errors for both = '+str(errorDec)
     if realizeErrors:
         for i in range(pos_A.shape[0]):
             data2[i,1]+=np.random.normal(0,errorRA)
-    errorDec = np.median(np.abs(data2[:,2]))*(percentError/100.0)
     if realizeErrors:
         for i in range(pos_A.shape[0]):
             data2[i,2] += np.random.normal(0,errorDec)
@@ -202,21 +207,29 @@ def calc_orbit():
 #             (u1,u2,u3,u4)=diTools.PASAtoEN(data3[i,1],data3[i,2],data3[i,3],data3[i,4])
     #Averaging out the errors in PASA due to issue with ENtoPASA
     errorPAMean = np.mean(data3[:,2])
+    print 'errorPAMean = '+str(errorPAMean)+" = "+str((errorPAMean/np.median(np.abs(data3[:,1])))*100.0)+"% the median of the data"
+    errorPA2 = np.median(np.abs(data3[:,1]))*(percentError/100.0)
+    print 'errorPA2 = '+str(errorPA2)
     data3[:,2] = errorPAMean
     errorSAMean = np.mean(data3[:,4])
+    print 'errorSAMean = '+str(errorSAMean)+" = "+str((errorSAMean/np.median(np.abs(data3[:,3])))*100.0)+"% the median of the data"
+    errorSA2 = np.median(np.abs(data3[:,3]))*(percentError/100.0)
+    print "errorSA2 = "+str(errorSA2)
+    print 
     data3[:,4] = errorSAMean
     
-      #calculate error and use it to realize the errors in the DI data if requested
+    #calculate error and use it to realize the errors in the DI data if requested
 #     errorPA = np.median(np.abs(data3[:,1]))*(percentError/100.0)
+#     data3[:,2] = errorPA
 #     if realizeErrors:
 #         for i in range(pos_A.shape[0]):
 #             data3[i,1] += np.random.normal(0,errorPA)
-#             data3[i,2] = errorPA
 #     errorSA = np.median(np.abs(data3[:,3]))*(percentError/100.0)
+#     data3[:,4] = errorSA
 #     if realizeErrors:
 #         for i in range(pos_A.shape[0]):
 #             data3[i,3]+=np.random.normal(0,errorSA)
-#             data3[i,4] = errorSA
+             
     
     if storePrimaryRVs:
         data3[:,5] = data2[:,3]

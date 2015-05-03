@@ -31,7 +31,7 @@ RVdataFilename =RVdata.dat
 outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-outputData_filenameRoot = FakeData-mcmc-3D-veryOpen-20PercentRealizedError2
+outputData_filenameRoot = FakeData-mcmc-3D-veryOpen-5PercentRealizedError3
 #*************************************************************************************************************************
 # Only perform Radial Velocity simulation. Both RVonly and DIonly can NOT be true!!, set both to false for 3D [bool]
 RVonly =false
@@ -118,9 +118,9 @@ eMIN =0.3
 # Maximum allowed value for the Eccentricity　[double]
 eMAX =0.8
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMIN =3.2
+a_totalMIN =2
 # Minimum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-a_totalMAX =3.5
+a_totalMAX =7
 # Minimum allowed value for the Period [double][yrs]#0.05
 periodMIN =4.
 # Maximum allowed value for the Period [double][yrs]#0.064

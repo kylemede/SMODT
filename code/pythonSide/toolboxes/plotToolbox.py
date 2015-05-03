@@ -8,6 +8,7 @@ import timeit
 from math import pi
 #import dicts
 import pickle
+from progressbar import ProgressBar
 import generalToolbox as genTools 
 import DItoolbox as diTools
 import RVtoolbox as rvTools 
@@ -61,15 +62,15 @@ def fixPlotBordersAndLabels(plot):
     This will just increase the boarder thicknesses and label sizes to look better for printing or 
     putting in papers.
     """
-    plot.tick_params(axis='both',which='major',width=5,length=7,pad=12,direction='in',labelsize=45)
+    plot.tick_params(axis='both',which='major',width=5,length=7,pad=12,direction='in',labelsize=20)
     #plot.axhline(linewidth=2.0)
     #plot.axvline(linewidth=2.0)
     #plot.xaxis.set_tick_params(width=5,length=5,pad=2,direction='in')
     #plot.yaxis.set_tick_params(width=5,length=5,pad=2,direction='in')
-    plot.spines['right'].set_linewidth(4.0)
-    plot.spines['bottom'].set_linewidth(4.0)
-    plot.spines['top'].set_linewidth(4.0)
-    plot.spines['left'].set_linewidth(4.0)
+    plot.spines['right'].set_linewidth(3.0)
+    plot.spines['bottom'].set_linewidth(3.0)
+    plot.spines['top'].set_linewidth(3.0)
+    plot.spines['left'].set_linewidth(3.0)
     return plot
     
 def histMakeAndDump(chiSquareds,data,outFilenameRoot='',weight=False, normed=False, nu=1,logY=False,histType='bar'):
@@ -579,8 +580,8 @@ def addDIdataToPlot(subPlot,SAs,SAerrors,PAs,PAerrors,asConversion,telescopeView
         top = yCent+0.5*h
         btm = yCent-0.5*h
         
-        subPlot.plot([left,right],[yCent,yCent],linewidth=4,color='k',alpha=1.0)
-        subPlot.plot([xCent,xCent],[btm,top],linewidth=4,color='k',alpha=1.0)
+        subPlot.plot([left,right],[yCent,yCent],linewidth=3,color='k',alpha=1.0)
+        subPlot.plot([xCent,xCent],[btm,top],linewidth=3,color='k',alpha=1.0)
         # see if new min max found for x,y
         if xmax<right:
             xmax = right
@@ -715,15 +716,16 @@ def makeCleanSummaryPlot(outputDataFilename=''):
     if True:
         return newDataFilename
             
-def densityDIplot(dataDir,sysDataDict, DIdataDict,nuDI=1):
+def densityPlot(dataDir,sysDataDict, DIdataDict,RVdataDict,paramSettingsDict,nuDI=1,nuRV=1):
     """
     """
     alf = 0.002
     N = 1000
-    print 'Starting to make a density plot for the DI data fit'
+    DI = False
+    print 'Starting to make a density plot for the data fit'
     # record the time the chain started
     startTime = timeit.default_timer()
-    orbitEllipsePlotFilename = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/','DIdensityPlot')
+    
     outputDataFile = os.path.join(dataDir,'outputData-ALL.dat')
     (chiSquareds, incs, es, longANs, periods, argPeris, semiMajors, Ts, Tcs, Ks, rvOffsets) = genTools.getEveryNthOrbElements(outputDataFile,N=N)
     print 'getEveryNthOrbElements found '+str(len(incs))+" sets"
@@ -733,10 +735,27 @@ def densityDIplot(dataDir,sysDataDict, DIdataDict,nuDI=1):
     print 'np.median(incs) = '+str(np.median(incs))
     print 'np.median(argPeris) = '+str(np.median(argPeris))
     print 'np.median(Ts) = '+str(np.median(Ts))
+    print 'np.median(Tcs) = '+str(np.median(Tcs))
     print 'np.median(semiMajors) = '+str(np.median(semiMajors))
-    orbitEllipsePlotter(longANs, es, periods, incs, argPeris, semiMajors, Ts,sysDataDict, DIdataDict,\
-                          plotFilename=orbitEllipsePlotFilename, xLim=False, yLim=False, show=False,nuDI=1,alf=alf)
-    print 'Finished making the density plot for the DI data fit'
+    print 'np.median(Ks) = '+str(np.median(Ks))
+    print 'np.median(rvOffsets) = '+str(np.median(rvOffsets))
+    if DI:
+        #update argPeri value to take offset into account
+        argPerisUse = []
+        for i in range(0,len(argPeris)):
+            argPerisUse.append(argPeris[i]+paramSettingsDict['argPeriOffsetDI'])
+        orbitEllipsePlotFilename = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/','DIdensityPlot')
+        orbitEllipsePlotter(longANs, es, periods, incs, argPerisUse, semiMajors, Ts,sysDataDict, DIdataDict,\
+                              plotFilename=orbitEllipsePlotFilename, xLim=False, yLim=False, show=False,nuDI=1,alf=alf)
+    else:
+        #update argPeri value to take offset into account
+        argPerisUse = []
+        for i in range(0,len(argPeris)):
+            argPerisUse.append(argPeris[i]+paramSettingsDict['argPeriOffsetRV'])
+        orbitrvPlotFilename = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/','RVdensityPlot')
+        rvPlotter(es, Ts, Tcs, periods, incs, argPerisUse, semiMajors, sysDataDict, RVdataDict, paramSettingsDict,\
+                 K=Ks, RVoffsets=rvOffsets, nuRV=1, plotFilename=orbitrvPlotFilename, show=False, plotFullOrbit=True, primaryRVs=True,alf=alf)
+    print 'Finished making the density plot for the data fit'
     endTime = timeit.default_timer()
     totalTime = (endTime-startTime) # in seconds
     totalTimeString = genTools.timeString(totalTime)
@@ -744,7 +763,7 @@ def densityDIplot(dataDir,sysDataDict, DIdataDict,nuDI=1):
 
 def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
-    if True:
+    if False:
         outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-20PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
         outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-10PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
         outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-5PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
@@ -851,7 +870,7 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
         paramList = [1,4]
         paramStrs = ['Eccentricity','Period [Yrs]']
         perfectVals = [0.50,5.00]
-        xLims2 = [[0.41,0.59],[4.71,5.19]]
+        xLims2 = [[0.3,0.59],[4.51,5.99]]
     
     ## run through all the data files and parameters requested and make root histogram files
     for i in range(0,len(paramList)):
@@ -2125,6 +2144,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
         asConversion = 1000.0
     else:
         asConversion = 1.0
+        
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     
     # DI data
     SAs = DIdataDict['SAs']                                   
@@ -2168,9 +2189,6 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
         period = [period]
     if type(To)!=list:
         To = [To]
-        
-    # create a primary star polygon at center of plot
-    starPolygon = star((asConversion/1000.0)*2.0*a[0], 0, 0, color='black', N=10, thin = 0.4)
     
     ###################################################################################################################
     ## calculate the locations of companion for 'numOrbs' locations throughout the orbit to make an orbit ellipse    
@@ -2187,7 +2205,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
         ellipseYs = []
         numSteps = 1000.0
         if len(longAN_deg)>100:
-            numSteps = 500.0
+            numSteps = 1000.0
         periodIncrement = (period[orb]*365.25)/numSteps
         t = 1.0 
         numFailed = 0
@@ -2489,12 +2507,13 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
             print "\n\n     TH-I: for orbit #"+str(orb)+", "+chiSquaredStr+"\n"
     #######################################################################################            
     
+    ############################################################################################################################################
+    ########################################## Starting to Plot ################################################################################
+    ############################################################################################################################################
+
     ## Create figure, axes and start plotting/drawing everything
-    fig = plt.figure(1,figsize=(14,12))
+    fig = plt.figure(1,figsize=(10,9))
     main = fig.add_subplot(111)
-    main.set_xlabel(xLabel, fontsize=30)
-    main.set_ylabel(yLabel, fontsize=30)
-    plt.suptitle(plotFileTitle, fontsize=10)
         
     # Draw orbit ERRORS !!
     if False:
@@ -2524,23 +2543,23 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
             main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2,color='blue',alpha=alf) 
     
     #draw semi-major
-    main.plot([Xstart,Xhalf],[Ystart,Yhalf],'g-',linewidth=1)
+    main.plot([Xstart,Xhalf],[Ystart,Yhalf],'g-',linewidth=2)
     
     #calculate and draw an X at the center of the semi-major axis
-    xStar = (Xhalf+Xstart)/2.0
-    yStar = (Yhalf+Ystart)/2.0
+    xCOM = (Xhalf+Xstart)/2.0
+    yCOM = (Yhalf+Ystart)/2.0
     if telescopeView:
-        yStar = -yStar
-        xStar = -xStar
-    main.plot(xStar,yStar,'rx',linewidth=1)
+        yCOM = -yCOM
+        xCOM = -xCOM
+    main.plot(xCOM,yCOM,'rx',markersize=12,mew=2.5)
     
     # draw lines along diagonals to mark out 45 degree locations from origin ### Useless now
     #main.plot( [xLim[0],xLim[1]], [yLim[0],yLim[1]])
     #main.plot( [xLim[1],xLim[0]], [yLim[0],yLim[1]])
     
     # Draw stars for the location of each 1/4 of the orbit  # These are optional, I would not include them for the final versions, maybe just the periapsis one.
-    main.add_patch(startStar)
     if False:
+        main.add_patch(startStar)
         main.add_patch(oneQuarterStar)
         main.add_patch(halfStar)
         main.add_patch(threeQuarterStar)
@@ -2550,6 +2569,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
             main.add_patch(predStar)
     
     # Draw larger star for primary star's location
+    # create a primary star polygon at center of plot
+    starPolygon = star((asConversion/1000.0)*12.0*a[0], 0, 0, color='yellow', N=6, thin = 0.5)
     main.add_patch(starPolygon)
     
     ## call function to calculate, create and return polygons for the 
@@ -2651,8 +2672,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
             print "new dataMaxMins = "+repr(dataMaxMins)
     
     # Draw lines for horizontal and vertical from origin
-    main.plot([xLim[0],xLim[1]],[0,0],c='black',linewidth=2)
-    main.plot([0,0],[yLim[0],yLim[1]],c='black',linewidth=2)
+    #main.plot([xLim[0],xLim[1]],[0,0],c='black',linewidth=2)
+    #main.plot([0,0],[yLim[0],yLim[1]],c='black',linewidth=2)
     
     if False:
         # draw the error boxes for the companion start locations in the data
@@ -2675,9 +2696,22 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     #print "xLim2 = "+repr(xLim2)
     main.axes.set_xlim(xLim2)
     main.axes.set_ylim(yLim)
-    main = fixPlotBordersAndLabels(main)
-    main.axhline(linewidth=1.0)
-    main.axvline(linewidth=1.0)
+    # Fix up borders and tick labels to ideal sizes
+    main.axhline(linewidth=2.0,color='k')
+    main.axvline(linewidth=2.0,color='k')
+    main.tick_params(axis='both',which='major',width=5,length=7,pad=12,direction='in',labelsize=30)
+    #plot.axhline(linewidth=2.0)
+    #plot.axvline(linewidth=2.0)
+    #plot.xaxis.set_tick_params(width=5,length=5,pad=2,direction='in')
+    #plot.yaxis.set_tick_params(width=5,length=5,pad=2,direction='in')
+    main.spines['right'].set_linewidth(4.0)
+    main.spines['bottom'].set_linewidth(4.0)
+    main.spines['top'].set_linewidth(4.0)
+    main.spines['left'].set_linewidth(4.0)
+    main.set_position([0.17,0.12,0.79,0.83])
+    main.set_xlabel(xLabel, fontsize=35)
+    main.set_ylabel(yLabel, fontsize=35)
+    #plt.suptitle(plotFileTitle, fontsize=20)
 
     # save plot to file
     if plotFilename!='':
@@ -2919,7 +2953,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     prepend = ""
     if outputDatafile=='':
         #baseDir = "/mnt/Data1/Todai_Work/Dropbox/EclipseWorkspace/SMODT/settings_and_InputData"
-        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-5PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat" 
+        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-10PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat" 
         baseDir = os.path.dirname(outputDatafile)
         prepend = "FakeData_"
     elif outputDatafile!="":
@@ -2937,7 +2971,15 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     # Get data dicts
     ####################################################
     sysDataDict = genTools.sysDataToDict(sysDatafilename)
-    RVdataDict = rvTools.RVdataToDict(RVdatafilename)
+    try:
+        RVdataDict = rvTools.RVdataToDict(RVdatafilename)
+    except: 
+        useless=True
+    DIdatafilename = os.path.join(baseDir,"code-used/"+prepend+'DIdata.dat')
+    try:
+        DIdataDict = diTools.DIdataToDict(DIdatafilename)
+    except:
+        uselss = True
     paramSettingsDict = genTools.cFileToSimSettingsDict(inputSettingsFile)
     ####################################################
     # Make output plot filenames
@@ -3010,8 +3052,6 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
         ##############   DI plot(s)  #######################
         if True:
             ## Make a DI fit plot
-            DIdatafilename = os.path.join(baseDir,"code-used/"+prepend+'DIdata.dat')
-            DIdataDict = diTools.DIdataToDict(DIdatafilename)
             if False:
                 if False:
                     longANs = [136.48,115.03,143.82]
@@ -3034,7 +3074,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
                 orbitEllipsePlotter(longANs,es,periods,incs,argPeris,a_totals,\
                                  sysDataDict,DIdataDict,plotFilename=diPlotFilename,show=False,To=Ts, nuDI=nuDI) 
             if True:
-                densityDIplot(baseDir, sysDataDict, DIdataDict, nuDI=nuDI) 
+                densityPlot(baseDir, sysDataDict, DIdataDict,RVdataDict,paramSettingsDict, nuDI=nuDI,nuRV=nuRV) 
     ####################################################
     # Extra non-orbit plots and statistic calculations
     ####################################################
@@ -3071,7 +3111,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
         genTools.gelmanRubinStage2(fileList)
 
 def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, paramSettingsDict,\
-                 K=0, RVoffsets=[0], nuRV=1, plotFilename='', show=True, plotFullOrbit=True, primaryRVs=True):
+                 K=0, RVoffsets=[0], nuRV=1, plotFilename='', show=True, plotFullOrbit=True, primaryRVs=True,alf=1.0):
     """
     create a plot for the RV data and a fit line from the best orbit data params.
     
@@ -3085,9 +3125,13 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     """
     verbose = False
     addLegend = False
-    plotErrorBars = False
+    plotErrorBars = True
     makeTrendPlot = True
     makeDataResidualPlot = False
+    
+    colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
+    
+    
     ## make string with input values for possible printing
     s= '\nInputs to rvPlotter were:'+'\n'
     s=s+ 'e = '+repr(e)+'\n'
@@ -3102,6 +3146,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     if verbose:
         print s
         
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    
     #check the orbit element inputs to ensure they are lists, else make them lists
     if type(argPeri_deg)!=list:
         argPeri_deg = [argPeri_deg]
@@ -3125,19 +3171,24 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             TcUse.append(Tcent)
         else:
             TcUse.append(Tc[i])
-    if verbose:
+    if False:
         print "Tc = "+repr(Tc)
         print "TcUse = "+repr(TcUse)
     Tc = TcUse
     
     if type(K)!=list:
         K = [K]
-    if type(RVoffsets)!=list:
+    if type(argPeri_deg)!=list:
         RVoffsets = [RVoffsets]
     
     RV_epochs = RVdataDict['RV_epochs']
     RV_errors = RVdataDict['RV_errors']
     RVs = RVdataDict['RVs']
+    KMperSec = False
+    MtoKM = 1.0
+    if np.max(RVs)>2000.0:
+        KMperSec = True
+        MtoKM = 1000.0
     
     if type(RV_epochs[0])!=list:
         RV_epochs = [RV_epochs]
@@ -3192,26 +3243,21 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     
     #subtract RVoffsets
     RVsIN = RVs
-    RVsOUT = []
+    if type(RVsIN)!=np.ndarray:
+        RVsIN = np.array(RVsIN)
+    RVsOUT2 = []
     numEpochsTotal = 0
-    s=''
-    for dataset in range(0,len(RVsIN)):
-        RVsUSE=[]
-        if len(RVoffsets)>=(dataset+1):
-            offset = RVoffsets[dataset]
-        else:
-            offset = 0
-        s=s+"offset being subtracted from RV data for data set #"+str(dataset)+" is "+str(offset)+"\n"
-        numEpochsTotal+=len(RVsIN[dataset])
-        for epoch in range(0,len(RVsIN[dataset])):
-            vel = RVsIN[dataset][epoch]-offset
-            RVsUSE.append(vel)
-        RVsOUT.append(RVsUSE)
-    if False:
-        s=  '\nlen of input RVs = '+str(len(RVs))
-        s=s+'\nlen of output RVs = '+str(len(RVsOUT))
-        print s
-    log.write(s+'\n')
+    for orb in range(0,len(e)):
+        RVsOUT = []
+        for dataset in range(0,len(RVsIN)):
+            offset = RVoffsets[orb][dataset]
+            s="offset being subtracted from RV data for orb #"+str(orb)+"/"+str(len(e))+", dataset #"+str(dataset)+" is "+str(offset)+"\n"
+            numEpochsTotal+=len(RVsIN[dataset])
+            RVsOUT.append(RVsIN[dataset]-offset)
+        log.write(s+'\n')
+        if verbose:
+            print s
+        RVsOUT2.append(RVsOUT)
         
     # data for planet's orbit that are needed to calculate proper chiSquare for RV fit
     planet_K = sysDataDict["planet_K"] #[m/s]
@@ -3293,8 +3339,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             planet_es.append(planet_e)
             planet_argPeris.append(planet_argPeri)
             planet_Ts.append(planet_T)
-            if verbose:
-                print 'appending '+str(planet_T)+" to planet_Ts"
+            #if verbose:
+            #    print 'appending '+str(planet_T)+" to planet_Ts"
             planet_Tcs.append(planet_Tc)
             planet_MsinIs.append(planet_MsinI)
             planet_Ks.append(planet_K)
@@ -3337,10 +3383,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         numEpochs_RV = 0.0
         chi_squared_RV_reducedCur2 = []
         chi_squared_RV_Cur2 = []
-        for dataset in range(0,len(RVsOUT)):
+        for dataset in range(0,len(RVsOUT2[orb])):
             chiSquaredTot = 0.0
             epochs = RV_epochsIN2[dataset]
-            rvs = RVsOUT[dataset]
+            rvs = RVsOUT2[orb][dataset]
             errors = RV_errors[dataset]                
             residuals = []
             planetVRs = []
@@ -3412,9 +3458,9 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                     s= 'Bad point found at '+str(rvs[epoch])+", taken at "+str(RV_epochsIN2[dataset][epoch])+", was off by = "+str(RV)
                     print s
                     log.write(s+'\n')
-                residuals.append(RV)
-                planetVRs.append(v_r_p) 
-                starVRs.append(v_r_c) 
+                residuals.append(RV/MtoKM)
+                planetVRs.append(v_r_p/MtoKM) 
+                starVRs.append(v_r_c/MtoKM) 
                 chiSquaredCurr = genTools.chiSquaredCalc(rvs[epoch], error, v_r_c+v_r_p)
                 chiSquaredTot = chiSquaredTot+chiSquaredCurr
                 
@@ -3460,8 +3506,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             for dataset in range(0,len(RVsOUT)):
                 RVsOUTupdated = []
                 for epoch in range(0,len(RVsOUT[dataset])): 
-                    RVsOUTupdated.append(RVsOUT[dataset][epoch]-planetVRs3[orb][dataset][epoch]) 
+                    #print 'RVsOUT[dataset][epoch]/MtoKM = '+str(RVsOUT[dataset][epoch]/MtoKM)+", planetVRs3[orb][dataset][epoch] = "+str(planetVRs3[orb][dataset][epoch])
+                    RVsOUTupdated.append((RVsOUT[dataset][epoch]/MtoKM)-planetVRs3[orb][dataset][epoch]) 
                 RVsOUTupdated2.append(RVsOUTupdated)
+                #print 'ln3510: np.max(RVsOUTupdated2) = '+str(np.max(RVsOUTupdated))
             RVsOUTupdated3.append(RVsOUTupdated2)
     # if simulating planet's orbit and star RVs exist sub them
     elif (simulate_StarPlanetRV  and (starVRs3[0][0][0]!=0)):
@@ -3474,13 +3522,21 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             for dataset in range(0,len(RVsOUT)):
                 RVsOUTupdated = []
                 for epoch in range(0,len(RVsOUT[dataset])): 
-                    RVsOUTupdated.append(RVsOUT[dataset][epoch]-starVRs3[orb][dataset][epoch])
+                    #print 'RVsOUT[dataset][epoch]/MtoKM = '+str(RVsOUT[dataset][epoch]/MtoKM)+", starVRs3[orb][dataset][epoch] = "+str(starVRs3[orb][dataset][epoch])
+                    RVsOUTupdated.append((RVsOUT[dataset][epoch]/MtoKM)-starVRs3[orb][dataset][epoch])
                 RVsOUTupdated2.append(RVsOUTupdated)
+                #print 'ln3510: np.max(RVsOUTupdated2) = '+str(np.max(RVsOUTupdated))
             RVsOUTupdated3.append(RVsOUTupdated2) 
     # if simulating either and data of the other doesn't exist, just copy RVs to 3d ary
     else:
         for orb in range(0,len(e)):
-            RVsOUTupdated3.append(RVsOUT)
+            RVsOUTupdated2 = []
+            for dataset in range(0,len(RVsOUT)):
+                RVsOUTupdated = []
+                for epoch in range(0,len(RVsOUT[dataset])): 
+                    RVsOUTupdated.append((RVsOUT[dataset][epoch]/MtoKM))
+                RVsOUTupdated2.append(RVsOUTupdated)
+            RVsOUTupdated3.append(RVsOUTupdated2)
     
     if planetVRs3[0][0][0]!=0:
         s = '\n'+'*'*50+'\nPlanet Radial Velocities:\n'
@@ -3541,12 +3597,13 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                 aUse = a2
             # calculate the velocity residual due to the companion 
             (v_r_c,Kcalc) = rvTools.vrCalculatorSemiMajorType(t,e[orb],T[orb],period[orb],argPeri_deg[orb],aUse,T_center=Tc[orb],i=inc[orb], K=K_use, verbose=False)
-            orbitVRs.append(v_r_c)
+            orbitVRs.append(v_r_c/MtoKM)
         #print 'times were '+repr(times)
-        s= 'Orbit '+str(orb)+" had a K = "+str(Kcalc)
-        if verbose:
-            print s
-        log.write(s+'\n')
+        if len(argPeri_deg)<len(colorsList):
+            s= 'Orbit '+str(orb)+" had a K = "+str(Kcalc)
+            if verbose:
+                print s
+            log.write(s+'\n')
         orbitPhases = epochsToPhases(times,Tc[orb],period[orb], verbose=False)
         #print 'orbital phases were:\n'+repr(orbitPhases)
         orbitPhases2.append(orbitPhases)
@@ -3560,23 +3617,29 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         
     ############################################################
     ## Create figure, axes and start plotting/drawing everything
-    fig = plt.figure(1,figsize=(20,10))
-    plt.suptitle(plotFileTitle, fontsize=15)
+    fig = plt.figure(1,figsize=(10,5))
+    #plt.suptitle(plotFileTitle, fontsize=10)
     residualsPlot = fig.add_subplot(212)
-    residualsPlot.set_position([0.1,0.12,0.85,0.23])
+    residualsPlot.set_position([0.12,0.14,0.83,0.23])
     #residualsPlot.set_title("Residuals Plot")
-    residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=30)
-    residualsPlot.axes.set_ylabel("Residual",fontsize=25)
+    residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=15)
+    residualsPlot.axes.set_ylabel("Residual",fontsize=15)
     #colorsList = ['b','m','k','g','y','o','p']
-    colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     
     #plot RESIDUAL data and fit, plus build up the chiSquaredStr
+    print 'about to load up residuals plot'
+    # create a progress bar object for updates to user of progress
+    if len(argPeri_deg)<len(colorsList):
+        p = ProgressBar('red',width=30,block='=',empty='-',lastblock='>')
     for orb in range(0,len(argPeri_deg)):
         chiSquaredStr = ''
         for dataset in range(0,len(RVs)):
-            chiSquaredStr = chiSquaredStr+'\ndataset '+str(dataset)+' has chiSquared = '+str(chi_squared_RV_Cur2[dataset])+", or reduced chiSquared = "+str(chi_squared_RV_reducedCur2[dataset])
-            chiSquaredStr = chiSquaredStr+'\nchiSquared_reduced for dataset '+str(dataset)+' is = '+str(chi_squared_RV_reducedCur2[dataset])
-            residualsPlot.scatter(phases3[orb][dataset],residuals3[orb][dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
+            c='blue'
+            if len(argPeri_deg)<len(colorsList):
+                chiSquaredStr = chiSquaredStr+'\ndataset '+str(dataset)+' has chiSquared = '+str(chi_squared_RV_Cur2[dataset])+", or reduced chiSquared = "+str(chi_squared_RV_reducedCur2[dataset])
+                chiSquaredStr = chiSquaredStr+'\nchiSquared_reduced for dataset '+str(dataset)+' is = '+str(chi_squared_RV_reducedCur2[dataset])
+                c = colorsList[dataset]
+            residualsPlot.scatter(phases3[orb][dataset],residuals3[orb][dataset],s=15,edgecolor=c,facecolor=c,alpha=alf)
             s= '\n\n*** RMS of residuals '+str(dataset)+'= '+str(np.sqrt(np.mean(np.array(residuals3[orb][dataset])**2)))+' ***\n\n'
             log.write(s+'\n')
             if verbose:
@@ -3587,6 +3650,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
                     xs = [phases3[orb][dataset][epoch],phases3[orb][dataset][epoch]]
                     ys = [residuals3[orb][dataset][epoch]-abs(RV_errors[dataset][epoch]),residuals3[orb][dataset][epoch]+abs(RV_errors[dataset][epoch])]
                     residualsPlot.plot(xs,ys,c='k')
+        if len(argPeri_deg)<len(colorsList):
+            p.render((orb+1) * 100 // len(argPeri_deg), 'Complete so far.')
                
     chiSquaredStr = chiSquaredStr+'\nchiSquared_reduced for ALL data is = '+str(chi_squared_RV_reduced)
     s= chiSquaredStr
@@ -3608,7 +3673,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     
     ## make plot of fit to data
     fitPlot = fig.add_subplot(211)
-    fitPlot.set_position([0.1,0.35,0.85,0.55])
+    fitPlot.set_position([0.12,0.37,0.83,0.55])
     fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
     fitXmin = genTools.findArrayMin(orbitPhases2)
     if xmin<fitXmin:
@@ -3656,18 +3721,29 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     fitPlot.axes.set_xlim(fitXLimsUSE)
     fitPlot.axes.set_ylim(fitYLimsUSE)
     fitPlot=fixPlotBordersAndLabels(fitPlot)
-    fitPlot.axes.set_ylabel("RV [m/s]",fontsize=30)
+    yLabel = "RV [m/s]"
+    if KMperSec:
+        yLabel = "RV [km/s]"
+    fitPlot.axes.set_ylabel(yLabel,fontsize=15)
     residualsPlot=fixPlotBordersAndLabels(residualsPlot)
+    #print 'ln3712: np.max(RVsOUTupdated3) = '+str(np.max(RVsOUTupdated3))
+    print "About to load up fit plot"
+    if len(argPeri_deg)<len(colorsList):
+        p = ProgressBar('red',width=30,block='=',empty='-',lastblock='>')
     for orb in range(0,len(e)):
-        fitPlot.plot(orbitPhases2[orb],orbitVRs2[orb],c='r',linewidth=2.0)
+        fitPlot.plot(orbitPhases2[orb],orbitVRs2[orb],c='r',linewidth=2.0,alpha=alf)
         for dataset in range(0,len(RVs)):
-            fitPlot.scatter(phases3[orb][dataset],RVsOUTupdated3[orb][dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
+            c='blue'
+            if len(argPeri_deg)<len(colorsList):
+                c = colorsList[dataset]
+            fitPlot.scatter(phases3[orb][dataset],RVsOUTupdated3[orb][dataset],s=15,edgecolor=c,facecolor=c,alpha=alf)
             if plotErrorBars:
                 for epoch in range(0,len(phases3[orb][dataset])):
                     xs = [phases3[orb][dataset][epoch],phases3[orb][dataset][epoch]]
                     ys = [RVsOUTupdated3[orb][dataset][epoch]-abs(RV_errors[dataset][epoch]),RVsOUTupdated3[orb][dataset][epoch]+abs(RV_errors[dataset][epoch])]
                     fitPlot.plot(xs,ys,c='k',linewidth=2.0)
-            
+        if len(argPeri_deg)<len(colorsList):
+            p.render((orb+1) * 100 // len(argPeri_deg), 'Complete so far.')
     paramsLegndStr = 'e = '+str(e[0])
     paramsLegndStr +='\ninc = '+str(inc[0])
     paramsLegndStr +='\na = '+str(a[0])
@@ -3720,42 +3796,50 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         plt.show()
     plt.close()
     
-    ## Another plot to show the residuals over JD time to look for any remaining trend
-    if makeTrendPlot:
-        fig2 = plt.figure(2,figsize=(20,10))
-        plt.suptitle(plotFileTitle, fontsize=10)
+    ## Another plot to show the residuals over JD time to look for any remaining trend 
+
+    if makeTrendPlot:       
+        print "about to load up trend plot"
+        if len(argPeri_deg)<len(colorsList):
+            p = ProgressBar('red',width=30,block='=',empty='-',lastblock='>')
+        fig2 = plt.figure(2,figsize=(10,5))
+        #plt.suptitle(plotFileTitle, fontsize=10)
         residualsPlotTrend = fig2.add_subplot(212)
-        residualsPlotTrend.set_position([0.1,0.12,0.85,0.23])
+        residualsPlotTrend.set_position([0.12,0.14,0.83,0.23])
         RVsPlotTrend = fig2.add_subplot(211)
-        RVsPlotTrend.set_position([0.1,0.35,0.85,0.55])
+        RVsPlotTrend.set_position([0.12,0.37,0.83,0.55])
         RVsPlotTrend.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
-        RVsPlotTrend.set_title("RVs TREND")
-        RVsPlotTrend.axes.set_ylabel("RV [m/s]",fontsize=30)
+        #RVsPlotTrend.set_title("RVs TREND")
+        RVsPlotTrend.axes.set_ylabel(yLabel,fontsize=15)
         #residualsPlotTrend.set_title("Residuals Plot TREND")
-        residualsPlotTrend.axes.set_ylabel("Residual",fontsize=25)
-        residualsPlotTrend.axes.set_xlabel("Epoch [JD]",fontsize=30)
+        residualsPlotTrend.axes.set_ylabel("Residual",fontsize=15)
+        residualsPlotTrend.axes.set_xlabel("Epoch [JD]",fontsize=15)
         residualsPlotTrend=fixPlotBordersAndLabels(residualsPlotTrend)
         RVsPlotTrend=fixPlotBordersAndLabels(RVsPlotTrend)
         rng = genTools.findArrayMax(RV_epochsIN2)-genTools.findArrayMin(RV_epochsIN2)
         rngUse= [genTools.findArrayMin(RV_epochsIN2)-rng*0.05,genTools.findArrayMax(RV_epochsIN2)+rng*0.05]
         for orb in range(0,len(argPeri_deg)):
             for dataset in range(0,len(RVs)):
-                    residualsPlotTrend.scatter(RV_epochsIN2[dataset],residuals3[orb][dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
-                    RVsPlotTrend.scatter(RV_epochsIN2[dataset],RVsOUT[dataset],s=35,edgecolor=colorsList[dataset],facecolor=colorsList[dataset])
-                    #plot error bars
-                    if plotErrorBars:
-                        for epoch in range(0,len(RV_epochsIN2[dataset])):
-                            xs = [RV_epochsIN2[dataset][epoch],RV_epochsIN2[dataset][epoch]]
-                            ys = [residuals3[orb][dataset][epoch]-abs(RV_errors[dataset][epoch]),residuals3[orb][dataset][epoch]+abs(RV_errors[dataset][epoch])]
-                            residualsPlotTrend.plot(xs,ys,c='k')
-                            xs = [RV_epochsIN2[dataset][epoch],RV_epochsIN2[dataset][epoch]]
-                            ys = [RVsOUT[dataset][epoch]-abs(RV_errors[dataset][epoch]),RVsOUT[dataset][epoch]+abs(RV_errors[dataset][epoch])]
-                            RVsPlotTrend.plot(xs,ys,c='k')
-        residualsPlotTrend.plot(rngUse,[0,0],c='r',linewidth=2.0)
+                c='blue'
+                if len(argPeri_deg)<len(colorsList):
+                    c = colorsList[dataset]
+                residualsPlotTrend.scatter(RV_epochsIN2[dataset],residuals3[orb][dataset],s=15,edgecolor=c,facecolor=c,alpha=alf)
+                RVsPlotTrend.scatter(RV_epochsIN2[dataset],RVsOUTupdated3[orb][dataset],s=15,edgecolor=c,facecolor=c,alpha=alf)
+                #plot error bars
+                if plotErrorBars:
+                    for epoch in range(0,len(RV_epochsIN2[dataset])):
+                        xs = [RV_epochsIN2[dataset][epoch],RV_epochsIN2[dataset][epoch]]
+                        ys = [residuals3[orb][dataset][epoch]-abs(RV_errors[dataset][epoch]),residuals3[orb][dataset][epoch]+abs(RV_errors[dataset][epoch])]
+                        residualsPlotTrend.plot(xs,ys,c='k')
+                        xs = [RV_epochsIN2[dataset][epoch],RV_epochsIN2[dataset][epoch]]
+                        ys = [RVsOUT[dataset][epoch]-abs(RV_errors[dataset][epoch]),RVsOUT[dataset][epoch]+abs(RV_errors[dataset][epoch])]
+                        RVsPlotTrend.plot(xs,ys,c='k')
+            if len(argPeri_deg)<len(colorsList):
+                p.render((orb+1) * 100 // len(argPeri_deg), 'Complete so far.')
+        residualsPlotTrend.plot(rngUse,[0,0],c='r',linewidth=2.0,alpha=alf)
         residualsPlotTrend.axes.set_ylim(yLim2)
-        RVsPlotTrend.plot(rngUse,[0,0],c='r',linewidth=2.0)
-        RVsPlotTrend.axes.set_ylim(fitYLimsUSE)
-        
+        RVsPlotTrend.plot(rngUse,[0,0],c='r',linewidth=2.0,alpha=alf)
+        RVsPlotTrend.axes.set_ylim(fitYLimsUSE)        
         residualsPlotTrend.axes.set_xlim(rngUse)
         RVsPlotTrend.axes.set_xlim(rngUse)
         

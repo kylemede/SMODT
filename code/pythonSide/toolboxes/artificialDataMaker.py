@@ -27,11 +27,11 @@ def calc_orbit():
     #Computer Directory
     #baseSaveDir='/mnt/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
     baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
-    NumDataPointsOut = 10 #must be much less than 10000.  values between 10-500 are suitable.
+    NumDataPointsOut = 20 #must be much less than 10000.  values between 10-500 are suitable.
     storePrimaryRVs = True
     percentError = 5.0 #error is set to a percentage of the median
     realizeErrors = True
-    overlapEnds = False # will ensure some points near end overlap the beginning of the orbit.
+    overlapEnds = True # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
     massratio = 2.0
@@ -88,7 +88,7 @@ def calc_orbit():
    
     ## Extend t to include a fifth of extra points at the end that overlap the beginning of the orbit
     if overlapEnds:
-        NumOverlapPts = NptsBIG//7
+        NumOverlapPts = NptsBIG//10
         t2 = np.empty((t.shape[0]+NumOverlapPts))
         t2[0:t.size]=t
         t2[t.size:]=t[2]*np.arange(NumOverlapPts+1)[1:]+t[-1]
@@ -210,17 +210,18 @@ def calc_orbit():
     print 'errorPAMean = '+str(errorPAMean)+" = "+str((errorPAMean/np.median(np.abs(data3[:,1])))*100.0)+"% the median of the data"
     errorPA2 = np.median(np.abs(data3[:,1]))*(percentError/100.0)
     print 'errorPA2 = '+str(errorPA2)
-    data3[:,2] = errorPAMean
+    print 'errorPA2*1.7 = '+str(errorPA2*1.7)
+    data3[:,2] = errorPA2*1.7
     errorSAMean = np.mean(data3[:,4])
     print 'errorSAMean = '+str(errorSAMean)+" = "+str((errorSAMean/np.median(np.abs(data3[:,3])))*100.0)+"% the median of the data"
     errorSA2 = np.median(np.abs(data3[:,3]))*(percentError/100.0)
     print "errorSA2 = "+str(errorSA2)
     print 
-    data3[:,4] = errorSAMean
+    data3[:,4] = errorSA2
     
-    #calculate error and use it to realize the errors in the DI data if requested
+#     #calculate error and use it to realize the errors in the DI data if requested
 #     errorPA = np.median(np.abs(data3[:,1]))*(percentError/100.0)
-#     data3[:,2] = errorPA
+#     data3[:,2] = errorPA*1.7
 #     if realizeErrors:
 #         for i in range(pos_A.shape[0]):
 #             data3[i,1] += np.random.normal(0,errorPA)

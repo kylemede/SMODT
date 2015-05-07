@@ -94,45 +94,21 @@ except AttributeError:
 _orbCalc.ORBCALC_H_swigconstant(_orbCalc)
 ORBCALC_H = _orbCalc.ORBCALC_H
 
-def cadd(x, y):
-    return _orbCalc.cadd(x, y)
-cadd = _orbCalc.cadd
-
-def selection(flag):
-    return _orbCalc.selection(flag)
-selection = _orbCalc.selection
-
-def fact(n):
-    return _orbCalc.fact(n)
-fact = _orbCalc.fact
-
-def csin(i):
-    return _orbCalc.csin(i)
-csin = _orbCalc.csin
-
-def speak(str):
-    return _orbCalc.speak(str)
-speak = _orbCalc.speak
-
-def sum_scalar(x, y):
-    return _orbCalc.sum_scalar(x, y)
-sum_scalar = _orbCalc.sum_scalar
-
-def sum_1d(nx, ny):
-    return _orbCalc.sum_1d(nx, ny)
-sum_1d = _orbCalc.sum_1d
-
-def sum2d(x):
-    return _orbCalc.sum2d(x)
-sum2d = _orbCalc.sum2d
-
-def sumfunc(nx, ny, op):
-    return _orbCalc.sumfunc(nx, ny, op)
-sumfunc = _orbCalc.sumfunc
-
-def sum2d_double(x, nx, ny):
-    return _orbCalc.sum2d_double(x, nx, ny)
+def sum2d_double(x):
+    return _orbCalc.sum2d_double(x)
 sum2d_double = _orbCalc.sum2d_double
+
+def modAndReturn2d_double(x):
+    return _orbCalc.modAndReturn2d_double(x)
+modAndReturn2d_double = _orbCalc.modAndReturn2d_double
+
+def modAndReturnDouble(x):
+    return _orbCalc.modAndReturnDouble(x)
+modAndReturnDouble = _orbCalc.modAndReturnDouble
+
+def speedTestSWIG(ntimes):
+    return _orbCalc.speedTestSWIG(ntimes)
+speedTestSWIG = _orbCalc.speedTestSWIG
 # This file is compatible with both classic and new-style classes.
 
 

@@ -15,18 +15,24 @@ except AttributeError:
     numpy_include = numpy.get_numpy_include()
 
 _hello = Extension("_hello",
-		    ["hello_wrap.cxx",
-		     "hello.cc"],
-		     include_dirs = [numpy_include],
-		     )
+            ["hello_wrap.cxx",
+             "hello.cc"],
+             include_dirs = [numpy_include],
+             )
 _orbCalc = Extension("_orbCalc",
-		    ["orbCalc_wrap.cxx",
-		     "orbCalc.cc"],
-		     include_dirs = [numpy_include],
-		     )
+            ["orbCalc_wrap.cxx",
+             "orbCalc.cc"],
+             include_dirs = [numpy_include],
+             )
+		     
+_orbCalc2 = Extension("_orbCalc2",
+            ["orbCalc2_wrap.cxx",
+             "orbCalc2.cc"],
+             include_dirs = [numpy_include],
+             )
 
 setup(name= "KylesInitialTests",
 	description = "Functions that links with c++",
 	author      = "Kyle Mede",
-	py_modules  = ["hello","orbCalc"],
-	ext_modules = [_hello,_orbCalc])
+	py_modules  = ["hello","orbCalc","orbCalc2"],
+	ext_modules = [_hello,_orbCalc,_orbCalc2])

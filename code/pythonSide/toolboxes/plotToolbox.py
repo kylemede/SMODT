@@ -73,63 +73,111 @@ def fixPlotBordersAndLabels(plot):
     plot.spines['left'].set_linewidth(2.0)
     return plot
     
-def histMakeAndDump(chiSquareds,data,outFilenameRoot='',weight=False, normed=False, nu=1,logY=False,histType='bar'):
+def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, normed=False, nu=1,logY=False,histType='bar'):
     """
-    This will make a matplotlib histogram using the input settings, then pickle the resulting n,bins
-    objects to disk following the filenames: 
-    'outFilenameRoot'+'_n.pkl'
-    'outFilenameRoot'+'_bins.pkl'
+    This will make a matplotlib histogram using the input settings, then writing the resulting  
+    centers of the bins and number of data points in said bin values to disk, with '.dat' extension
+    if not added already.
     
-    This function is designed to work with a follow up like histLoadAndPlot to produce publication worthy plots.
+    This function is designed to work with a follow up like histLoadAndPlot_** to produce publication worthy plots.
     """
+    if outFilename[-4]!='.dat':
+        outFilename=outFilename+'.dat'
+        
     if weight:
         theWeights = genTools.likelihoodsCalc(chiSquareds, nu)
     else:
-        theWeights = np.ones(len(data))
-        
-    if len(data)<20000:
-                nbins = 50
-    elif 50000<len(data)<200000:
-        nbins=70
-    else: 
-        nbins=100        
+        theWeights = np.ones(len(data))      
     fig = plt.figure(1)
     subPlot = fig.add_subplot(111)
     (n,bins,rectangles)=subPlot.hist(data, bins=nbins, normed=False, weights=theWeights,linewidth=7,histtype=histType,log=logY, fill=False)
-    pickle.dump(n,open(outFilenameRoot+'_n.pkl','wb'))
-    pickle.dump(bins,open(outFilenameRoot+'_bins.pkl','wb'))
-    #pickle.dump(rectangles,open(outFilenameRoot+'_recs.pkl','wb'))
+    #find center of bins
+    if type(bins)!=np.ndarray:
+        bins = np.array(bins)
+    binCenters = (bins[1:]+bins[:-1])/2.0
+    histData=np.zeros((len(n),2))
+    histData[:,0]=binCenters
+    histData[:,1]=n
+    np.savetxt(outFilename,histData)
     if True:
-        print "output pickle files were:"
-        print outFilenameRoot+'_n.pkl'
-        print outFilenameRoot+'_bins.pkl'
-        #print outFilenameRoot+'_recs.pkl'
+        print "output dat file: "+outFilename
     
-def histLoadAndPlot_StackedPosteriors(plot,pklRoot='',xLabel='X',lineColor='k',xLims=False,latex=False):
+def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='k',xLims=False,latex=False):
     """
-    Loads previously plotted histograms that were pickled to disk following the naming conventions:
-    'outFilenameRoot'+'_n.pkl'
-    'outFilenameRoot'+'_bins.pkl'
-    and plot them up in a way that is ready for publication.
+    Loads previously plotted histograms that were written to disk by histPlotAndDump, and plot them up 
+    in a way that is ready for publication.  This version is to plot a posterior of the same parameter 
+    for multiple simulation runs to see how they differ.
     
     It is foreseen that many versions of this function will exist for different specific publication ready plots.
     """
-    n = pickle.load(open(pklRoot+'_n.pkl','rb'))
-    bins = pickle.load(open(pklRoot+'_bins.pkl','rb'))
-    #rectangles = pickle.load(open(pklRoot+'_recs.pkl','rb'))
-    ys = []
-    xs = []
-    maxN = np.max(n)
-    for i in range(0,len(n)):
-        ys.append(n[i]/maxN)
-        ys.append(n[i]/maxN)
-        xs.append(bins[i])
-        xs.append(bins[i+1])
-        if i<(len(n)-1):
-            #print 'i = '+str(i)+", len(n) = "+str(len(n))
-            ys.append(n[i+1]/maxN)
-            xs.append(bins[i+1])
+    if outFilename[-4]!='.dat':
+        outFilename=outFilename+'.dat'
+    histData = np.loadtxt(outFilename)  
+    ys=xs=[]
+    maxN = np.max(histData[:,1])
+    halfBinWidth = (histData[1][0]-histData[0][0])/2.0
+    for i in range(0,histData.shape[0]):
+        ys.append(histData[i][1]/maxN)
+        ys.append(histData[i][1]/maxN)
+        xs.append(histData[i][0]-halfBinWidth)
+        xs.append(histData[i][0]+halfBinWidth)
     plot.plot(xs,ys,color=lineColor,linewidth=3)
+    plot.axes.set_ylim([0.0,1.02])
+    if xLims!=False:
+        plot.axes.set_xlim(xLims)
+    plt.locator_params(axis='x',nbins=5) # maximum number of x labels
+    plt.locator_params(axis='y',nbins=6) # maximum number of y labels
+    plot.tick_params(axis='both',which='major',width=3,length=4,pad=6,direction='in',labelsize=25)
+    plot.spines['right'].set_linewidth(2.0)
+    plot.spines['bottom'].set_linewidth(2.0)
+    plot.spines['top'].set_linewidth(2.0)
+    plot.spines['left'].set_linewidth(2.0)
+    # add axes label
+    if latex:
+        plot.axes.set_ylabel(r'$\displaystyle dp/dx\times(constant)$',fontsize=25)
+    else:
+        plot.axes.set_ylabel('dp/dx(*constant)',fontsize=25)
+    plot.axes.set_xlabel(xLabel,fontsize=20)
+    
+    return plot
+    
+def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',xLabel='X',lineColor='k',xLims=False,latex=False):
+    """
+    Loads previously plotted histograms that were written to disk by histPlotAndDump, and plot them up 
+    in a way that is ready for publication.  This is the standard plotter used for plotting simple posteriors
+    with shaded regions matching the 68% and 95% confidence.
+    
+    It is foreseen that many versions of this function will exist for different specific publication ready plots.
+    """
+    if outFilename[-4]!='.dat':
+        outFilename=outFilename+'.dat'
+    histData = np.loadtxt(outFilename)  
+    ys=xs=[]
+    maxN = np.max(histData[:,1])
+    halfBinWidth = (histData[1][0]-histData[0][0])/2.0
+    for i in range(0,histData.shape[0]):
+        ys.append(histData[i][1]/maxN)
+        ys.append(histData[i][1]/maxN)
+        xs.append(histData[i][0]-halfBinWidth)
+        xs.append(histData[i][0]+halfBinWidth)
+        
+    recs2 = []
+    if type(confLevels)==list:
+        for rec in rectangles:
+            x=rec.get_x()
+            c = 'w'
+            cEdge = 'k'
+            if(x>confLevels[1][0])and(x<confLevels[1][1]):
+                c = '0.8'
+            if (x>confLevels[0][0])and(x<confLevels[0][1]):
+                c = '0.5'
+            recs2.append(patches.Rectangle(xy=(), width=rec.get_width(),height=rec.get_height(),facecolor=c, edgecolor=cEdge))#color=c))
+    # draw updated patches on plot
+    for rec in recs2:
+            plot.add_patch(rec)
+            
+    # draw the top line of hist
+    plot.plot(xs,ys,color=lineColor,linewidth=1)
     plot.axes.set_ylim([0.0,1.02])
     if xLims!=False:
         plot.axes.set_xlim(xLims)
@@ -914,10 +962,10 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
         for outputDataFilename in outputDataFilenames:
             if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i)+'_n.pkl'))==False:
                 print 'Initial Plotting for parameter '+str(i)+"/"+str(len(paramList)-1)+" for file:\n"+outputDataFilename
-                pklBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
+                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
                 #(CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
                 (log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReader(outputDataFilename, paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False)
-                histMakeAndDump([],data,outFilenameRoot=pklBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
+                histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
                 
     ## make combined/stacked plot for each parameter in list
     for i in range(0,len(paramList)):
@@ -933,12 +981,12 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
         colorInt = 0
         for outputDataFilename in outputDataFilenames:
             if os.path.exists(outputDataFilename):
-                pklBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
+                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
                 print 'Loading and re-plotting parameter '+str(i)+"/"+str(len(paramList)-1)+" for file:\n"+outputDataFilename
                 xLim=False
                 if ALLparams==False:
                     xLim = xLims2[i]  
-                subPlot = histLoadAndPlot_StackedPosteriors(subPlot,pklRoot=pklBaseName,xLabel=paramStrs[i],lineColor=colorsList[colorInt],xLims=xLim,latex=latex)
+                subPlot = histLoadAndPlot_StackedPosteriors(subPlot,outFilename=histDataBaseName,xLabel=paramStrs[i],lineColor=colorsList[colorInt],xLims=xLim,latex=latex)
                 #subPlot = histConverter([], data, subPlot, paramStrs[i], confLevels=False, weight=weight, normed=normalize, nu=nu, bestVal=perfectVals[i],lineColor=colorsList[colorInt])
                 #print 'color = '+colorsList[colorInt]
                 #subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=55)

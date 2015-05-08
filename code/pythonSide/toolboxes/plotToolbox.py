@@ -151,9 +151,17 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     """
     if outFilename[-4]!='.dat':
         outFilename=outFilename+'.dat'
-    histData = np.loadtxt(outFilename)  
-    ys=xs=[]
+    histData = np.loadtxt(outFilename)
+    ys=[]
+    xs=[]
     maxN = np.max(histData[:,1])
+    minSub = 0
+    if np.max(histData[:,0])>100000:
+        #must be the To or Tc, so subtract int(min) and add to x-axis label
+        #doing this as it doesn't go well allowing matplotlib to do it itself formatting wise
+        minSub = int(np.min(histData[:,0]))
+        histData[:,0]-=minSub
+        xLabel = xLabel+" +"+str(minSub)
     halfBinWidth = (histData[1][0]-histData[0][0])/2.0
     # load up list of x,y values for tops of bins
     for i in range(0,histData.shape[0]):
@@ -163,9 +171,9 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
         xs.append(histData[i][0]+halfBinWidth)
     # load up list of shaded rectangle objects if confidence levels were provided
     recs = []
-    if type(confLevels)==list:
+    if (type(confLevels)==list)or(type(confLevels)==np.ndarray):
         for i in range(0,histData.shape[0]):
-            x=histData[i][0]-halfBinWidth
+            x=histData[i][0]-halfBinWidth+minSub
             c = 'w'
             if (x>confLevels[1][0])and(x<confLevels[1][1]):
                 c = '0.8'
@@ -181,22 +189,21 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     plot.axes.set_ylim([0.0,1.02])
     if xLims!=False:
         plot.axes.set_xlim(xLims)
-    plt.locator_params(axis='x',nbins=5) # maximum number of x labels
-    plt.locator_params(axis='y',nbins=6) # maximum number of y labels
-    plot.tick_params(axis='both',which='major',width=3,length=4,pad=6,direction='in',labelsize=25)
-    plot.spines['right'].set_linewidth(2.0)
-    plot.spines['bottom'].set_linewidth(2.0)
-    plot.spines['top'].set_linewidth(2.0)
-    plot.spines['left'].set_linewidth(2.0)
+    plt.locator_params(axis='x',nbins=3) # maximum number of x labels
+    plt.locator_params(axis='y',nbins=3) # maximum number of y labels
+    plot.tick_params(axis='both',which='major',width=1,length=2,pad=6,direction='in',labelsize=10)
+    plot.spines['right'].set_linewidth(1.0)
+    plot.spines['bottom'].set_linewidth(1.0)
+    plot.spines['top'].set_linewidth(1.0)
+    plot.spines['left'].set_linewidth(1.0)
     # add axes label
     if showYlabel:
         if latex:
-            plot.axes.set_ylabel(r'$\displaystyle dp/dx\times(constant)$',fontsize=25)
+            plot.axes.set_ylabel(r'$\displaystyle dp/dx\times(constant)$',fontsize=15)
         else:
-            plot.axes.set_ylabel('dp/dx(*constant)',fontsize=25)
-    plot.axes.set_xlabel(xLabel,fontsize=20)
-    
-    
+            plot.axes.set_ylabel('dp/dx(*constant)',fontsize=15)
+    plot.axes.set_xlabel(xLabel,fontsize=10)
+        
     return plot
     
     
@@ -1041,6 +1048,7 @@ def summaryPlotter2(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1
     verbose = False
     latex=False
     plotFormat = 'eps'
+    forceRecalc = False
     
     #plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
@@ -1081,11 +1089,13 @@ def summaryPlotter2(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1
         log.write(s+'\n')
         f.close()
            
-        # check if the passed in value for plotFilename includes '.png'
-        if '.png' not in plotFilename:
-            plotFilename = plotFilename+'.png'
+        # check if the passed in value for plotFilename includes format extension
+        if '.'+plotFormat not in plotFilename:
+            plotFilename = plotFilename+"."+plotFormat
+            print 'updating plotFilename to : '+plotFilename
         else:
             plotFilename = plotFilename
+            print 'plotfilename was found to already have the format extension'
             
         paramList = [0,1,2,3,4,5,6,7]
         paramStrs = ['Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]']
@@ -1100,17 +1110,17 @@ def summaryPlotter2(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1
                 #perfectVals.append(0.0)
             
         # Create empty figure to be filled up with plots
-        fig = plt.figure(1, figsize=(10,8)) 
+        fig = plt.figure(1, figsize=(10,10)) 
         
         ## run through all the data files and parameters requested and make root histogram files
         for i in range(0,len(paramList)):
-            if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i)+'.dat'))==False:
-                print 'Initial Plotting for parameter '+str(i)+"/"+str(len(paramList)-1)+" for file:\n"+outputDataFilename
+            if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i)+'.dat'))==False)or forceRecalc:
+                print 'Initial Plotting for parameter '+str(i)+"/"+str(len(paramList)-1)+": "+paramStrs[i]+", for file:\n"+outputDataFilename
                 histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
                 (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
                 #(log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReader(outputDataFilename, paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False)
                 histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
-                if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat'))==False:
+                if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat'))==False)or forceRecalc:
                     np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat'),CLevels)
                     print 'confidence levels data stored to: '+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat')
                     
@@ -1123,7 +1133,7 @@ def summaryPlotter2(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1
             subPlot = fig.add_subplot(341+i)
             
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
-            print 'Loading and re-plotting parameter '+str(i)+"/"+str(len(paramList)-1)+" for file:\n"+outputDataFilename
+            print 'Loading and re-plotting parameter '+str(i)+"/"+str(len(paramList)-1)+": "+paramStrs[i]#+" for file:\n"+outputDataFilename
             xLim=False
             CLevels=False
             if shadeConfLevels:
@@ -1151,6 +1161,9 @@ def summaryPlotter2(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1
                 print s
             #log.write(s+'\n')
         plt.close()
+        if True:
+            print 'converting to PDF as well'
+            os.system("epstopdf "+plotFilename)
 
 def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=True, normalize=True, nu=1, plot4x1=False, TcStepping=False):
     """
@@ -1681,7 +1694,7 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
                 if numRVdatasets<9:
                     fig = plt.figure(2, figsize=(42,50) ,dpi=300)
                 else:
-                    s= 'summaryPlotter2: WARNING!!! Plotter not set up to handle more than 9 RV datasets and '\
+                    s= 'summaryPlotter: WARNING!!! Plotter not set up to handle more than 9 RV datasets and '\
                     +str(numRVdatasets)+' were found in the output datafile.'
                     print s
                     log.write(s+'\n')
@@ -3237,7 +3250,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     # Perform orbit plotting, either DI, RV or both
     ####################################################
     #bestOrbit = [61.0,0.5,2456847.0,0,]
-    if True:    
+    if False:    
         bestOrbit = []  
         try:
             #print '#'*50
@@ -3274,7 +3287,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
             rvModDatasetMaker(e, T, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, paramSettingsDict,\
                      RVoffsets=RVoffsets, modDatasetsFilename=modDatasetsFilename, numModDatasets=numModDataSets)
         ##############   DI plot(s)  #######################
-        if True:
+        if False:
             ## Make a DI fit plot
             if False:
                 if False:
@@ -3313,6 +3326,10 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     if False:
         ## Make the posterior prob histograms.
         summaryPlotter(outputDatafile, summaryPlotFile, weight=False, confLevels=True, nu=1, plot4x1=False)
+    if True:
+        ## Make the posterior prob histograms.
+        summaryPlotFile = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/',"SummaryPlot-Manual")
+        summaryPlotter2(outputDatafile, summaryPlotFile, shadeConfLevels=True, nu=1)
     if False:
         ## Make the 'cleaned' posterior prob histograms
         makeCleanSummaryPlot(outputDatafile)

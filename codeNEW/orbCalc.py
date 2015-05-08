@@ -94,12 +94,12 @@ except AttributeError:
 _orbCalc.ORBCALC_H_swigconstant(_orbCalc)
 ORBCALC_H = _orbCalc.ORBCALC_H
 
-def sum2d_double(x):
-    return _orbCalc.sum2d_double(x)
+def sum2d_double(xx):
+    return _orbCalc.sum2d_double(xx)
 sum2d_double = _orbCalc.sum2d_double
 
-def modAndReturn2d_double(x):
-    return _orbCalc.modAndReturn2d_double(x)
+def modAndReturn2d_double(yy):
+    return _orbCalc.modAndReturn2d_double(yy)
 modAndReturn2d_double = _orbCalc.modAndReturn2d_double
 
 def modAndReturnDouble(x):

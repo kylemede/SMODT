@@ -17,6 +17,7 @@ public:
     void loadData(double *xx, int nx, int ny);
     void calculator(double  *yy, int nx, int ny);
 };
+double testFunc(double t);
 
 
 #endif

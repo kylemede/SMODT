@@ -1,5 +1,11 @@
 #include "orbCalc2.h"
 
+double testFunc(double t){
+    std::cout<<"\nInside testFunc"<<std::endl;
+    t = t*300;
+    return t;
+}
+
 void OrbCalcObj::loadData(double *xx, int nx, int ny){
     std::cout<<"\nInside loadData function"<<std::endl;
     dataAry = xx;
@@ -36,6 +42,10 @@ void OrbCalcObj::calculator(double  *yy, int nx, int ny){
 	        std::cout<<"[i,j] = ["<<i<<","<<j<<"] = "<<yy[j+i*ny]<<std::endl;
 		}
 	}
+	std::cout<<"testFunc provided = "<<testDouble<<std::endl;
+	double r = testFunc(testDouble);
+	std::cout<<"testFunc returned = "<<r<<std::endl;
+	
 }
 
 

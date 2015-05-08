@@ -239,7 +239,8 @@ def simulator(paramSettingsDict):
             print s
             PMlogFile.write(s)
             if True:
-                tools.plot.summaryPlotter(dataFinalFilename, summaryPlotFile, weight=False, confLevels=True, nu=nu, plot4x1=plot4x1, TcStepping=paramSettingsDict['TcStepping'] )         
+                #tools.plot.summaryPlotter(dataFinalFilename, summaryPlotFile, weight=False, confLevels=True, nu=nu, plot4x1=plot4x1, TcStepping=paramSettingsDict['TcStepping'] )  
+                tools.plot.summaryPlotter2(dataFinalFilename, summaryPlotFile, shadeConfLevels=True, nu=nu)       
             if False:
                 if paramSettingsDict['SILENT']==False:
                     print "\n\n"+"!"*75+'\nNOTE: Making Posteriors plot with the makeCleanSummaryPlot function instead of standard summaryPlotter\n'+"!"*75+"\n\n"

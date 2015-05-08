@@ -141,7 +141,7 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
     
     return plot
     
-def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',xLabel='X',lineColor='k',xLims=False,latex=False):
+def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel='X',xLims=False,latex=False,showYlabel=False):
     """
     Loads previously plotted histograms that were written to disk by histPlotAndDump, and plot them up 
     in a way that is ready for publication.  This is the standard plotter used for plotting simple posteriors
@@ -155,29 +155,29 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',xLabel='X',lineColor='k
     ys=xs=[]
     maxN = np.max(histData[:,1])
     halfBinWidth = (histData[1][0]-histData[0][0])/2.0
+    # load up list of x,y values for tops of bins
     for i in range(0,histData.shape[0]):
         ys.append(histData[i][1]/maxN)
         ys.append(histData[i][1]/maxN)
         xs.append(histData[i][0]-halfBinWidth)
         xs.append(histData[i][0]+halfBinWidth)
-        
-    recs2 = []
+    # load up list of shaded rectangle objects if confidence levels were provided
+    recs = []
     if type(confLevels)==list:
-        for rec in rectangles:
-            x=rec.get_x()
+        for i in range(0,histData.shape[0]):
+            x=histData[i][0]-halfBinWidth
             c = 'w'
-            cEdge = 'k'
-            if(x>confLevels[1][0])and(x<confLevels[1][1]):
+            if (x>confLevels[1][0])and(x<confLevels[1][1]):
                 c = '0.8'
             if (x>confLevels[0][0])and(x<confLevels[0][1]):
                 c = '0.5'
-            recs2.append(patches.Rectangle(xy=(), width=rec.get_width(),height=rec.get_height(),facecolor=c, edgecolor=cEdge))#color=c))
-    # draw updated patches on plot
-    for rec in recs2:
-            plot.add_patch(rec)
+            recs.append(patches.Rectangle(xy=(histData[i][0]-halfBinWidth,0), width=halfBinWidth*2.0,height=histData[i][1]/maxN,facecolor=c, edgecolor=c))
+        # draw updated patches on plot
+        for rec in recs:
+                plot.add_patch(rec)
             
     # draw the top line of hist
-    plot.plot(xs,ys,color=lineColor,linewidth=1)
+    plot.plot(xs,ys,color='k',linewidth=1)
     plot.axes.set_ylim([0.0,1.02])
     if xLims!=False:
         plot.axes.set_xlim(xLims)
@@ -189,10 +189,11 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',xLabel='X',lineColor='k
     plot.spines['top'].set_linewidth(2.0)
     plot.spines['left'].set_linewidth(2.0)
     # add axes label
-    if latex:
-        plot.axes.set_ylabel(r'$\displaystyle dp/dx\times(constant)$',fontsize=25)
-    else:
-        plot.axes.set_ylabel('dp/dx(*constant)',fontsize=25)
+    if showYlabel:
+        if latex:
+            plot.axes.set_ylabel(r'$\displaystyle dp/dx\times(constant)$',fontsize=25)
+        else:
+            plot.axes.set_ylabel('dp/dx(*constant)',fontsize=25)
     plot.axes.set_xlabel(xLabel,fontsize=20)
     
     
@@ -789,7 +790,7 @@ def makeCleanSummaryPlot(outputDataFilename=''):
         
         ## pass trimmed data to the plotter
         if verbose:
-            print '\nCalling summaryPlotter2 to plot new trimmed data'
+            print '\nCalling summaryPlotter to plot new trimmed data'
         summaryPlotter(newDataFilename, newPlotFilename, weight=False, confLevels=True, normalize=True, nu=1, plot4x1=False, TcStepping=False)
         if quiet==False:
             print '\nNew plot for trimmed data written to: '+newPlotFilename
@@ -882,7 +883,7 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
     if ALLparams==False:
         latex=True
     
-    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    #plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
         plt.rc('text', usetex=True)
     
@@ -890,9 +891,6 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
         outputDataFilenames = [outputDataFilenames]
     
     colorsList =['Black','Blue','DarkGreen','Red','Purple','Fuchsia','Crimson','Aqua','Gold','OrangeRed','Plum','Chartreuse','Chocolate','SteelBlue ','Teal','Salmon','Brown']
-    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    ## Add a color list here and add the ability to pass it into the histConverter func for the line plot
-    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     
     if os.path.exists(outputDataFilenames[0]):  
         s= '\nCreating a simple plot of some key posteriors for files:\n'
@@ -994,7 +992,7 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
                     subPlot.set_position(positions[i])
                 colorInt+=1
             else:
-                s= "simpleKeyPosteriorsPlotter: ERROR!!!! file doesn't exist"
+                s= "stackedPosteriorsPlotterFunc: ERROR!!!! file doesn't exist"
                 print s
                 break
         # record the time the chain finished and print
@@ -1023,14 +1021,136 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
     endTime = timeit.default_timer()
     totalTime = (endTime-startTime) # in seconds
     totalTimeString = genTools.timeString(totalTime)
-    s= '\n\simpleKeyPosteriorsPlotter: Plotting took '+totalTimeString+' to complete.\n'
+    s= '\n\stackedPosteriorsPlotterFunc: Plotting took '+totalTimeString+' to complete.\n'
     if verbose:
         print s
-    #log.write(s+'\n')
-    #log.write('\n'+75*'#'+'\n Leaving simpleKeyPosteriorsPlotter \n'+75*'#'+'\n')
-    #log.close()
     
+def summaryPlotter2(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1):
+    """
+    This advanced plotting function will plot all the data in a 3x3 grid (or 3x1) on a single figure.  The data will be plotted
+    in histograms that can be will be normalized to a max of 1.0 and the data can be weighted if desired.  The 
+    confidence levels of the data can be calculated and the resulting histograms will have the bars inside the
+    68% bin shaded as dark grey and 95% as light grey and the rest will be white.
+    
+    :param nu:       The value of nu to convert chi squared to reduced chi squared.
+    :type nu:        float
+    :param plot4x1:  Only make plots for K, argPeri, e, and To (or Tc if Tc stepping was used).
+    :type plot4x1:   Python boolean
+    """
+    quiet = True
+    verbose = False
+    latex=False
+    plotFormat = 'eps'
+    
+    #plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    if latex:
+        plt.rc('text', usetex=True)
         
+    ## find number of RV datasets
+    if os.path.exists(outputDataFilename):  
+        datadir = os.path.dirname(outputDataFilename)
+        
+        ## get log
+        logFilename = os.path.join(datadir,'processManagerLogFile.txt')
+        log = open(logFilename,'a')
+        log.write('\n'+75*'#'+'\n Inside summaryPlotter \n'+75*'#'+'\n')
+         
+        s= '\nCreating summary plot for file:\n'+outputDataFilename
+        s=s+ '\nInput plotfilename:\n'+plotFilename
+        if verbose:
+            print s
+        log.write(s+'\n')
+        
+        ## find number of RV datasets
+        f = open(outputDataFilename,'r')
+        plotFileTitle = f.readline()[:-5]
+        headings = f.readline()
+        line = f.readline()
+        dataLineCols = line.split()
+        numRVdatasets=0
+        if (len(line)>10):
+            numRVdatasets = len(dataLineCols) - 10
+        else:
+            line = f.readline()
+            dataLineCols = line.split()
+            if (len(line)>10):
+                numRVdatasets = len(dataLineCols) - 10
+        s= "\nNumber of RV datasets found in summaryPlotter was "+str(numRVdatasets)+"\n"
+        if verbose:
+            print s
+        log.write(s+'\n')
+        f.close()
+           
+        # check if the passed in value for plotFilename includes '.png'
+        if '.png' not in plotFilename:
+            plotFilename = plotFilename+'.png'
+        else:
+            plotFilename = plotFilename
+            
+        paramList = [0,1,2,3,4,5,6,7]
+        paramStrs = ['Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]']
+        #perfectVals = [70.0,0.5,2457000.0,2457000.0,5.0,40.0,50.0,3.34718746581]
+        if numRVdatasets>0:
+            paramList.append(9)
+            paramStrs.append('K [m/s]')
+            #perfectVals.append(4933.18419284)
+            for dataset in range(1,numRVdatasets+1):
+                paramList.append(9+dataset)
+                paramStrs.append('RV offset '+str(dataset)+' [m/s]')
+                #perfectVals.append(0.0)
+            
+        # Create empty figure to be filled up with plots
+        fig = plt.figure(1, figsize=(10,8)) 
+        
+        ## run through all the data files and parameters requested and make root histogram files
+        for i in range(0,len(paramList)):
+            if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i)+'.dat'))==False:
+                print 'Initial Plotting for parameter '+str(i)+"/"+str(len(paramList)-1)+" for file:\n"+outputDataFilename
+                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
+                (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
+                #(log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReader(outputDataFilename, paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False)
+                histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
+                if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat'))==False:
+                    np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat'),CLevels)
+                    print 'confidence levels data stored to: '+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat')
+                    
+        ## make combined/stacked plot for each parameter in list
+        for i in range(0,len(paramList)):
+            startTime = timeit.default_timer()
+            s='\nStarting to plot shaded hist for '+paramStrs[i]
+            if verbose:
+                print s
+            subPlot = fig.add_subplot(341+i)
+            
+            histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
+            print 'Loading and re-plotting parameter '+str(i)+"/"+str(len(paramList)-1)+" for file:\n"+outputDataFilename
+            xLim=False
+            CLevels=False
+            if shadeConfLevels:
+                CLevels=np.loadtxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat'))
+            showYlabel=False
+            if (i==0)or(i==4)or(i==8):
+                showYlabel = True
+            subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[i],xLims=xLim,latex=latex,showYlabel=showYlabel)
+            
+            # record the time the chain finished and print
+            endTime = timeit.default_timer()
+            totalTimeString = genTools.timeString(endTime-startTime)
+            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
+            if quiet==False:
+                print s            
+            
+        ## Save file if requested.
+        if verbose:
+            print '\nStarting to save param hist figure:'
+        if plotFilename!='':
+            plt.savefig(plotFilename,format=plotFormat)
+            s= 'Summary plot saved to: '+plotFilename
+            print s
+            if quiet==False:
+                print s
+            #log.write(s+'\n')
+        plt.close()
 
 def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=True, normalize=True, nu=1, plot4x1=False, TcStepping=False):
     """
@@ -1104,7 +1224,6 @@ def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=Tr
 
         NumSamples = 0
         # Create empty figure to be filled up with plots
-        
         fig = plt.figure(1, figsize=(10,5)) 
     
         ## give the figure its title

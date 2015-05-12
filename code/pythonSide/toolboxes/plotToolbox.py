@@ -100,7 +100,7 @@ def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, norme
     histData[:,1]=n
     np.savetxt(outFilename,histData)
     if True:
-        print "output dat file: "+outFilename
+        print "output dat file:\n"+outFilename
     
 def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='k',xLims=False,latex=False):
     """
@@ -191,18 +191,23 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
         plot.axes.set_xlim(xLims)
     plt.locator_params(axis='x',nbins=3) # maximum number of x labels
     plt.locator_params(axis='y',nbins=3) # maximum number of y labels
-    plot.tick_params(axis='both',which='major',width=1,length=2,pad=6,direction='in',labelsize=10)
-    plot.spines['right'].set_linewidth(1.0)
-    plot.spines['bottom'].set_linewidth(1.0)
-    plot.spines['top'].set_linewidth(1.0)
-    plot.spines['left'].set_linewidth(1.0)
+    plot.tick_params(axis='both',which='major',width=1,length=2,pad=4,direction='in',labelsize=10)
+    plot.spines['right'].set_linewidth(0.7)
+    plot.spines['bottom'].set_linewidth(0.7)
+    plot.spines['top'].set_linewidth(0.7)
+    plot.spines['left'].set_linewidth(0.7)
     # add axes label
     if showYlabel:
         if latex:
-            plot.axes.set_ylabel(r'$\displaystyle dp/dx\times(constant)$',fontsize=15)
+            plot.axes.set_ylabel(r'$\frac{dp}{dx} \times constant $',fontsize=15)
         else:
             plot.axes.set_ylabel('dp/dx(*constant)',fontsize=15)
-    plot.axes.set_xlabel(xLabel,fontsize=10)
+    else:
+        plot.axes.set_yticklabels(['','',''])
+    if latex:
+        plot.axes.set_xlabel(r''+xLabel,fontsize=10)
+    else:
+        plot.axes.set_xlabel(xLabel,fontsize=10)
         
     return plot
     
@@ -980,9 +985,9 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
             print s
         #log.write(s+'\n')
         if ALLparams:
-            subPlot = fig.add_subplot(341+i)
+            subPlot = fig.add_subplot(3,4,i+1)
         else:
-            subPlot = fig.add_subplot(121+i)
+            subPlot = fig.add_subplot(1,2,i+1)
         colorInt = 0
         for outputDataFilename in outputDataFilenames:
             if os.path.exists(outputDataFilename):
@@ -1032,7 +1037,7 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
     if verbose:
         print s
     
-def summaryPlotter2(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1):
+def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1):
     """
     This advanced plotting function will plot all the data in a 3x3 grid (or 3x1) on a single figure.  The data will be plotted
     in histograms that can be will be normalized to a max of 1.0 and the data can be weighted if desired.  The 
@@ -1040,19 +1045,19 @@ def summaryPlotter2(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1
     68% bin shaded as dark grey and 95% as light grey and the rest will be white.
     
     :param nu:       The value of nu to convert chi squared to reduced chi squared.
-    :type nu:        float
-    :param plot4x1:  Only make plots for K, argPeri, e, and To (or Tc if Tc stepping was used).
-    :type plot4x1:   Python boolean
+    :type nu:        float32
     """
     quiet = True
     verbose = False
-    latex=False
+    latex=True
     plotFormat = 'eps'
     forceRecalc = False
     
     #plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    plt.rc('font',family='serif')
     if latex:
         plt.rc('text', usetex=True)
+        plt.rcParams['text.latex.unicode']=True  
         
     ## find number of RV datasets
     if os.path.exists(outputDataFilename):  
@@ -1092,37 +1097,49 @@ def summaryPlotter2(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1
         # check if the passed in value for plotFilename includes format extension
         if '.'+plotFormat not in plotFilename:
             plotFilename = plotFilename+"."+plotFormat
-            print 'updating plotFilename to : '+plotFilename
+            print 'updating plotFilename to:\n'+plotFilename
         else:
             plotFilename = plotFilename
             print 'plotfilename was found to already have the format extension'
             
         paramList = [0,1,2,3,4,5,6,7]
-        paramStrs = ['Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]']
+        if latex:
+            paramStrs = ['$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]']
+        else:
+            paramStrs = ['Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]']
         #perfectVals = [70.0,0.5,2457000.0,2457000.0,5.0,40.0,50.0,3.34718746581]
         if numRVdatasets>0:
             paramList.append(9)
-            paramStrs.append('K [m/s]')
+            if latex:
+                paramStrs.append('$K$ [m/s]')
+            else:
+                paramStrs.append('K [m/s]')
             #perfectVals.append(4933.18419284)
             for dataset in range(1,numRVdatasets+1):
                 paramList.append(9+dataset)
-                paramStrs.append('RV offset '+str(dataset)+' [m/s]')
+                if latex:
+                    #paramStrs.append("$\alpha$ "+str(dataset)+" [m/s]")
+                    paramStrs.append("$offset_{"+str(dataset)+"}$ [m/s]")
+                else:
+                    paramStrs.append('offset '+str(dataset)+' [m/s]')
                 #perfectVals.append(0.0)
             
-        # Create empty figure to be filled up with plots
-        fig = plt.figure(1, figsize=(10,10)) 
-        
-        ## run through all the data files and parameters requested and make root histogram files
+        ## run through all the data files and parameters requested and make histogram files
         for i in range(0,len(paramList)):
             if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i)+'.dat'))==False)or forceRecalc:
-                print 'Initial Plotting for parameter '+str(i)+"/"+str(len(paramList)-1)+": "+paramStrs[i]+", for file:\n"+outputDataFilename
+                if verbose:
+                    print 'Initial Plotting for parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[i]+", for file:\n"+outputDataFilename
                 histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
                 (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
                 #(log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReader(outputDataFilename, paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False)
                 histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
                 if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat'))==False)or forceRecalc:
                     np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat'),CLevels)
-                    print 'confidence levels data stored to: '+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat')
+                    if verbose:
+                        print 'confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat')
+        
+        # Create empty figure to be filled up with plots
+        fig = plt.figure(figsize=(10,10)) 
                     
         ## make combined/stacked plot for each parameter in list
         for i in range(0,len(paramList)):
@@ -1130,10 +1147,10 @@ def summaryPlotter2(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1
             s='\nStarting to plot shaded hist for '+paramStrs[i]
             if verbose:
                 print s
-            subPlot = fig.add_subplot(341+i)
+            subPlot = fig.add_subplot(3,4,i+1)
             
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
-            print 'Loading and re-plotting parameter '+str(i)+"/"+str(len(paramList)-1)+": "+paramStrs[i]#+" for file:\n"+outputDataFilename
+            print 'Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[i]#+" for file:\n"+outputDataFilename
             xLim=False
             CLevels=False
             if shadeConfLevels:
@@ -1165,631 +1182,7 @@ def summaryPlotter2(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1
             print 'converting to PDF as well'
             os.system("epstopdf "+plotFilename)
 
-def summaryPlotter(outputDataFilename, plotFilename, weight=False, confLevels=True, normalize=True, nu=1, plot4x1=False, TcStepping=False):
-    """
-    This advanced plotting function will plot all the data in a 3x3 grid (or 3x1) on a single figure.  The data will be plotted
-    in histograms that can be will be normalized to a max of 1.0 and the data can be weighted if desired.  The 
-    confidence levels of the data can be calculated and the resulting histograms will have the bars inside the
-    68% bin shaded as dark grey and 95% as light grey and the rest will be white.
-    
-    :param nu:       The value of nu to convert chi squared to reduced chi squared.
-    :type nu:        float
-    :param plot4x1:  Only make plots for K, argPeri, e, and To (or Tc if Tc stepping was used).
-    :type plot4x1:   Python boolean
-    """
-    quiet = True
-    verbose = False
-    makeMassPlot = False
-    ## find number of RV datasets
-    if os.path.exists(outputDataFilename):  
-        datadir = os.path.dirname(outputDataFilename)
-        
-        ## get log
-        logFilename = os.path.join(datadir,'processManagerLogFile.txt')
-        log = open(logFilename,'a')
-        log.write('\n'+75*'#'+'\n Inside summaryPlotter \n'+75*'#'+'\n')
-         
-        s= '\nCreating summary plot for file:\n'+outputDataFilename
-        s=s+ '\nInput plotfilename:\n'+plotFilename
-        if verbose:
-            print s
-        log.write(s+'\n')
-        
-        ## find number of RV datasets
-        f = open(outputDataFilename,'r')
-        plotFileTitle = f.readline()[:-5]
-        headings = f.readline()
-        line = f.readline()
-        dataLineCols = line.split()
-        numRVdatasets=0
-        if (len(line)>10):
-            numRVdatasets = len(dataLineCols) - 10
-        else:
-            line = f.readline()
-            dataLineCols = line.split()
-            if (len(line)>10):
-                numRVdatasets = len(dataLineCols) - 10
-        s= "\nNumber of RV datasets found in summaryPlotter was "+str(numRVdatasets)+"\n"
-        if TcStepping==True:
-            s=s+"\nTcStepping passed in was True, so plotting Tc instead of To"
-        else:
-            s=s+"\nTcStepping passed in was False, so plotting To instead of Tc"
-        if verbose:
-            print s
-        log.write(s+'\n')
-        f.close()
-           
-        # check if the passed in value for plotFilename includes '.png'
-        if '.png' not in plotFilename:
-            plotFilename = plotFilename+'.png'
-        else:
-            plotFilename = plotFilename
-        
-        ## make an advanced title for plot from folder and filename
-        titleTop = os.path.dirname(outputDataFilename).split('/')[-1]
-        titleBtm = os.path.basename(plotFilename).split('.')[0]+'  TOTAL Posterior Distributions plot'
-        plotFileTitle = titleTop+'\n'+titleBtm
-        
-        s='\nStarting to make Total Summary Plot'
-        if verbose:
-            print s
-        log.write(s+'\n')
 
-        NumSamples = 0
-        # Create empty figure to be filled up with plots
-        fig = plt.figure(1, figsize=(10,5)) 
-    
-        ## give the figure its title
-        plt.suptitle(plotFileTitle,fontsize=15)
-        
-        # Create sub plot and fill it up for the Argument of Perigie
-        if not plot4x1:
-            subPlot = fig.add_subplot(243)
-        else:
-            subPlot = fig.add_subplot(223)
-        startTime = timeit.default_timer()
-        s='\nStarting to plot hist for argPeri_degsAlls'
-        if verbose:
-            print s
-        log.write(s+'\n')
-        paramColNum = 6
-        xlabel = 'Argument of Perigie [deg]'
-        startTime1 = timeit.default_timer()
-        (CLevels,data,chiSquareds,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True,fast=False)
-        endTime1 = timeit.default_timer()
-        totalTime = (endTime1-startTime1) # in seconds
-        totalTimeString = genTools.timeString(totalTime)
-        s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-        startTime1 = timeit.default_timer()
-        subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-        endTime1 = timeit.default_timer()
-        totalTime = (endTime1-startTime1) # in seconds
-        totalTimeString = genTools.timeString(totalTime)
-        s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            
-        if (type(data)!=float)and(NumSamples==0):
-            NumSamples=data.size
-        #argPeriMedian = np.median(argPeri_degsAlls)
-        s=s+ "done plotting argPeri_degsAlls:\n"
-        # record the time the chain finished and print
-        endTime = timeit.default_timer()
-        totalTime = (endTime-startTime) # in seconds
-        totalTimeString = genTools.timeString(totalTime)
-        s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-        if quiet==False:
-            print s
-        log.write(s+'\n')
-        
-        if not plot4x1:
-            startTime = timeit.default_timer()
-            s='\nStarting to plot hist for inclination_degsAlls:'
-            if verbose:
-                print s
-            log.write(s+'\n')
-            subPlot = fig.add_subplot(241)
-            paramColNum = 5
-            xlabel = 'Inclination [deg]'
-            startTime1 = timeit.default_timer()
-            (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-            endTime1 = timeit.default_timer()
-            totalTime = (endTime1-startTime1) # in seconds
-            totalTimeString = genTools.timeString(totalTime)
-            s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            startTime1 = timeit.default_timer()
-            subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-            endTime1 = timeit.default_timer()
-            totalTime = (endTime1-startTime1) # in seconds
-            totalTimeString = genTools.timeString(totalTime)
-            s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
-            if (type(data)!=float)and(NumSamples==0):
-                NumSamples=data.size
-            ##################$$$$$$$$$$$$$ This extra garbage collection might not be needed but I want it for now as a code EX. ######
-            #del inclination_degsAlls
-            #gc.collect()
-            s= s+"done plotting inclination_degsAlls\n"
-            # record the time the chain finished and print
-            endTime = timeit.default_timer()
-            totalTime = (endTime-startTime) # in seconds
-            totalTimeString = genTools.timeString(totalTime)
-            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            if quiet==False:
-                print s
-            log.write(s+'\n')
-        
-        if not plot4x1:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            startTime = timeit.default_timer()
-            s='\nStarting to plot hist for longAN_degsAlls:'
-            if verbose:
-                print s
-            log.write(s+'\n')
-            subPlot = fig.add_subplot(242)
-            paramColNum = 0
-            xlabel = 'Longitude of Ascending Node [deg]'
-            (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-            bestLongAN = bestDataVal
-            s=''
-            if (bestLongAN==0):
-                s=s+'bestLongAN==0, so it was fixed and we might plot Ks in its place\n'
-            else:
-                subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-                if (type(data)!=float)and(NumSamples==0):
-                    NumSamples=data.size
-            #longANMedian = np.median(longAN_degsAlls)
-            s=s+"done plotting longAN_degsAlls\n"
-            # record the time the chain finished and print
-            endTime = timeit.default_timer()
-            totalTime = (endTime-startTime) # in seconds
-            totalTimeString = genTools.timeString(totalTime)
-            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            if quiet==False:
-                print s
-            log.write(s+'\n')
-        if True:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            # Create sub plot and fill it up for the e
-            if not plot4x1:
-                subPlot = fig.add_subplot(244)
-            else:
-                subPlot = fig.add_subplot(221)
-            startTime = timeit.default_timer()
-            s='\nStarting to plot hist for esAlls:'
-            if verbose:
-                print s
-            log.write(s+'\n')
-            paramColNum = 1
-            xlabel = 'e'
-            startTime1 = timeit.default_timer()
-            (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-            endTime1 = timeit.default_timer()
-            totalTime = (endTime1-startTime1) # in seconds
-            totalTimeString = genTools.timeString(totalTime)
-            s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            startTime1 = timeit.default_timer()
-            subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-            endTime1 = timeit.default_timer()
-            totalTime = (endTime1-startTime1) # in seconds
-            totalTimeString = genTools.timeString(totalTime)
-            s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            if (type(data)!=float)and(NumSamples==0):
-                NumSamples=data.size
-            #eMedian = np.median(esAlls)
-            s=s+ "done plotting esAlls"
-            # record the time the chain finished and print
-            endTime = timeit.default_timer()
-            totalTime = (endTime-startTime) # in seconds
-            totalTimeString = genTools.timeString(totalTime)
-            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            if quiet==False:
-                print s
-            log.write(s+'\n')
-        
-        
-        # Create sub plot and fill it up for the Time of last Periapsis OR Time of Center Transit/inferior conjunction
-        if not plot4x1:
-            subPlot = fig.add_subplot(245)
-        else:
-            subPlot = fig.add_subplot(222)
-        if TcStepping:
-            paramColNum = 3
-            xlabel = 'Time of Center Transit [JD]'
-        else:
-            paramColNum = 2
-            xlabel = 'Time of last Periapsis [JD]'
-        startTime = timeit.default_timer()
-        s='\nStarting to plot hist for TsAlls:'
-        if verbose:
-            print s
-        log.write(s+'\n')
-        startTime1 = timeit.default_timer()
-        (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-        endTime1 = timeit.default_timer()
-        totalTime = (endTime1-startTime1) # in seconds
-        totalTimeString = genTools.timeString(totalTime)
-        s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-        startTime1 = timeit.default_timer()
-        subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-        endTime1 = timeit.default_timer()
-        totalTime = (endTime1-startTime1) # in seconds
-        totalTimeString = genTools.timeString(totalTime)
-        s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-        if (CLevels[1][1]-CLevels[1][0])>50:
-            # shink x axis labels as there are too may big numbers and they merge otherwise
-            subPlot.tick_params(axis='x',which='major',labelsize=14)
-        subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
-        if (type(data)!=float)and(NumSamples==0):
-            NumSamples=data.size
-        #TMedian = np.median(TsAlls)
-        s= s+"done plotting TsAlls\n"
-        # record the time the chain finished and print
-        endTime = timeit.default_timer()
-        totalTime = (endTime-startTime) # in seconds
-        totalTimeString = genTools.timeString(totalTime)
-        s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-        if quiet==False:
-            print s
-        log.write(s+'\n')
-            
-        
-        # Create sub plot and fill it up for the Ks
-        if plot4x1: 
-            startTime = timeit.default_timer()
-            s='\nStarting to plot hist for Ks:'
-            if verbose:
-                print s
-            log.write(s+'\n')
-            subPlot = fig.add_subplot(224)
-            paramColNum = 9
-            xlabel = 'K [m/s]'
-            startTime1 = timeit.default_timer()
-            if verbose:
-                print 'Getting data'
-            
-            (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-            
-            endTime1 = timeit.default_timer()
-            totalTime = (endTime1-startTime1) # in seconds
-            totalTimeString = genTools.timeString(totalTime)
-            s='Getting data took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            startTime1 = timeit.default_timer()
-            
-            subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-            
-            endTime1 = timeit.default_timer()
-            totalTime = (endTime1-startTime1) # in seconds
-            totalTimeString = genTools.timeString(totalTime)
-            s=s+'Plotting took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            if (type(data)!=float)and(NumSamples==0):
-                NumSamples=data.size
-            #periodMedian = np.median(periodsAlls)
-            s= s+"done plotting Ks\n"
-            # record the time the chain finished and print
-            endTime = timeit.default_timer()
-            totalTime = (endTime-startTime) # in seconds
-            totalTimeString = genTools.timeString(totalTime)
-            s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            if quiet==False:
-                print s
-            log.write(s+'\n')
-        elif (bestLongAN==0):
-            startTime = timeit.default_timer()
-            s='\nStarting to plot hist for Ks:'
-            if verbose:
-                print s
-            log.write(s+'\n')
-            subPlot = fig.add_subplot(242)
-            paramColNum = 9
-            xlabel = 'K [m/s]'
-            (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-            subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-            if (type(data)!=float)and(NumSamples==0):
-                NumSamples=data.size
-            #periodMedian = np.median(periodsAlls)
-            s= "done plotting Ks\n"
-            # record the time the chain finished and print
-            endTime = timeit.default_timer()
-            totalTime = (endTime-startTime) # in seconds
-            totalTimeString = genTools.timeString(totalTime)
-            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            if quiet==False:
-                print s
-            log.write(s+'\n')
-        
-        # Create sub plot and fill it up for the Period
-        if not plot4x1: 
-            startTime = timeit.default_timer()
-            s='\nStarting to plot hist for periodsAlls:'
-            if verbose:
-                print s
-            log.write(s+'\n')
-            subPlot = fig.add_subplot(246)
-            paramColNum = 4
-            xlabel = 'Period [Years]'
-            (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-            subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-            periodCLevels = CLevels
-            periodBest = bestDataVal
-            if (NumSamples<2e7)and(makeMassPlot):
-                periods = data
-            #periodMedian = np.median(periodsAlls)
-            s= "done plotting periodsAlls"
-            # record the time the chain finished and print
-            endTime = timeit.default_timer()
-            totalTime = (endTime-startTime) # in seconds
-            totalTimeString = genTools.timeString(totalTime)
-            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            if quiet==False:
-                print s
-            log.write(s+'\n')
-            
-        if True:
-            # Create sub plot and fill it up for the semi-majors
-            if not plot4x1: 
-                startTime = timeit.default_timer()
-                s='\nStarting to plot hist for Semi-Majors:'
-                if verbose:
-                    print s
-                log.write(s+'\n')
-                subPlot = fig.add_subplot(247)
-                paramColNum = 7
-                xlabel = 'Combined Semi-Major axis (a1+a2) [AU]'
-                (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-                subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-                if (type(data)!=float)and(NumSamples==0):
-                    NumSamples=data.size
-                semiMajorCLevels = CLevels
-                semiMajorBest = bestDataVal
-                if (NumSamples<2e7)and(makeMassPlot):
-                    semiMajors = data
-                #periodMedian = np.median(periodsAlls)
-                s="done plotting Semi-Majors\n"
-                # record the time the chain finished and print
-                endTime = timeit.default_timer()
-                totalTime = (endTime-startTime) # in seconds
-                totalTimeString = genTools.timeString(totalTime)
-                s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-                if quiet==False:
-                    print s
-                log.write(s+'\n')        
-        
-            if (NumSamples<2e7)and(makeMassPlot):
-                ## create plot for predicted total mass if possible
-                if not plot4x1:
-                    startTime = timeit.default_timer()
-                    s='\nStarting to plot hist for Mtotals:'
-                    if verbose:
-                        print s
-                    log.write(s+'\n')
-                    # conversion factors and constants
-                    SecPerYear = 31557600.0
-                    G = 6.67300e-11
-                    MperAU = 149598000000.0
-                    KGperMsun = 1.98892e30
-                    
-                    #print 'Starting to calculate the total Mass array'
-                    #print 'There were '+str(NumSamples)+" samples in total"
-                    consts = ((4.0*np.pi**2.0)/G)*((MperAU**3.0)/(KGperMsun*SecPerYear**2.0))
-                    
-                    #semiMajorCLevels = np.array(semiMajorCLevels)
-                    #periodCLevels = np.array(periodCLevels)
-                    # calculate the CLevels for the mass
-                    #CLevels=[[]]
-                    if verbose:
-                        print 'semiMajorCLevels = '+repr(semiMajorCLevels)
-                        print 'periodCLevels = '+repr(periodCLevels)
-                    CLevelsA = consts*((semiMajorCLevels[0][0]**3.0)/(periodCLevels[0][0]**2.0))
-                    CLevelsB = consts*((semiMajorCLevels[0][1]**3.0)/(periodCLevels[0][1]**2.0))
-                    CLevelsC = consts*((semiMajorCLevels[1][0]**3.0)/(periodCLevels[1][0]**2.0))
-                    CLevelsD = consts*((semiMajorCLevels[1][1]**3.0)/(periodCLevels[1][1]**2.0))
-                    CLevels=[[CLevelsA,CLevelsB],[CLevelsC,CLevelsD]]
-                    if verbose:
-                        print 'CLevels = '+repr(CLevels)
-                    #print 'CLevels normal = '+repr([[CLevelsA,CLevelsB],[CLevelsC,CLevelsD]])
-                    bestVal = consts*((semiMajorBest**3.0)/(periodBest**2.0))
-                    
-                    Mtotals = consts*np.divide(np.power(semiMajors,3.0),np.power(periods,2.0)) # in Msun
-                    #print "total mass array has "+str(Mtotals.size)+" elements"
-                    #print "calculating CLevels for Mtotals"
-                    
-                    #print "Mtotals CLevels found to be "+repr(CLevels)
-                    subPlot = fig.add_subplot(248)
-                    xlabel = 'Total Mass [Msun]'
-                    #print "starting to plot Mtotals"
-                    chiSquareds = np.array(chiSquareds)
-                    #bestVal = Mtotals[np.where(chiSquareds==chiSquareds.min())][0]
-                    subPlot = histConverter(chiSquareds, Mtotals, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestVal)
-                    s= "done plotting Mtotals"
-                    # record the time the chain finished and print
-                    endTime = timeit.default_timer()
-                    totalTime = (endTime-startTime) # in seconds
-                    totalTimeString = genTools.timeString(totalTime)
-                    s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-                    Median = np.median(Mtotals)
-                    s =s+ "\n"+"*"*25 
-                    s=s+"\nBest Fit value of Mtotals = "+str(bestVal)
-                    if NumSamples<2e7:
-                        s=s+"\nMedian value of Mtotals = "+str(Median)
-                    s=s+"\n68.3% conf levels = "+repr(CLevels[0])
-                    s=s+"\n95.4% conf levels = "+repr(CLevels[1])
-                    if NumSamples<2e7:
-                        s=s+"\ntotal range = "+repr([np.min(Mtotals),np.max(Mtotals)])
-                    s =s+"\n"+"*"*25+"\n"
-                    if quiet==False:
-                        print s
-                    log.write(s+'\n')
-
-        # This is for if you want to get a hist for the Tc and To params when doing TcStepping.  It is placed ontop of the semi-major's hist!!!!
-        else:
-            # Create sub plot and fill it up for the Period
-            if not plot4x1: 
-                startTime = timeit.default_timer()
-                if TcStepping:
-                    paramColNum = 2
-                    xlabel = 'Time of Periapsis [JD]'
-                    s='\nStarting to plot hist for Ts:'
-                else:
-                    paramColNum = 3
-                    xlabel = 'Time of Center Transit [JD]'
-                    s='\nStarting to plot hist for Tcs:'
-                if verbose:
-                    print s
-                log.write(s+'\n')
-                subPlot = fig.add_subplot(247)
-                (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-                subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-                s= "done plotting Tcs or Ts"
-                # record the time the chain finished and print
-                endTime = timeit.default_timer()
-                totalTime = (endTime-startTime) # in seconds
-                totalTimeString = genTools.timeString(totalTime)
-                s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-                if quiet==False:
-                    print s
-                log.write(s+'\n')
-        
-        if True:#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            if not plot4x1:
-                legendStr = ''
-                ## Get value of non-reduced chiSquared minimum
-                bestOrbitFilename = os.path.join(datadir,'bestOrbit.txt')
-                if verbose:
-                    print '\nFinding best Chisquared from file: '+bestOrbitFilename
-                bestOrbitFile = open(bestOrbitFilename,'r')
-                lines = bestOrbitFile.readlines()
-                bestOrbitFile.close()
-                for line in lines:
-                    legendStr=legendStr+line
-                    if 'chiSquaredMin'in line:
-                        chiSquaredMin=float(line.split('=')[1])
-                if verbose:
-                    print '\nBest chiSquared found to be = '+str(chiSquaredMin)
-            
-                ## get nu value, then calculate chiSquared cut off
-                # get log
-                logFilename = os.path.join(datadir,'log-chain_1.txt')
-                [nu,nuRV,nuDI,printStr] = genTools.findNuFromLog(logFilename)
-                bestReducedChiSquared = chiSquaredMin/nu
-                legendStr=legendStr+'\nReducedChiSquared = '+str(bestReducedChiSquared)+'\n'
-                subPlot = fig.add_subplot(248)
-                subPlot.text(0.05,0.05,legendStr,ha='left',fontsize=20)
-                subPlot.axes.set_yticklabels([])
-                subPlot.axes.set_xticklabels([])
-                
-                
-        # Save file if requested.
-        if verbose:
-            print '\nStarting to save param hist figure:'
-        if plotFilename!='':
-            plt.savefig(plotFilename, dpi=300, orientation='landscape')
-            s= 'Summary plot saved to: '+plotFilename
-            if quiet==False:
-                print s
-            log.write(s+'\n')
-        plt.close()
-        
-        if (numRVdatasets>0)and(True):
-            ## Create a second figure of RV offsets. ####
-            try:
-                # Create empty figure to be filled up with plots
-                # Create sub plot and fill it up for the Semi-major
-                if numRVdatasets<9:
-                    fig = plt.figure(2, figsize=(42,50) ,dpi=300)
-                else:
-                    s= 'summaryPlotter: WARNING!!! Plotter not set up to handle more than 9 RV datasets and '\
-                    +str(numRVdatasets)+' were found in the output datafile.'
-                    print s
-                    log.write(s+'\n')
-                
-                #add figure title
-                plt.suptitle(plotFileTitle,fontsize=30)
-                
-                for dataset in range(1,numRVdatasets+1):
-                    startTime = timeit.default_timer()
-                    subPlot = fig.add_subplot(330+dataset)
-                    paramColNum = 9+dataset
-                    if verbose:
-                        print 'Starting to plot '+'RV offset '+str(dataset)+":"
-                    xlabel = 'RV offset '+str(dataset)+' [m/s]'
-                    (CLevels,data,bestDataVal) =genTools.confLevelFinder(outputDataFilename,paramColNum, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-                    subPlot = histConverter(chiSquareds, data, subPlot, xlabel, confLevels=CLevels, weight=weight, normed=normalize, nu=nu, bestVal=bestDataVal)
-                    if ((dataset==1)or(dataset==4))or(dataset==7):
-                        subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=50)
-                    subPlot.tick_params(axis='both',which='major',labelsize=30)
-                    subPlot.axes.set_xlabel(xlabel,fontsize=50)
-                    s= "\nDone plotting RV offsets for dataset "+str(dataset)
-                    # record the time the chain finished and print
-                    endTime = timeit.default_timer()
-                    totalTime = (endTime-startTime) # in seconds
-                    totalTimeString = genTools.timeString(totalTime)
-                    s=s+'\nThat took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-                    if quiet==False:
-                        print s
-                    log.write(s+'\n') 
-                     
-                # Save file 
-                if verbose:
-                    print '\nStarting to save RVoffsets figure'
-                plotFilename2 = plotFilename[0:-4]+'-RVoffsets.png'
-                plt.savefig(plotFilename2, dpi=300, orientation='landscape')
-                s= 'RV offsets summary figure saved to '+plotFilename2
-                if quiet==False:
-                    print s
-                log.write(s+'\n')  
-                plt.close()
-            except:
-                plt.close()
-                s= 'No RV offsets to plot' 
-                if quiet==False:
-                    print s
-                log.write(s+'\n')  
-
-        ## Make a chiSquared distribution         
-        if False:
-            fig = plt.figure(2, figsize=(35,15) ,dpi=300)
-            subPlot = fig.add_subplot(111)
-            xlabel = 'chiSquare - chiSquare_MIN'
-            CLevels = [[0,0],[0,0]]
-            useAry = chiSquareds[int(len(chiSquareds)/2.0):]
-            useAry = np.array(useAry)
-            useAry = useAry-useAry.min()
-            subPlot = histConverter(chiSquareds, useAry, subPlot, xlabel, weight=False, bestVal=0.0001,logY=True)
-            
-            #add reduced chisquared axis labels
-            x1,x2 = subPlot.get_xlim()
-            ax2 = subPlot.twiny()
-            ax2.set_xlim(((1.0/nu)*x1),((1.0/nu)*x2))
-            ax2.figure.canvas.draw()
-            ax2.set_xlabel("reduced(chiSquare - chiSquare_MIN)",fontsize=30)
-            subPlot.axes.set_ylabel('dp/dx (*constant)',fontsize=30)
-            
-            #subPlot.set_yscale('log')
-            if verbose:
-                print 'Starting to save chiSquared figure:'
-            plotFilename3 = plotFilename[0:-4]+'-ChiSquaredDist.png'
-            print "\n!!!!!!! IGNORE THESE NEXT FONT ERRORS (if they occurr). TRIED TO FIX IT, BUT... !!!!!!!"
-            plt.savefig(plotFilename3, dpi=300, orientation='landscape')
-            print "!!!!!!!   IGNORE THOSE FONT ERRORS (if they occurr). TRIED TO FIX IT, BUT... !!!!!!!"
-            s= 'chiSquared dist summary figure saved to '+plotFilename3
-            if quiet==False:
-                print s
-            log.write(s+'\n')  
-            plt.close()
-            
-        # record the time the chain finished and print
-        endTime = timeit.default_timer()
-        totalTime = (endTime-startTime) # in seconds
-        totalTimeString = genTools.timeString(totalTime)
-        s= '\n\nsummaryPlotter: Plotting took '+totalTimeString+' to complete.\n'
-        if verbose:
-            print s
-        log.write(s+'\n')
-        log.write('\n'+75*'#'+'\n Leaving summaryPlotter \n'+75*'#'+'\n')
-        log.close()
-    else:
-        s= "summaryPlotter: ERROR!!!! file doesn't exist"
-        print s
-        log.write(s+'\n')
-        log.write('\n'+75*'#'+'\n Leaving summaryPlotter \n'+75*'#'+'\n')
-        log.close()
         
 def progessPlotterSingleFile(outputDataFilename, plotFilename, nu=1, plot4x1=False, logFilename='',TcStepping=False):
     """
@@ -3190,7 +2583,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     prepend = ""
     if outputDatafile=='':
         #baseDir = "/mnt/Data1/Todai_Work/Dropbox/EclipseWorkspace/SMODT/settings_and_InputData"
-        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-5Percent-postConversionDIerrors2-PAerrorTimes1point7-1overlapEpoch-500-Thousand-in_Total/outputData-ALL.dat" 
+        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-5Percent--500-Thousand-in_Total/outputData-ALL.dat" 
         baseDir = os.path.dirname(outputDatafile)
         prepend = "FakeData_"
     elif outputDatafile!="":
@@ -3329,7 +2722,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     if True:
         ## Make the posterior prob histograms.
         summaryPlotFile = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/',"SummaryPlot-Manual")
-        summaryPlotter2(outputDatafile, summaryPlotFile, shadeConfLevels=True, nu=1)
+        summaryPlotter(outputDatafile, summaryPlotFile, shadeConfLevels=True, nu=1)
     if False:
         ## Make the 'cleaned' posterior prob histograms
         makeCleanSummaryPlot(outputDatafile)

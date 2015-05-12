@@ -25,8 +25,8 @@ def calc_orbit():
     "
     """
     #Computer Directory
-    #baseSaveDir='/mnt/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
-    baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
+    baseSaveDir='/mnt/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
+    #baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
     NumDataPointsOut = 20 #must be much less than 10000.  values between 10-500 are suitable.
     storePrimaryRVs = True
     percentError = 5.0 #error is set to a percentage of the median

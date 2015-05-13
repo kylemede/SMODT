@@ -510,19 +510,15 @@ def simulator(paramSettingsDict):
     histFiles = []
     hF = glob.glob(os.path.join(origFolder,"hist*.dat"))
     cF = glob.glob(os.path.join(origFolder,"confLevels*.dat"))
-    #print 'hF = '+repr(hF)
-    #print 'cF = '+repr(cF)
     for i in range(0,len(hF)):
         histFiles.append(hF[i])
         histFiles.append(cF[i])
-    print 'histFiles = '+repr(histFiles)
     histFolder = os.path.join(origFolder,"histData")
     os.mkdir(histFolder)
     for f in histFiles:
         try:
             shutil.move(f,os.path.join(histFolder,os.path.basename(f)))
         except:
-            print 'failed to move file:\n'+f+'\ninto hist folder.'
             if paramSettingsDict['verbose']:
                 print 'failed to move file:\n'+f+'\ninto hist folder.'
     

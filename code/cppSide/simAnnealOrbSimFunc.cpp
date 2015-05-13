@@ -802,12 +802,12 @@ void simAnealOrbFuncObj::simulator()
 			}
 			//cout<<"SimAnnealFunc, line #"<<803<<endl;//$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$
 			ss<<"#######################################################################################"<<endl;
-			if (SSO.SILENT==false)
-				ss<<acceptString;
+			ss<<acceptString;
 			printLine = ss.str();
 			ss.clear();
 			ss.str(std::string());
-			cout<<printLine;
+			if (SSO.SILENT==false)
+				cout<<printLine;
 			SSlog<< printLine;
 
 		}

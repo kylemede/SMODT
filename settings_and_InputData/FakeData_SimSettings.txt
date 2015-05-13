@@ -7,9 +7,9 @@
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 chiSquaredMax =3000.0
 # The number of samples orbital parameters to try/draw [int]
-numSamples =71500
+numSamples =100000
 # The number of times to print status updates to the screen/terminal during the run [int]
-numSamplePrints =0
+numSamplePrints =10
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 numChains =7
@@ -59,9 +59,9 @@ CopyToDrobox =true
 # Settings for MCMC mode ###
 ############################
 # Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
-CalcBurnIn =false
+CalcBurnIn =true
 # remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?
-removeBurnIn = false
+removeBurnIn = true
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 calcCorrLengths =true
 # number of samples to draw for simAnneal stage [int] 
@@ -71,7 +71,7 @@ makeMCMCprogPlots =false
 # Make plots of Simulated Annealing progress plots? [bool]
 makeSimAnnealProgPlots =false
 # Calculate the Gelman-Rubin statistic? [bool]
-CalcGelmanRubin =false
+CalcGelmanRubin =true
 # How many times do you want the Gelman-Rubin statistic calculated [int]
 numTimesCalcGR =10
 # Delete Gelman Rubin chain files after?  Still keeps resulting single 'GRvalues.txt' file though. [bool]

@@ -99,7 +99,7 @@ def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, norme
     histData[:,0]=binCenters
     histData[:,1]=n
     np.savetxt(outFilename,histData)
-    if True:
+    if False:
         print "output dat file:\n"+outFilename
     
 def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='k',xLims=False,latex=False):
@@ -648,7 +648,7 @@ def addRVdataToPlot(subPlot,RVs,RVerrors,epochs,alf=1.0,color='blue',plotErrorBa
                 print 'len(RVerrors)<1!!!'
         if plotErrorBars:
             subPlot.plot(xs,ys,c=color,linewidth=2,alpha=alf)
-        subPlot.plot(epochs[epoch],RVs[epoch],c='k',marker='.',markersize=4)
+        subPlot.plot(epochs[epoch],RVs[epoch],c='k',marker='.',markersize=6)
     return subPlot
 
 def addDIdataToPlot(subPlot,SAs,SAerrors,PAs,PAerrors,asConversion,telescopeView=False):
@@ -2329,7 +2329,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     # Fix up borders and tick labels to ideal sizes
     #main.axhline(linewidth=2.0,color='k')
     #main.axvline(linewidth=2.0,color='k')
-    main.tick_params(axis='both',which='major',width=1,length=3,pad=10,direction='in',labelsize=10)
+    main.tick_params(axis='both',which='major',width=1,length=3,pad=10,direction='in',labelsize=15)
     #plot.axhline(linewidth=2.0)
     #plot.axvline(linewidth=2.0)
     #plot.xaxis.set_tick_params(width=5,length=5,pad=2,direction='in')
@@ -2338,7 +2338,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     main.spines['bottom'].set_linewidth(1.0)
     main.spines['top'].set_linewidth(1.0)
     main.spines['left'].set_linewidth(1.0)
-    main.set_position([0.19,0.15,0.77,0.80])
+    main.set_position([0.19,0.15,0.79,0.83])
     main.set_xlabel(xLabel, fontsize=30)
     main.set_ylabel(yLabel, fontsize=30)
     #plt.suptitle(plotFileTitle, fontsize=20)

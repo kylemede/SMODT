@@ -142,12 +142,13 @@ def calc_orbit():
     vel_Anew = []
     vel_Bnew = []
     tnew = []
-    for i in range(0,len(t),int(NptsBIG/NumDataPointsOut)):
+    for i in range(0,len(t),int(len(t)/NumDataPointsOut)):
         pos_Anew.append(pos_A[i])
         pos_Bnew.append(pos_B[i])
         vel_Anew.append(vel_A[i])
         vel_Bnew.append(vel_B[i])
         tnew.append(t[i])
+    
     pos_A = np.array(pos_Anew)
     pos_B = np.array(pos_Bnew)
     vel_A = np.array(vel_Anew)
@@ -207,15 +208,16 @@ def calc_orbit():
 #             (u1,u2,u3,u4)=diTools.PASAtoEN(data3[i,1],data3[i,2],data3[i,3],data3[i,4])
     #Averaging out the errors in PASA due to issue with ENtoPASA
     errorPAMean = np.mean(data3[:,2])
-    print 'errorPAMean = '+str(errorPAMean)+" = "+str((errorPAMean/np.median(np.abs(data3[:,1])))*100.0)+"% the median of the data"
+    #print 'errorPAMean = '+str(errorPAMean)+" = "+str((errorPAMean/np.median(np.abs(data3[:,1])))*100.0)+"% the median of the data"
     errorPA2 = np.median(np.abs(data3[:,1]))*(percentError/100.0)
-    print 'errorPA2 = '+str(errorPA2)
-    print 'errorPA2*1.7 = '+str(errorPA2*1.7)
+    #print 'errorPA2 = '+str(errorPA2)
+    #print 'errorPA2*1.7 = '+str(errorPA2*1.7)
     data3[:,2] = errorPA2*1.7
     errorSAMean = np.mean(data3[:,4])
-    print 'errorSAMean = '+str(errorSAMean)+" = "+str((errorSAMean/np.median(np.abs(data3[:,3])))*100.0)+"% the median of the data"
+    #print 'errorSAMean = '+str(errorSAMean)+" = "+str((errorSAMean/np.median(np.abs(data3[:,3])))*100.0)+"% the median of the data"
     errorSA2 = np.median(np.abs(data3[:,3]))*(percentError/100.0)
-    print "errorSA2 = "+str(errorSA2)
+    #print "errorSA2 = "+str(errorSA2)
+    print "resulting data files have "+str(len(data3[:,3]))+" epochs"
     print 
     data3[:,4] = errorSA2
     

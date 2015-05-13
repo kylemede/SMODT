@@ -1,6 +1,7 @@
 #@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 import os
 import shutil
+import glob
 import timeit
 from multiprocessing import Process
 import toolboxes as tools
@@ -402,8 +403,8 @@ def simulator(paramSettingsDict):
                 PMlogFile.write(s)
                 cleanDataFilename=''
                 if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
-                    if True:
-                        tools.plot.summaryPlotter(dataFinalFilename2, summaryPlotFile2, weight=False, confLevels=True, nu=nu, plot4x1=plot4x1, TcStepping=paramSettingsDict['TcStepping'] )         
+                    if True: 
+                        tools.plot.summaryPlotter(dataFinalFilename2, summaryPlotFile2, shadeConfLevels=True, nu=nu)         
                     if False:
                         print "\n\n"+"!"*75+'\nNOTE: Making Posteriors plot with the makeCleanSummaryPlot function instead of standard summaryPlotter\n'+"!"*75+"\n\n"
                         cleanDataFilename = tools.plot.makeCleanSummaryPlot(dataFinalFilename2)
@@ -443,11 +444,12 @@ def simulator(paramSettingsDict):
     origFiles.append("bestOrbit.txt")
     # get Summary plot filenames
     if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
-        origFiles.append(os.path.basename(summaryPlotFile)+".png")
+        origFiles.append(os.path.basename(summaryPlotFile)+".eps")
+        origFiles.append(os.path.basename(summaryPlotFile)+".pdf")
         origFiles.append(os.path.basename(summaryPlotFile)+"-ChiSquaredDist.png")
         origFiles.append(os.path.basename(keyPosteriorsPlotFile)+".eps")
-        if paramSettingsDict['DIonly']==False:
-            origFiles.append(os.path.basename(summaryPlotFile)+"-RVoffsets.png")
+#         if paramSettingsDict['DIonly']==False:
+#             origFiles.append(os.path.basename(summaryPlotFile)+"-RVoffsets.png")
         if (len(dataFiles)>1)and(paramSettingsDict['removeBurnIn'] and (paramSettingsDict["mcONLY"]==False))and(paramSettingsDict['CalcBurnIn']and (paramSettingsDict['simAnneal']==False)):
             origFiles.append(os.path.basename(summaryPlotFile)+"-burnInRemoved.png")
             origFiles.append(os.path.basename(summaryPlotFile)+"-burnInRemoved-ChiSquaredDist.png")
@@ -502,7 +504,28 @@ def simulator(paramSettingsDict):
         try:
             shutil.move(os.path.join(origFolder,file),os.path.join(resultsFolder,file))
         except:
-            nothing=True
+            if paramSettingsDict['verbose']:
+                print 'failed to move file:\n'+file+'\ninto results folder.'
+    # Get hist and conflevel files to move to its own subfolder
+    histFiles = []
+    hF = glob.glob(os.path.join(origFolder,"hist*.dat"))
+    cF = glob.glob(os.path.join(origFolder,"confLevels*.dat"))
+    #print 'hF = '+repr(hF)
+    #print 'cF = '+repr(cF)
+    for i in range(0,len(hF)):
+        histFiles.append(hF[i])
+        histFiles.append(cF[i])
+    print 'histFiles = '+repr(histFiles)
+    histFolder = os.path.join(origFolder,"histData")
+    os.mkdir(histFolder)
+    for f in histFiles:
+        try:
+            shutil.move(f,os.path.join(histFolder,os.path.basename(f)))
+        except:
+            print 'failed to move file:\n'+f+'\ninto hist folder.'
+            if paramSettingsDict['verbose']:
+                print 'failed to move file:\n'+f+'\ninto hist folder.'
+    
             
     ## build up list of log files and move to new folder
     origFiles = []

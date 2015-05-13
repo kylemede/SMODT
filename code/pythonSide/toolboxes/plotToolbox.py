@@ -62,15 +62,15 @@ def fixPlotBordersAndLabels(plot):
     This will just increase the boarder thicknesses and label sizes to look better for printing or 
     putting in papers.
     """
-    plot.tick_params(axis='both',which='major',width=3,length=5,pad=10,direction='in',labelsize=20)
+    plot.tick_params(axis='both',which='major',width=1,length=3,pad=8,direction='in',labelsize=20)
     #plot.axhline(linewidth=2.0)
     #plot.axvline(linewidth=2.0)
     #plot.xaxis.set_tick_params(width=5,length=5,pad=2,direction='in')
     #plot.yaxis.set_tick_params(width=5,length=5,pad=2,direction='in')
-    plot.spines['right'].set_linewidth(2.0)
-    plot.spines['bottom'].set_linewidth(2.0)
-    plot.spines['top'].set_linewidth(2.0)
-    plot.spines['left'].set_linewidth(2.0)
+    plot.spines['right'].set_linewidth(1.0)
+    plot.spines['bottom'].set_linewidth(1.0)
+    plot.spines['top'].set_linewidth(1.0)
+    plot.spines['left'].set_linewidth(1.0)
     return plot
     
 def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, normed=False, nu=1,logY=False,histType='bar'):
@@ -646,9 +646,9 @@ def addRVdataToPlot(subPlot,RVs,RVerrors,epochs,alf=1.0,color='blue',plotErrorBa
                 print 'RVerrors[epoch] = '+str(RVerrors[epoch])
             else:
                 print 'len(RVerrors)<1!!!'
-        subPlot.plot(epochs[epoch],RVs[epoch],c=color,marker='.',markersize=2)
         if plotErrorBars:
             subPlot.plot(xs,ys,c=color,linewidth=2,alpha=alf)
+        subPlot.plot(epochs[epoch],RVs[epoch],c='k',marker='.',markersize=4)
     return subPlot
 
 def addDIdataToPlot(subPlot,SAs,SAerrors,PAs,PAerrors,asConversion,telescopeView=False):
@@ -896,8 +896,10 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
         latex=True
     
     #plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    plt.rc('font',family='serif')
     if latex:
         plt.rc('text', usetex=True)
+        plt.rcParams['text.latex.unicode']=True 
     
     if type(outputDataFilenames)!=list:
         outputDataFilenames = [outputDataFilenames]
@@ -1103,6 +1105,7 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1)
             print 'plotfilename was found to already have the format extension'
             
         paramList = [0,1,2,3,4,5,6,7]
+        paramFileStrs = ['Omega','e','To', 'Tc','P','i','omega','a_total']
         if latex:
             paramStrs = ['$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]']
         else:
@@ -1110,6 +1113,7 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1)
         #perfectVals = [70.0,0.5,2457000.0,2457000.0,5.0,40.0,50.0,3.34718746581]
         if numRVdatasets>0:
             paramList.append(9)
+            paramFileStrs.append('K')
             if latex:
                 paramStrs.append('$K$ [m/s]')
             else:
@@ -1117,6 +1121,7 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1)
             #perfectVals.append(4933.18419284)
             for dataset in range(1,numRVdatasets+1):
                 paramList.append(9+dataset)
+                paramFileStrs.append('offset_'+str(dataset))
                 if latex:
                     #paramStrs.append("$\alpha$ "+str(dataset)+" [m/s]")
                     paramStrs.append("$offset_{"+str(dataset)+"}$ [m/s]")
@@ -1754,6 +1759,8 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
         asConversion = 1.0
         
     plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    #plt.rc('font',family='serif')
+    plt.rc('text', usetex=False) 
     
     # DI data
     SAs = DIdataDict['SAs']                                   
@@ -2166,7 +2173,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
             P.render((orb+1) * 100 // len(longAN_deg), 'Complete so far.')
     
     #draw semi-major
-    main.plot([Xstart,Xhalf],[Ystart,Yhalf],'g-',linewidth=2)
+    #main.plot([Xstart,Xhalf],[Ystart,Yhalf],'g-',linewidth=2)
     
     #calculate and draw an X at the center of the semi-major axis
     xCOM = (Xhalf+Xstart)/2.0
@@ -2174,7 +2181,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     if telescopeView:
         yCOM = -yCOM
         xCOM = -xCOM
-    main.plot(xCOM,yCOM,'rx',markersize=12,mew=2.5)
+    #main.plot(xCOM,yCOM,'rx',markersize=12,mew=2.5)
     
     # draw lines along diagonals to mark out 45 degree locations from origin ### Useless now
     #main.plot( [xLim[0],xLim[1]], [yLim[0],yLim[1]])
@@ -2320,20 +2327,20 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     main.axes.set_xlim(xLim2)
     main.axes.set_ylim(yLim)
     # Fix up borders and tick labels to ideal sizes
-    main.axhline(linewidth=2.0,color='k')
-    main.axvline(linewidth=2.0,color='k')
-    main.tick_params(axis='both',which='major',width=5,length=7,pad=12,direction='in',labelsize=30)
+    #main.axhline(linewidth=2.0,color='k')
+    #main.axvline(linewidth=2.0,color='k')
+    main.tick_params(axis='both',which='major',width=1,length=3,pad=10,direction='in',labelsize=10)
     #plot.axhline(linewidth=2.0)
     #plot.axvline(linewidth=2.0)
     #plot.xaxis.set_tick_params(width=5,length=5,pad=2,direction='in')
     #plot.yaxis.set_tick_params(width=5,length=5,pad=2,direction='in')
-    main.spines['right'].set_linewidth(4.0)
-    main.spines['bottom'].set_linewidth(4.0)
-    main.spines['top'].set_linewidth(4.0)
-    main.spines['left'].set_linewidth(4.0)
-    main.set_position([0.17,0.12,0.79,0.83])
-    main.set_xlabel(xLabel, fontsize=35)
-    main.set_ylabel(yLabel, fontsize=35)
+    main.spines['right'].set_linewidth(1.0)
+    main.spines['bottom'].set_linewidth(1.0)
+    main.spines['top'].set_linewidth(1.0)
+    main.spines['left'].set_linewidth(1.0)
+    main.set_position([0.19,0.15,0.77,0.80])
+    main.set_xlabel(xLabel, fontsize=30)
+    main.set_ylabel(yLabel, fontsize=30)
     #plt.suptitle(plotFileTitle, fontsize=20)
 
     # save plot to file
@@ -2371,11 +2378,11 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
         saPlot = fig2.add_subplot(211)
         saPlot.set_xlabel('Epochs [JD]', fontsize=30)
         saPlot.set_ylabel('SA Residuals ["]', fontsize=30)
-        saPlot.tick_params(axis='both',which='major',width=3,length=5,pad=10,direction='in',labelsize=25)
+        saPlot.tick_params(axis='both',which='major',width=1,length=3,pad=10,direction='in',labelsize=25)
         paPlot = fig2.add_subplot(212)
         paPlot.set_xlabel('Epochs [JD]', fontsize=30)
         paPlot.set_ylabel("PA Residuals [deg]", fontsize=30)
-        paPlot.tick_params(axis='both',which='major',width=3,length=5,pad=10,direction='in',labelsize=25)
+        paPlot.tick_params(axis='both',which='major',width=1,length=3,pad=10,direction='in',labelsize=25)
         #plt.suptitle(plotFileTitle, fontsize=10)
         if len(longAN_deg)>len(colorsList):
             print '\nAbout to Draw residuals'
@@ -2780,7 +2787,8 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     if verbose:
         print s
         
-    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    plt.rc('font',family='serif')
+    plt.rc('text', usetex=False)
     
     #check the orbit element inputs to ensure they are lists, else make them lists
     if type(K)!=list:

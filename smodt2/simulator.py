@@ -1,4 +1,5 @@
 import numpy as np
+import tools
 
 
 class Simulator(object):
@@ -7,9 +8,9 @@ class Simulator(object):
     It contains the functions to perform basic 'shotgun' Monte Carlo, 
     Simulated Annealing, Sigma Tunning, and pure MCMC simulations.
     """
-    def __init__(self,settingsDict,log):
+    def __init__(self,settingsDict):
         self.settingsDict = settingsDict
-        self.log = log
+        self.log = tools.getLogger('main.simulator',lvl=10,addFH=False)
         ##Examples
         #(memTrackProc,memLogFilename) = self.starter()
         #self._memLogFilename = memLogFilename

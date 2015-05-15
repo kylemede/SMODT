@@ -1,5 +1,5 @@
 import numpy as np
-
+import tools
 
 """
     This is the 'main' of SMODT. 
@@ -11,6 +11,8 @@ def smodt():
     """
     'main'
     """
+    log = tools.getLogger('main',lvl=10)
+    
 
 
 

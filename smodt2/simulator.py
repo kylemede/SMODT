@@ -31,6 +31,7 @@ class Simulator(object):
         self.log.info("In Simulator.monteCarlo")
         tools.test()
         
+        
     def simAnneal(self):
         """
         Performs Simulated Annealing.

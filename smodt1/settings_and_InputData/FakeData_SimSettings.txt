@@ -14,13 +14,13 @@ numSamplePrints =10
 # NOTE: greater than numCores-1 causes system to slow down!
 numChains =7
 # set to 'true' to ONLY PRINT the ABSOLUTE MINIMUM of messages about progress to the screen [bool]
-SILENT = false
+SILENT = true
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 quiet =true
 # set to 'true' to receive prints from the functions called by main for testing [bool]
 verbose =false
 # Directory where input data and settings files are [string, at least 2 chars long]
-settings_and_InputDataDir =/run/media/kmede/Data1/Todai_Work/Dropbox/EclipseWorkspaceDB/SMODT/settings_and_InputData
+settings_and_InputDataDir =/mnt/Data1/Todai_Work/Dropbox/EclipseWorkspaceDB/SMODT/settings_and_InputData
 # Name of file where system data is [string, at least 2 chars long]
 SystemDataFilename =SystemData.txt
 # Name of file where Direct Imaging data is [string, at least 2 chars long]
@@ -28,7 +28,7 @@ DIdataFilename =DIdata.dat
 # Name of file where Radial Velocity data is [string, at least 2 chars long]
 RVdataFilename =RVdata.dat
 # Directory where you want the output data folder to go [string, at least 2 chars long]
-outputData_dir =/run/media/kmede/Data1/Todai_Work/Data/data_SMODT
+outputData_dir =/mnt/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
 outputData_filenameRoot = FakeData-mcmc-3D-veryOpen-5Percent

@@ -11,6 +11,7 @@ class Simulator(object):
     def __init__(self,settingsDict):
         self.settingsDict = settingsDict
         self.log = tools.getLogger('main.simulator',lvl=10,addFH=False)
+        tools.logSystemInfo(self.log)
         ##Examples
         #(memTrackProc,memLogFilename) = self.starter()
         #self._memLogFilename = memLogFilename
@@ -20,20 +21,28 @@ class Simulator(object):
         """
         Start things off??$$$$$$$$$$$$$$$$$$$$$$$$
         """
+        self.log.info("In Simulator.starter")
     
     def monteCarlo(self):
         """
         Performs 'shotgun' Monte Carlo.
         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
         """
+        self.log.info("In Simulator.monteCarlo")
+        tools.test()
         
     def simAnneal(self):
         """
         Performs Simulated Annealing.
         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
         """
+        self.log.info("In Simulator.simAnneal")
+        tools.test()
+        
     def mcmc(self):
         """
         Performs pure Markov Chain Monte Carlo.
         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
         """
+        self.log.info("In Simulator.mcmc")
+        tools.test()

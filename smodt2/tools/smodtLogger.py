@@ -186,17 +186,17 @@ def logSystemInfo(log):
     | Python Version = '2.7.3'
 
     """
-    log.info("-"*11+' System Information Summary '+'-'*11)
-    #log.info('Machine Type = '+platform.machine())
-    #log.info('Machine Version = '+platform.version())
-    log.info('OS type = '+platform.uname()[0])
-    log.info('OS Version = '+platform.uname()[2])
-    log.info('Machine UserName = '+platform.uname()[1])
-    log.info('Machine Processor Type = '+platform.processor())
-    log.info('Number of cores = '+str(psutil.NUM_CPUS)) #comes up as not an available member var, but it is...
-    totMem = psutil.virtual_memory()[0]/1073741824.0
-    percentMem = psutil.virtual_memory()[2]
-    log.info('Total RAM [GB] = '+str(totMem)+', % used = '+str(percentMem))
-    log.info('Python Version = '+repr(platform.python_version()))
-    log.info('-'*50) 
+    infoStr = ''
+    infoStr+="\n"+"="*11+' System Information Summary '+'='*11
+    infoStr+="\n"+'OS type = '+platform.uname()[0]
+    infoStr+="\n"+'OS Version = '+platform.uname()[2]
+    infoStr+="\n"+'Machine UserName = '+platform.uname()[1]
+    infoStr+="\n"+'Machine Processor Type = '+platform.processor()
+    infoStr+="\n"+'Number of cores = '+str(psutil.NUM_CPUS) #comes up as not an available member var, but it is...
+    totMem = int(round(psutil.virtual_memory()[0]/1073741824.0))
+    percentMem = int(round(psutil.virtual_memory()[2]))
+    infoStr+="\n"+'Total RAM = '+str(totMem)+'[GB], with ~ '+str(percentMem)+"% already in use at simulation start"
+    infoStr+="\n"+'Python Version = '+repr(platform.python_version())
+    infoStr+="\n"+'='*50
+    log.info(infoStr)
         

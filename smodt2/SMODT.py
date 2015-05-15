@@ -12,7 +12,7 @@ def smodt():
     """
     'main'
     """
-    log = tools.getLogger('main',lvl=10)
+    log = tools.getLogger('main',lvl=100)
     log.info("just entered smodt main")
     settingsDict = dict()#$$$$$$$$$$$$$$$ load this up or get it with a tool func
     Sim = simulator.Simulator(settingsDict)

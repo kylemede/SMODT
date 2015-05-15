@@ -10,8 +10,9 @@ class Simulator(object):
     """
     def __init__(self,settingsDict):
         self.settingsDict = settingsDict
-        self.log = tools.getLogger('main.simulator',lvl=10,addFH=False)
+        self.log = tools.getLogger('main.simulator',lvl=100,addFH=False)
         tools.logSystemInfo(self.log)
+        self.Orbit = tools.cppTools.Orbit()
         ##Examples
         #(memTrackProc,memLogFilename) = self.starter()
         #self._memLogFilename = memLogFilename
@@ -30,6 +31,13 @@ class Simulator(object):
         """
         self.log.info("In Simulator.monteCarlo")
         tools.test()
+        self.log.info('starting c++ obj test')
+        self.Orbit.testDouble = 20.0
+        a = np.array([[1.0,2.0],[3.0,4.0]])
+        self.Orbit.loadRealData(a)
+        b = np.zeros((2,2))
+        self.Orbit.calculate(b)
+        self.log.info('\nb = \n'+repr(b))
         
         
     def simAnneal(self):

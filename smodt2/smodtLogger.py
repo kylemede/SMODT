@@ -193,7 +193,7 @@ def logSystemInfo(log):
     log.info('OS Version = '+platform.uname()[2])
     log.info('Machine UserName = '+platform.uname()[1])
     log.info('Machine Processor Type = '+platform.processor())
-    log.info('Number of cores = '+str(psutil.NUM_CPUS))
+    log.info('Number of cores = '+str(psutil.NUM_CPUS)) #comes up as not an available member var, but it is...
     totMem = psutil.virtual_memory()[0]/1073741824.0
     percentMem = psutil.virtual_memory()[2]
     log.info('Total RAM [GB] = '+str(totMem)+', % used = '+str(percentMem))

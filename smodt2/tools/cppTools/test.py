@@ -91,10 +91,10 @@ class TestSwig(unittest.TestCase):
         obj.testDouble = 20.0
         a = np.array([[1.0,2.0],[3.0,4.0]])
         obj.loadRealData(a)
-        b = np.zeros((2,2))
-        params = np.array([1,2,3,4,5,6])
-        print 'before b = '+repr(b)
         obj.loadConstants(10, 20, 30, 40)
+        b = np.zeros((2,2))
+        params = np.array([1,2,3,4,5,6])        
+        print 'before b = '+repr(b)
         obj.calculate(b,params)
         print 'b = '+repr(b)
         print 'params = '+repr(params)

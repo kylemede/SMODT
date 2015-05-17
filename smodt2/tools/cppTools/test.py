@@ -92,8 +92,12 @@ class TestSwig(unittest.TestCase):
         a = np.array([[1.0,2.0],[3.0,4.0]])
         obj.loadRealData(a)
         b = np.zeros((2,2))
-        obj.calculate(b)
+        params = np.array([1,2,3,4,5,6])
+        print 'before b = '+repr(b)
+        obj.loadConstants(10, 20, 30, 40)
+        obj.calculate(b,params)
         print 'b = '+repr(b)
+        print 'params = '+repr(params)
         np.testing.assert_array_almost_equal(b,np.array([[1.0,2.0],[2.0,3.0]]))
 
 if __name__ == "__main__":

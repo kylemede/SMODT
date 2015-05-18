@@ -4,7 +4,7 @@ from smodtLogger import logSystemInfo
 from smodtLogger import addFileHandler
 from smodtLogger import addStreamHandler
 
-from generalTools import test
+from generalTools import loadRealData
  
 import cppTools
 

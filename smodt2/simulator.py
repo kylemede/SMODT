@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.constants.codata import precision
-np.set_printoptions(precision=15)
+#np.set_printoptions(precision=15)
 import tools
 from settings_and_inpuData import constants
 

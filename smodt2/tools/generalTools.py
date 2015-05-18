@@ -2,7 +2,7 @@
 import smodtLogger
 import os
 import numpy as np
-np.set_printoptions(precision=15)
+#np.set_printoptions(precision=15)
 
 log = smodtLogger.getLogger('main.tools',lvl=100,addFH=False)
 

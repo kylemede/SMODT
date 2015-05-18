@@ -37,17 +37,17 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	params = y;
 	params_n = y_n;
 
-	std::cout<<"\nInside Orbit calculator function"<<std::endl;
-//    //std::cout<<"testDouble = "<<testDouble<<std::endl;
-//    testDouble = testDouble*10.0;
-//    //std::cout<<"testDouble = "<<testDouble<<std::endl;
-//    std::cout<<"For STATIC dataAry:"<<std::endl;
-//    for (int i=0; i<dataRealAry_nx; i++){
-//		for (int j=0;j<dataRealAry_ny;j++){
-//	        std::cout<<"[i,j = ["<<i<<","<<j<<"] = "<<dataRealAry[j+i*dataRealAry_ny]<<std::endl;
-//		}
-//	}
-//
+	std::cout<<"\nInside Orbit calculator function"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+	if (true){//$$$$$$$$$$$$$$$$$$$$$$$$$
+		std::cout<<"real data inside Orbit c++ code:"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+		for (int i=0; i<dataRealAry_nx; i++){//$$$$$$$$$$$$$$$$$$$$$$$$$
+			std::cout<<"[";//$$$$$$$$$$$$$$$$$$$$$$$$$
+			for (int j=0;j<dataRealAry_ny;j++){//$$$$$$$$$$$$$$$$$$$$$$$$$
+				std::cout<<dataRealAry[j+i*dataRealAry_ny]<<", ";//$$$$$$$$$$$$$$$$$$$$$$$$$
+			}//$$$$$$$$$$$$$$$$$$$$$$$$$
+			std::cout<<"]"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+		}//$$$$$$$$$$$$$$$$$$$$$$$$$
+	}
 //    std::cout<<"For STATIC paramsArys:"<<std::endl;
 //    for (int i=0; i<params_n;i++)
 //    	std::cout<<"["<<i<<"] = "<<params[i]<<std::endl;
@@ -80,23 +80,17 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		params[12]=K;
 	}
 	//start loop over each epoch of data
-	for (int i=0;i<dataRealAry_nx; i++){
+	for (int i=0;i<dataModelAry_nx; i++){
+		if (false)//$$$$$$$$$$$$$$$$$$$$$$$$$
+			std::cout<<"\nepoch "<<dataRealAry[0+i*dataRealAry_ny]<<":"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		//------------------
 		//Calculate TA and E
 		//------------------
 		M = (2.0*pi*(dataRealAry[0+i*dataRealAry_ny]-2.0*params[5]+params[6])/(params[7]*daysPerYear));
-		//std::cout<<"daysPerYear = "<<daysPerYear<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//std::cout<<"params[7] = "<<params[7]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//std::cout<<"pi = "<<pi<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//std::cout<<"dataRealAry[0+i*dataRealAry_ny] = "<<dataRealAry[0+i*dataRealAry_ny]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//std::cout<<"params[5] = "<<params[5]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//std::cout<<"params[6] = "<<params[6]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//std::cout<<"M = "<<M<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		if (M>2.0*pi)
 			M -= 2.0*pi;
 		if (M<0)
 			M += 2.0*pi;
-		//std::cout<<"M = "<<M<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		Eprime = M+params[4]*sin(M)+((params[4]*params[4])/(2.0*M))*sin(2.0*M);
 		NewtonCount = 0;
 		while ( (fabs(E-Eprime)>1.0e-10)&&(NewtonCount<50) ){
@@ -104,12 +98,6 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 			Eprime = E-((E-params[4]*sin(E)-M)/(1.0-params[4]*cos(E)));
 			NewtonCount +=1;
 		}
-		//std::cout<<"NewtonCount = "<<NewtonCount<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//std::cout<<"M = "<<M<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//std::cout<<"E = "<<E<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//std::cout<<"Eprime = "<<Eprime<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-		//std::cout<<"(E-params[4]*sin(E)) = "<<(E-params[4]*sin(E))<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
 		//double check it satisfies the original equation
 		if (fabs((E-params[4]*sin(E))-M)>1.0e-5)
 			std::cout<<"PROBLEM!! resulting E from Newton's loop isn't within error limit!!!"<<std::endl;
@@ -120,17 +108,20 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//--------------------------
 		//Calculate RV
 		//--------------------------
-		if (dataRealAry[5+i*dataRealAry_nx]!=0){
-			dataModelAry[2+i*dataRealAry_nx]=K*(cos(theta+params[9]*(pi/180.0))+params[4]*cos(params[9]*(pi/180.0)));
+		if (dataRealAry[5+i*dataRealAry_ny]!=0){
+			dataModelAry[2+i*dataModelAry_ny]=K*(cos(theta+params[9]*(pi/180.0))+params[4]*cos(params[9]*(pi/180.0)));
 		}
-		else
-			dataModelAry[2+i*dataRealAry_nx]=0.0;
-		if (false)
-			std::cout<<"RV = "<<dataModelAry[2+i*dataRealAry_nx] <<std::endl;
+		else{
+			//std::cout<<"RV real = "<< dataRealAry[5+i*dataRealAry_ny]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+			dataModelAry[2+i*dataModelAry_ny]=0.0;
+		}
+		if (false){//$$$$$$$$$$$$$$$$$$$$$$$$$
+			std::cout<<"RV = "<<dataModelAry[2+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+		}//$$$$$$$$$$$$$$$$$$$$$$$$$
 		//--------------------------
 		//Calculate x,y
 		//--------------------------
-		if ((dataRealAry[1+i*dataRealAry_nx]!=0)&&(dataRealAry[3+i*dataRealAry_nx]!=0)){
+		if ((dataRealAry[1+i*dataRealAry_ny]!=0)&&(dataRealAry[3+i*dataRealAry_ny]!=0)){
 			// calculate all the Thiele-Innes constants in ["]
 			A = ((atot/MperAU)/params[2])*(cos(params[3]*(pi/180.0))*cos(params[9]*(pi/180.0))-sin(params[3]*(pi/180.0))*sin(params[9]*(pi/180.0))*cos(params[8]*(pi/180.0)));
 			B = ((atot/MperAU)/params[2])*(sin(params[3]*(pi/180.0))*cos(params[9]*(pi/180.0))+cos(params[3]*(pi/180.0))*sin(params[9]*(pi/180.0))*cos(params[8]*(pi/180.0)));
@@ -141,15 +132,27 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 			Y = sqrt(1.0-params[4]*params[4])*sin(E);
 
 			// Calculate the predicted x&y in ["]
-			dataModelAry[0+i*dataRealAry_nx] = A*X +F*Y;
-			dataModelAry[1+i*dataRealAry_nx] = B*X +G*Y;
+			dataModelAry[0+i*dataModelAry_ny] = A*X +F*Y;
+			dataModelAry[1+i*dataModelAry_ny] = B*X +G*Y;
 		}
-		else
-			dataModelAry[0+i*dataRealAry_nx] = dataModelAry[1+i*dataRealAry_nx] = 0.0;
-		if (false){
-			std::cout<<"x = "<<dataModelAry[0+i*dataRealAry_nx] <<std::endl;
-			std::cout<<"y = "<<dataModelAry[1+i*dataRealAry_nx] <<std::endl;
+		else{
+			//std::cout<<"x real = "<< dataRealAry[1+i*dataRealAry_nx]<<", y real = "<< dataRealAry[3+i*dataRealAry_nx]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+			dataModelAry[0+i*dataModelAry_nx] = dataModelAry[1+i*dataModelAry_nx] = 0.0;
 		}
+		if (false){//$$$$$$$$$$$$$$$$$$$$$$$$$
+			std::cout<<"x = "<<dataModelAry[0+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+			std::cout<<"y = "<<dataModelAry[1+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+		}//$$$$$$$$$$$$$$$$$$$$$$$$$
+	}
+	if (true){//$$$$$$$$$$$$$$$$$$$$$$$$$
+		std::cout<<"\nModel data (after calculating all model epochs) inside Orbit c++ code:"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+		for (int i=0; i<dataModelAry_nx; i++){//$$$$$$$$$$$$$$$$$$$$$$$$$
+			std::cout<<"[";//$$$$$$$$$$$$$$$$$$$$$$$$$
+			for (int j=0;j<dataModelAry_ny;j++){//$$$$$$$$$$$$$$$$$$$$$$$$$
+				std::cout<<dataModelAry[j+i*dataModelAry_ny]<<", ";//$$$$$$$$$$$$$$$$$$$$$$$$$
+			}//$$$$$$$$$$$$$$$$$$$$$$$$$
+			std::cout<<"]"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+		}//$$$$$$$$$$$$$$$$$$$$$$$$$
 	}
 
 

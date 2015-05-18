@@ -32,7 +32,6 @@ def calc_orbit():
     percentError = 5.0 #error is set to a percentage of the median
     realizeErrors = True
     overlapEnds = True # will ensure some points near end overlap the beginning of the orbit.
-    smodt2 = True#ie. write outputs as x,y,rv; rather than SA,PA,RV for SMDOT1.0
 
     #System settings
     massratio = 2.0
@@ -197,82 +196,91 @@ def calc_orbit():
         for i in range(pos_A.shape[0]):
             data2[i,4] += np.random.normal(0,errorRVsecondary)
     
-    if smodt2==False:
-        #load up data for SMODT1.0 format
-        #convert RA and Dec into the SA and PA used by SMODT
-        data3 = np.empty((pos_A.shape[0],7))
-        data3[:,0] = data2[:, 0]
-        for i in range(0,pos_A.shape[0]):
-            # convert x,y to SA and PA with fake errors
-            #NOTE: there is an error in the resulting errors from ENtoPASA, but the PASA values are good.
-            (data3[i,1],data3[i,2],data3[i,3],data3[i,4]) = diTools.ENtoPASA(data2[i,1], errorRA, data2[i,2], errorDec)
-    #         if False:
-    #             print repr((data2[i,1], null, data2[i,2], null))
-    #             (u1,u2,u3,u4)=diTools.PASAtoEN(data3[i,1],data3[i,2],data3[i,3],data3[i,4])
-        #Averaging out the errors in PASA due to issue with ENtoPASA
-        errorPAMean = np.mean(data3[:,2])
-        #print 'errorPAMean = '+str(errorPAMean)+" = "+str((errorPAMean/np.median(np.abs(data3[:,1])))*100.0)+"% the median of the data"
-        errorPA2 = np.median(np.abs(data3[:,1]))*(percentError/100.0)
-        #print 'errorPA2 = '+str(errorPA2)
-        #print 'errorPA2*1.7 = '+str(errorPA2*1.7)
-        data3[:,2] = errorPA2*1.7
-        errorSAMean = np.mean(data3[:,4])
-        #print 'errorSAMean = '+str(errorSAMean)+" = "+str((errorSAMean/np.median(np.abs(data3[:,3])))*100.0)+"% the median of the data"
-        errorSA2 = np.median(np.abs(data3[:,3]))*(percentError/100.0)
-        #print "errorSA2 = "+str(errorSA2)
-        data3[:,4] = errorSA2
-        
-    #     #calculate error and use it to realize the errors in the DI data if requested
-    #     errorPA = np.median(np.abs(data3[:,1]))*(percentError/100.0)
-    #     data3[:,2] = errorPA*1.7
-    #     if realizeErrors:
-    #         for i in range(pos_A.shape[0]):
-    #             data3[i,1] += np.random.normal(0,errorPA)
-    #     errorSA = np.median(np.abs(data3[:,3]))*(percentError/100.0)
-    #     data3[:,4] = errorSA
-    #     if realizeErrors:
-    #         for i in range(pos_A.shape[0]):
-    #             data3[i,3]+=np.random.normal(0,errorSA)
-            
-        #output data3 has format ->SMODT format with DI and RV combined into one file
-        #1. JD
-        #2. Position Angle [deg]
-        #3. Position Angle ERROR [deg]
-        #4. Separation Angle ["]
-        #5. Separation Angle ERROR ["]
-        #6. RV of primary (or secondary) rel to CofM [m/s]
-        #7. RV ERROR [m/s]
+    #load up data for SMODT1.0 format
+    #convert RA and Dec into the SA and PA used by SMODT
+    data3 = np.empty((pos_A.shape[0],7))
+    data3[:,0] = data2[:, 0]
+    for i in range(0,pos_A.shape[0]):
+        # convert x,y to SA and PA with fake errors
+        #NOTE: there is an error in the resulting errors from ENtoPASA, but the PASA values are good.
+        (data3[i,1],data3[i,2],data3[i,3],data3[i,4]) = diTools.ENtoPASA(data2[i,1], errorRA, data2[i,2], errorDec)
+#         if False:
+#             print repr((data2[i,1], null, data2[i,2], null))
+#             (u1,u2,u3,u4)=diTools.PASAtoEN(data3[i,1],data3[i,2],data3[i,3],data3[i,4])
+    #Averaging out the errors in PASA due to issue with ENtoPASA
+    errorPAMean = np.mean(data3[:,2])
+    #print 'errorPAMean = '+str(errorPAMean)+" = "+str((errorPAMean/np.median(np.abs(data3[:,1])))*100.0)+"% the median of the data"
+    errorPA2 = np.median(np.abs(data3[:,1]))*(percentError/100.0)
+    #print 'errorPA2 = '+str(errorPA2)
+    #print 'errorPA2*1.7 = '+str(errorPA2*1.7)
+    data3[:,2] = errorPA2*1.7
+    errorSAMean = np.mean(data3[:,4])
+    #print 'errorSAMean = '+str(errorSAMean)+" = "+str((errorSAMean/np.median(np.abs(data3[:,3])))*100.0)+"% the median of the data"
+    errorSA2 = np.median(np.abs(data3[:,3]))*(percentError/100.0)
+    #print "errorSA2 = "+str(errorSA2)
+    data3[:,4] = errorSA2
     
-    else:
-        #load up data for SMODT2.0 format
-        data3 = np.empty((pos_A.shape[0],7))
-        data3[:,0] = data2[:, 0]#1. JD
-        data3[:,1] = data2[:,1]#2. RA (x) ["]
-        data3[:,2] = errorRA #3. RA ERROR ["]
-        data3[:,3] = data2[:,2]#4. Dec (y) ["]
-        data3[:,4] = errorDec#5. Dec ERROR ["]
-        #output data3 has format ->SMODT format with DI and RV combined into one file
-        #1. JD
-        #2. RA (x) ["]
-        #3. RA ERROR ["]
-        #4. Dec (y) ["]
-        #5. Dec ERROR ["]
-        #6. RV of primary (or secondary) rel to CofM [m/s]
-        #7. RV ERROR [m/s]
+#     #calculate error and use it to realize the errors in the DI data if requested
+#     errorPA = np.median(np.abs(data3[:,1]))*(percentError/100.0)
+#     data3[:,2] = errorPA*1.7
+#     if realizeErrors:
+#         for i in range(pos_A.shape[0]):
+#             data3[i,1] += np.random.normal(0,errorPA)
+#     errorSA = np.median(np.abs(data3[:,3]))*(percentError/100.0)
+#     data3[:,4] = errorSA
+#     if realizeErrors:
+#         for i in range(pos_A.shape[0]):
+#             data3[i,3]+=np.random.normal(0,errorSA)
+        
+    #output data3 has format ->SMODT format with DI and RV combined into one file
+    #1. JD
+    #2. Position Angle [deg]
+    #3. Position Angle ERROR [deg]
+    #4. Separation Angle ["]
+    #5. Separation Angle ERROR ["]
+    #6. RV of primary (or secondary) rel to CofM [m/s]
+    #7. RV ERROR [m/s]
+    
+    
+    #load up data for SMODT2.0 format
+    data4 = np.empty((pos_A.shape[0],7))
+    data4[:,0] = data2[:, 0]#1. JD
+    data4[:,1] = data2[:,1]#2. RA (x) ["]
+    data4[:,2] = errorRA #3. RA ERROR ["]
+    data4[:,3] = data2[:,2]#4. Dec (y) ["]
+    data4[:,4] = errorDec#5. Dec ERROR ["]
+    #output data4 has format ->SMODT format with DI and RV combined into one file
+    #1. JD
+    #2. RA (x) ["]
+    #3. RA ERROR ["]
+    #4. Dec (y) ["]
+    #5. Dec ERROR ["]
+    #6. RV of primary (or secondary) rel to CofM [m/s]
+    #7. RV ERROR [m/s]
     if storePrimaryRVs:
         data3[:,5] = data2[:,3]
         data3[:,6] = errorRVprimary
+        data4[:,5] = data2[:,3]
+        data4[:,6] = errorRVprimary
     else:
         data3[:,5] = data2[:,4]
         data3[:,6] = errorRVsecondary
+        data4[:,5] = data2[:,4]
+        data4[:,6] = errorRVsecondary
     print "resulting data files have "+str(len(data3[:,3]))+" epochs"
     ## split these up into two separate files
-    dataDI = np.empty((pos_A.shape[0],5))
-    dataDI[:,0] = data3[:,0]
-    dataDI[:,1] = data3[:,1]
-    dataDI[:,2] = data3[:,2]
-    dataDI[:,3] = data3[:,3]
-    dataDI[:,4] = data3[:,4]
+    dataDI1 = np.empty((pos_A.shape[0],5))
+    dataDI1[:,0] = data3[:,0]
+    dataDI1[:,1] = data3[:,1]
+    dataDI1[:,2] = data3[:,2]
+    dataDI1[:,3] = data3[:,3]
+    dataDI1[:,4] = data3[:,4]
+    dataDI2 = np.empty((pos_A.shape[0],5))
+    dataDI2[:,0] = data4[:,0]
+    dataDI2[:,1] = data4[:,1]
+    dataDI2[:,2] = data4[:,2]
+    dataDI2[:,3] = data4[:,3]
+    dataDI2[:,4] = data4[:,4]
     dataRV = np.empty((pos_A.shape[0],3))
     dataRV[:,0] = data3[:,0]
     dataRV[:,1] = data3[:,5]
@@ -283,8 +291,9 @@ def calc_orbit():
         np.savetxt(os.path.join(baseSaveDir,'mockdata.dat'), data, fmt="%.10g")
         #np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat.dat'), data3, fmt="%.10g")
     if True:
-        np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat-DI.dat'), dataDI, fmt="%.10g")
+        np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODT1format-DI.dat'), dataDI1, fmt="%.10g")
         np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat-RV.dat'), dataRV, fmt="%.10g")
+        np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODT2format-DI.dat'), dataDI2, fmt="%.10g")
     print '\nOutput data files written to:\n'+baseSaveDir
 
 if __name__ == "__main__":

@@ -84,11 +84,19 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//------------------
 		//Calculate TA and E
 		//------------------
-		M = (2.0*pi*(dataRealAry[0+i*dataRealAry_ny]-2.0*params[5]+params[6])/(P*daysPerYear));
+		M = (2.0*pi*(dataRealAry[0+i*dataRealAry_ny]-2.0*params[5]+params[6])/(params[7]*daysPerYear));
+		//std::cout<<"daysPerYear = "<<daysPerYear<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//std::cout<<"params[7] = "<<params[7]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//std::cout<<"pi = "<<pi<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//std::cout<<"dataRealAry[0+i*dataRealAry_ny] = "<<dataRealAry[0+i*dataRealAry_ny]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//std::cout<<"params[5] = "<<params[5]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//std::cout<<"params[6] = "<<params[6]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//std::cout<<"M = "<<M<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		if (M>2.0*pi)
 			M -= 2.0*pi;
 		if (M<0)
 			M += 2.0*pi;
+		//std::cout<<"M = "<<M<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 		Eprime = M+params[4]*sin(M)+((params[4]*params[4])/(2.0*M))*sin(2.0*M);
 		NewtonCount = 0;
 		while ( (fabs(E-Eprime)>1.0e-10)&&(NewtonCount<50) ){
@@ -96,6 +104,12 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 			Eprime = E-((E-params[4]*sin(E)-M)/(1.0-params[4]*cos(E)));
 			NewtonCount +=1;
 		}
+		//std::cout<<"NewtonCount = "<<NewtonCount<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//std::cout<<"M = "<<M<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//std::cout<<"E = "<<E<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//std::cout<<"Eprime = "<<Eprime<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+		//std::cout<<"(E-params[4]*sin(E)) = "<<(E-params[4]*sin(E))<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
 		//double check it satisfies the original equation
 		if (fabs((E-params[4]*sin(E))-M)>1.0e-5)
 			std::cout<<"PROBLEM!! resulting E from Newton's loop isn't within error limit!!!"<<std::endl;
@@ -106,16 +120,17 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//--------------------------
 		//Calculate RV
 		//--------------------------
-		if (dataRealAry[5]!=0){
+		if (dataRealAry[5+i*dataRealAry_nx]!=0){
 			dataModelAry[2+i*dataRealAry_nx]=K*(cos(theta+params[9]*(pi/180.0))+params[4]*cos(params[9]*(pi/180.0)));
 		}
 		else
 			dataModelAry[2+i*dataRealAry_nx]=0.0;
-		std::cout<<"RV = "<<dataModelAry[2+i*dataRealAry_nx] <<std::endl;
+		if (false)
+			std::cout<<"RV = "<<dataModelAry[2+i*dataRealAry_nx] <<std::endl;
 		//--------------------------
 		//Calculate x,y
 		//--------------------------
-		if ((dataRealAry[1]!=0)&&(dataRealAry[3]!=0)){
+		if ((dataRealAry[1+i*dataRealAry_nx]!=0)&&(dataRealAry[3+i*dataRealAry_nx]!=0)){
 			// calculate all the Thiele-Innes constants in ["]
 			A = ((atot/MperAU)/params[2])*(cos(params[3]*(pi/180.0))*cos(params[9]*(pi/180.0))-sin(params[3]*(pi/180.0))*sin(params[9]*(pi/180.0))*cos(params[8]*(pi/180.0)));
 			B = ((atot/MperAU)/params[2])*(sin(params[3]*(pi/180.0))*cos(params[9]*(pi/180.0))+cos(params[3]*(pi/180.0))*sin(params[9]*(pi/180.0))*cos(params[8]*(pi/180.0)));
@@ -131,8 +146,10 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		}
 		else
 			dataModelAry[0+i*dataRealAry_nx] = dataModelAry[1+i*dataRealAry_nx] = 0.0;
-		std::cout<<"x = "<<dataModelAry[0+i*dataRealAry_nx] <<std::endl;
-		std::cout<<"y = "<<dataModelAry[1+i*dataRealAry_nx] <<std::endl;
+		if (false){
+			std::cout<<"x = "<<dataModelAry[0+i*dataRealAry_nx] <<std::endl;
+			std::cout<<"y = "<<dataModelAry[1+i*dataRealAry_nx] <<std::endl;
+		}
 	}
 
 

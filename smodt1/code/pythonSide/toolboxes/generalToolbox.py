@@ -2784,98 +2784,106 @@ def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
         print 'timeDiff_days = '+str(timeDiff_days)+', phaseDiff_days = '+str(phaseDiff_days)+', period_days = '+str(period_days)
     
     M = n*(((timeDiff_days)/365.242)+phase)#+(phase*2.0*pi)
-    ## Push M value into 0-2pi range ######
-    numCirclesBiggerD = abs(M/(2.0*pi))
-    numCirclesBiggerI = int(numCirclesBiggerD)
-    if numCirclesBiggerI<1:
-        numCirclesBiggerI = 1
-    if (M<0.0):
-        M_out = (numCirclesBiggerI+1)*2.0*pi + M
-        if verbose:
-            print "M updated from, "+str(M)+" to "+str(M_out)+", numCirclesBiggerI = "+str(numCirclesBiggerI)+", numCirclesBiggerD = "+str(numCirclesBiggerD)
+    if verbose:
+        print "initial M = "+str(M)
+    if (M!=0)or(M!=(2.0*pi)):        
+        ## Push M value into 0-2pi range ######
+        numCirclesBiggerD = abs(M/(2.0*pi))
+        numCirclesBiggerI = int(numCirclesBiggerD)
+        if numCirclesBiggerI<1:
+            numCirclesBiggerI = 1
+        if (M<0.0):
+            M_out = (numCirclesBiggerI+1)*2.0*pi + M
+            if verbose:
+                print "M updated from, "+str(M)+" to "+str(M_out)+", numCirclesBiggerI = "+str(numCirclesBiggerI)+", numCirclesBiggerD = "+str(numCirclesBiggerD)
+            
+        elif M>(2.0*pi):
+            M_out = M-numCirclesBiggerI*2.0*pi
+            if verbose:
+                print "M updated from, "+str(M)+" to "+str(M_out)+", numCirclesBiggerI = "+str(numCirclesBiggerI)+", numCirclesBiggerD = "+str(numCirclesBiggerD)
+        else:
+            M_out = M
+        M = M_out
         
-    elif M>(2.0*pi):
-        M_out = M-numCirclesBiggerI*2.0*pi
+        M_deg = math.degrees(M) # convert resulting M to degrees
         if verbose:
-            print "M updated from, "+str(M)+" to "+str(M_out)+", numCirclesBiggerI = "+str(numCirclesBiggerI)+", numCirclesBiggerD = "+str(numCirclesBiggerD)
-    else:
-        M_out = M
-    M = M_out
+            print 'Mean Anomaly [deg]= ',M_deg
     
-    M_deg = math.degrees(M) # convert resulting M to degrees
-    if verbose:
-        print 'Mean Anomaly [deg]= ',M_deg
-
-    ### Performing Newton's Method to get the Eccentric Anomaly value ###
-    if verbose:
-        print '-'*50
-    # initial guess (E_last), will be updated in loop.  
-    # Anything works, just takes longer if further from real value. => pi
-    E_last = 2*pi
-    # stored initial value to be updated in loop
-    # this value is always very close to the true value and will minimize the number of loops
-    # the inital guess used here is from Argyle "Observing and Measuring Visual Double Stars"
-    try:
-        E_latest = M+e*math.sin(M)+((e**2.0)/(2.0*M))*math.sin(2.0*M)
-    except:
-        # not sure why, but there were cases of division by zero
-        # thus, for these cases, I will resort to my old predicted start value that doesn't suffer from this.
-        E_latest = M+e*math.sin(M)
-    M_last = M
-    # show input value to 
-    if debug:
-        print "Inputs to Newton's Method are : \nM [rad]= "+str(M)+"\nE_last [rad]= "+\
-        str(E_last)+"\nE_latest [rad] = "+str(E_latest)+"\ne = "+str(e)
-        
-        print "\nStarting to run Newton's while loop."
-    
-    count = 0 # a counter to stop inf loops in Newton's method below
-    while (abs(E_last-E_latest) > (1.0e-10))and(count<50):
-        if debug:
-            print 'current E [rad]= ', E_latest
-        E_last = E_latest
-        M_last = E_last - e*math.sin(E_last)
-        E_latest = E_last - ((M_last-M)/(1.0-e*math.cos(E_last)))
-        count = count+1
-
-    E_latest_deg = math.degrees(E_latest) # convert resulting E to degrees
-    if E_latest_deg<0.0:
-        E_latest_deg = 360.0-E_latest_deg
-        
-    if verbose:
-        print "The resultant E value is [deg] = ", E_latest_deg
-    # check if the resultant value solves the original equation.
-    Mnewton = math.degrees(E_latest-e*math.sin(E_latest))
-    if abs(M_deg-Mnewton)>(1.0e-5):
+        ### Performing Newton's Method to get the Eccentric Anomaly value ###
         if verbose:
-            print "PROBLEM: This resultant E does not satisfy the original equation, Newton's method FAILED !!!"
-            print 'M from this E Equals = '+str(Mnewton)
-            print 'M original = '+str(M_deg)
-            print 'E initial = '+str(math.degrees(M+e*math.sin(M) ))
-            print 'e = '+str(e)
-    else:
-        if debug:
-            print "This resultant E solves the original equation, Newton's Method worked :-)"
             print '-'*50
-    ### Newton's loop finished! ###
-    
-    ## calculate True Anomaly from Eccentric Anomaly
-    top = (math.cos(E_latest)-e)
-    btm = (1.0-e*math.cos(E_latest))
-    TA_rad  = math.acos(top/btm) 
-
-    if (E_latest>pi) or (E_latest<0):
-        # this is to take care of the silly fact that after E=180deg,
-        # the equation above produces TAs that go down from 180, rather than up.
-        ## This has been found to be due to the equation eliminating negative
-        ## values because of the cosine, thus the new update of E_latest<0.0:
-        ## should fix this problem, but the solutions will not go 0->360
-        ## but rather 0->180, -180->-0.
-        TA_rad_orig = TA_rad
-        TA_rad = 2.0*pi - TA_rad
-        if verbose:
-            print "E_latest found to be over PI, so changed TA from "+str(math.degrees(TA_rad_orig))+" to "+str(math.degrees(TA_rad))
+        # initial guess (E_last), will be updated in loop.  
+        # Anything works, just takes longer if further from real value. => pi
+        E_last = 2*pi
+        # stored initial value to be updated in loop
+        # this value is always very close to the true value and will minimize the number of loops
+        # the inital guess used here is from Argyle "Observing and Measuring Visual Double Stars"
+        try:
+            E_latest = M+e*math.sin(M)+((e**2.0)/(2.0*M))*math.sin(2.0*M)
+        except:
+            # not sure why, but there were cases of division by zero
+            # thus, for these cases, I will resort to my old predicted start value that doesn't suffer from this.
+            E_latest = M+e*math.sin(M)
+        M_last = M
+        # show input value to 
+        if debug:
+            print "Inputs to Newton's Method are : \nM [rad]= "+str(M)+"\nE_last [rad]= "+\
+            str(E_last)+"\nE_latest [rad] = "+str(E_latest)+"\ne = "+str(e)
+            
+            print "\nStarting to run Newton's while loop."
         
+        count = 0 # a counter to stop inf loops in Newton's method below
+        while (abs(E_last-E_latest) > (1.0e-10))and(count<50):
+            if debug:
+                print 'current E [rad]= ', E_latest
+            E_last = E_latest
+            M_last = E_last - e*math.sin(E_last)
+            E_latest = E_last - ((M_last-M)/(1.0-e*math.cos(E_last)))
+            count = count+1
+    
+        E_latest_deg = math.degrees(E_latest) # convert resulting E to degrees
+        if E_latest_deg<0.0:
+            E_latest_deg = 360.0-E_latest_deg
+            
+        if verbose:
+            print "The resultant E value is [deg] = ", E_latest_deg
+        # check if the resultant value solves the original equation.
+        Mnewton = math.degrees(E_latest-e*math.sin(E_latest))
+        if abs(M_deg-Mnewton)>(1.0e-5):
+            if verbose:
+                print "PROBLEM: This resultant E does not satisfy the original equation, Newton's method FAILED !!!"
+                print 'M from this E Equals = '+str(Mnewton)
+                print 'M original = '+str(M_deg)
+                print 'E initial = '+str(math.degrees(M+e*math.sin(M) ))
+                print 'e = '+str(e)
+        else:
+            if debug:
+                print "This resultant E solves the original equation, Newton's Method worked :-)"
+                print '-'*50
+        ### Newton's loop finished! ###
+        
+        ## calculate True Anomaly from Eccentric Anomaly
+        top = (math.cos(E_latest)-e)
+        btm = (1.0-e*math.cos(E_latest))
+        TA_rad  = math.acos(top/btm) 
+    
+        if (E_latest>pi) or (E_latest<0):
+            # this is to take care of the silly fact that after E=180deg,
+            # the equation above produces TAs that go down from 180, rather than up.
+            ## This has been found to be due to the equation eliminating negative
+            ## values because of the cosine, thus the new update of E_latest<0.0:
+            ## should fix this problem, but the solutions will not go 0->360
+            ## but rather 0->180, -180->-0.
+            TA_rad_orig = TA_rad
+            TA_rad = 2.0*pi - TA_rad
+            if verbose:
+                print "E_latest found to be over PI, so changed TA from "+str(math.degrees(TA_rad_orig))+" to "+str(math.degrees(TA_rad))
+    else:
+        if verbose:
+            print 'initial M=0 or 2pi, thus the exact beginning of the orbit and M=E=TA=0'
+        M_deg=0
+        E_latest_deg=0
+        TA_rad=0      
     return (n, M_deg, E_latest_deg,TA_rad)
 
 def timeString(duration):

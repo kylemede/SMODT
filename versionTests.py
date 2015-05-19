@@ -33,24 +33,25 @@ def calcTest():
     
     params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,a_total,0,0,offset])
     
+    #for SMODT2.0 model
     Orbit = tools2.cppTools.Orbit()
     Orbit.loadRealData(realData2)
     Orbit.loadConstants(constants.Grav,constants.pi,constants.KGperMsun, constants.daysPerYear,constants.secPerYear,constants.MperAU)
-    print 'modelData2 BEFORE = '+repr(modelData2)
+    #print 'modelData2 BEFORE = \n'+repr(modelData2)
     Orbit.calculate(modelData2,params)
-    print 'modelData2 AFTER = '+repr(modelData2)
+    print 'modelData2 AFTER = \n'+repr(modelData2)
     
-    epochs = realData2[:,0]
-    RVs1 = []
-    xs1 =[]
-    ys1 = []
-    tits=oK
-    for t in epochs:
-        (v_r, K)=tools1.RVtoolbox.vrCalculatorSemiMajorType(t,e,T,P,omega,a1,T_center,inc, K=False, verbose=False)
-        (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, x, y, a1, a2) = tools1.DItoolbox.orbitCalculatorTH_I(t, Sys_Dist_PC, inc, Omega, e, T, P, omega, a_total,Mass1, Mass2, verbose=False)
-        RVs1.append(v_r)
-        xs1.append(x)
-        ys1.append(y)
+    #for SMODT1.0 model
+    modelData1 = np.zeros(modelData2.shape)
+    i=0
+    for t in realData2[:,0]:
+        (v_r, K)=tools1.RVtoolbox.vrCalculatorSemiMajorType(t,e,T,P,omega,a1,T_center,inc, verbose=True)
+        (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, x, y, a1, a2) = tools1.DItoolbox.orbitCalculatorTH_I(t, Sys_Dist_PC, inc, Omega, e, T, P, omega, a_total,Mass1, Mass2, verbose=True)
+        modelData1[i,:] =[x,y,v_r] 
+        i+=1
+    print 'modelData1 = \n'+repr(modelData1)
+    ##compare 
+    
     
 if __name__ == '__main__':
     calcTest()

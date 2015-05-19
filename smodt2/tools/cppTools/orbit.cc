@@ -38,7 +38,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	params_n = y_n;
 
 	std::cout<<"\nInside Orbit calculator function"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
-	if (true){//$$$$$$$$$$$$$$$$$$$$$$$$$
+	if (false){//$$$$$$$$$$$$$$$$$$$$$$$$$
 		std::cout<<"real data inside Orbit c++ code:"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		for (int i=0; i<dataRealAry_nx; i++){//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"[";//$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -48,27 +48,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 			std::cout<<"]"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		}//$$$$$$$$$$$$$$$$$$$$$$$$$
 	}
-//    std::cout<<"For STATIC paramsArys:"<<std::endl;
-//    for (int i=0; i<params_n;i++)
-//    	std::cout<<"["<<i<<"] = "<<params[i]<<std::endl;
-//
-//	std::cout<<"For INPLACE dataAryModel:"<<std::endl;
-//	int ints;
-//	double ints2;
-//	for (int i=0; i<dataModelAry_nx; i++){
-//		for (int j=0;j<dataModelAry_ny;j++){
-//		ints = i+j;
-//		//std::cout<<"ints = "<<ints<<std::endl;
-//		ints2 = (double)ints;
-//		//std::cout<<"ints2 = "<<ints2<<std::endl;
-//		dataModelAry[j+i*dataModelAry_ny]=ints2*1.0+1.0;
-//	        std::cout<<"[i,j] = ["<<i<<","<<j<<"] = "<<dataModelAry[j+i*dataModelAry_ny]<<std::endl;
-//		}
-//	}
-//	//std::cout<<"testFunc provided = "<<testDouble<<std::endl;
-//	double r = testFunc(testDouble);
-//	std::cout<<"testFunc returned = "<<r<<std::endl;
-	
+
 	//--------------------------------------------------------------------------
 	//------------------------------- 	START REAL CALCULATE STEPS -------------
 	//--------------------------------------------------------------------------
@@ -144,7 +124,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 			std::cout<<"y = "<<dataModelAry[1+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		}//$$$$$$$$$$$$$$$$$$$$$$$$$
 	}
-	if (true){//$$$$$$$$$$$$$$$$$$$$$$$$$
+	if (false){//$$$$$$$$$$$$$$$$$$$$$$$$$
 		std::cout<<"\nModel data (after calculating all model epochs) inside Orbit c++ code:"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		for (int i=0; i<dataModelAry_nx; i++){//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"[";//$$$$$$$$$$$$$$$$$$$$$$$$$

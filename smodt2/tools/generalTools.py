@@ -34,7 +34,7 @@ def loadDIdata(filename):
     for line in lines:
         #log.debug("line was:'"+line+"'")#$$$$$$$$$$$$$$$$$$$$$$$$
         if len(line.split())>2:
-            if line.split()[0].replace('.','',1).isdigit() and line.split()[2].replace('.','',1).isdigit():
+            if line.split()[0].replace('.','',1).isdigit() and line.split()[3].replace('.','',1).replace('-','',1).isdigit():
                 diData.append([float(line.split()[0]),float(line.split()[1]),float(line.split()[2]),float(line.split()[3]),float(line.split()[4])])  
     return np.array(diData)
     
@@ -74,7 +74,7 @@ def loadRVdata(filename):
             datasetNumLast+=1
         #log.debug("line was:'"+line+"'")#$$$$$$$$$$$$$$$$$$$$$$$$
         if len(line.split())>2:
-            if line.split()[0].replace('.','',1).isdigit() and line.split()[2].replace('.','',1).isdigit():
+            if line.split()[0].replace('.','',1).isdigit() and line.split()[1].replace('.','',1).replace('-','',1).isdigit():
                 curDataAry = [float(line.split()[0]),float(line.split()[1])]
                 #if jitter was provided on first line of data set
                 if len(line.split())>3:
@@ -91,6 +91,13 @@ def loadRVdata(filename):
                         log.error("could not convert 5th element of split into datasetNum.  5th element was: "+str(line.split()[4]))
                 curDataAry.append(datasetNumLast)
                 rvData.append(curDataAry)
+#             else:
+#                 print '0th and 1st column vals not numbers, \nline:'+line
+#                 print '0th = '+repr(line.split()[0].replace('.','',1).isdigit())
+#                 print '1st = '+repr(line.split()[1].replace('.','',1).replace('-','',1).isdigit())
+#         else:
+#             print "line had less than 2 columns, \nline:"+line
+                
     return np.array(rvData)
     
     
@@ -107,12 +114,12 @@ def loadRealData(filenameRoot):
     rvEpochs = []
     if os.path.exists(diFilename):
         diData = loadDIdata(diFilename)
-        diEpochs = diData[:,0]
         #print 'diData = '+repr(diData)
+        diEpochs = diData[:,0]
     if os.path.exists(rvFilename):
         rvData = loadRVdata(rvFilename)
-        rvEpochs = rvData[:,0]
         #print 'rvData = '+repr(rvData)
+        rvEpochs = rvData[:,0]
     #load in epochs from both sets, sort and kill double entries
     epochsTemp = np.concatenate((diEpochs,rvEpochs))
     epochsTemp.sort()

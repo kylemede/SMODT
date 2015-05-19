@@ -15,16 +15,16 @@ def calcTest():
     modelData2 = np.zeros((realData2.shape[0],3))
     RVdataDict = tools1.RVtoolbox.RVdataToDict(rvFilename1)
     DIdataDict = tools1.DItoolbox.DIdataToDict(diFilename1)
-    e = 0.5
+    e = 0.4
     Sys_Dist_PC = 5.0
     Mass1 = 1.0
-    Mass2 = 0.5
-    Omega = 70.0
-    omega = 50.0
+    Mass2 = 0.2
+    Omega = 170.0
+    omega = 90.0
     T = 2457000.0
     T_center = 2457000.0
-    P = 5.0
-    inc =  40.0
+    P = 15.0
+    inc =  30.0
     offset = 0.0
     
     a_total = (((constants.Grav*constants.KGperMsun*(Mass1+Mass2)*((P*constants.secPerYear)**2.0))/(4.0*(constants.pi**2.0))))**(1.0/3.0)
@@ -40,9 +40,11 @@ def calcTest():
     Orbit.loadRealData(realData2)
     Orbit.loadConstants(constants.Grav,constants.pi,constants.KGperMsun, constants.daysPerYear,constants.secPerYear,constants.MperAU)
     #print 'modelData2 BEFORE = \n'+repr(modelData2)
+    #blah=blah
     Orbit.calculate(modelData2,params)
     #print "model 2, K = "+str(params[12])
     #print 'modelData2 AFTER = \n'+repr(modelData2)
+    
     
     #for SMODT1.0 model
     modelData1 = np.zeros(modelData2.shape)

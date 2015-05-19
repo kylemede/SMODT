@@ -2923,7 +2923,7 @@ def semiMajorConverter(Mass1, Mass2, a_total=0.0,a1=0.0,a2=0.0, period=0.0, verb
     """
     # conversion factors and constants
     SecPerYear = 31556908.799999997
-    G = 6.67300e-11
+    G = 6.67384e-11
     MperAU = 149597870700.0
     KGperMsun = 1.98855e30
     

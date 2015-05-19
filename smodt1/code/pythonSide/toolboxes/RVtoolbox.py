@@ -365,6 +365,13 @@ def vrCalculatorSemiMajorType(t,e,T,period,argPeri,a1,T_center=0,i=False, K=Fals
             print 'e*math.cos(math.radians(argPeri-pi)) = '+str(e*math.cos(math.radians(argPeri-pi)))
             print '#######################################################'
     v_r = K*(math.cos(math.radians(argPeri)+TA_rad)+e*math.cos(math.radians(argPeri)))
+    if False:
+        print 'TA_rad*(180.0/pi) = '+str(TA_rad*(180.0/pi))
+        print 'math.cos(math.radians(argPeri)+TA_rad) = '+str(math.cos(math.radians(argPeri)+TA_rad))
+        print 'math.cos(math.radians(argPeri)) = '+str(math.cos(math.radians(argPeri)))
+        print 'e*math.cos(math.radians(argPeri)) = '+str(e*math.cos(math.radians(argPeri)))
+        
+        print 'v_r = '+str(v_r)
 
     return (v_r, K)
 

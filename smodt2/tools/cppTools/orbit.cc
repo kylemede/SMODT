@@ -12,7 +12,7 @@ void Orbit::loadRealData(double *xx, int xx_nx, int xx_ny){
     dataRealAry = xx;
     dataRealAry_nx = xx_nx;
     dataRealAry_ny = xx_ny;
-    if (true)
+    if (false)
     	std::cout<<"data loaded!"<<std::endl;
 };
 void Orbit::loadConstants(double Grav_in,double pi_in,double KGperMsun_in, double daysPerYear_in,double secPerYear_in,double MperAU_in){
@@ -22,7 +22,7 @@ void Orbit::loadConstants(double Grav_in,double pi_in,double KGperMsun_in, doubl
 	daysPerYear = daysPerYear_in;
 	secPerYear = secPerYear_in;
 	MperAU = MperAU_in;
-	if (true)
+	if (false)
 		std::cout<<"constants loaded!"<<std::endl;
 };
 
@@ -37,7 +37,8 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	params = y;
 	params_n = y_n;
 
-	std::cout<<"\nInside Orbit calculator function"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+	if (false)
+		std::cout<<"\nInside Orbit calculator function"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 	if (false){//$$$$$$$$$$$$$$$$$$$$$$$$$
 		std::cout<<"real data inside Orbit c++ code:"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		for (int i=0; i<dataRealAry_nx; i++){//$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -90,6 +91,13 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//--------------------------
 		if (dataRealAry[5+i*dataRealAry_ny]!=0){
 			dataModelAry[2+i*dataModelAry_ny]=K*(cos(theta+params[9]*(pi/180.0))+params[4]*cos(params[9]*(pi/180.0)));
+			if (false){
+				std::cout<<"theta deg V2.0 = "<<(theta*(180.0/pi))<<std::endl;
+				std::cout<<"cos(theta+params[9]*(pi/180.0)) = "<<cos(theta+params[9]*(pi/180.0))<<std::endl;
+				std::cout<<"cos(params[9]*(pi/180.0)) = "<< cos(params[9]*(pi/180.0))<<std::endl;
+				std::cout<<"params[4]*cos(params[9]*(pi/180.0)) = "<< params[4]*cos(params[9]*(pi/180.0))<<std::endl;
+				std::cout<<"dataModelAry[2+i*dataModelAry_ny] = "<<dataModelAry[2+i*dataModelAry_ny] <<std::endl;
+			}
 		}
 		else{
 			//std::cout<<"RV real = "<< dataRealAry[5+i*dataRealAry_ny]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$

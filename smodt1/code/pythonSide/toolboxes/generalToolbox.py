@@ -2883,7 +2883,7 @@ def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
             print 'initial M=0 or 2pi, thus the exact beginning of the orbit and M=E=TA=0'
         M_deg=0
         E_latest_deg=0
-        TA_rad=0      
+        TA_rad=0 
     return (n, M_deg, E_latest_deg,TA_rad)
 
 def timeString(duration):

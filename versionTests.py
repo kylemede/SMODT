@@ -29,7 +29,7 @@ def calcTest():
     
     a_total = (((constants.Grav*constants.KGperMsun*(Mass1+Mass2)*((P*constants.secPerYear)**2.0))/(4.0*(constants.pi**2.0))))**(1.0/3.0)
     a_total = a_total/constants.MperAU
-    #a1 = a_total/(1.0+(Mass1/Mass2))
+    a1 = a_total/(1.0+(Mass1/Mass2))
     #print 'a_total before = '+str(a_total)
     #print 'a1 before = '+str(a1)
     
@@ -41,7 +41,7 @@ def calcTest():
     Orbit.loadConstants(constants.Grav,constants.pi,constants.KGperMsun, constants.daysPerYear,constants.secPerYear,constants.MperAU)
     #print 'modelData2 BEFORE = \n'+repr(modelData2)
     Orbit.calculate(modelData2,params)
-    print "model 2, K = "+str(params[12])
+    #print "model 2, K = "+str(params[12])
     #print 'modelData2 AFTER = \n'+repr(modelData2)
     
     #for SMODT1.0 model
@@ -50,8 +50,9 @@ def calcTest():
     for t in realData2[:,0]:
         (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, x, y, a1, a2) = tools1.DItoolbox.orbitCalculatorTH_I(t, Sys_Dist_PC, inc, Omega, e, T, P, omega, a_total,Mass1, Mass2, verbose=False)
         #print 'a1 from DI = '+str(a1)
+        #print 'TA_deg V1.0 = '+str(TA_deg)
         (v_r, K)=tools1.RVtoolbox.vrCalculatorSemiMajorType(t,e,T,P,omega,a1,T_center,inc, verbose=False)
-        print "model 1, K = "+str(K)
+        #print "model 1, K = "+str(K)
         modelData1[i,:] =[x,y,v_r] 
         i+=1
     #print 'modelData1 = \n'+repr(modelData1)

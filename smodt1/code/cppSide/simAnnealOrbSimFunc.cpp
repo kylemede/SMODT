@@ -242,8 +242,8 @@ void simAnealOrbFuncObj::simulator()
 	{
 		if ((SSO.T_Min==-1)&&(SSO.T_Max==-1))
 		{
-			Tmin = earliestEpoch-period_latest*365.242;
-			TMIN = earliestEpoch-SSO.periodMAX*365.242;
+			Tmin = earliestEpoch-period_latest*DaysPerYear;
+			TMIN = earliestEpoch-SSO.periodMAX*DaysPerYear;
 			TMAX = earliestEpoch;
 			ss<<"\n******  both T_Min and T_Max set to -1  ******\n"<<endl;
 		}
@@ -1490,7 +1490,7 @@ void simAnealOrbFuncObj::simulator()
 			//*******************************************
 			//Calculate priors ratio
 			//e_prior = 1.0;//$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$
-			if (((period_latest*365.242)<1000.0)||(SSO.eMAX==0))
+			if (((period_latest*DaysPerYear)<1000.0)||(SSO.eMAX==0))
 				e_prior = 1.0;
 			else
 				e_prior = e_latest/DIt.e;

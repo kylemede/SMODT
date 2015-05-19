@@ -770,7 +770,7 @@ void MCMCorbFuncObj::simulator()
 			//*******************************************
 			//Calculate priors ratio
 			//e_prior = 1.0;//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-			if (((period_latest*365.242)<1000.0)||(SSO.eMAX==0))
+			if (((period_latest*DaysPerYear)<1000.0)||(SSO.eMAX==0))
 				e_prior = 1.0;
 			else
 				e_prior = e_latest/DIt.e;

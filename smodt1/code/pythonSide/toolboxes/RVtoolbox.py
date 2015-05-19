@@ -218,9 +218,9 @@ def vrCalculatorPlanetMassType(t,e,T,period,argPeri,M1,T_center=0,M2SineI=False,
         else:
             # convert units of days to seconds
             period_seconds = period*86400.0#31557600.0
-            M1_kg = M1*1.98855e30
+            M1_kg = M1*1.9884e30
             M2SineI_kg = M2SineI*1.8983e27
-            G = 6.67300e-11
+            G = 6.67384e-11
             
             # Calc K in parts to see equation better
             A = ((2.0*pi*G)/period_seconds)**(1.0/3.0)
@@ -235,7 +235,7 @@ def vrCalculatorPlanetMassType(t,e,T,period,argPeri,M1,T_center=0,M2SineI=False,
     if K==0:
         v_r = 0
     else:
-        period_years = period/365.25
+        period_years = period/365.2422
         
         ## get the genTools.TAcalculator to find the TA in radians
         (n, M_deg, E_latest_deg,TA_rad) = genTools.TAcalculator(t,e, T, period_years, T_center=T_center, verbose=False, debug=False)
@@ -276,9 +276,9 @@ def vrCalculatorMassType(t,e,T,period,argPeri,M1,M2,T_center=0,i=False, K=False,
             print "vrCalculatorStarMassType: Both K and period = zero, thus cannot calculate RV!!"
         else:
             # convert units of years to seconds
-            period_seconds = period*31556908.799999997
-            M1_kg = M1*1.98855e30
-            M2_kg = M2*1.98855e30
+            period_seconds = period*31556926.080000006
+            M1_kg = M1*1.9884e30
+            M2_kg = M2*1.9884e30
             G = 6.67384e-11
             
             # Calc K in parts to see equation better
@@ -333,7 +333,7 @@ def vrCalculatorSemiMajorType(t,e,T,period,argPeri,a1,T_center=0,i=False, K=Fals
         print 'vrCalcStar1268: The value of i and K cannot both be False, one MUST be defined'
     if (K==False) and (i!=False):
         # convert units of years to seconds
-        seconds_per_yr = 31556908.799999997
+        seconds_per_yr = 31556926.080000006
         period_seconds = period*seconds_per_yr
         meters_per_AU = 149597870700.0
         a1_meters = a1*meters_per_AU

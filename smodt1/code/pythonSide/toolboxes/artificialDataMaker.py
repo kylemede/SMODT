@@ -37,10 +37,10 @@ def calc_orbit():
     massratio = 2.0
     M_primary = 1.0 #Solar masses
     distance = 5.0 #parsecs
-    km_to_arcsec = 1/1.49598e8/distance # convert km to arcsecond
+    km_to_arcsec = 1/149597870.7/distance # convert km to arcsecond
     
     #constants
-    G = 6.673e-8 #cgs
+    G = 6.67384e-8 #cgs
     
     #Orbital Elements
     TimeLastPeri = 2457000.0 #JD
@@ -50,10 +50,10 @@ def calc_orbit():
     omega = 50*np.pi/180 # Argument of periastron
     i = 40*np.pi/180 # Inclination
  
-    mu = G*M_primary*1.989e33*(1 + 1./massratio) #gravitational parameter
-    a = (mu*(period*86400*365.242)**2/4/np.pi**2)**(1./3) #in cm
+    mu = G*M_primary*1.9884e33*(1 + 1./massratio) #gravitational parameter
+    a = (mu*(period*86400*365.2422)**2/4/np.pi**2)**(1./3) #in cm
     a_km = a/1e5 #to km
-    a_AU = a_km/149597871. #to AU
+    a_AU = a_km/149597870.7 #to AU
     a2 = a_km/(massratio + 1.)
     a1 = a_km - a2 # Semimajor axis of the low-mass component (in km)
     
@@ -97,21 +97,21 @@ def calc_orbit():
     pos_B = -pos_A/massratio
     
     # Velocities in km/s using centered differencing
-    vel_A = (pos_A[2:] - pos_A[:-2])/(t[2] - t[0])/(86400*365.242)
+    vel_A = (pos_A[2:] - pos_A[:-2])/(t[2] - t[0])/(86400*365.2422)
     if False:
         vel_A2 = pos_A.copy()
-        vel_A2 = (pos_A[1:] - pos_A[:-1])/(t[1] - t[0])/(86400*365.242)
+        vel_A2 = (pos_A[1:] - pos_A[:-1])/(t[1] - t[0])/(86400*365.2422)
         print "pos_A = "+repr(pos_A[0:10])+"\n"+repr(pos_A[-10:])+"\n"
         print "Vel_A before = "+repr(vel_A[0:10])+"\n"+repr(vel_A[-10:])+"\n"
         print "Vel_A after = "+repr(vel_A2[0:10])+"\n"+repr(vel_A2[-10:])+"\n"
         print "pos_A[2]-pos_A[0] = "+str(pos_A[2]-pos_A[0])+", t[2] - t[0] = "+str(t[2] - t[0])
-        print "(pos_A[2]-pos_A[0])/(t[2] - t[0])/(86400*365.242) = "+str((pos_A[2]-pos_A[0])/(t[2] - t[0])/(86400*365.24))
+        print "(pos_A[2]-pos_A[0])/(t[2] - t[0])/(86400*365.2422) = "+str((pos_A[2]-pos_A[0])/(t[2] - t[0])/(86400*365.24))
         print "\npos_A[1]-pos_A[0] = "+str(pos_A[1]-pos_A[0])+", t[1] - t[0] = "+str(t[1] - t[0])
-        print "(pos_A[1]-pos_A[0])/(t[1] - t[0])/(86400*365.242) = "+str((pos_A[1]-pos_A[0])/(t[1] - t[0])/(86400*365.24))
-        print "(t[2] - t[0])*365.24 = "+str((t[2] - t[0])*365.242)
-        print "(t[1] - t[0])*365.24 = "+str((t[1] - t[0])*365.242)
+        print "(pos_A[1]-pos_A[0])/(t[1] - t[0])/(86400*365.2422) = "+str((pos_A[1]-pos_A[0])/(t[1] - t[0])/(86400*365.24))
+        print "(t[2] - t[0])*365.24 = "+str((t[2] - t[0])*365.2422)
+        print "(t[1] - t[0])*365.24 = "+str((t[1] - t[0])*365.2422)
     pos_A = pos_A[1:-1]
-    vel_B = (pos_B[2:] - pos_B[:-2])/(t[2] - t[0])/(86400*365.242)
+    vel_B = (pos_B[2:] - pos_B[:-2])/(t[2] - t[0])/(86400*365.2422)
     pos_B = pos_B[1:-1]
     t = t[1:-1]
 
@@ -166,7 +166,7 @@ def calc_orbit():
     data[:, 7] = vel_B[:, 2] #8. radial velocity of primary (km/s)
     
     data2 = np.zeros((pos_A.shape[0],5))
-    data2[:,0] = data[:, 1]*365.242+TimeLastPeri #JD 
+    data2[:,0] = data[:, 1]*365.2422+TimeLastPeri #JD 
     data2[:,1] = pos_A[:, 1]*km_to_arcsec - pos_B[:, 1]*km_to_arcsec #Ythi=Xplot=RA  separation between two bodies based on primary being at 0,0 ["]
     data2[:,2] = pos_A[:, 0]*km_to_arcsec - pos_B[:, 0]*km_to_arcsec #Xthi=Yplot=Dec  separation between two bodies based on primary being at 0,0 ["]
     data2[:,3] = vel_B[:, 2]*1000.0 # RV of primary compared to center of mass origin[ m/s]

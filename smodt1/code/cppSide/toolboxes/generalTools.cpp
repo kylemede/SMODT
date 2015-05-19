@@ -54,7 +54,7 @@ eccArgPeri2ToTcType generalTools::eccArgPeri2ToTcCalc(eccArgPeri2ToTcType EATT)
 			ATAN_rad +=2.0*PI;
 		double E_s_rad = ATAN_rad*2.0;
 		double M_s_rad = E_s_rad-EATT.e*sin(E_s_rad);
-		double delta_t = (M_s_rad*EATT.period*365.242)/(2.0*PI);
+		double delta_t = (M_s_rad*EATT.period*DaysPerYear)/(2.0*PI);
 		double delta_t_orig = delta_t;
 
 		// in the case that the situation is flipped during the 'backHalf' option
@@ -62,7 +62,7 @@ eccArgPeri2ToTcType generalTools::eccArgPeri2ToTcCalc(eccArgPeri2ToTcType EATT)
 		{
 			// check if argPeri is inside the back part of orbit where To>Tc
 			if (EATT.argPeri_deg>270)
-				delta_t = delta_t-EATT.period*365.242;
+				delta_t = delta_t-EATT.period*DaysPerYear;
 			else if (EATT.argPeri_deg==270)
 				delta_t = 0.0;
 		}
@@ -71,7 +71,7 @@ eccArgPeri2ToTcType generalTools::eccArgPeri2ToTcCalc(eccArgPeri2ToTcType EATT)
 		{
 			// check if argPeri is inside the back part of orbit where To>Tc
 			if (EATT.argPeri_deg>90)
-				delta_t = delta_t-EATT.period*365.242;
+				delta_t = delta_t-EATT.period*DaysPerYear;
 			else if (EATT.argPeri_deg==90)
 				delta_t = 0.0;
 		}
@@ -145,7 +145,7 @@ TAcalcReturnType generalTools::TAcalculator(TAcalcInputType TACIT)
 		cout<<"******************** Starting TAcalculator *******************"<<endl;
 	//Calculate the mean motion and save to output structure
 	double n = (2.0*PI)/TACIT.period; //period in years
-	double period_days = TACIT.period*365.242;
+	double period_days = TACIT.period*DaysPerYear;
 	double timeDiff_days = (TACIT.t-TACIT.T)-int((TACIT.t-TACIT.T)/period_days)*period_days;
 	if (TACIT.verbose==true)
 	{
@@ -172,7 +172,7 @@ TAcalcReturnType generalTools::TAcalculator(TAcalcInputType TACIT)
 	}
 
 	//Calculate the Mean Anomaly and add to output structure
-	double M = n*((timeDiff_days/365.242)+phase);//+(phase*2.0*PI);//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+	double M = n*((timeDiff_days/DaysPerYear)+phase);//+(phase*2.0*PI);//$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	double numCirclesBiggerD = fabs((M/(2.0*PI)));
 	int numCirclesBiggerI = int(numCirclesBiggerD);
 	if (numCirclesBiggerI<1)

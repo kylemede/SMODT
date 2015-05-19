@@ -308,8 +308,8 @@ int main(int argc ,char *argv[])
 	{
 		if ((SSO.T_Min==-1)&&(SSO.T_Max==-1))
 		{
-			Tmin = earliestEpoch-SSO.periodMAX*365.242;
-			TMIN = earliestEpoch-SSO.periodMAX*365.242;
+			Tmin = earliestEpoch-SSO.periodMAX*DaysPerYear;
+			TMIN = earliestEpoch-SSO.periodMAX*DaysPerYear;
 			TMAX = earliestEpoch;
 			ss<<"\n******  both T_Min and T_Max set to -1  ******"<<endl;
 		}
@@ -485,7 +485,7 @@ int main(int argc ,char *argv[])
         if ((SSO.periodMIN!=0)&&(SSO.periodMAX!=0))
         	period_proposed = RanGen.UniformRandom(SSO.periodMIN, SSO.periodMAX); //  [yrs]
         DIt.period = period_proposed;
-        Tmin = earliestEpoch-period_proposed*365.242;
+        Tmin = earliestEpoch-period_proposed*DaysPerYear;
        // cout<<"mcONLYorbSimulator.cpp, line# "<<450<<endl;//$$$$$$$$$$$$$$$$ DEBUGGING $$$$$$$$$$$$$$$$$
         if (Tmin<TMIN)
         	Tmin = TMIN;

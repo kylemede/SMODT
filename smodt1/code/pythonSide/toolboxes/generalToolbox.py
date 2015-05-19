@@ -2922,10 +2922,10 @@ def semiMajorConverter(Mass1, Mass2, a_total=0.0,a1=0.0,a2=0.0, period=0.0, verb
     then the individual values using the mass ratio.
     """
     # conversion factors and constants
-    SecPerYear = 31556908.799999997
+    SecPerYear = 31556926.080000006
     G = 6.67384e-11
     MperAU = 149597870700.0
-    KGperMsun = 1.98855e30
+    KGperMsun = 1.9884e30
     
     if verbose:
         print '\n**  In SemiMajorConverter **'

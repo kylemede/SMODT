@@ -2786,7 +2786,7 @@ def TAcalculator(t,e, T, period, T_center=0, verbose=False, debug=False):
     M = n*(((timeDiff_days)/365.242)+phase)#+(phase*2.0*pi)
     if verbose:
         print "initial M = "+str(M)
-    if (M!=0)or(M!=(2.0*pi)):        
+    if (M!=0)and(M!=(2.0*pi)):        
         ## Push M value into 0-2pi range ######
         numCirclesBiggerD = abs(M/(2.0*pi))
         numCirclesBiggerI = int(numCirclesBiggerD)
@@ -2922,10 +2922,10 @@ def semiMajorConverter(Mass1, Mass2, a_total=0.0,a1=0.0,a2=0.0, period=0.0, verb
     then the individual values using the mass ratio.
     """
     # conversion factors and constants
-    SecPerYear = 31557600.0
+    SecPerYear = 31556908.799999997
     G = 6.67300e-11
-    MperAU = 149598000000.0
-    KGperMsun = 1.98892e30
+    MperAU = 149597870700.0
+    KGperMsun = 1.98855e30
     
     if verbose:
         print '\n**  In SemiMajorConverter **'

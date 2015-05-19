@@ -6,3 +6,4 @@ KGperMsun = 1.98855e30
 daysPerYear = 365.242
 secPerYear = 60*60*24*daysPerYear
 MperAU = 149597870700.0
+KGperMjupiter = 1.8983e27

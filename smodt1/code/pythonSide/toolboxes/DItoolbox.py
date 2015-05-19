@@ -440,7 +440,7 @@ def orbitCalculatorTH_I(t, Sys_Dist_PC, inclination_deg, longAN_deg, e, T, perio
         # the system must then be a binary star system, thus calculate the
         # a1 and a2 values of the system.
         # NOTE: Mass2 MUST < Mass1, ie. primary is bigger.
-        (a_total, a1, a2, period) = genTools.semiMajorConverter(Mass1, Mass2, a_total,0,0,period)
+        (a_total, a1, a2, period) = genTools.semiMajorConverter(Mass1, Mass2, a_total,0,0,period,verbose=False)
     else:
         # default Mass1 and Mass2, thus a planet system and a_total = a2 and a1=0.0
         # this is because we assume most planet's mass << star's mass, so a1<<a2

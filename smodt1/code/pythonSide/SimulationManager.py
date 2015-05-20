@@ -123,7 +123,7 @@ def simulator(paramSettingsDict):
     # make call to 'make' to build the C++ code for this simulation
     # to ensure it is good to go
     ###############################################################
-    pwd = os.curdir
+    pwd = os.getcwd()
     makeDir = paramSettingsDict['cppCodeDir']
     s =  '*'*23+"  About to compile C++ code  " +'*'*23+"\n"+'*'*75+"\n"
     s = s+ 'makeDir:'+makeDir

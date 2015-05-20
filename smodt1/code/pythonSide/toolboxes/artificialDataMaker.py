@@ -40,14 +40,14 @@ def calc_orbit():
     km_to_arcsec = 1/149597870.7/distance # convert km to arcsecond
     
     #constants
-    G = 6.67384e-8 #cgs
+    G = 6.67259e-8 #cgs
     
     #Orbital Elements
     TimeLastPeri = 2457000.0 #JD
     e = 0.4
     period = 15. # years
-    Omega = 170*np.pi/180 # Longitude of ascending node
-    omega = 90*np.pi/180 # Argument of periastron
+    Omega = 60*np.pi/180 # Longitude of ascending node
+    omega = 110*np.pi/180 # Argument of periastron
     i = 30*np.pi/180 # Inclination
  
     mu = G*M_primary*1.9884e33*(1 + 1./massratio) #gravitational parameter

@@ -19,8 +19,8 @@ def calcTest():
     Sys_Dist_PC = 5.0
     Mass1 = 1.0
     Mass2 = 0.2
-    Omega = 170.0
-    omega = 90.0
+    Omega = 60.0
+    omega = 110.0
     T = 2457000.0
     T_center = 2457000.0
     P = 15.0
@@ -44,7 +44,6 @@ def calcTest():
     Orbit.calculate(modelData2,params)
     #print "model 2, K = "+str(params[12])
     #print 'modelData2 AFTER = \n'+repr(modelData2)
-    
     
     #for SMODT1.0 model
     modelData1 = np.zeros(modelData2.shape)

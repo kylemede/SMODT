@@ -1,6 +1,7 @@
 #import numpy as np
 import smodtLogger
 import os
+import shutil
 import numpy as np
 #np.set_printoptions(precision=15)
 
@@ -100,7 +101,6 @@ def loadRVdata(filename):
                 
     return np.array(rvData)
     
-    
 def loadRealData(filenameRoot):
     """
     Load the observed real data into a numpy array.
@@ -144,9 +144,35 @@ def loadRealData(filenameRoot):
     #print 'realData = '+repr(realData)
     return realData
             
+def loadSettingsDict(filenameRoot):
+    """
+    Load the values from both the simple (symSettingsSimple.py) and advanced (symSettingsAdvanced.py)
+    into a dictionary for use throughout the simulation and post-processing.
+    Those that are deemed useful will be loaded in as a tuple with a comment for later adding to 
+    the resulting simulation data file fits header.
+    NOTE: the first step is to copy these files to standardized names so they can be called in to 
+          use.  They will overwrite the files:
+          SMODT/tools/temp/simpleSettings.py   &   advancedSettings.py 
     
+    filenameRoot would be the absolute path plus the prepend to the settings files.
+    ex. '/run/..../SMODT/settings_and_inputData/FakeData_'
+    """
+    ## A BIT HACKY FOR NOW, NEED TO FIND A CLEANER WAY TO DO THIS!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    cwd = os.getcwd()
+    smodtHeadDir = filenameRoot.split("SMODT")[0]
+    shutil.copy(filenameRoot+'symSettingsSimple.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/simpleSettings.py'))
+    shutil.copy(filenameRoot+'symSettingsAdvanced.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/advancedSettings.py'))
+    os.chdir(os.path.join(smodtHeadDir,'SMODT'))
+    from smodt2.tools.temp import simpleSettings
+    from smodt2.tools.temp import advancedSettings
+    os.chdir(cwd)
+    ## first for the simple settings
     
+     
     
+    ## now for the advanced settings
+    
+
     
     
     

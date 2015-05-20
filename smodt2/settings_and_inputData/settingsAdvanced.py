@@ -1,5 +1,5 @@
 import numpy as np
-import symSettingsSimple
+from symSettingsSimple import simpleSettingsDict
 import constants
 
 advancedDict = {
@@ -96,35 +96,45 @@ advancedDict = {
 ########################################
 #NOTE: only change the code and not the name of the functions or their inputs.
 def ePrior(e,P):
-    if (P*constants.daysPerYear<1000.0)and(symSettingsSimple.eMAX!=0):
+    if (P*constants.daysPerYear<1000.0)and(simpleSettingsDict['eMAX']!=0):
         return 2.0*e
     else:
         return 1.0
 def pPrior(P):
-    if symSettingsSimple.PMAX!=symSettingsSimple.PMIN!=0:
+    if simpleSettingsDict['PMAX']!=simpleSettingsDict['PMIN']!=0:
         return P
     else:
         return 1.0
 def incPrior(inc):
-    if symSettingsSimple.incMAX!=symSettingsSimple.incMIN!=0:
+    if simpleSettingsDict['incMAX']!=simpleSettingsDict['incMIN']!=0:
         return np.sin(inc*(constants.pi/180.0))
     else:
         return 1.0
 def mass1Prior(mass):
-    if symSettingsSimple.mass1MIN!=symSettingsSimple.mass1MAX!=0:
+    if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
         return gaussian(mass, mass1Est, mass1Err)
     else:
         return 1.0
 def mass2Prior(mass):
-    if symSettingsSimple.mass2MIN!=symSettingsSimple.mass2MAX!=0:
+    if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
         return gaussian(mass, mass2Est, mass2Err)
     else:
         return 1.0
 def distPrior(dist):
-    if symSettingsSimple.distMIN!=symSettingsSimple.distMAX!=0:
+    if simpleSettingsDict['distMIN']!=simpleSettingsDict['distMAX']!=0:
         return gaussian(dist, distEst, distErr)
     else:
         return 1.0
 
 def gaussian(x,mu,sig):
     return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+
+
+######################
+# Merge the two dicts#
+######################
+settingsDict = {}
+for key in simpleSettingsDict:
+    settingsDict[key]=simpleSettingsDict[key]
+for key in advancedDict:
+    settingsDict[key]=advancedDict[key]

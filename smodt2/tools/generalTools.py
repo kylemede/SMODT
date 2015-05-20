@@ -110,6 +110,9 @@ def loadRealData(filenameRoot):
     """
     diFilename = filenameRoot+'DIdata.dat'
     rvFilename = filenameRoot+'RVdata.dat'
+    if False:
+        print 'using diFilename = '+diFilename
+        print 'using rvFilename = '+rvFilename
     diEpochs = []
     rvEpochs = []
     if os.path.exists(diFilename):
@@ -157,14 +160,20 @@ def loadSettingsDict(filenameRoot):
     filenameRoot would be the absolute path plus the prepend to the settings files.
     ex. '/run/..../SMODT/settings_and_inputData/FakeData_'
     """
-    ## A BIT HACKY FOR NOW, NEED TO FIND A CLEANER WAY TO DO THIS!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    ## A BIT HACKY FOR NOW, NEED TO FIND A CLEANER WAY TO DO THIS!?!?! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     cwd = os.getcwd()
     smodtHeadDir = filenameRoot.split("SMODT")[0]
-    shutil.copy(filenameRoot+'settingsSimple.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/simpleSettings.py'))
-    shutil.copy(filenameRoot+'settingsAdvanced.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/advancedSettings.py'))
+    shutil.copy(filenameRoot+'settingsSimple.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsSimple.py'))
+    shutil.copy(filenameRoot+'settingsAdvanced.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsAdvanced.py'))
+    shutil.copy(os.path.dirname(filenameRoot)+'/constants.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/constants.py'))
+    if False:
+        print 'Copied simple to:\n'+os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsSimple.py')
+        print 'Copied advanced to:\n'+os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsAdvanced.py')
+        print 'Copied constants to:\n'+os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/constants.py')
     os.chdir(os.path.join(smodtHeadDir,'SMODT'))
-    from smodt2.tools.temp.advancedSettings import settingsDict
+    from tools.temp.settingsAdvanced import settingsDict
     os.chdir(cwd)
+    return settingsDict
     #print "settingsDict['pPrior'](3.0) ="+str(settingsDict['pPrior'](3.0))
 
     

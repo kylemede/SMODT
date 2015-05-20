@@ -5,6 +5,7 @@ from smodtLogger import addFileHandler
 from smodtLogger import addStreamHandler
 
 from generalTools import loadRealData
+from generalTools import loadSettingsDict
  
 import cppTools
 

@@ -1,8 +1,9 @@
 import numpy as np
+import os
 from scipy.constants.codata import precision
 #np.set_printoptions(precision=15)
 import tools
-from settings_and_inpuData import constants
+from settings_and_inputData import constants
 
 
 class Simulator(object):
@@ -16,6 +17,9 @@ class Simulator(object):
         self.log = tools.getLogger('main.simulator',lvl=100,addFH=False)
         tools.logSystemInfo(self.log)
         self.Orbit = tools.cppTools.Orbit()
+        self.realData = tools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']))
+        self.Orbit.loadRealData(self.realData)
+        self.Orbit.loadConstants(constants.Grav,constants.pi,constants.KGperMsun, constants.daysPerYear,constants.secPerYear,constants.MperAU)
         #Load real data here? doesn't change so might as well
         #could also make the empty model data array here too
         ##Examples
@@ -35,17 +39,25 @@ class Simulator(object):
         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
         """
         self.log.info("In Simulator.monteCarlo")
-        #tools.test()
         self.log.info('starting c++ obj test')
-        #self.Orbit.testDouble = 20.0
-        a = np.ones((10,7))
-        #a = np.array([[1.0,2.0],[3.0,4.0]])
-        self.Orbit.loadRealData(a)
-        self.Orbit.loadConstants(constants.Grav,constants.pi,constants.KGperMsun, constants.daysPerYear,constants.secPerYear,constants.MperAU)
-        b = np.zeros((10,3))
-        params = np.ones((14))
-        self.Orbit.calculate(b,params)
-        self.log.info('\nb = \n'+repr(b))
+        modelData = np.zeros((self.realData.shape[0],3))
+        e = 0.4
+        Sys_Dist_PC = 5.0
+        Mass1 = 1.0
+        Mass2 = 0.2
+        Omega = 60.0
+        omega = 110.0
+        T = 2457000.0
+        T_center = 2457000.0
+        P = 15.0
+        inc =  30.0
+        offset = 0.0
+        params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
+        self.Orbit.calculate(modelData,params)
+        #atot = params[10]
+        #K = params[12]
+        print '\nmodelData = \n'+repr(modelData)
+        #self.log.info('\nmodelData = \n'+repr(modelData))
         
         
     def simAnneal(self):
@@ -54,7 +66,7 @@ class Simulator(object):
         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
         """
         self.log.info("In Simulator.simAnneal")
-        tools.test()
+        
         
     def mcmc(self):
         """
@@ -62,4 +74,4 @@ class Simulator(object):
         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
         """
         self.log.info("In Simulator.mcmc")
-        tools.test()
+        

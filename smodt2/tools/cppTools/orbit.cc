@@ -36,10 +36,10 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	dataModelAry_ny=yy_ny;
 	params = y;
 	params_n = y_n;
-
-	if (false)
+	bool verbose=false;
+	if (verbose)
 		std::cout<<"\nInside Orbit calculator function"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
-	if (false){//$$$$$$$$$$$$$$$$$$$$$$$$$
+	if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$
 		std::cout<<"real data inside Orbit c++ code:"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		for (int i=0; i<dataRealAry_nx; i++){//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"[";//$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -62,7 +62,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	}
 	//start loop over each epoch of data
 	for (int i=0;i<dataModelAry_nx; i++){
-		if (false)//$$$$$$$$$$$$$$$$$$$$$$$$$
+		if (verbose)//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"\nepoch "<<dataRealAry[0+i*dataRealAry_ny]<<":"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		//------------------
 		//Calculate TA and E
@@ -103,7 +103,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 			//std::cout<<"RV real = "<< dataRealAry[5+i*dataRealAry_ny]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 			dataModelAry[2+i*dataModelAry_ny]=0.0;
 		}
-		if (false){//$$$$$$$$$$$$$$$$$$$$$$$$$
+		if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"RV = "<<dataModelAry[2+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		}//$$$$$$$$$$$$$$$$$$$$$$$$$
 		//--------------------------
@@ -127,12 +127,12 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 			//std::cout<<"x real = "<< dataRealAry[1+i*dataRealAry_nx]<<", y real = "<< dataRealAry[3+i*dataRealAry_nx]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 			dataModelAry[0+i*dataModelAry_nx] = dataModelAry[1+i*dataModelAry_nx] = 0.0;
 		}
-		if (false){//$$$$$$$$$$$$$$$$$$$$$$$$$
+		if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"x = "<<dataModelAry[0+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"y = "<<dataModelAry[1+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		}//$$$$$$$$$$$$$$$$$$$$$$$$$
 	}
-	if (false){//$$$$$$$$$$$$$$$$$$$$$$$$$
+	if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$
 		std::cout<<"\nModel data (after calculating all model epochs) inside Orbit c++ code:"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		for (int i=0; i<dataModelAry_nx; i++){//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"[";//$$$$$$$$$$$$$$$$$$$$$$$$$

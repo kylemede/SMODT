@@ -2,6 +2,7 @@ import logging
 import platform
 import psutil
 import sys
+import os
 #import traceback
 
 log_dict={}
@@ -54,7 +55,7 @@ class SMODTlogger(logging.getLoggerClass()):
                 break
         addStreamHandler(self,lvl)
         
-def getLogger(name='generalLoggerName',lvl=20,addFH=True,addSH=True):
+def getLogger(name='generalLoggerName',dir='',lvl=20,addFH=True,addSH=True,):
     """This will either return the logging object already
     instantiated, or instantiate a new one and return it.  
     **Use this function to both create and return any logger** to avoid 
@@ -85,10 +86,10 @@ def getLogger(name='generalLoggerName',lvl=20,addFH=True,addSH=True):
     except:
         if verbose:
             print 'No logger object found so creating one with the name '+name
-        log = setUpLogger(name,lvl,addFH,addSH)
+        log = setUpLogger(name,dir,lvl,addFH,addSH)
     return log
 
-def setUpLogger(name='generalLoggerName',lvl=20,addFH=True,addSH=True):
+def setUpLogger(name='generalLoggerName',dir='',lvl=20,addFH=True,addSH=True):
     """ This function is utilized by getLogger to set up a new logging object.
     It will have the default name 'generalLoggerName' and stream handler level
     of 20 unless redefined in the function call.  
@@ -118,14 +119,14 @@ def setUpLogger(name='generalLoggerName',lvl=20,addFH=True,addSH=True):
     log.setLevel(1)
     # add the requested handlers to the log
     if addFH:
-        addFileHandler(log,lvl=1)
+        addFileHandler(log,dir,lvl=1)
     # make a stream handler
     if addSH:
         addStreamHandler(log,lvl)
     return log    
         
     
-def addFileHandler(log, lvl=1):
+def addFileHandler(log, dir='',lvl=1):
     """
     This function will add a file handler to a log with the provided level.
     
@@ -137,7 +138,7 @@ def addFileHandler(log, lvl=1):
     """
     if verbose:
         print 'Setting FileHandler level to '+str(lvl)
-    fh = logging.FileHandler(log.name+'.log')
+    fh = logging.FileHandler(os.path.join(dir,log.name+'.log'))
     fh.setLevel(lvl)
     frmtString = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     fFrmt = logging.Formatter(frmtString)

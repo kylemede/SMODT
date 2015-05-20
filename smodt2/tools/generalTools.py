@@ -163,15 +163,39 @@ def loadSettingsDict(filenameRoot):
     shutil.copy(filenameRoot+'symSettingsSimple.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/simpleSettings.py'))
     shutil.copy(filenameRoot+'symSettingsAdvanced.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/advancedSettings.py'))
     os.chdir(os.path.join(smodtHeadDir,'SMODT'))
-    from smodt2.tools.temp import simpleSettings
-    from smodt2.tools.temp import advancedSettings
+    from smodt2.tools.temp import simpleSettings as simple
+    from smodt2.tools.temp import advancedSettings as advanced
     os.chdir(cwd)
     ## first for the simple settings
+    settingsDict = {}
+    settingsDict['nSamples'] = simple.nSamples
     
-     
+    
     
     ## now for the advanced settings
+    settingsDict['CalcBurn'] = advanced.CalcBurn
+    settingsDict['delBurn'] = advanced.delBurn
+    settingsDict['calcCL'] = advanced.calcCL
+    settingsDict['nSAsamp'] = advanced.nSAsamp
+    settingsDict['nSTsamp'] = advanced.nSTsamp
+    settingsDict['pltMCMCprog'] = advanced.pltMCMCprog
+    settingsDict['pltSAprog'] = advanced.pltSAprog
+    settingsDict['CalcGR'] = advanced.CalcGR
+    settingsDict['nGRcalc'] = advanced.nGRcalc
+    settingsDict['fitPrime'] = advanced.fitPrime
+    settingsDict['primeRVs'] = advanced.primeRVs
+    settingsDict['TcStep'] = advanced.TcStep
+    settingsDict['TcEqualT'] = advanced.TcEqualT
+    settingsDict['omegaPrv'] = advanced.omegaPrv
+    settingsDict['omegaPdi'] = advanced.omegaPdi
     
+    settingsDict['pPrior'] = advanced.pPrior
+    settingsDict['ePrior'] = advanced.ePrior 
+    settingsDict['incPrior'] = advanced.incPrior 
+    settingsDict['mass1Prior'] = advanced.mass1Prior 
+    settingsDict['mass2Prior'] = advanced.mass2Prior 
+    settingsDict['distPrior'] = advanced.distPrior 
+    #print "settingsDict['pPrior'](3.0) ="+str(settingsDict['pPrior'](3.0))
 
     
     

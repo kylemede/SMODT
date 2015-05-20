@@ -54,7 +54,7 @@ K_MIN = 0
 K_MAX = 0
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-vMINs =[-1500]
-vMAXs =[1500]
+vMINs =[-150]
+vMAXs =[150]
 
 

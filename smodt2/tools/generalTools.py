@@ -165,6 +165,13 @@ def loadSettingsDict(filenameRoot):
     ## A BIT HACKY FOR NOW, NEED TO FIND A CLEANER WAY TO DO THIS!?!?! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     cwd = os.getcwd()
     smodtHeadDir = filenameRoot.split("SMODT")[0]
+    try:
+        os.remove(os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsSimple.py'))
+        os.remove(os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsAdvanced.py'))
+        os.remove(os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/constants.py'))
+    except:
+        temp=True
+    print '\n'+filenameRoot+'settingsSimple.py\n'
     shutil.copy(filenameRoot+'settingsSimple.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsSimple.py'))
     shutil.copy(filenameRoot+'settingsAdvanced.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsAdvanced.py'))
     shutil.copy(os.path.dirname(filenameRoot)+'/constants.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/constants.py'))
@@ -214,7 +221,8 @@ def startup(argv):
             print '$'*50+'\n'
     else:
         os.mkdir(settingsDict['finalFolder'])
-   
+    for key in settingsDict:
+       print key+' = '+repr(settingsDict[key])
     ## run make for swig if requested
     if settingsDict['remake']:
         cwd = os.getcwd()

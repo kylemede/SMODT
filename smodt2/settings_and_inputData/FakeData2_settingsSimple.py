@@ -33,9 +33,10 @@ simpleSettingsDict={
 # Minimum/Maximum allowed value for the Eccentricity [double]
 'eMIN' : 0.2,
 'eMAX' : 0.6,
-## Minimum/Maximum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-#a_totMIN :2,
-#a_totMAX :7,
+# Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
+#(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
+'TMIN' : 2456900,
+'TMAX' : 2457150,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 12.0,
 'PMAX' : 17.0,
@@ -45,13 +46,12 @@ simpleSettingsDict={
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 80,
 'omegaMAX' : 130,
-# Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
-#(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'T_Min' : 2456900,
-'T_Max' : 2457150,
+## Minimum/Maximum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
+#a_totMIN :2,
+#a_totMAX :7,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
-'K_MIN' : 0,
-'K_MAX' : 0,
+'KMIN' : 0,
+'KMAX' : 0,
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
 'vMINs' :[-150],

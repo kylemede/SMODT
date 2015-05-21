@@ -46,7 +46,7 @@ advancedDict = {
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
 'chiMAX' : (3000.0,"Max chiSquared during SA or MC"),
 # set to 'true' to have NOTHING print to screen while running [bool]
-'SILENT' : False,
+'SILENT' : True,
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 'quiet' : True,
 # set to 'true' to receive prints from the functions called by main for testing [bool]
@@ -118,7 +118,6 @@ advancedDict = {
 #best estimate of system's distance from Earth, and error [double][PC]
 'distEst' : (5.0,"Estimated System Distance"),
 'distErr' : (0.1,"Estimated System Distance error"),
-
 ##################################
 # Push prior functions into dict #
 ##################################

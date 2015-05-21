@@ -103,7 +103,7 @@ class Simulator(object):
         Randomly increment one of the parameters
         """
         #params order =[Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,aTot,chiSquared,K,offset]
-        #figure out which parameters are varying in this run
+        #figure out which parameters are varying in this run.
         paramInts = []
         for i in range(0,len(params)-1):
             if self.rangeMaxs[i]!=0:

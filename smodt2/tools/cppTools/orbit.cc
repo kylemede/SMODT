@@ -68,10 +68,11 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//Calculate TA and E
 		//------------------
 		M = (2.0*pi*(dataRealAry[0+i*dataRealAry_ny]-2.0*params[5]+params[6])/(params[7]*daysPerYear));
-		if (M>2.0*pi)
-			M -= 2.0*pi;
-		if (M<0)
-			M += 2.0*pi;
+		//std::cout<<"M before = "<<M*(180.0/pi)<<std::endl;
+		M -= (int)(M/(2.0*pi))*(2.0*pi);//shift into [-360,360]
+		//if (M<0)
+		//	M+=2.0*pi;
+		//std::cout<<"M after = "<<M*(180.0/pi)<<std::endl;
 		Eprime = M+params[4]*sin(M)+((params[4]*params[4])/(2.0*M))*sin(2.0*M);
 		NewtonCount = 0;
 		while ( (fabs(E-Eprime)>1.0e-10)&&(NewtonCount<50) ){

@@ -3,6 +3,7 @@ import smodtLogger
 import os
 import shutil
 import numpy as np
+import sys
 #np.set_printoptions(precision=15)
 
 log = smodtLogger.getLogger('main.tools',lvl=100,addFH=False)
@@ -177,9 +178,52 @@ def loadSettingsDict(filenameRoot):
     #print "settingsDict['pPrior'](3.0) ="+str(settingsDict['pPrior'](3.0))
 
     
+def startup(argv):    
+    ## Pull in settings filename prepend from command line args, if provided
+    prepend = ''
+    if len(argv)>1:
+        try:
+            prepend = argv[1]
+        except:
+            print '\nWarning: the settings file prepended feature is not working correctly !!\n'    
+    ######################### FIND MORE ELEGANT WAY TO DO THIS!!!!############################
+    tempRoot = '/run/media/kmede/Data1/Todai_Work/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/settings_and_inputData/'+prepend###$$$$ this will be handled with setup.py??? How to know where SMODT is on disk??
+    settingsDict = loadSettingsDict(tempRoot)
+    settingsDict['smodtdir']='/run/media/kmede/Data1/Todai_Work/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/'###$$$$ this will be handled with setup.py??? How to know where SMODT is on disk??
+    settingsDict['settingsDir']=os.path.join(settingsDict['smodtdir'],'settings_and_inputData/')
+    settingsDict['prepend']=prepend
+    #####################################################################################
     
-    
-    
+    ## Make a directory (folder) to place all the files from this simulation run
+    settingsDict['finalFolder'] = os.path.join(settingsDict['outDir'],settingsDict['outRoot'])
+    if os.path.exists(settingsDict['finalFolder']):
+        if settingsDict['SILENT']==False:
+            print '\n'+'$'*50
+            print 'WARNING!! the folder:\n"'+settingsDict['finalFolder']+'"\nALREADY EXISTS!'
+            print 'You can overwrite the data in it, or exit this simulation.'
+            YN = raw_input('OVERWRITE current folder (y/n):')
+        else:
+            YN = 'y'
+        if (('y' in YN) or ('Y' in YN)):
+            shutil.rmtree(settingsDict['finalFolder'])
+            os.mkdir(settingsDict['finalFolder'])
+        elif (('n' in YN) or ('N' in YN)):
+            sys.exit()
+        if settingsDict['SILENT']==False:
+            print '$'*50+'\n'
+    else:
+        os.mkdir(settingsDict['finalFolder'])
+   
+    ## run make for swig if requested
+    if settingsDict['remake']:
+        cwd = os.getcwd()
+        os.chdir(os.path.join(settingsDict['smodtdir'],'tools/cppTools/'))
+        os.system('make clean')
+        os.system('make')
+        os.chdir(cwd)
+        #print 'moved back to:\n'+cwd
+    return settingsDict
+        
     
     
     

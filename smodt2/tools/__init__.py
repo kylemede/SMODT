@@ -6,6 +6,7 @@ from smodtLogger import addStreamHandler
 
 from generalTools import loadRealData
 from generalTools import loadSettingsDict
+from generalTools import startup
  
 import cppTools
 

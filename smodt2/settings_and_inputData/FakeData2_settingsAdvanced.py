@@ -60,6 +60,8 @@ advancedDict = {
 'delChains' :True,
 # Delete combined data files after simulation is complete? [bool]
 'delCombined' :False,
+# run 'make' on C++/SWIG code to make sure it is up-to-date [bool]
+'remake' :True,
 ###$$$$$$$$$$$$$$$$$$$$$$ Keep in final version $$$$$$$$$$$$$$$$$$$$$$$$$$
 # Copy output non-data files to a Dropbox folder? [bool]  
 'CopyToDB' :False,

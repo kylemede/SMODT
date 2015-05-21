@@ -1,0 +1,43 @@
+11 epochs of data from artificialDataMaker.py were made, params hardcoded and SWIG and V1.0 python code were compared to see how long it took to produce matching modeled data.  The data was then concatonated together to make larger arrays for longer speed tests.  
+Results: SWIG is 10-58 times faster, with the larger being gained on larger datasets.
+
+#epochs = 11
+for swig it took: 5.79357147217e-05
+for python it took: 0.000592947006226
+Thus, SWIG is 10 times faster than Python version.
+diff maxs = 4.13900253185e-06, 6.30710818264e-06, 0.00986881622077
+diff mins = 1.11022302463e-16, 1.38777878078e-17, 1.13686837722e-13
+
+orig # epochs = 11
+new # epochs = 88
+for swig it took: 0.000132083892822
+for python it took: 0.0046489238739
+Thus, SWIG is 35 times faster than Python version.
+diff maxs = 4.13900253185e-06, 6.30710818264e-06, 0.00986881622077
+diff mins = 1.11022302463e-16, 1.38777878078e-17, 1.13686837722e-13
+ 
+orig # epochs = 11
+new # epochs = 352
+for swig it took: 0.000373840332031
+for python it took: 0.0183429718018
+Thus, SWIG is 49 times faster than Python version.
+diff maxs = 4.13900253185e-06, 6.30710818264e-06, 0.00986881622077
+diff mins = 1.11022302463e-16, 1.38777878078e-17, 1.13686837722e-13
+
+orig # epochs = 11
+new # epochs = 45056
+for swig it took: 0.0430889129639
+for python it took: 2.53928279877
+Thus, SWIG is 58 times faster than Python version.
+diff maxs = 4.13900253185e-06, 6.30710818264e-06, 0.00986881622077
+diff mins = 1.11022302463e-16, 1.38777878078e-17, 1.13686837722e-13
+
+orig # epochs = 11
+new # epochs = 360448
+for swig it took: 0.32049202919
+for python it took: 18.2499079704
+Thus, SWIG is 56 times faster than Python version.
+diff maxs = 4.13900253185e-06, 6.30710818264e-06, 0.00986881622077
+diff mins = 1.11022302463e-16, 1.38777878078e-17, 1.13686837722e-13
+ 
+

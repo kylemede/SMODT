@@ -4,6 +4,7 @@ from smodt2.settings_and_inputData import constants
 import os
 import math
 import numpy as np
+import timeit
 
 def calcTest():
     #np.set_printoptions(precision=15)
@@ -27,6 +28,15 @@ def calcTest():
     inc =  30.0
     offset = 0.0
     
+    #############################################
+    if True:
+        print "orig # epochs = "+str(realData2.shape[0])
+        for i in range(10):
+            realData2 = np.concatenate((realData2,realData2))
+        print "new # epochs = "+str(realData2.shape[0])
+        modelData2 = np.zeros((realData2.shape[0],3))
+        #print 'new modelData.shape = '+repr(modelData2.shape)
+    ############################################
     a_total = (((constants.Grav*constants.KGperMsun*(Mass1+Mass2)*((P*constants.secPerYear)**2.0))/(4.0*(constants.pi**2.0))))**(1.0/3.0)
     a_total = a_total/constants.MperAU
     a1 = a_total/(1.0+(Mass1/Mass2))
@@ -36,18 +46,23 @@ def calcTest():
     params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,a_total,0,0,offset])
     
     #for SMODT2.0 model
+    tic=timeit.default_timer()
     Orbit = tools2.cppTools.Orbit()
     Orbit.loadRealData(realData2)
     Orbit.loadConstants(constants.Grav,constants.pi,constants.KGperMsun, constants.daysPerYear,constants.secPerYear,constants.MperAU)
     #print 'modelData2 BEFORE = \n'+repr(modelData2)
     #blah=blah
     Orbit.calculate(modelData2,params)
+    toc=timeit.default_timer()
+    swigTime=toc-tic
+    print "\nfor swig it took: "+str(swigTime)
     #print "model 2, K = "+str(params[12])
     #print 'modelData2 AFTER = \n'+repr(modelData2)
     
     #for SMODT1.0 model
     modelData1 = np.zeros(modelData2.shape)
     i=0
+    tic=timeit.default_timer()
     for t in realData2[:,0]:
         (n, M_deg, E_latest_deg, TA_deg, Sep_Dist_AU_OP, SA, PA, x, y, a1, a2) = tools1.DItoolbox.orbitCalculatorTH_I(t, Sys_Dist_PC, inc, Omega, e, T, P, omega, a_total,Mass1, Mass2, verbose=False)
         #print 'a1 from DI = '+str(a1)
@@ -56,9 +71,17 @@ def calcTest():
         #print "model 1, K = "+str(K)
         modelData1[i,:] =[x,y,v_r] 
         i+=1
+    toc=timeit.default_timer()
+    pyTime=toc-tic
+    print "for python it took: "+str(pyTime)
+    print "Thus, SWIG is "+str(int(pyTime/swigTime))+" times faster than Python version."
     #print 'modelData1 = \n'+repr(modelData1)
     ##compare 
-    print 'modelData2-modelData1 = \n'+repr(modelData2-modelData1)
+    diffAry = modelData2-modelData1
+    #print 'modelData2-modelData1 = \n'+repr(diffAry)
+    diffAry2 = np.where(diffAry<0,-1.0*diffAry,diffAry)#convert all negs to pos
+    print '\ndiff maxs = '+str(np.max(diffAry2[:,0]))+", "+str(np.max(diffAry2[:,1]))+", "+str(np.max(diffAry2[:,2]))
+    print 'diff mins = '+str(np.min(diffAry2[:,0]))+", "+str(np.min(diffAry2[:,1]))+", "+str(np.min(diffAry2[:,2]))
     
     
 if __name__ == '__main__':

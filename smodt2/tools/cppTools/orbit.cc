@@ -73,20 +73,24 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//if (M<0)
 		//	M+=2.0*pi;
 		//std::cout<<"M after = "<<M*(180.0/pi)<<std::endl;
-		Eprime = M+params[4]*sin(M)+((params[4]*params[4])/(2.0*M))*sin(2.0*M);
-		NewtonCount = 0;
-		while ( (fabs(E-Eprime)>1.0e-10)&&(NewtonCount<50) ){
-			E = Eprime;
-			Eprime = E-((E-params[4]*sin(E)-M)/(1.0-params[4]*cos(E)));
-			NewtonCount +=1;
+		if ((M!=0)and(M!=(2.0*pi))){
+			Eprime = M+params[4]*sin(M)+((params[4]*params[4])/(2.0*M))*sin(2.0*M);
+			NewtonCount = 0;
+			while ( (fabs(E-Eprime)>1.0e-10)&&(NewtonCount<50) ){
+				E = Eprime;
+				Eprime = E-((E-params[4]*sin(E)-M)/(1.0-params[4]*cos(E)));
+				NewtonCount +=1;
+			}
+			//double check it satisfies the original equation
+			if (fabs((E-params[4]*sin(E))-M)>1.0e-5)
+				std::cout<<"PROBLEM!! resulting E from Newton's loop isn't within error limit!!!"<<std::endl;
+			thetaPrime = acos((cos(E)-params[4])/(1.0-params[4]*cos(E)));
+			if (E>pi)
+				thetaPrime = 2.0*pi-thetaPrime;
+			theta = thetaPrime;
 		}
-		//double check it satisfies the original equation
-		if (fabs((E-params[4]*sin(E))-M)>1.0e-5)
-			std::cout<<"PROBLEM!! resulting E from Newton's loop isn't within error limit!!!"<<std::endl;
-		thetaPrime = acos((cos(E)-params[4])/(1.0-params[4]*cos(E)));
-		if (E>pi)
-			thetaPrime = 2.0*pi-thetaPrime;
-		theta = thetaPrime;
+		else
+			theta=E= 0.0;
 		//--------------------------
 		//Calculate RV
 		//--------------------------

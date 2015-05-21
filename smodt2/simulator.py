@@ -32,6 +32,16 @@ class Simulator(object):
         Start things off??$$$$$$$$$$$$$$$$$$$$$$$$
         """
         self.log.info("In Simulator.starter")
+    def dictVal(self,key):
+        """
+        Get the value for a key in the settings dictionary.
+        This will handle the values that are tuples and not
+        returning the value.
+        """
+        if type(self.settingsDict[key])==tuple:
+            return self.settingsDict[key][0]
+        else:
+            return self.settingsDict[key]
     
     def monteCarlo(self):
         """
@@ -57,6 +67,8 @@ class Simulator(object):
         #atot = params[10]
         #K = params[12]
         print '\nmodelData = \n'+repr(modelData)
+        baseFilename = 'testData.fits'
+        tools.writeFits(baseFilename,modelData,self.settingsDict)
         #self.log.info('\nmodelData = \n'+repr(modelData))
         
         

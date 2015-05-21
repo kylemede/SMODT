@@ -9,6 +9,8 @@ or use command $sudo pip install psutil (in su)
 ($sudo pip install scipy)
 -swig 
 ($sudo yum install swig)
+-pyfits
+($sudo yum install pyfits)
 
 NOTE: Need sudo for swig compiling --> '$ sudo make' or '$ sudo make clean' for cpp swig code!!!  I guess this will come into the setup.py area.
       NOT TRUE if the user has read/write privilages for the SMODT dirs/files!!!

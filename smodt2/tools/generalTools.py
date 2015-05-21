@@ -4,6 +4,7 @@ import os
 import shutil
 import numpy as np
 import sys
+import pyfits
 #np.set_printoptions(precision=15)
 
 log = smodtLogger.getLogger('main.tools',lvl=100,addFH=False)
@@ -224,11 +225,34 @@ def startup(argv):
         #print 'moved back to:\n'+cwd
     return settingsDict
         
-    
-    
-    
-    
-    
+def writeFits(baseFilename,data,settingsDict):
+    """
+    Data will be written to a fits file with a single PrimaryHDU,
+    with the .header loaded up with the tuples from the settingsDict 
+    and .data = provided data.
+    File will be stored in the 'finalFolder' directory from the settingsDict.
+    """
+    if '.fits' not in baseFilename:
+        baseFilename=baseFilename+'.fits'
+    hdu = pyfits.PrimaryHDU(data)
+    hdulist = pyfits.HDUList([hdu])
+    header = hdulist[0].header
+    ##load up header with tuples from settingsDict
+    #print "starting to load up header with tuples from settingsDict"
+    for key in settingsDict:
+        if type(settingsDict[key])==tuple:
+            header[key]=settingsDict[key]
+            #print "adding '"+key+"' = "+repr(settingsDict[key])
+    hdulist.writeto(os.path.join(settingsDict['finalFolder'],baseFilename))
+    hdulist.close()
+    ## check resulting fits file header
+    if False:
+        f = pyfits.open(os.path.join(settingsDict['finalFolder'],baseFilename))
+        head = f[0].header
+        f.close()
+        for key in head:
+            print key+' = '+repr(header[key])
+        print '\n\n'+repr(head)
     
     
     

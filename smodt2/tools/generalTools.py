@@ -134,6 +134,7 @@ def loadRealData(filenameRoot):
             epochs.append(epoch)
     epochs = np.array(epochs)
     realData = np.zeros((epochs.shape[0],8))
+    realData[:,2]=realData[:,4]=realData[:,6]=np.inf
     #print 'epochs = '+repr(epochs)
     diCounter = 0
     rvCounter = 0
@@ -171,7 +172,7 @@ def loadSettingsDict(filenameRoot):
         os.remove(os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/constants.py'))
     except:
         temp=True
-    print '\n'+filenameRoot+'settingsSimple.py\n'
+    #print '\n'+filenameRoot+'settingsSimple.py\n'
     shutil.copy(filenameRoot+'settingsSimple.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsSimple.py'))
     shutil.copy(filenameRoot+'settingsAdvanced.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsAdvanced.py'))
     shutil.copy(os.path.dirname(filenameRoot)+'/constants.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/constants.py'))
@@ -182,6 +183,23 @@ def loadSettingsDict(filenameRoot):
     os.chdir(os.path.join(smodtHeadDir,'SMODT'))
     from tools.temp.settingsAdvanced import settingsDict
     os.chdir(cwd)
+    
+    #######################################################
+    ## determine argPeriOffsetRV and argPeriOffsetDI values
+    #######################################################
+    omegaFdi = 0
+    omegaFrv = 0
+    #first using RV special bools
+    if (settingsDict['primeRVs'] and settingsDict['fitPrime']):
+        omegaFdi=-180.0
+    elif (settingsDict['primeRVs'] and(settingsDict['fitPrime']==False)):
+        omegaFrv=180.0
+    #now update due to fixed argPeriPlus values
+    omegaFrv+=settingsDict['omegaPrv'][0]
+    omegaFdi+=settingsDict['omegaPdi'][0]
+    settingsDict['omegaFrv'] = (omegaFrv,"Total fixed val added to RV omega in model")
+    settingsDict['omegaFdi'] = (omegaFdi,"Total fixed val added to DI omega in model")
+    
     return settingsDict
     #print "settingsDict['pPrior'](3.0) ="+str(settingsDict['pPrior'](3.0))
 
@@ -221,8 +239,9 @@ def startup(argv):
             print '$'*50+'\n'
     else:
         os.mkdir(settingsDict['finalFolder'])
-    for key in settingsDict:
-       print key+' = '+repr(settingsDict[key])
+    if False:
+        for key in settingsDict:
+           print key+' = '+repr(settingsDict[key])
     ## run make for swig if requested
     if settingsDict['remake']:
         cwd = os.getcwd()

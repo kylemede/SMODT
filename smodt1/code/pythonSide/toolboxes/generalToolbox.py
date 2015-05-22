@@ -2246,7 +2246,6 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
     #######################################################
     ## determine argPeriOffsetRV and argPeriOffsetDI values
     #######################################################
-    returnDict['argPeriPlusRV']  
     argPeriOffsetDI = 0
     argPeriOffsetRV = 0
     #first using RV special bools

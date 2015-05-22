@@ -3,7 +3,7 @@ import os
 from scipy.constants.codata import precision
 #np.set_printoptions(precision=15)
 import tools
-import timit
+import timeit
 from settings_and_inputData import constants
 
 
@@ -18,13 +18,15 @@ class Simulator(object):
         self.log = tools.getLogger('main.simulator',lvl=100,addFH=False)
         tools.logSystemInfo(self.log)
         self.Orbit = tools.cppTools.Orbit()
-        self.realData = tools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']))
+        self.Orbit.loadomegaOffsets(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'))
+        self.realData = tools.loadRealData(os.path.join(self.dictVal('settingsDir'),self.dictVal('prepend')))
         self.Orbit.loadRealData(self.realData)
         self.Orbit.loadConstants(constants.Grav,constants.pi,constants.KGperMsun, constants.daysPerYear,constants.secPerYear,constants.MperAU)
-        (self.rangeMaxs,self.rangeMins,self.starterSigmas) = self.starter()
-        self.seed = timeit.default_timer()
+        (self.rangeMaxs,self.rangeMins,self.starterSigmas,self.paramInts,self.nu,self.nuDI,self.nuRV) = self.starter()
+        self.seed = int(timeit.default_timer())
         self.log.info("random number seed = "+str(self.seed))
         np.random.seed(self.seed)
+        self.paramsLast = 0
         #Load real data here? doesn't change so might as well
         #could also make the empty model data array here too
         ##Examples
@@ -38,8 +40,12 @@ class Simulator(object):
         need code to load them up.
         """
         self.log.info("In Simulator.starter")
-        ##load up range min,max and sigma arrays
-        #params order =[Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,aTot,chiSquared,K,offset]
+        ##check there are 
+        if np.max(self.realData[:,-1])!=len(self.dictVal('vMINs')):
+            self.log.error("THE NUMBER OF vMINs/vMAXs DOES NOT MATCH THE NUMBER OF RV DATASETS!!!\n"+\
+                           "please check the vMINs/vMAXs arrays in the simple settings file\n"+\
+                           "to make sure they have matching lengths to the number of RV datasets.")
+        ##load up range min,max and sigma arrayS
         rangeMaxs = [self.dictVal('mass1MAX'),\
                self.dictVal('mass2MAX'),\
                self.dictVal('distMAX'),\
@@ -52,8 +58,7 @@ class Simulator(object):
                self.dictVal('omegaMAX'),\
                0,\
                0,\
-               self.dictVal('KMAX'),\
-               self.dictVal('vMAXs')]
+               self.dictVal('KMAX')]
         rangeMins = [self.dictVal('mass1MIN'),\
                self.dictVal('mass2MIN'),\
                self.dictVal('distMIN'),\
@@ -66,8 +71,7 @@ class Simulator(object):
                self.dictVal('omegaMIN'),\
                0,\
                0,\
-               self.dictVal('KMIN'),\
-               self.dictVal('vMINs')]
+               self.dictVal('KMIN')]
         sigmas = [0.1*(self.dictVal('mass1MAX')-self.dictVal('mass1MIN')),\
                0.1*(self.dictVal('mass2MAX')-self.dictVal('mass2MIN')),\
                0.1*(self.dictVal('distMAX')-self.dictVal('distMIN')),\
@@ -80,12 +84,39 @@ class Simulator(object):
                0.1*(self.dictVal('omegaMAX')-self.dictVal('omegaMIN')),\
                0,\
                0,\
-               0.1*(self.dictVal('KMAX')-self.dictVal('KMIN')),\
-               []]
+               0.1*(self.dictVal('KMAX')-self.dictVal('KMIN'))]
         for i in range(0,len(self.dictVal('vMINs'))):
-            sigmas[-1].append(0.1*(self.dictVal('vMAXs')[i]-self.dictVal('vMINs')[i]))
+            sigmas.append(0.1*(self.dictVal('vMAXs')[i]-self.dictVal('vMINs')[i]))
+            rangeMins.append(self.dictVal('vMINs')[i])
+            rangeMaxs.append(self.dictVal('vMAXs')[i])
         
-        return (rangeMaxs,rangeMins,sigmas)
+        #figure out which parameters are varying in this run.
+        #don't vary atot or chiSquared ever, and take care of TcEqualT cases
+        paramInts = []
+        for i in range(0,len(rangeMins)):
+            if (i!=10)and(i!=11):
+                if rangeMaxs[i]!=0:
+                    if self.dictVal('TcEqualT'):
+                        if self.dictVal('TcStep'):
+                            if i!=5:
+                                paramInts.append(i)
+                        else:
+                            if i!=6:
+                                paramInts.append(i)
+                    else:
+                        paramInts.append(i)
+        #print 'paramInts = '+repr(paramInts)
+        #find total number of RV and DI epochs in real data
+        nDIepochs = np.sum(np.where(self.realData[:,1]!=0))
+        nRVepochs = np.sum(np.where(self.realData[:,5]!=0))
+        nEpochs = len(self.realData[:,0])
+        nDIvars = np.sum(np.where(paramInts<10))
+        nRVvars = np.sum(np.where(paramInts!=3))
+        nVars = len(paramInts)
+        nu = nDIepochs*2+nRVepochs-nVars
+        nuDI = nDIepochs*2-nDIvars
+        nuRV = nRVepochs-nRVvars
+        return (rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
     
     def dictVal(self,key):
         """
@@ -103,22 +134,76 @@ class Simulator(object):
         Randomly increment one of the parameters
         """
         #params order =[Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,aTot,chiSquared,K,offset]
-        #figure out which parameters are varying in this run.
-        paramInts = []
-        for i in range(0,len(params)-1):
-            if self.rangeMaxs[i]!=0:
-                paramInts.append(i)
-
-            
+        
+        #print 'params IN = '+repr(params)
+        ## vary all the params if mcONLY
         if mcOnly:
-            for i in range(0,len(params)-1):
-                params[i]=np.random.uniform(self.rangeMins[i],self.rangeMaxs[i])
-            for i in range(0,len(params[-1])):
-                params[-1][i]=np.random.uniform(self.rangeMins[-1][i],self.rangeMaxs[-1][i])
+            for i in range(0,len(params)):
+                if i in self.paramInts:
+                    params[i]=np.random.uniform(self.rangeMins[i],self.rangeMaxs[i])
+        ## vary a random param if SA, ST or MCMC
         else:
-            """
-            """
+            varyInt = self.paramInts[np.random.randint(0,len(self.paramInts))]
+            params[varyInt]=np.random.uniform(params[varyInt]-sigmas[varyInt],params[varyInt]+sigmas[varyInt])
+            #print 'varyInt = '+str(varyInt)
+            
+        ## if TcEqualT, push the varied one into the other
+        if self.dictVal('TcEqualT'):
+            if self.dictVal('TcStep'):
+                params[5]=params[6]
+            else:
+                params[6]=params[5]
+                
+        #print 'params OUT = '+repr(params)
         return params
+    
+    def accept(self,params,modelData,temp=1.0,mcOnly=False):
+        """
+        First this will calculate chi squared for model vs real data.
+        
+        For mcOnly it performs simple chisquared cut-off acceptance 
+        based on 'chiMAX' value in settingsDict.
+        Else, it will calculate the priors and accept based on 
+        the Metropolis-Hastings algorithm. The temp factor will 
+        be set to 1.0 for MCMC and Sigma Tuning, and should be provided 
+        for Simulated Annealing.
+        """
+        print ''
+        #print 'realData = '+repr(self.realData)
+        print '(self.realData[:,1]-modelData[:,0]) = '+repr((self.realData[:,1]-modelData[:,0]))
+        print '(self.realData[:,3]-modelData[:,1]) = '+repr((self.realData[:,3]-modelData[:,1]))
+        print '(self.realData[:,5]-modelData[:,2]) = '+repr((self.realData[:,5]-modelData[:,2]))
+        diffs = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1]),(self.realData[:,5]-modelData[:,2])))
+        errors = np.concatenate((self.realData[:,2],self.realData[:,4],self.realData[:,6]))
+        params[11] = np.sum((diffs**2)/(errors**2))
+        if True:
+            #print 'diffs = '+repr(diffs)
+            #print 'diffs**2 = '+repr(diffs**2)
+            #print 'errors = '+repr(errors)
+            print 'chiSquared = '+str(params[11])
+        accept = False
+        if mcOnly:
+            if params[11]<self.dictVal('chiMAX'):
+                accept=True
+        else:
+            #handle case where doing SA and nothing accepted yet
+            if (temp!=0)and(self.paramsLast==0):
+                if params[11]<self.dictVal('chiMAX'):
+                    accept=True
+            else:
+                likelihoodRatio = np.e**((self.paramsLast[11] - params[11])/ (2.0*temp))
+                ###### put all prior funcs together in dict??
+                priorsRatio = (self.dictVal(ePrior)(params[4])/self.dictVal(ePrior)(self.paramsLast[4]))
+                priorsRatio*= (self.dictVal(pPrior)(params[7])/self.dictVal(pPrior)(self.paramsLast[7]))
+                priorsRatio*= (self.dictVal(incPrior)(params[8])/self.dictVal(incPrior)(self.paramsLast[8]))
+                priorsRatio*= (self.dictVal(mass1Prior)(params[0])/self.dictVal(mass1Prior)(self.paramsLast[0]))
+                priorsRatio*= (self.dictVal(mass2Prior)(params[1])/self.dictVal(mass2Prior)(self.paramsLast[1]))
+                priorsRatio*= (self.dictVal(distPrior)(params[2])/self.dictVal(distPrior)(self.paramsLast[2])) 
+                if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
+                    accept = True
+        if accept:
+            self.paramsLast=params
+        return (params,accept)
     
     def monteCarlo(self):
         """
@@ -126,6 +211,44 @@ class Simulator(object):
         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
         """
         self.log.info("In Simulator.monteCarlo")
+        self.log.info('starting c++ obj test')
+        modelData = np.zeros((self.realData.shape[0],3))
+        acceptedParams = []
+        e = 0.4
+        Sys_Dist_PC = 5.0
+        Mass1 = 1.0
+        Mass2 = 0.2
+        Omega = 60.0
+        omega = 110.0
+        T = 2457000.0
+        T_center = 2457000.0
+        P = 15.0
+        inc =  30.0
+        offset = 0.0
+        for i in range(0,10):
+            params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
+            self.Orbit.calculate(modelData,params)
+            (params,accept) = self.accept(params,modelData,mcOnly=True)
+            print 'atot = '+str(params[10])
+            print 'K = '+str(params[12])
+            print 'chiSquared = '+str(params[11])
+            if accept:
+                acceptedParams.append(params)
+            #params = self.increment(params,mcOnly=True)
+        
+        
+        print '\nmodelData = \n'+repr(acceptedParams)
+        baseFilename = 'testDataMC.fits'
+        tools.writeFits(baseFilename,acceptedParams,self.settingsDict)
+        #self.log.info('\nmodelData = \n'+repr(modelData))
+        
+        
+    def simAnneal(self):
+        """
+        Performs Simulated Annealing.
+        Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
+        """
+        self.log.info("In Simulator.simAnneal")
         self.log.info('starting c++ obj test')
         modelData = np.zeros((self.realData.shape[0],3))
         e = 0.4
@@ -141,21 +264,14 @@ class Simulator(object):
         offset = 0.0
         params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
         self.Orbit.calculate(modelData,params)
-        params = self.increment(params,mcOnly=True)
+        params = self.increment(params,self.starterSigmas)
+        
         #atot = params[10]
         #K = params[12]
         print '\nmodelData = \n'+repr(modelData)
-        baseFilename = 'testData.fits'
+        baseFilename = 'testDataSA.fits'
         tools.writeFits(baseFilename,modelData,self.settingsDict)
         #self.log.info('\nmodelData = \n'+repr(modelData))
-        
-        
-    def simAnneal(self):
-        """
-        Performs Simulated Annealing.
-        Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
-        """
-        self.log.info("In Simulator.simAnneal")
         
         
     def mcmc(self):

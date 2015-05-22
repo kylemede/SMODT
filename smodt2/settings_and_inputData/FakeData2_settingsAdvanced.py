@@ -62,7 +62,7 @@ advancedDict = {
 # Delete combined data files after simulation is complete? [bool]
 'delCombined' :False,
 # run 'make' on C++/SWIG code to make sure it is up-to-date [bool]
-'remake' :True,
+'remake' :False,
 ###$$$$$$$$$$$$$$$$$$$$$$ Keep in final version $$$$$$$$$$$$$$$$$$$$$$$$$$
 # Copy output non-data files to a Dropbox folder? [bool]  
 'CopyToDB' :False,
@@ -101,11 +101,11 @@ advancedDict = {
 # take the time of center transit (inferior conjunction) into account? [bool]
 'TcEqualT' : (True,"Fix Tc=T?"),
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
-'omegaPrv' : (0.0,"Fixed val added to RV omega in model"),
+'omegaPrv' : (0.0,"Custom fixed val added to RV omega in model"),
 ##################################################
 ## Special settings DI model:
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
-'omegaPdi' : (0.0,"Fixed val added to DI omega in model"),
+'omegaPdi' : (0.0,"Custom fixed val added to DI omega in model"),
 ######################
 # System Information #
 ######################

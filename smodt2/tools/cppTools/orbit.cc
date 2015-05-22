@@ -6,6 +6,11 @@ double testFunc(double t){
     return t;
 };
 
+void Orbit::loadomegaOffsets(double omegaOffsetDI,double omegaOffsetRV){
+	omegaOffsetDI = omegaOffsetDI;
+	omegaOffsetRV = omegaOffsetRV;
+};
+
 void Orbit::loadRealData(double *xx, int xx_nx, int xx_ny){
 	if (false)
 		std::cout<<"\nInside loadData function"<<std::endl;

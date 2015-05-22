@@ -18,8 +18,8 @@ def smodt():
     log.info("Prepend string passed in was '"+settingsDict['prepend']+"'")
     Sim = simulator.Simulator(settingsDict)
     Sim.monteCarlo()#$$doesn't do anything yet!!
-    Sim.simAnneal()#$$doesn't do anything yet!!
-    Sim.mcmc()#$$doesn't do anything yet!!
+    #Sim.simAnneal()#$$doesn't do anything yet!!
+    #Sim.mcmc()#$$doesn't do anything yet!!
    
     
     

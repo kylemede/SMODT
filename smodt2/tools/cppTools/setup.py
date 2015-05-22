@@ -22,7 +22,7 @@ _orbit = Extension("_orbit",
 
 
 setup(name= "orbitSetUp",
-	description = "Functions that links with c++",
+	description = "Object for calculating predicted orbit with c++",
 	author      = "Kyle Mede",
 	py_modules  = ["orbit"],
 	ext_modules = [_orbit])

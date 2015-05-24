@@ -169,11 +169,10 @@ class Simulator(object):
         for Simulated Annealing.
         """
         print ''
-        #print 'realData = '+repr(self.realData)
-        print '(self.realData[:,1]-modelData[:,0]) = '+repr((self.realData[:,1]-modelData[:,0]))
-        print '(self.realData[:,3]-modelData[:,1]) = '+repr((self.realData[:,3]-modelData[:,1]))
-        print '(self.realData[:,5]-modelData[:,2]) = '+repr((self.realData[:,5]-modelData[:,2]))
+        print 'reals = \n'+repr(self.realData[:,[1,3,5]])
+        print 'modelData = \n'+repr(modelData)
         diffs = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1]),(self.realData[:,5]-modelData[:,2])))
+        print 'diffs = \n'+repr(diffs)
         errors = np.concatenate((self.realData[:,2],self.realData[:,4],self.realData[:,6]))
         params[11] = np.sum((diffs**2)/(errors**2))
         if True:
@@ -218,18 +217,18 @@ class Simulator(object):
         Sys_Dist_PC = 5.0
         Mass1 = 1.0
         Mass2 = 0.2
-        Omega = 60.0
+        Omega = 60.0#-90.0
         omega = 110.0
         T = 2457000.0
         T_center = 2457000.0
         P = 15.0
         inc =  30.0
         offset = 0.0
-        for i in range(0,10):
+        for i in range(0,1):
             params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
             self.Orbit.calculate(modelData,params)
             (params,accept) = self.accept(params,modelData,mcOnly=True)
-            print 'atot = '+str(params[10])
+            #print 'atot = '+str(params[10])
             print 'K = '+str(params[12])
             print 'chiSquared = '+str(params[11])
             if accept:

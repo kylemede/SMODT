@@ -12,6 +12,8 @@ public:
     int NewtonCount;
     double omegaOffsetDI;
     double omegaOffsetRV;
+    double omegaDI;
+    double omegaRV;
     //declare REAL static data array
     double* dataRealAry;
     int dataRealAry_nx;
@@ -31,7 +33,7 @@ public:
     
     //funcs
     //for passing in a STATIC 2D data array of Real data into the object
-    void loadomegaOffsets(double omegaOffsetDI,double omegaOffsetRV);
+    void loadomegaOffsets(double omegaoffsetDI,double omegaoffsetRV);
     void loadRealData(double *xx, int xx_nx, int xx_ny);
     //For loading in the global constants
     void loadConstants(double Grav_in,double pi_in,double KGperMsun_in, double daysPerYear_in,double secPerYear_in,double MperAU_in);

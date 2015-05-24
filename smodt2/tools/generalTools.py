@@ -189,16 +189,26 @@ def loadSettingsDict(filenameRoot):
     #######################################################
     omegaFdi = 0
     omegaFrv = 0
+    #print '1,omegaFdi = '+str(omegaFdi)
+    #print '1,omegaFrv = '+str(omegaFrv)
+    #print "settingsDict['primeRVs'] = "+repr(settingsDict['primeRVs'][0])
+    #print "settingsDict['fitPrime'] = "+repr(settingsDict['fitPrime'][0])
     #first using RV special bools
-    if (settingsDict['primeRVs'] and settingsDict['fitPrime']):
+    if (settingsDict['primeRVs'][0] and settingsDict['fitPrime'][0]):
         omegaFdi=-180.0
-    elif (settingsDict['primeRVs'] and(settingsDict['fitPrime']==False)):
+        #print '2,omegaFdi = '+str(omegaFdi)
+    elif (settingsDict['primeRVs'][0] and(settingsDict['fitPrime'][0]==False)):
         omegaFrv=180.0
+        #print '2,omegaFrv = '+str(omegaFrv)
     #now update due to fixed argPeriPlus values
-    omegaFrv+=settingsDict['omegaPrv'][0]
     omegaFdi+=settingsDict['omegaPdi'][0]
-    settingsDict['omegaFrv'] = (omegaFrv,"Total fixed val added to RV omega in model")
+    omegaFrv+=settingsDict['omegaPrv'][0]
+    #print "settingsDict['omegaPdi'][0] = "+str(settingsDict['omegaPdi'][0])
+    #print "settingsDict['omegaPrv'][0] = "+str(settingsDict['omegaPrv'][0])
+    #print '3,omegaFdi = '+str(omegaFdi)
+    #print '3,omegaFrv = '+str(omegaFrv)
     settingsDict['omegaFdi'] = (omegaFdi,"Total fixed val added to DI omega in model")
+    settingsDict['omegaFrv'] = (omegaFrv,"Total fixed val added to RV omega in model")
     
     return settingsDict
     #print "settingsDict['pPrior'](3.0) ="+str(settingsDict['pPrior'](3.0))

@@ -29,7 +29,7 @@ def calcTest():
     offset = 0.0
     
     #############################################
-    if True:
+    if False:
         print "orig # epochs = "+str(realData2.shape[0])
         for i in range(10):
             realData2 = np.concatenate((realData2,realData2))
@@ -56,6 +56,7 @@ def calcTest():
     toc=timeit.default_timer()
     swigTime=toc-tic
     print "\nfor swig it took: "+str(swigTime)
+    #print 'atot model 2 = '+str(params[10])
     #print "model 2, K = "+str(params[12])
     #print 'modelData2 AFTER = \n'+repr(modelData2)
     

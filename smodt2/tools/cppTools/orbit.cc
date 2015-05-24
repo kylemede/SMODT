@@ -6,9 +6,12 @@ double testFunc(double t){
     return t;
 };
 
-void Orbit::loadomegaOffsets(double omegaOffsetDI,double omegaOffsetRV){
-	omegaOffsetDI = omegaOffsetDI;
-	omegaOffsetRV = omegaOffsetRV;
+void Orbit::loadomegaOffsets(double omegaoffsetDI,double omegaoffsetRV){
+	omegaOffsetDI = omegaoffsetDI;
+	omegaOffsetRV = omegaoffsetRV;
+	std::cout<<"loading omega offsets"<<std::endl;
+	std::cout<<"omegaOffsetDI = "<<omegaOffsetDI <<std::endl;
+	std::cout<<"omegaOffsetRV = "<<omegaOffsetRV <<std::endl;
 };
 
 void Orbit::loadRealData(double *xx, int xx_nx, int xx_ny){
@@ -41,7 +44,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	dataModelAry_ny=yy_ny;
 	params = y;
 	params_n = y_n;
-	bool verbose=false;
+	bool verbose=true;
 	if (verbose)
 		std::cout<<"\nInside Orbit calculator function"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 	if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -65,6 +68,12 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		K = ((2.0*pi*((atot)/(1.0+(params[0]/params[1])))*sin(params[8]*(pi/180.0)))/(params[7]*secPerYear*pow((1.0-params[4]*params[4]),(1.0/2.0))));
 		params[12]=K;
 	}
+	omegaDI = params[9]+omegaOffsetDI;
+	omegaRV = params[9]+omegaOffsetRV;
+	std::cout<<"omegaOffsetDI = "<<omegaOffsetDI <<std::endl;
+	std::cout<<"omegaOffsetRV = "<<omegaOffsetRV <<std::endl;
+	std::cout<<"omegaDI = "<< omegaDI <<std::endl;
+	std::cout<<"omegaRV = "<< omegaRV <<std::endl;
 	//start loop over each epoch of data
 	for (int i=0;i<dataModelAry_nx; i++){
 		if (verbose)//$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -100,12 +109,12 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//Calculate RV
 		//--------------------------
 		if (dataRealAry[5+i*dataRealAry_ny]!=0){
-			dataModelAry[2+i*dataModelAry_ny]=K*(cos(theta+params[9]*(pi/180.0))+params[4]*cos(params[9]*(pi/180.0)));
+			dataModelAry[2+i*dataModelAry_ny]=K*(cos(theta+omegaRV*(pi/180.0))+params[4]*cos(omegaRV*(pi/180.0)));
 			if (false){
 				std::cout<<"theta deg V2.0 = "<<(theta*(180.0/pi))<<std::endl;
-				std::cout<<"cos(theta+params[9]*(pi/180.0)) = "<<cos(theta+params[9]*(pi/180.0))<<std::endl;
-				std::cout<<"cos(params[9]*(pi/180.0)) = "<< cos(params[9]*(pi/180.0))<<std::endl;
-				std::cout<<"params[4]*cos(params[9]*(pi/180.0)) = "<< params[4]*cos(params[9]*(pi/180.0))<<std::endl;
+				std::cout<<"cos(theta+omegaRV*(pi/180.0)) = "<<cos(theta+omegaRV*(pi/180.0))<<std::endl;
+				std::cout<<"cos(omegaRV*(pi/180.0)) = "<< cos(omegaRV*(pi/180.0))<<std::endl;
+				std::cout<<"params[4]*cos(omegaRV*(pi/180.0)) = "<< params[4]*cos(omegaRV*(pi/180.0))<<std::endl;
 				std::cout<<"dataModelAry[2+i*dataModelAry_ny] = "<<dataModelAry[2+i*dataModelAry_ny] <<std::endl;
 			}
 		}
@@ -121,10 +130,10 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//--------------------------
 		if ((dataRealAry[1+i*dataRealAry_ny]!=0)&&(dataRealAry[3+i*dataRealAry_ny]!=0)){
 			// calculate all the Thiele-Innes constants in ["]
-			A = ((atot/MperAU)/params[2])*(cos(params[3]*(pi/180.0))*cos(params[9]*(pi/180.0))-sin(params[3]*(pi/180.0))*sin(params[9]*(pi/180.0))*cos(params[8]*(pi/180.0)));
-			B = ((atot/MperAU)/params[2])*(sin(params[3]*(pi/180.0))*cos(params[9]*(pi/180.0))+cos(params[3]*(pi/180.0))*sin(params[9]*(pi/180.0))*cos(params[8]*(pi/180.0)));
-			F = ((atot/MperAU)/params[2])*(-cos(params[3]*(pi/180.0))*sin(params[9]*(pi/180.0))-sin(params[3]*(pi/180.0))*cos(params[9]*(pi/180.0))*cos(params[8]*(pi/180.0)));
-			G = ((atot/MperAU)/params[2])*(-sin(params[3]*(pi/180.0))*sin(params[9]*(pi/180.0))+cos(params[3]*(pi/180.0))*cos(params[9]*(pi/180.0))*cos(params[8]*(pi/180.0)));
+			A = ((atot/MperAU)/params[2])*(cos(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))-sin(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
+			B = ((atot/MperAU)/params[2])*(sin(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))+cos(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
+			F = ((atot/MperAU)/params[2])*(-cos(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))-sin(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
+			G = ((atot/MperAU)/params[2])*(-sin(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))+cos(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
 			// The coordinates of the unit orbital ellipse in the true plane (Binnendijk)
 			X = cos(E)-params[4];
 			Y = sqrt(1.0-params[4]*params[4])*sin(E);
@@ -135,7 +144,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		}
 		else{
 			//std::cout<<"x real = "<< dataRealAry[1+i*dataRealAry_nx]<<", y real = "<< dataRealAry[3+i*dataRealAry_nx]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
-			dataModelAry[0+i*dataModelAry_nx] = dataModelAry[1+i*dataModelAry_nx] = 0.0;
+			dataModelAry[0+i*dataModelAry_ny] = dataModelAry[1+i*dataModelAry_ny] = 0.0;
 		}
 		if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"x = "<<dataModelAry[0+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$

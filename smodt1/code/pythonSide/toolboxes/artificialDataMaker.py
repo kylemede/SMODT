@@ -184,16 +184,12 @@ def calc_orbit():
     if realizeErrors:
         for i in range(pos_A.shape[0]):
             data2[i,1]+=np.random.normal(0,errorRA)
-    if realizeErrors:
-        for i in range(pos_A.shape[0]):
             data2[i,2] += np.random.normal(0,errorDec)
     errorRVprimary = np.median(np.abs(data2[:,3]))*(percentError/100.0)
-    if realizeErrors:
-        for i in range(pos_A.shape[0]):
-            data2[i,3] += np.random.normal(0,errorRVprimary)
     errorRVsecondary = np.median(np.abs(data2[:,4]))*(percentError/100.0)
     if realizeErrors:
         for i in range(pos_A.shape[0]):
+            data2[i,3] += np.random.normal(0,errorRVprimary)
             data2[i,4] += np.random.normal(0,errorRVsecondary)
     
     #load up data for SMODT1.0 format

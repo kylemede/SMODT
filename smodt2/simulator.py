@@ -231,7 +231,6 @@ class Simulator(object):
         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
         """
         self.log.info("In Simulator.monteCarlo")
-        self.log.info('starting c++ obj test')
         self.log.info("Trying "+str(self.dictVal('nSamples'))+" samples")
         print "Trying "+str(self.dictVal('nSamples'))+" samples"
         bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
@@ -241,7 +240,7 @@ class Simulator(object):
         Sys_Dist_PC = 5.0
         Mass1 = 1.0
         Mass2 = 0.2
-        Omega = 60.0#-90.0
+        Omega = 60.0
         omega = 110.0
         T = 2457000.0
         T_center = 2457000.0
@@ -254,9 +253,6 @@ class Simulator(object):
         for i in range(0,self.dictVal('nSamples')):
             self.Orbit.calculate(modelData,params)
             (params,accept) = self.accept(params,modelData,mcOnly=True)
-            #print 'atot = '+str(params[10])
-            #print 'K = '+str(params[12])
-            #print 'chiSquared = '+str(params[11])
             if accept:
                 acceptedParams.append(params)
             params = self.increment(params,mcOnly=True)
@@ -265,7 +261,7 @@ class Simulator(object):
         bar.render(100, 'Complete so far.')
         toc=timeit.default_timer()
         swigTime=toc-tic
-        print "\nfor swig it took: "+str(swigTime)
+        print "\nMC it took: "+str(swigTime)
         acceptedParams = np.array(acceptedParams)
         #print '\nmodelData = \n'+repr(acceptedParams)
         print 'number accepted = '+str(acceptedParams.shape[0])
@@ -280,8 +276,11 @@ class Simulator(object):
         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
         """
         self.log.info("In Simulator.simAnneal")
-        self.log.info('starting c++ obj test')
+        self.log.info("Trying "+str(self.dictVal('nSamples'))+" samples")
+        print "Trying "+str(self.dictVal('nSamples'))+" samples"
+        bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
         modelData = np.zeros((self.realData.shape[0],3))
+        acceptedParams = []
         e = 0.4
         Sys_Dist_PC = 5.0
         Mass1 = 1.0
@@ -294,17 +293,74 @@ class Simulator(object):
         inc =  30.0
         offset = 0.0
         params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
-        self.Orbit.calculate(modelData,params)
-        params = self.increment(params,self.starterSigmas)
-        
-        #atot = params[10]
-        #K = params[12]
-        print '\nmodelData = \n'+repr(modelData)
+        tic=timeit.default_timer()
+        nsamp = self.dictVal('nSamples')
+        temp = self.dictVal('strtTemp')
+        for i in range(0,self.dictVal('nSamples')):
+            self.Orbit.calculate(modelData,params)
+            (params,accept) = self.accept(params,modelData,temp=temp)
+            if accept:
+                acceptedParams.append(params)
+            params = self.increment(params,sigmas=self.starterSigmas)
+            ##Decrease Temperature HERE!!!!!!
+            if i%(self.dictVal('nSamples')//20)==0:
+                bar.render(i * 100 // self.dictVal('nSamples'), 'Complete so far.')
+        bar.render(100, 'Complete so far.')
+        toc=timeit.default_timer()
+        swigTime=toc-tic
+        print "\nSA it took: "+str(swigTime)
+        acceptedParams = np.array(acceptedParams)
+        #print '\nmodelData = \n'+repr(acceptedParams)
+        print 'number accepted = '+str(acceptedParams.shape[0])
         baseFilename = 'testDataSA.fits'
-        tools.writeFits(baseFilename,modelData,self.settingsDict)
+        tools.writeFits(baseFilename,acceptedParams,self.settingsDict)
         #self.log.info('\nmodelData = \n'+repr(modelData))
-        
-        
+
+    def sigmaTuning(self):
+        """
+        Performs Sigma Tuning.
+        Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
+        """
+        self.log.info("In Simulator.sigmaTuning")
+        self.log.info("Trying "+str(self.dictVal('nSamples'))+" samples")
+        print "Trying "+str(self.dictVal('nSamples'))+" samples"
+        bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
+        modelData = np.zeros((self.realData.shape[0],3))
+        acceptedParams = []
+        e = 0.4
+        Sys_Dist_PC = 5.0
+        Mass1 = 1.0
+        Mass2 = 0.2
+        Omega = 60.0
+        omega = 110.0
+        T = 2457000.0
+        T_center = 2457000.0
+        P = 15.0
+        inc =  30.0
+        offset = 0.0
+        params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
+        tic=timeit.default_timer()
+        sigmas=self.starterSigmas
+        for i in range(0,self.dictVal('nSamples')):
+            self.Orbit.calculate(modelData,params)
+            (params,accept) = self.accept(params,modelData)
+            if accept:
+                acceptedParams.append(params)
+            params = self.increment(params)
+            ##tune sigma HERE!!!!!!
+            if i%(self.dictVal('nSamples')//20)==0:
+                bar.render(i * 100 // self.dictVal('nSamples'), 'Complete so far.')
+        bar.render(100, 'Complete so far.')
+        toc=timeit.default_timer()
+        swigTime=toc-tic
+        print "\nSA it took: "+str(swigTime)
+        acceptedParams = np.array(acceptedParams)
+        #print '\nmodelData = \n'+repr(acceptedParams)
+        print 'number accepted = '+str(acceptedParams.shape[0])
+        baseFilename = 'testDataST.fits'
+        tools.writeFits(baseFilename,acceptedParams,self.settingsDict)
+        #self.log.info('\nmodelData = \n'+repr(modelData))       
+ 
     def mcmc(self):
         """
         Performs pure Markov Chain Monte Carlo.

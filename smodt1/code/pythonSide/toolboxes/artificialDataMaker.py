@@ -29,7 +29,7 @@ def calc_orbit():
     #baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
     NumDataPointsOut = 10 #must be much less than 10000.  values between 10-500 are suitable.
     storePrimaryRVs = True
-    percentError = 0.0001 #error is set to a percentage of the median
+    percentError = 5 #error is set to a percentage of the median
     realizeErrors = True
     overlapEnds = True # will ensure some points near end overlap the beginning of the orbit.
 
@@ -86,7 +86,7 @@ def calc_orbit():
     NptsBIG = 10000
     t = (np.arange(NptsBIG) - 1)/(NptsBIG - 2.)*period
    
-    ## Extend t to include a fifth of extra points at the end that overlap the beginning of the orbit
+    ## Extend t to include a tenth of extra points at the end that overlap the beginning of the orbit
     if overlapEnds:
         NumOverlapPts = NptsBIG//10
         t2 = np.empty((t.shape[0]+NumOverlapPts))

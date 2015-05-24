@@ -9,9 +9,9 @@ double testFunc(double t){
 void Orbit::loadomegaOffsets(double omegaoffsetDI,double omegaoffsetRV){
 	omegaOffsetDI = omegaoffsetDI;
 	omegaOffsetRV = omegaoffsetRV;
-	std::cout<<"loading omega offsets"<<std::endl;
-	std::cout<<"omegaOffsetDI = "<<omegaOffsetDI <<std::endl;
-	std::cout<<"omegaOffsetRV = "<<omegaOffsetRV <<std::endl;
+	//std::cout<<"loading omega offsets"<<std::endl;
+	//std::cout<<"omegaOffsetDI = "<<omegaOffsetDI <<std::endl;
+	//std::cout<<"omegaOffsetRV = "<<omegaOffsetRV <<std::endl;
 };
 
 void Orbit::loadRealData(double *xx, int xx_nx, int xx_ny){
@@ -44,7 +44,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	dataModelAry_ny=yy_ny;
 	params = y;
 	params_n = y_n;
-	bool verbose=true;
+	bool verbose=false;
 	if (verbose)
 		std::cout<<"\nInside Orbit calculator function"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 	if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -70,10 +70,6 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	}
 	omegaDI = params[9]+omegaOffsetDI;
 	omegaRV = params[9]+omegaOffsetRV;
-	std::cout<<"omegaOffsetDI = "<<omegaOffsetDI <<std::endl;
-	std::cout<<"omegaOffsetRV = "<<omegaOffsetRV <<std::endl;
-	std::cout<<"omegaDI = "<< omegaDI <<std::endl;
-	std::cout<<"omegaRV = "<< omegaRV <<std::endl;
 	//start loop over each epoch of data
 	for (int i=0;i<dataModelAry_nx; i++){
 		if (verbose)//$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -137,10 +133,12 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 			// The coordinates of the unit orbital ellipse in the true plane (Binnendijk)
 			X = cos(E)-params[4];
 			Y = sqrt(1.0-params[4]*params[4])*sin(E);
-
 			// Calculate the predicted x&y in ["]
-			dataModelAry[0+i*dataModelAry_ny] = A*X +F*Y;
-			dataModelAry[1+i*dataModelAry_ny] = B*X +G*Y;
+			//KEY NOTE: x_TH-I = y_plot = North
+			//          y_TH-I = x_plot = East
+			//THUS, store x=y_TH-I, y=x_TH-I !!!
+			dataModelAry[0+i*dataModelAry_ny] = B*X +G*Y;
+			dataModelAry[1+i*dataModelAry_ny] = A*X +F*Y;
 		}
 		else{
 			//std::cout<<"x real = "<< dataRealAry[1+i*dataRealAry_nx]<<", y real = "<< dataRealAry[3+i*dataRealAry_nx]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$

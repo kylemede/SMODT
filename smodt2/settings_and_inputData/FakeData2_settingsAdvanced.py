@@ -44,7 +44,7 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
-'chiMAX' : (3000.0,"Max chiSquared during SA or MC"),
+'chiMAX' : (50.0,"Max reduced chiSquared during SA or MC"),
 # set to 'true' to have NOTHING print to screen while running [bool]
 'SILENT' : True,
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]

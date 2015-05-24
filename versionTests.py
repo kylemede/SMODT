@@ -70,7 +70,7 @@ def calcTest():
         #print 'TA_deg V1.0 = '+str(TA_deg)
         (v_r, K)=tools1.RVtoolbox.vrCalculatorSemiMajorType(t,e,T,P,omega,a1,T_center,inc, verbose=False)
         #print "model 1, K = "+str(K)
-        modelData1[i,:] =[x,y,v_r] 
+        modelData1[i,:] =[y,x,v_r] 
         i+=1
     toc=timeit.default_timer()
     pyTime=toc-tic

@@ -168,26 +168,45 @@ class Simulator(object):
         be set to 1.0 for MCMC and Sigma Tuning, and should be provided 
         for Simulated Annealing.
         """
-        print ''
-        print 'reals = \n'+repr(self.realData[:,[1,3,5]])
-        print 'modelData = \n'+repr(modelData)
         diffs = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1]),(self.realData[:,5]-modelData[:,2])))
-        print 'diffs = \n'+repr(diffs)
         errors = np.concatenate((self.realData[:,2],self.realData[:,4],self.realData[:,6]))
         params[11] = np.sum((diffs**2)/(errors**2))
-        if True:
-            #print 'diffs = '+repr(diffs)
-            #print 'diffs**2 = '+repr(diffs**2)
-            #print 'errors = '+repr(errors)
+        diffsDI = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1])))
+        errorsDI = np.concatenate((self.realData[:,2],self.realData[:,4]))
+        diffsRV = (self.realData[:,5]-modelData[:,2])
+        errorsRV = self.realData[:,6][np.where(diffsRV!=0)]
+        #print 'diffsDI = \n'+repr(diffsDI)
+        #print 'errorsDI = \n'+repr(errorsDI)
+        #print 'diffsRV = \n'+repr(diffsRV)
+        #print 'errorsRV = \n'+repr(errorsRV)
+        chiSquaredDI = np.sum((diffsDI[np.where(diffsDI!=0)]**2)/(errorsDI[np.where(diffsDI!=0)]**2))
+        chiSquaredRV = np.sum((diffsRV[np.where(diffsRV!=0)]**2)/(errorsRV**2))
+        #print 'chiSquared = '+str(params[11])
+        #print 'chiSquaredDI = '+str(chiSquaredDI)
+        #print 'chiSquaredRV = '+str(chiSquaredRV)
+        #print 'nu,nuDI,nuRV = '+str(self.nu)+", "+str(self.nuDI)+", "+str(self.nuRV)
+        #print 'reduced chiSquared: 3D, DI, RV = '+str(params[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)
+        #print 'chiSquaredDI reduced = '+str(chiSquaredDI/self.nuDI)
+        #print 'chiSquaredRV reduced = '+str(chiSquaredRV/self.nuRV)
+        #print 'chiSquared reduced = '+str(params[11]/self.nu)
+        
+        if False:
+            print ''
+            print 'reals = \n'+repr(self.realData[:,[1,3,5]])
+            print 'modelData = \n'+repr(modelData)
+            print 'real-model = \n'+repr(self.realData[:,[1,3,5]]-modelData)
+            print 'diffs = \n'+repr(diffs)
+            print 'errors = \n'+repr(errors)
+            print '(diffs**2)/(errors**2) = \n'+repr((diffs**2)/(errors**2))
             print 'chiSquared = '+str(params[11])
         accept = False
         if mcOnly:
-            if params[11]<self.dictVal('chiMAX'):
+            if (params[11]/self.nu)<self.dictVal('chiMAX'):
                 accept=True
         else:
             #handle case where doing SA and nothing accepted yet
             if (temp!=0)and(self.paramsLast==0):
-                if params[11]<self.dictVal('chiMAX'):
+                if (params[11]/self.nu)<self.dictVal('chiMAX'):
                     accept=True
             else:
                 likelihoodRatio = np.e**((self.paramsLast[11] - params[11])/ (2.0*temp))
@@ -202,6 +221,7 @@ class Simulator(object):
                     accept = True
         if accept:
             self.paramsLast=params
+        #print 'accept: reduced chiSquared: 3D, DI, RV = '+repr(accept)+": "+str(params[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)
         return (params,accept)
     
     def monteCarlo(self):
@@ -211,6 +231,8 @@ class Simulator(object):
         """
         self.log.info("In Simulator.monteCarlo")
         self.log.info('starting c++ obj test')
+        self.log.info("Trying "+str(self.dictVal('nSamples'))+" samples")
+        print "Trying "+str(self.dictVal('nSamples'))+" samples"
         modelData = np.zeros((self.realData.shape[0],3))
         acceptedParams = []
         e = 0.4
@@ -224,19 +246,23 @@ class Simulator(object):
         P = 15.0
         inc =  30.0
         offset = 0.0
-        for i in range(0,1):
-            params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
+        params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
+        tic=timeit.default_timer()
+        for i in range(0,self.dictVal('nSamples')):
             self.Orbit.calculate(modelData,params)
             (params,accept) = self.accept(params,modelData,mcOnly=True)
             #print 'atot = '+str(params[10])
-            print 'K = '+str(params[12])
-            print 'chiSquared = '+str(params[11])
+            #print 'K = '+str(params[12])
+            #print 'chiSquared = '+str(params[11])
             if accept:
                 acceptedParams.append(params)
-            #params = self.increment(params,mcOnly=True)
-        
-        
-        print '\nmodelData = \n'+repr(acceptedParams)
+            params = self.increment(params,mcOnly=True)
+        toc=timeit.default_timer()
+        swigTime=toc-tic
+        print "\nfor swig it took: "+str(swigTime)
+        acceptedParams = np.array(acceptedParams)
+        #print '\nmodelData = \n'+repr(acceptedParams)
+        print 'number accepted = '+str(acceptedParams.shape[0])
         baseFilename = 'testDataMC.fits'
         tools.writeFits(baseFilename,acceptedParams,self.settingsDict)
         #self.log.info('\nmodelData = \n'+repr(modelData))

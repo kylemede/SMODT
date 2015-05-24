@@ -5,6 +5,7 @@ import constants
 ########################################
 #Define the priors as python functions #
 ########################################
+#NOTE: key max = 8characters, value+comment max = 68 characters.
 #NOTE: only change the code and not the name of the functions or their inputs.
 def ePrior(e,P):
     if (P*constants.daysPerYear<1000.0)and(simpleSettingsDict['eMAX']!=0):
@@ -43,15 +44,15 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
-'chiMAX' : 3000.0,
+'chiMAX' : (50.0,"Max reduced chiSquared during SA or MC"),
 # set to 'true' to have NOTHING print to screen while running [bool]
-'SILENT' : False,
+'SILENT' : True,
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 'quiet' : True,
 # set to 'true' to receive prints from the functions called by main for testing [bool]
 'verbose' : False,
 # Simulated Annealing starting temperature [double]
-'strtTemp' : 800.0,
+'strtTemp' : (800.0,"SA starting temperature."),
 # make plot of posterior distributions? [bool]
 'pltDists' :True,
 # make plots of RV and DI/AM orbit fits [bool]
@@ -60,6 +61,8 @@ advancedDict = {
 'delChains' :True,
 # Delete combined data files after simulation is complete? [bool]
 'delCombined' :False,
+# run 'make' on C++/SWIG code to make sure it is up-to-date [bool]
+'remake' :False,
 ###$$$$$$$$$$$$$$$$$$$$$$ Keep in final version $$$$$$$$$$$$$$$$$$$$$$$$$$
 # Copy output non-data files to a Dropbox folder? [bool]  
 'CopyToDB' :False,
@@ -69,15 +72,15 @@ advancedDict = {
 # Settings for MCMC mode ###
 ############################
 # Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
-'CalcBurn' :True,
+'CalcBurn' :(True,"Calculate Burn-in?"),
 # remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?
-'delBurn' : True,
+'delBurn' : (True,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :True,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :1000000,
+'nSAsamp' :(1000000,"Number of Annealing samples"),
 # number of samples to draw for sigma tuning stage [int] 
-'nSTsamp' :500000,
+'nSTsamp' :(500000,"Number of Tuning samples"),
 # Make plots of MCMC progress plots? [bool]
 'pltMCMCprog' :False,
 # Make plots of Simulated Annealing progress plots? [bool]
@@ -90,32 +93,31 @@ advancedDict = {
 # Special Settings for the models ###
 #####################################
 # fit to the primary's RV orbit [bool]
-'fitPrime' : False,
+'fitPrime' : (False,"Fit primary's orbit?"),
 # Are the RVs in the RVdata.dat for the Primary star? [bool]
-'primeRVs' : True,
+'primeRVs' : (True,"RVs measured from Primary?"),
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
-'TcStep' : False,
+'TcStep' : (False,"Step in Tc not T?"),
 # take the time of center transit (inferior conjunction) into account? [bool]
-'TcEqualT' : True,
+'TcEqualT' : (True,"Fix Tc=T?"),
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
-'omegaPrv' : 0.0,
+'omegaPrv' : (0.0,"Custom fixed val added to RV omega in model"),
 ##################################################
 ## Special settings DI model:
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
-'omegaPdi' : 0.0,
+'omegaPdi' : (0.0,"Custom fixed val added to DI omega in model"),
 ######################
 # System Information #
 ######################
 #best estimate of primary's mass, and error [double][Msun]
-'mass1Est' : 1.0,
-'mass1Err' : 0.1,
+'mass1Est' : (1.0,"Primary's estimated mass"),
+'mass1Err' : (0.1,"Primary's estimated mass error"),
 #best estimate of secondary's mass, and error [double][Msun]
-'mass2Est' : 0.2,
-'mass2Err' : 0.1,
+'mass2Est' : (0.2,"Secondary's estimated mass"),
+'mass2Err' : (0.1,"Secondary's estimated mass error"),
 #best estimate of system's distance from Earth, and error [double][PC]
-'distEst' : 5.0,
-'distErr' :0.1,
-
+'distEst' : (5.0,"Estimated System Distance"),
+'distErr' : (0.1,"Estimated System Distance error"),
 ##################################
 # Push prior functions into dict #
 ##################################

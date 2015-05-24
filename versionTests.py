@@ -7,6 +7,18 @@ import numpy as np
 import timeit
 
 def calcTest():
+    if False:
+        ##silly progressbar test
+        bar = tools2.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
+        nsamp = 1000000
+        for i in range(1,nsamp):
+            math.sin(np.pi)
+            if (i%(nsamp//10))==0:
+                bar.render(i * 100 // nsamp, 'Complete so far.')
+        bar.render(100, 'Complete so far.')
+    
+    
+    
     #np.set_printoptions(precision=15)
     dataFilenameRoot = "/run/media/kmede/Data1/Todai_Work/Dropbox/EclipseWorkspaceDB/SMODT/FakeData_"
     diFilename1 = dataFilenameRoot+'DIdata.dat'

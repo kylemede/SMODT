@@ -7,6 +7,7 @@ import timeit
 from settings_and_inputData import constants
 
 
+
 class Simulator(object):
     """
     This is the Simulator parent class.  
@@ -233,6 +234,7 @@ class Simulator(object):
         self.log.info('starting c++ obj test')
         self.log.info("Trying "+str(self.dictVal('nSamples'))+" samples")
         print "Trying "+str(self.dictVal('nSamples'))+" samples"
+        bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
         modelData = np.zeros((self.realData.shape[0],3))
         acceptedParams = []
         e = 0.4
@@ -248,6 +250,7 @@ class Simulator(object):
         offset = 0.0
         params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
         tic=timeit.default_timer()
+        nsamp = self.dictVal('nSamples')
         for i in range(0,self.dictVal('nSamples')):
             self.Orbit.calculate(modelData,params)
             (params,accept) = self.accept(params,modelData,mcOnly=True)
@@ -257,6 +260,9 @@ class Simulator(object):
             if accept:
                 acceptedParams.append(params)
             params = self.increment(params,mcOnly=True)
+            if i%(self.dictVal('nSamples')//20)==0:
+                bar.render(i * 100 // self.dictVal('nSamples'), 'Complete so far.')
+        bar.render(100, 'Complete so far.')
         toc=timeit.default_timer()
         swigTime=toc-tic
         print "\nfor swig it took: "+str(swigTime)

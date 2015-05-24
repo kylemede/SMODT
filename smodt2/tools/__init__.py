@@ -8,6 +8,8 @@ from generalTools import loadRealData
 from generalTools import loadSettingsDict
 from generalTools import startup
 from generalTools import writeFits
+
+from progressbar.progressbar import ProgressBar
  
 import cppTools
 

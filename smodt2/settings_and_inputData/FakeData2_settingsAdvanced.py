@@ -51,10 +51,6 @@ advancedDict = {
 'quiet' : True,
 # set to 'true' to receive prints from the functions called by main for testing [bool]
 'verbose' : False,
-# Simulated Annealing starting temperature [double]
-'strtTemp' : (800.0,"SA starting temperature."),
-# Number of temperature steps over Simulated Annealing [int]
-'nTemps'  : (1000,"Number of temperature steps during SA."),
 # make plot of posterior distributions? [bool]
 'pltDists' :True,
 # make plots of RV and DI/AM orbit fits [bool]
@@ -80,9 +76,15 @@ advancedDict = {
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :True,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(1000000,"Number of Annealing samples"),
+'nSAsamp' :(100000,"Number of Annealing samples"),
+# Simulated Annealing starting temperature [double]
+'strtTemp' : (800.0,"SA starting temperature."),
+# Number of temperature steps over Simulated Annealing [int]
+'nTemps'  : (1000,"Number of temperature steps during SA."),
 # number of samples to draw for sigma tuning stage [int] 
 'nSTsamp' :(500000,"Number of Tuning samples"),
+# number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]
+'nSigmas': (1000,"Times to calc acceptance during MCMC (and tune sigmas during ST)."),
 # Make plots of MCMC progress plots? [bool]
 'pltMCMCprog' :False,
 # Make plots of Simulated Annealing progress plots? [bool]

@@ -32,6 +32,10 @@ class Simulator(object):
         self.latestSumStr = ''
         self.bestRedChiSqr = 1e6
         self.stgNsampDict = {'SA':'nSAsamp','ST':'nSTsamp','MC':'nSamples','MCMC':'nSamples'}
+        self.acceptBoolAry = []
+        self.parIntVaryAry = []
+        self.sigPercentMAX = 0.5 #$$ Put in settings dict???
+        self.sigPercentMIN = 0.01 #$$ Put in settings dict???
         #Load real data here? doesn't change so might as well
         #could also make the empty model data array here too
         ##Examples
@@ -110,7 +114,6 @@ class Simulator(object):
                                 paramInts.append(i)
                     else:
                         paramInts.append(i)
-        #print 'paramInts = '+repr(paramInts)
         #find total number of RV and DI epochs in real data
         nDIepochs = np.sum(np.where(self.realData[:,1]!=0))
         nRVepochs = np.sum(np.where(self.realData[:,5]!=0))
@@ -146,6 +149,7 @@ class Simulator(object):
         ## vary a random param if SA, ST or MCMC
         else:
             varyInt = self.paramInts[np.random.randint(0,len(self.paramInts))]
+            self.parIntVaryAry.append(varyInt)
             params[varyInt]=np.random.uniform(params[varyInt]-sigmas[varyInt],params[varyInt]+sigmas[varyInt])            
         ## if TcEqualT, push the varied one into the other
         if self.dictVal('TcEqualT'):
@@ -211,8 +215,11 @@ class Simulator(object):
                 if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
                     accept = True
         if accept:
+            self.acceptBoolAry.append(1)
             self.paramsLast=params
             self.latestSumStr = 'Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(params[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
+        else:
+            self.acceptBoolAry.append(0)
         ## Write a short summary to log
         if sample%(self.dictVal(self.stgNsampDict[stage])//10)==0:
             ##Log some summary for this step
@@ -242,19 +249,26 @@ class Simulator(object):
         of samples, a summary message will also be written to the log.
         """
         if (stage=='ST')or(stage=='MCMC'):
-            ##determine if time to tune
             acceptStr = ''
-            ##calculate acceptance rate for each param
             shiftStr = ''
-            if stage=='ST':
-                ##check each rate to choose up/down shift and do so and update shiftStr
-                shiftStr+=''
-                if sample%(self.dictVal('nSTsamp')//10)==0:
-                    ##Log some summary for this step
-                    self.log.info(acceptStr+shiftStr)
-            elif sample%(self.dictVal('nSamples')//10)==0:
+            if sample%(self.dictVal(self.stgNsampDict[stage])//10)==0:
+                for i in self.paramInts:
+                    ##calculate acceptance rate for each param
+                    nAcc = np.sum(self.acceptBoolAry[np.where(self.parIntVaryAry==i)])
+                    nTot = len(np.where(self.parIntVaryAry==i)[0])
+                    acceptStr+= 'parameter # '+str(i)+' acceptance = '+str(nAcc/nTot)+'\n'
+                    if stage=='ST':
+                        ##check each rate to choose up/down shift and do so and update shiftStr
+                        shiftStr+= 'parameter # '+str(i)+" shifting sigma "+str(sigmas[i])
+                        if ((nAcc/nTot)>0.35)and(sigmas[i]<self.sigPercentMAX):
+                            sigmas[i]+=self.sigPercentMIN
+                        elif ((nAcc/nTot)<0.25)and(sigmas[i]>self.sigPercentMIN):
+                            sigmas[i]-=self.sigPercentMIN
+                        shiftStr+=str(sigmas[i])+"\n"
+                self.acceptBoolAry = []
+                self.parIntVaryAry = []
                 ##Log some summary for this step
-                self.log.info(acceptStr)
+                self.log.info(acceptStr+shiftStr)
         return sigmas
     
     def simulatorFunc(self,stage='',startParams=[],startSigmas=[]):

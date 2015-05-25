@@ -53,6 +53,8 @@ advancedDict = {
 'verbose' : False,
 # Simulated Annealing starting temperature [double]
 'strtTemp' : (800.0,"SA starting temperature."),
+# Number of temperature steps over Simulated Annealing [int]
+'nTemps'  : (1000,"Number of temperature steps during SA."),
 # make plot of posterior distributions? [bool]
 'pltDists' :True,
 # make plots of RV and DI/AM orbit fits [bool]

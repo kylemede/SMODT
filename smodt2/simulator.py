@@ -224,7 +224,19 @@ class Simulator(object):
             self.paramsLast=params
         #print 'accept: reduced chiSquared: 3D, DI, RV = '+repr(accept)+": "+str(params[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)
         return (params,accept)
-    
+    def tempDrop(self,i,temp,mode=''):
+        """
+        Determine if it is time to drop the temp, and drop if it is.
+        Total temperature range is [strtTemp,0.1), so the minimum 
+        temperature is actually <1.0 meaning the last few temperature drops 
+        will really push the currently found minimum towards its peak.
+        There will be a fixed number of temperature steps = 'nTemps'.
+        """
+        if mode=='SA':
+            if i%(self.dictVal('nSAsamp')//self.dictVal('nTemps')):
+                temp-=(self.dictVal('strtTemp')+0.9)*(1.0/self.dictVal('nTemps'))
+        return temp
+        
     def monteCarlo(self):
         """
         Performs 'shotgun' Monte Carlo.
@@ -302,7 +314,7 @@ class Simulator(object):
             if accept:
                 acceptedParams.append(params)
             params = self.increment(params,sigmas=self.starterSigmas)
-            ##Decrease Temperature HERE!!!!!!
+            temp = self.tempDrop(i, temp, mode='SA')
             if i%(self.dictVal('nSamples')//20)==0:
                 bar.render(i * 100 // self.dictVal('nSamples'), 'Complete so far.')
         bar.render(100, 'Complete so far.')

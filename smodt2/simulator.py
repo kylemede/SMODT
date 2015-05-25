@@ -178,6 +178,8 @@ class Simulator(object):
         if (params[11]/self.nu)<self.bestRedChiSqr:
             self.bestRedChiSqr=(params[11]/self.nu)
             self.bestSumStr = 'BEST reduced chiSquareds so far: [total,DI,RV] = ['+str(params[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
+            if self.latestSumStr=='':
+                self.latestSumStr='Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))
         if False:
             print ''
             print 'reals = \n'+repr(self.realData[:,[1,3,5]])
@@ -196,7 +198,6 @@ class Simulator(object):
             if (temp!=0)and(self.paramsLast==0):
                 if (params[11]/self.nu)<self.dictVal('chiMAX'):
                     accept=True
-                    self.latestSumStr = 'Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(params[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
             ## For SA after first sample, MCMC, and ST
             else:
                 likelihoodRatio = np.e**((self.paramsLast[11] - params[11])/ (2.0*temp))
@@ -209,16 +210,16 @@ class Simulator(object):
                 priorsRatio*= (self.dictVal(distPrior)(params[2])/self.dictVal(distPrior)(self.paramsLast[2])) 
                 if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
                     accept = True
-                    self.latestSumStr = 'Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(params[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
         if accept:
             self.paramsLast=params
+            self.latestSumStr = 'Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(params[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
         ## Write a short summary to log
-        if sample%(self.dictVal(self.stgNsampDict[stage])//10):
+        if sample%(self.dictVal(self.stgNsampDict[stage])//10)==0:
             ##Log some summary for this step
-            self.log.info("Accepted: "+str(numAccepted)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+"\n"+self.latestSumStr+'\n'+self.bestSumStr)
+            self.log.info("\nAccepted: "+str(numAccepted)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+"\n"+self.latestSumStr+'\n'+self.bestSumStr+'\n')
         return (params,accept)
     
-    def tempDrop(self,i,temp,stage=''):
+    def tempDrop(self,sample,temp,stage=''):
         """
         Determine if it is time to drop the temp, and drop if it is.
         Total temperature range is [strtTemp,0.1), so the minimum 
@@ -227,7 +228,7 @@ class Simulator(object):
         There will be a fixed number of temperature steps = 'nTemps'.
         """
         if stage=='SA':
-            if i%(self.dictVal('nSAsamp')//self.dictVal('nTemps')):
+            if sample%(self.dictVal('nSAsamp')//self.dictVal('nTemps'))==0:
                 temp-=(self.dictVal('strtTemp')+0.9)*(1.0/self.dictVal('nTemps'))
                 ##Log some summary for this step??
         return temp
@@ -248,10 +249,10 @@ class Simulator(object):
             if stage=='ST':
                 ##check each rate to choose up/down shift and do so and update shiftStr
                 shiftStr+=''
-                if sample%(self.dictVal('nSTsamp')//10):
+                if sample%(self.dictVal('nSTsamp')//10)==0:
                     ##Log some summary for this step
                     self.log.info(acceptStr+shiftStr)
-            elif sample%(self.dictVal('nSamples')//10):
+            elif sample%(self.dictVal('nSamples')//10)==0:
                 ##Log some summary for this step
                 self.log.info(acceptStr)
         return sigmas
@@ -271,7 +272,7 @@ class Simulator(object):
         temp = 1.0
         if (stage=='SA')or(stage=='MC'):
             ## get starting params and sigmas as these two stages start at a random point
-            params = self.increment(stage='MC')
+            params = self.increment(params=np.zeros((len(self.rangeMins))),stage='MC')
             sigmas = self.starterSigmas
             if stage=='SA':
                 temp=self.dictVal('strtTemp')
@@ -281,12 +282,12 @@ class Simulator(object):
         ###Get a jumping routine for SA working???!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
             self.Orbit.calculate(modelData,params)
-            (params,accept) = self.accept(params,sample,modelData,len(acceptedParams),temp,stage)
+            (params,accept) = self.accept(sample,params,modelData,len(acceptedParams),temp,stage)
             if accept:
                 acceptedParams.append(params)
             params = self.increment(params,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
-            sigmas = sigTune(sample,sigmas,stage)
+            sigmas = self.sigTune(sample,sigmas,stage)
             if (True)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):#self.dictVal('SILENT')
                 bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), 'Complete so far.')
         if True:#self.dictVal('SILENT')
@@ -294,159 +295,12 @@ class Simulator(object):
         toc=timeit.default_timer()
         print "\n"+stage+" it took: "+str(toc-tic)#$$$$$ need time format function still $$$$$$$$$$$$$$$$$$$$$$$$$$$
         #print '\nmodelData = \n'+repr(acceptedParams)
+        ## SUMMARY of RUN log msg!!!!!!!!!!$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         print '# Accepted = '+str(len(acceptedParams))
         tools.writeFits('outputData'+stage+'.fits',acceptedParams,self.settingsDict)
         if (stage=='SA')or(stage=='ST'):
             return (params,sigmas)
         
         
-        
-        
-        
-        
-        
-        
-        
-#     def monteCarlo(self):
-#         """
-#         Performs 'shotgun' Monte Carlo.
-#         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
-#         """
-#         self.log.info("In Simulator.monteCarlo")
-#         self.log.info("Trying "+str(self.dictVal('nSamples'))+" samples")
-#         print "Trying "+str(self.dictVal('nSamples'))+" samples"
-#         bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
-#         modelData = np.zeros((self.realData.shape[0],3))
-#         acceptedParams = []
-#         e = 0.4
-#         Sys_Dist_PC = 5.0
-#         Mass1 = 1.0
-#         Mass2 = 0.2
-#         Omega = 60.0
-#         omega = 110.0
-#         T = 2457000.0
-#         T_center = 2457000.0
-#         P = 15.0
-#         inc =  30.0
-#         offset = 0.0
-#         params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
-#         tic=timeit.default_timer()
-#         nsamp = self.dictVal('nSamples')
-#         for sample in range(0,self.dictVal('nSamples')):
-#             self.Orbit.calculate(modelData,params)
-#             (params,accept) = self.accept(params,sample,modelData,numAccepted=len(acceptedParams),mcOnly=True)
-#             if accept:
-#                 acceptedParams.append(params)
-#             params = self.increment(params,mcOnly=True)
-#             if sample%(self.dictVal('nSamples')//20)==0:
-#                 bar.render(sample * 100 // self.dictVal('nSamples'), 'Complete so far.')
-#         bar.render(100, 'Complete so far.')
-#         toc=timeit.default_timer()
-#         swigTime=toc-tic
-#         print "\nMC it took: "+str(swigTime)
-#         acceptedParams = np.array(acceptedParams)
-#         #print '\nmodelData = \n'+repr(acceptedParams)
-#         print 'number accepted = '+str(acceptedParams.shape[0])
-#         baseFilename = 'testDataMC.fits'
-#         tools.writeFits(baseFilename,acceptedParams,self.settingsDict)
-#         #self.log.info('\nmodelData = \n'+repr(modelData))
-#         
-#         
-#     def simAnneal(self):
-#         """
-#         Performs Simulated Annealing.
-#         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
-#         """
-#         self.log.info("In Simulator.simAnneal")
-#         self.log.info("Trying "+str(self.dictVal('nSamples'))+" samples")
-#         print "Trying "+str(self.dictVal('nSamples'))+" samples"
-#         bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
-#         modelData = np.zeros((self.realData.shape[0],3))
-#         acceptedParams = []
-#         e = 0.4
-#         Sys_Dist_PC = 5.0
-#         Mass1 = 1.0
-#         Mass2 = 0.2
-#         Omega = 60.0
-#         omega = 110.0
-#         T = 2457000.0
-#         T_center = 2457000.0
-#         P = 15.0
-#         inc =  30.0
-#         offset = 0.0
-#         params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
-#         tic=timeit.default_timer()
-#         nsamp = self.dictVal('nSamples')
-#         temp = self.dictVal('strtTemp')
-#         for sample in range(0,self.dictVal('nSamples')):
-#             self.Orbit.calculate(modelData,params)
-#             (params,accept) = self.accept(params,sample,modelData,numAccepted=len(acceptedParams),temp=temp)
-#             if accept:
-#                 acceptedParams.append(params)
-#             params = self.increment(params,sigmas=self.starterSigmas)
-#             temp = self.tempDrop(sample, temp, stage='SA')
-#             if sample%(self.dictVal('nSamples')//20)==0:
-#                 bar.render(sample * 100 // self.dictVal('nSamples'), 'Complete so far.')
-#         bar.render(100, 'Complete so far.')
-#         toc=timeit.default_timer()
-#         swigTime=toc-tic
-#         print "\nSA it took: "+str(swigTime)
-#         acceptedParams = np.array(acceptedParams)
-#         #print '\nmodelData = \n'+repr(acceptedParams)
-#         print 'number accepted = '+str(acceptedParams.shape[0])
-#         baseFilename = 'testDataSA.fits'
-#         tools.writeFits(baseFilename,acceptedParams,self.settingsDict)
-#         #self.log.info('\nmodelData = \n'+repr(modelData))
-# 
-#     def sigmaTuning(self):
-#         """
-#         Performs Sigma Tuning.
-#         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
-#         """
-#         self.log.info("In Simulator.sigmaTuning")
-#         self.log.info("Trying "+str(self.dictVal('nSamples'))+" samples")
-#         print "Trying "+str(self.dictVal('nSamples'))+" samples"
-#         bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
-#         modelData = np.zeros((self.realData.shape[0],3))
-#         acceptedParams = []
-#         e = 0.4
-#         Sys_Dist_PC = 5.0
-#         Mass1 = 1.0
-#         Mass2 = 0.2
-#         Omega = 60.0
-#         omega = 110.0
-#         T = 2457000.0
-#         T_center = 2457000.0
-#         P = 15.0
-#         inc =  30.0
-#         offset = 0.0
-#         params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
-#         tic=timeit.default_timer()
-#         sigmas=self.starterSigmas
-#         for sample in range(0,self.dictVal('nSamples')):
-#             self.Orbit.calculate(modelData,params)
-#             (params,accept) = self.accept(params,sample,modelData,numAccepted=len(acceptedParams))
-#             if accept:
-#                 acceptedParams.append(params)
-#             params = self.increment(params)
-#             sigmas = sigTune(self,i,sigmas=sigmas,stage='ST')
-#             if sample%(self.dictVal('nSamples')//20)==0:
-#                 bar.render(sample* 100 // self.dictVal('nSamples'), 'Complete so far.')
-#         bar.render(100, 'Complete so far.')
-#         toc=timeit.default_timer()
-#         swigTime=toc-tic
-#         print "\nSA it took: "+str(swigTime)
-#         acceptedParams = np.array(acceptedParams)
-#         #print '\nmodelData = \n'+repr(acceptedParams)
-#         print 'number accepted = '+str(acceptedParams.shape[0])
-#         baseFilename = 'testDataST.fits'
-#         tools.writeFits(baseFilename,acceptedParams,self.settingsDict)
-#         #self.log.info('\nmodelData = \n'+repr(modelData))       
-#  
-#     def mcmc(self):
-#         """
-#         Performs pure Markov Chain Monte Carlo.
-#         Returns ?? not decided yet!!!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$ 
-#         """
-#         self.log.info("In Simulator.mcmc")
+
         

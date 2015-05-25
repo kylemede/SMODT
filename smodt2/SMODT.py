@@ -2,6 +2,7 @@
 import tools
 import simulator
 import sys
+import numpy as np
 
 """
     This is the 'main' of SMODT. 

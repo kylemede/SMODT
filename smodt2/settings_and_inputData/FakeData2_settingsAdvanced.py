@@ -24,17 +24,17 @@ def incPrior(inc):
         return 1.0
 def mass1Prior(mass):
     if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
-        return gaussian(mass, mass1Est, mass1Err)
+        return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
     else:
         return 1.0
 def mass2Prior(mass):
     if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
-        return gaussian(mass, mass2Est, mass2Err)
+        return gaussian(mass, advancedDict['mass2Est'][0], advancedDict['mass2Err'][0])
     else:
         return 1.0
 def distPrior(dist):
     if simpleSettingsDict['distMIN']!=simpleSettingsDict['distMAX']!=0:
-        return gaussian(dist, distEst, distErr)
+        return gaussian(dist, advancedDict['distEst'][0], advancedDict['distErr'][0])
     else:
         return 1.0
 
@@ -44,13 +44,15 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
-'chiMAX' : (65.0,"Max reduced chiSquared during SA or MC"),
+'chiMAX' : (500.0,"Max reduced chiSquared during SA or MC"),
 # set to 'true' to have NOTHING print to screen while running [bool]
 'SILENT' : True,
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
 'quiet' : True,
 # set to 'true' to receive prints from the functions called by main for testing [bool]
 'verbose' : False,
+#number of times to produce a summary log msg during a stage's progress [int]
+'nSumry'  :10,
 # make plot of posterior distributions? [bool]
 'pltDists' :True,
 # make plots of RV and DI/AM orbit fits [bool]
@@ -76,7 +78,7 @@ advancedDict = {
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :True,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(100000,"Number of Annealing samples"),
+'nSAsamp' :(1000000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
 'strtTemp' : (800.0,"SA starting temperature."),
 # Number of temperature steps over Simulated Annealing [int]
@@ -84,7 +86,7 @@ advancedDict = {
 # number of samples to draw for sigma tuning stage [int] 
 'nSTsamp' :(500000,"Number of Tuning samples"),
 # number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]
-'nSigmas': (1000,"Times to calc acceptance during MCMC (and tune sigmas during ST)."),
+'nSigmas': (1000,"Times to calc acceptance (and tune sigmas during ST)."),
 # Make plots of MCMC progress plots? [bool]
 'pltMCMCprog' :False,
 # Make plots of Simulated Annealing progress plots? [bool]

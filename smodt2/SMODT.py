@@ -15,7 +15,7 @@ def smodt():
     'main'
     """
     settingsDict = tools.startup(sys.argv)
-    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=100)
+    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=20)
     log.info("Prepend string passed in was '"+settingsDict['prepend']+"'")
     Sim = simulator.Simulator(settingsDict)
     e = 0.4

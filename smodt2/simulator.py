@@ -49,8 +49,8 @@ class Simulator(object):
         need code to load them up.
         """
         self.log.info("In Simulator.starter")
-        ##check there are 
-        if np.max(self.realData[:,-1])!=len(self.dictVal('vMINs')):
+        ##check there are matching number of RV datasets and provided min/max vals for offsets
+        if np.max(self.realData[:,-1])!=(len(self.dictVal('vMINs'))-1):
             self.log.error("THE NUMBER OF vMINs/vMAXs DOES NOT MATCH THE NUMBER OF RV DATASETS!!!\n"+\
                            "please check the vMINs/vMAXs arrays in the simple settings file\n"+\
                            "to make sure they have matching lengths to the number of RV datasets.")
@@ -124,6 +124,11 @@ class Simulator(object):
         nu = nDIepochs*2+nRVepochs-nVars
         nuDI = nDIepochs*2-nDIvars
         nuRV = nRVepochs-nRVvars
+        if False:
+            print 'rangeMins = '+repr(rangeMins)
+            print 'rangeMaxs = '+repr(rangeMaxs)
+            print 'sigmas = '+repr(sigmas)
+            print 'paramInts = '+repr(paramInts)
         return (rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
     
     def dictVal(self,key):
@@ -157,7 +162,24 @@ class Simulator(object):
                 params[5]=params[6]
             else:
                 params[6]=params[5]
+        #print 'params = '+repr(params)
         return params
+    
+    def rangeCheck(self,params,numAccepted=0,stage=''):
+        """
+        Check if values inside allowed range
+        """
+        inRange=True
+        for i in range(0,len(params)):
+            if i in self.paramInts:
+                if (self.rangeMins[i]>params[i])or(params[i]>self.rangeMaxs[i]):
+                    inRange=False
+        if ((inRange==False)and(numAccepted==0))and(stage=='SA'):
+            #jump as starting position was not in dead space.
+            params = self.increment(params,stage='MC')
+            self.log.debug("Nothing accepted yet, so jumping to new starting position.")
+            inRange=True
+        return (params,inRange)
     
     def accept(self,sample,params,modelData,numAccepted=0,temp=1.0,stage=''):
         """
@@ -170,6 +192,8 @@ class Simulator(object):
         be set to 1.0 for MCMC and Sigma Tuning, and should be provided 
         for Simulated Annealing.
         """
+        if (self.rangeMins[4]>params[4])or(params[4]>self.rangeMaxs[4]):
+            print 'e='+str(params[4])
         diffs = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1]),(self.realData[:,5]-modelData[:,2])))
         errors = np.concatenate((self.realData[:,2],self.realData[:,4],self.realData[:,6]))
         params[11] = np.sum((diffs**2)/(errors**2))
@@ -199,19 +223,20 @@ class Simulator(object):
                 accept=True
         else:
             #handle case where doing SA and nothing accepted yet
-            if (temp!=0)and(self.paramsLast==0):
+            if (temp!=0)and(numAccepted==0):
                 if (params[11]/self.nu)<self.dictVal('chiMAX'):
+                    #Forces an acceptance of current parameters.  Right idea???$$$$$$$$$$$$$$$
                     accept=True
             ## For SA after first sample, MCMC, and ST
             else:
                 likelihoodRatio = np.e**((self.paramsLast[11] - params[11])/ (2.0*temp))
                 ###### put all prior funcs together in dict??
-                priorsRatio = (self.dictVal(ePrior)(params[4])/self.dictVal(ePrior)(self.paramsLast[4]))
-                priorsRatio*= (self.dictVal(pPrior)(params[7])/self.dictVal(pPrior)(self.paramsLast[7]))
-                priorsRatio*= (self.dictVal(incPrior)(params[8])/self.dictVal(incPrior)(self.paramsLast[8]))
-                priorsRatio*= (self.dictVal(mass1Prior)(params[0])/self.dictVal(mass1Prior)(self.paramsLast[0]))
-                priorsRatio*= (self.dictVal(mass2Prior)(params[1])/self.dictVal(mass2Prior)(self.paramsLast[1]))
-                priorsRatio*= (self.dictVal(distPrior)(params[2])/self.dictVal(distPrior)(self.paramsLast[2])) 
+                priorsRatio = (self.dictVal('ePrior')(params[4],params[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
+                priorsRatio*= (self.dictVal('pPrior')(params[7])/self.dictVal('pPrior')(self.paramsLast[7]))
+                priorsRatio*= (self.dictVal('incPrior')(params[8])/self.dictVal('incPrior')(self.paramsLast[8]))
+                priorsRatio*= (self.dictVal('mass1Prior')(params[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
+                priorsRatio*= (self.dictVal('mass2Prior')(params[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
+                priorsRatio*= (self.dictVal('distPrior')(params[2])/self.dictVal('distPrior')(self.paramsLast[2])) 
                 if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
                     accept = True
         if accept:
@@ -220,8 +245,13 @@ class Simulator(object):
             self.latestSumStr = 'Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(params[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
         else:
             self.acceptBoolAry.append(0)
+            ## jumping done in another place too, kill this jump?? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            if ((numAccepted==False)and(stage=='SA'))and(sample%(self.dictVal('nSAsamp')//self.dictVal('nTemps'))==0):
+                #jump as starting position was not in dead space. $$$$$ this is second jump, needed???
+                params = self.increment(params,stage='MC')
+                self.log.info("Nothing accepted after "+str(sample)+" samples, so jumping to new starting position.")
         ## Write a short summary to log
-        if sample%(self.dictVal(self.stgNsampDict[stage])//10)==0:
+        if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
             ##Log some summary for this step
             self.log.info("\nAccepted: "+str(numAccepted)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+"\n"+self.latestSumStr+'\n'+self.bestSumStr+'\n')
         return (params,accept)
@@ -295,10 +325,12 @@ class Simulator(object):
             sigmas = startSigmas
         ###Get a jumping routine for SA working???!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
-            self.Orbit.calculate(modelData,params)
-            (params,accept) = self.accept(sample,params,modelData,len(acceptedParams),temp,stage)
-            if accept:
-                acceptedParams.append(params)
+            (params,inRange)=self.rangeCheck(params,len(acceptedParams),stage)
+            if inRange:
+                self.Orbit.calculate(modelData,params)
+                (params,accept) = self.accept(sample,params,modelData,len(acceptedParams),temp,stage)
+                if accept:
+                    acceptedParams.append(params)
             params = self.increment(params,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
             sigmas = self.sigTune(sample,sigmas,stage)

@@ -28,8 +28,8 @@ simpleSettingsDict={
 'distMIN' : 4.0,
 'distMAX' : 6.0,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-'OmegaMIN' : 160.0,
-'OmegaMAX' : 180.0,
+'OmegaMIN' : 20.0,
+'OmegaMAX' : 110.0,
 # Minimum/Maximum allowed value for the Eccentricity [double]
 'eMIN' : 0.2,
 'eMAX' : 0.6,
@@ -45,7 +45,7 @@ simpleSettingsDict={
 'incMAX' : 50.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 80,
-'omegaMAX' : 130,
+'omegaMAX' : 140,
 ## Minimum/Maximum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
 #a_totMIN :2,
 #a_totMAX :7,

@@ -92,8 +92,17 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 				NewtonCount +=1;
 			}
 			//double check it satisfies the original equation
-			if (fabs((E-params[4]*sin(E))-M)>1.0e-5)
+			if (fabs((E-params[4]*sin(E))-M)>1.0e-5){
 				std::cout<<"PROBLEM!! resulting E from Newton's loop isn't within error limit!!!"<<std::endl;
+				if (true){
+					std::cout<<"M = "<<M <<std::endl;
+					std::cout<<"e = "<<params[4]<<std::endl;
+					std::cout<<"T = "<<params[5]<<std::endl;
+					std::cout<<"Tc = "<<params[6]<<std::endl;
+					std::cout<<"P = "<<params[7]<<std::endl;
+					std::cout<<"Eprime = "<<Eprime <<"\n" <<std::endl;
+				}
+			}
 			thetaPrime = acos((cos(E)-params[4])/(1.0-params[4]*cos(E)));
 			if (E>pi)
 				thetaPrime = 2.0*pi-thetaPrime;

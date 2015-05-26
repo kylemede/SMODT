@@ -78,15 +78,15 @@ advancedDict = {
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :True,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(100000,"Number of Annealing samples"),
+'nSAsamp' :(50000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (100.0,"SA starting temperature."),
+'strtTemp' : (50.0,"SA starting temperature."),
 # Number of temperature steps over Simulated Annealing [int]
 'nTmpStps'  : (1000,"Number of temperature steps during SA."),
 # number of samples to draw for sigma tuning stage [int] 
-'nSTsamp' :(1000000,"Number of Tuning samples"),
+'nSTsamp' :(50000,"Number of Tuning samples"),
 # number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]
-'nSigStps': (100,"Times to calc acceptance and tune sigmas."),
+'nSigStps': (25,"Times to calc acceptance and tune sigmas."),
 # interval of accepted values between storing in output array (for SA,ST,MCMC, not MC) [int]
 'saveInt' : (10,"Interval between saving params, for all but MC."),
 # Make plots of MCMC progress plots? [bool]

@@ -35,10 +35,12 @@ class Simulator(object):
         self.bestRedChiSqr = 1e6
         self.stgNsampDict = {'SA':'nSAsamp','ST':'nSTsamp','MC':'nSamples','MCMC':'nSamples'}
         self.acceptCount = 0
+        self.acceptStr = ''
+        self.shiftStr = ''
         self.acceptBoolAry = []
         self.parIntVaryAry = []
         self.sigPercentMAX = 1.0 #$$ Put in settings dict???
-        self.sigPercentMIN = 0.01 #$$ Put in settings dict???
+        self.sigPercentMIN = 0.005 #$$ Put in settings dict???
         #Load real data here? doesn't change so might as well
         #could also make the empty model data array here too
         ##Examples
@@ -258,7 +260,7 @@ class Simulator(object):
                 priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
                 priorsRatio*= (self.dictVal('distPrior')(paramsOut[2])/self.dictVal('distPrior')(self.paramsLast[2])) 
                 lhs = np.random.uniform(0.0, 1.0)
-                if stage=='ST':
+                if False:# stage=='ST':
                     print '\nself.paramsLast[11] = '+repr(self.paramsLast[11])
                     print 'paramsOut[11] = '+repr(paramsOut[11])
                     print 'paramsOut[11] = '+repr(paramsOut[11])
@@ -281,7 +283,7 @@ class Simulator(object):
             ##Log some summary for this step
             sumStr = "below\n# Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
             sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
-            self.log.info(sumStr)
+            self.log.debug(sumStr)
         return (paramsOut,accept)
     
     def tempDrop(self,sample,temp,stage=''):
@@ -306,48 +308,42 @@ class Simulator(object):
         of samples, a summary message will also be written to the log.
         """
         sigmasOut = copy.deepcopy(sigs)
-        if stage!='MC':#(stage=='ST')or(stage=='MCMC'):
-            acceptStr = '\n'
-            shiftStr = '\n'
+        if (stage=='ST')or(stage=='MCMC'):
             if (sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSigStps'))==0)and(self.acceptCount>1):
+                self.acceptStr = '\n'
+                self.shiftStr = '\n'
                 self.parIntVaryAry = np.array(self.parIntVaryAry)
                 self.acceptBoolAry = np.array(self.acceptBoolAry)
-                
-                #print "self.parIntVaryAry = "+repr(self.parIntVaryAry)
-                print "len(self.acceptBoolAry) = "+repr(len(self.acceptBoolAry))
-                #print "len(self.parIntVaryAry) = "+repr(len(self.parIntVaryAry))
+                self.acceptStr+="Number of steps used to calculate acceptance rate = "+repr(len(self.acceptBoolAry))+'\n'
                 for i in self.paramInts:
                     ##calculate acceptance rate for each param
-                    #print 'i = '+str(i)
-                    #print "np.where(self.parIntVaryAry==i,self.acceptBoolAry,0) = "+repr(np.where(self.parIntVaryAry==i,self.acceptBoolAry,0))
-                    
-
                     nAcc = np.sum(np.where(self.parIntVaryAry==i,self.acceptBoolAry,0))
                     nTot = len(np.where(self.parIntVaryAry==i)[0])
-                    #print 'nAcc = '+str(nAcc)
-                    #print 'nTot = '+str(nTot)
-                    acceptStr+= 'parameter # '+str(i)+' acceptance = '+str(float(nAcc)/float(nTot))+'\n'
+                    self.acceptStr+= 'parameter # '+str(i)+' acceptance = '+str(float(nAcc)/float(nTot))+'\n'
                     if stage=='ST':
                         ##check each rate to choose up/down shift and do so and update shiftStr
-                        shiftStr+= 'parameter # '+str(i)+" shifting sigma "+str(sigs[i])
+                        self.shiftStr+= 'parameter # '+str(i)+" shifting sigma "+str(sigs[i])+" -> "
                         if ((float(nAcc)/float(nTot))>0.35)and(sigs[i]<self.sigPercentMAX):
                             sigmasOut[i]+=self.sigPercentMIN
                         elif ((float(nAcc)/float(nTot))<0.25)and(sigs[i]>self.sigPercentMIN):
                             sigmasOut[i]-=self.sigPercentMIN
-                        shiftStr+=str(sigmasOut[i])+"\n"
+                        self.shiftStr+=str(sigmasOut[i])+"\n"
                 self.acceptBoolAry = []
                 self.parIntVaryAry = []
                 ##Log some summary for this step
-                self.log.info(acceptStr+shiftStr)
+                self.log.debug(self.acceptStr+self.shiftStr)
         return sigmasOut
     
     def endSummary(self,totSaved,temp,stage=''):
         """
+        Make a final summary of important statistics for the chain.
         """
-        sumStr = "below\nFinalTemp = "+str(temp)+"\nTotal number of steps accepted = "+str(self.acceptCount)+"\n"
+        sumStr = "END OF CHAIN SUMMARY below\nFinalTemp = "+str(temp)+"\nTotal number of steps accepted = "+str(self.acceptCount)+"\n"
         sumStr+= "Average acceptance rate = "+str(float(self.acceptCount)/float(self.dictVal(self.stgNsampDict[stage])))+"\n"
         sumStr+= "Total number of steps stored = "+str(totSaved)+"\n"
         sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
+        if (stage=="ST")or(stage=="MCMC"):
+            sumStr+=self.acceptStr+self.shiftStr
         self.log.info(sumStr)
     
     def resetTracked(self,pars):
@@ -357,6 +353,8 @@ class Simulator(object):
         self.paramsLast = pars
         self.bestSumStr = ''
         self.latestSumStr = ''
+        self.acceptStr = ''
+        self.shiftStr = ''
         self.bestRedChiSqr = 1e6
         self.acceptCount = 0
         self.acceptBoolAry = []
@@ -367,8 +365,9 @@ class Simulator(object):
         The core function to perform the requested stage of the simulation ('MC','SA','ST','MCMC').
         If stage is SA or ST: final (params,sigmas) are returned, else nothing.
         """
+        
         tic=timeit.default_timer()
-        self.log.info("Trying "+str(self.dictVal(self.stgNsampDict[stage]))+" samples")
+        self.log.info("Trying "+str(self.dictVal(self.stgNsampDict[stage]))+" samples in sim mode = "+stage)
         bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
         modelData = np.zeros((len(self.realData),3))
         acceptedParams = []
@@ -390,7 +389,7 @@ class Simulator(object):
         startStr+= 'rangeMaxs = '+repr(self.rangeMaxs)+'\n'
         startStr+= 'sigmas = '+repr(sigmas)+'\n'
         startStr+= 'paramInts = '+repr(self.paramInts)+'\n'
-        self.log.info(startStr)
+        self.log.debug(startStr)
         ##loop through each sample 
         ##Follows these steps: inRange?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? DONE ->write output data
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
@@ -399,8 +398,8 @@ class Simulator(object):
             #    print 'sample = '+str(sample)+", temp = "+str(temp)+", # accepted = "+str(self.acceptCount)+", # saved = "+str(len(acceptedParams))+', inRange = '+repr(inRange)
             if inRange:
                 self.Orbit.calculate(modelData,proposedPars)
-                if (stage=='ST')and(sample==1000):
-                    break
+                #if (stage=='ST')and(sample==10000):
+                #    break
                 (params,accept) = self.accept(sample,proposedPars,modelData,len(acceptedParams),temp,stage)
                 if accept and (stage=='MC'):
                     acceptedParams.append(params)
@@ -414,7 +413,7 @@ class Simulator(object):
                 latestPars = proposedPars
             proposedPars = self.increment(latestPars,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
-            if 0.2<temp<3.0:
+            if stage=="ST":
                 sigmas = self.sigTune(sample,sigmas,stage)
             if (True)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):#self.dictVal('SILENT')
                 bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), 'Complete so far.')
@@ -424,9 +423,13 @@ class Simulator(object):
         self.log.info(stage+" it took: "+str(toc-tic)+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$$$$$$$$$$$$$$
         #print '\nmodelData = \n'+repr(acceptedParams)
         self.endSummary(len(acceptedParams),temp,stage)
-        tools.writeFits('outputData'+stage+'.fits',acceptedParams,self.settingsDict)
-        if (stage=='SA')or(stage=='ST'):
-            return (latestPars,sigmas)#(self.paramsBest,sigmas)
+        outFname = tools.writeFits('outputData'+stage+'.fits',acceptedParams,self.settingsDict)
+        if stage=='ST':
+            return (latestPars,sigmas)
+        elif stage=='SA':
+            return (self.paramsBest,np.ones(np.array(sigmas).shape)*0.01)
+        elif(stage=='MC')or(stage=='MCMC'):
+            return outFname
         
         
 

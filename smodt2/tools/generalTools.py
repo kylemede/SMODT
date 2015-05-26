@@ -271,6 +271,7 @@ def writeFits(baseFilename,data,settingsDict):
     """
     if '.fits' not in baseFilename:
         baseFilename=baseFilename+'.fits'
+    outFname = os.path.join(settingsDict['finalFolder'],baseFilename)
     hdu = pyfits.PrimaryHDU(data)
     hdulist = pyfits.HDUList([hdu])
     header = hdulist[0].header
@@ -280,8 +281,8 @@ def writeFits(baseFilename,data,settingsDict):
             header[key]=settingsDict[key]
             if len(settingsDict[key][1])>47:
                 log.warning("comment too long for pyfits headers:"+settingsDict[key][1])
-    hdulist.writeto(os.path.join(settingsDict['finalFolder'],baseFilename))
-    log.info("output file written to:below\n"+os.path.join(settingsDict['finalFolder'],baseFilename))
+    hdulist.writeto(outFname)
+    log.info("output file written to:below\n"+outFname)
     hdulist.close()
     ## check resulting fits file header
     if False:
@@ -291,6 +292,7 @@ def writeFits(baseFilename,data,settingsDict):
         for key in head:
             print key+' = '+repr(header[key])
         print '\n\n'+repr(head)
+    return outFname
     
     
     

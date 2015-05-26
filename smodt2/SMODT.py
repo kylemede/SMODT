@@ -16,7 +16,7 @@ def smodt():
     """
     settingsDict = tools.startup(sys.argv)
     log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=20)
-    log.info("Prepend string passed in was '"+settingsDict['prepend']+"'")
+    log.debug("Prepend string passed in was '"+settingsDict['prepend']+"'")
     Sim = simulator.Simulator(settingsDict)
     e = 0.4
     Sys_Dist_PC = 5.0
@@ -31,14 +31,16 @@ def smodt():
     offset = 0.0
     params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
     ##mcONLYcall
-    #Sim.simulatorFunc('MC')
+    #outFname = Sim.simulatorFunc('MC')
     ## SA call
-    (params,sigmas) = Sim.simulatorFunc('SA')
+    (paramsSA,sigmasSA) = Sim.simulatorFunc('SA')
     ## ST call
     print '-'*50+'\n\n\n'
-    (params,sigmas) = Sim.simulatorFunc('ST',params,sigmas)
+    (paramsST,sigmasST) = Sim.simulatorFunc('ST',paramsSA,sigmasSA)
     ##MCMC call
-    #Sim.simulatorFunc('MCMC',params,sigmas)    
+    print '-'*50+'\n\n\n'
+    outFname = Sim.simulatorFunc('MCMC',paramsST,sigmasST)
+    print 'FINAL OUTFILE :\n'+outFname    
     
     
     log.info("End of SMODT2.0 main")

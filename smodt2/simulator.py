@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import copy
 from scipy.constants.codata import precision
 #np.set_printoptions(precision=15)
 import tools
@@ -124,7 +125,7 @@ class Simulator(object):
         nu = nDIepochs*2+nRVepochs-nVars
         nuDI = nDIepochs*2-nDIvars
         nuRV = nRVepochs-nRVvars
-        if False:
+        if True:
             print 'rangeMins = '+repr(rangeMins)
             print 'rangeMaxs = '+repr(rangeMaxs)
             print 'sigmas = '+repr(sigmas)
@@ -142,46 +143,61 @@ class Simulator(object):
         else:
             return self.settingsDict[key]
     
-    def increment(self,params=[],sigmas=[],stage=''):
+    def increment(self,pars=[],sigs=[],stage=''):
         """
         Randomly increment one of the parameters
         """
+        parsOut = copy.deepcopy(pars)
+        varyInt=0
         ## vary all the params if mcONLY
         if stage=='MC':
-            for i in range(0,len(params)):
+            for i in range(0,len(pars)):
                 if i in self.paramInts:
-                    params[i]=np.random.uniform(self.rangeMins[i],self.rangeMaxs[i])
+                    parsOut[i]=np.random.uniform(self.rangeMins[i],self.rangeMaxs[i])
         ## vary a random param if SA, ST or MCMC
         else:
             varyInt = self.paramInts[np.random.randint(0,len(self.paramInts))]
             self.parIntVaryAry.append(varyInt)
-            params[varyInt]=np.random.uniform(params[varyInt]-sigmas[varyInt],params[varyInt]+sigmas[varyInt])            
+            #print '\nbefore params[varyInt] = '+repr(pars[varyInt])
+            #print 'np.random.uniform(params[varyInt]-sigmas[varyInt],params[varyInt]+sigmas[varyInt])   ='+repr(np.random.uniform(params[varyInt]-sigmas[varyInt],params[varyInt]+sigmas[varyInt]))
+            parsOut[varyInt]=np.random.uniform(pars[varyInt]-sigs[varyInt],pars[varyInt]+sigs[varyInt]) 
+            #print 'after params[varyInt] = '+repr(parsOut[varyInt])           
         ## if TcEqualT, push the varied one into the other
         if self.dictVal('TcEqualT'):
             if self.dictVal('TcStep'):
-                params[5]=params[6]
+                parsOut[5]=parsOut[6]
             else:
-                params[6]=params[5]
-        #print 'params = '+repr(params)
-        return params
+                parsOut[6]=parsOut[5]
+        if False:
+            #print 'params = '+repr(params)
+            print 'varyInt = '+str(varyInt)
+            print 'input params[varyInt] = '+repr(pars[varyInt])
+            print 'sigmas = '+repr(sigs)
+            print 'sigmas[varyInt] = '+repr(sigs[varyInt])
+            print 'parsOut[varyInt] = '+repr(parsOut[varyInt])
+            print 'parsOut-params = '+repr(parsOut-pars)
+            print 'after2 params[varyInt] = '+repr(parsOut[varyInt])
+        return parsOut
     
-    def rangeCheck(self,params,numAccepted=0,stage=''):
+    def rangeCheck(self,pars,numAccepted=0,stage=''):
         """
         Check if values inside allowed range
         """
         inRange=True
-        for i in range(0,len(params)):
+        paramsOut = copy.deepcopy(pars)
+        for i in range(0,len(pars)):
             if i in self.paramInts:
-                if (self.rangeMins[i]>params[i])or(params[i]>self.rangeMaxs[i]):
+                if (self.rangeMins[i]>pars[i])or(pars[i]>self.rangeMaxs[i]):
                     inRange=False
+                    #print 'out of range param was # '+str(i)+" val = "+repr(pars[i])
         if ((inRange==False)and(numAccepted==0))and(stage=='SA'):
             #jump as starting position was not in dead space.
-            params = self.increment(params,stage='MC')
+            paramsOut = self.increment(pars,np.zeros(pars.shape),stage='MC')
             self.log.debug("Nothing accepted yet, so jumping to new starting position.")
             inRange=True
-        return (params,inRange)
+        return (paramsOut,inRange)
     
-    def accept(self,sample,params,modelData,numAccepted=0,temp=1.0,stage=''):
+    def accept(self,sample,pars,modelData,numAccepted=0,temp=1.0,stage=''):
         """
         First this will calculate chi squared for model vs real data.
         
@@ -192,20 +208,19 @@ class Simulator(object):
         be set to 1.0 for MCMC and Sigma Tuning, and should be provided 
         for Simulated Annealing.
         """
-        if (self.rangeMins[4]>params[4])or(params[4]>self.rangeMaxs[4]):
-            print 'e='+str(params[4])
+        paramsOut = copy.deepcopy(pars)
         diffs = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1]),(self.realData[:,5]-modelData[:,2])))
         errors = np.concatenate((self.realData[:,2],self.realData[:,4],self.realData[:,6]))
-        params[11] = np.sum((diffs**2)/(errors**2))
+        paramsOut[11] = np.sum((diffs**2)/(errors**2))
         diffsDI = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1])))
         errorsDI = np.concatenate((self.realData[:,2],self.realData[:,4]))
         diffsRV = (self.realData[:,5]-modelData[:,2])
         errorsRV = self.realData[:,6][np.where(diffsRV!=0)]
         chiSquaredDI = np.sum((diffsDI[np.where(diffsDI!=0)]**2)/(errorsDI[np.where(diffsDI!=0)]**2))
         chiSquaredRV = np.sum((diffsRV[np.where(diffsRV!=0)]**2)/(errorsRV**2))
-        if (params[11]/self.nu)<self.bestRedChiSqr:
-            self.bestRedChiSqr=(params[11]/self.nu)
-            self.bestSumStr = 'BEST reduced chiSquareds so far: [total,DI,RV] = ['+str(params[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
+        if (paramsOut[11]/self.nu)<self.bestRedChiSqr:
+            self.bestRedChiSqr=(paramsOut[11]/self.nu)
+            self.bestSumStr = 'BEST reduced chiSquareds so far: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
             if self.latestSumStr=='':
                 self.latestSumStr='Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))
         if False:
@@ -216,45 +231,46 @@ class Simulator(object):
             print 'diffs = \n'+repr(diffs)
             print 'errors = \n'+repr(errors)
             print '(diffs**2)/(errors**2) = \n'+repr((diffs**2)/(errors**2))
-            print 'chiSquared = '+str(params[11])
+            print 'chiSquared = '+str(paramsOut[11])
         accept = False
         if stage=='MC':
-            if (params[11]/self.nu)<self.dictVal('chiMAX'):
+            if (paramsOut[11]/self.nu)<self.dictVal('chiMAX'):
                 accept=True
         else:
             #handle case where doing SA and nothing accepted yet
             if (temp!=0)and(numAccepted==0):
-                if (params[11]/self.nu)<self.dictVal('chiMAX'):
+                if (paramsOut[11]/self.nu)<self.dictVal('chiMAX'):
                     #Forces an acceptance of current parameters.  Right idea???$$$$$$$$$$$$$$$
                     accept=True
             ## For SA after first sample, MCMC, and ST
             else:
-                likelihoodRatio = np.e**((self.paramsLast[11] - params[11])/ (2.0*temp))
+                likelihoodRatio = np.e**((self.paramsLast[11] - paramsOut[11])/ (2.0*temp))
                 ###### put all prior funcs together in dict??
-                priorsRatio = (self.dictVal('ePrior')(params[4],params[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
-                priorsRatio*= (self.dictVal('pPrior')(params[7])/self.dictVal('pPrior')(self.paramsLast[7]))
-                priorsRatio*= (self.dictVal('incPrior')(params[8])/self.dictVal('incPrior')(self.paramsLast[8]))
-                priorsRatio*= (self.dictVal('mass1Prior')(params[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
-                priorsRatio*= (self.dictVal('mass2Prior')(params[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
-                priorsRatio*= (self.dictVal('distPrior')(params[2])/self.dictVal('distPrior')(self.paramsLast[2])) 
+                priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
+                priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
+                priorsRatio*= (self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
+                priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
+                priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
+                priorsRatio*= (self.dictVal('distPrior')(paramsOut[2])/self.dictVal('distPrior')(self.paramsLast[2])) 
                 if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
                     accept = True
         if accept:
             self.acceptBoolAry.append(1)
-            self.paramsLast=params
-            self.latestSumStr = 'Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(params[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
+            self.paramsLast=paramsOut
+            self.latestSumStr = 'Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
         else:
             self.acceptBoolAry.append(0)
             ## jumping done in another place too, kill this jump?? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             if ((numAccepted==False)and(stage=='SA'))and(sample%(self.dictVal('nSAsamp')//self.dictVal('nTemps'))==0):
                 #jump as starting position was not in dead space. $$$$$ this is second jump, needed???
-                params = self.increment(params,stage='MC')
+                paramsOut = self.increment(pars,np.zeros(params.shape),stage='MC')
                 self.log.info("Nothing accepted after "+str(sample)+" samples, so jumping to new starting position.")
         ## Write a short summary to log
+        #print "sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry') = "+repr(sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry')))
         if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
             ##Log some summary for this step
             self.log.info("\nAccepted: "+str(numAccepted)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+"\n"+self.latestSumStr+'\n'+self.bestSumStr+'\n')
-        return (params,accept)
+        return (paramsOut,accept)
     
     def tempDrop(self,sample,temp,stage=''):
         """
@@ -270,7 +286,7 @@ class Simulator(object):
                 ##Log some summary for this step??
         return temp
     
-    def sigTune(self,sample,sigmas=[],stage=''):
+    def sigTune(self,sample,sigs=[],stage=''):
         """
         Check if it is time to calculate the acceptance rate.
         If stage is 'ST'== Sigma Tuning, then it will also tune the 
@@ -278,6 +294,7 @@ class Simulator(object):
         rate.  In both cases, if it the sample (i) is at 10% of the total number 
         of samples, a summary message will also be written to the log.
         """
+        sigmasOut = copy.deepcopy(sigs)
         if (stage=='ST')or(stage=='MCMC'):
             acceptStr = ''
             shiftStr = ''
@@ -289,17 +306,17 @@ class Simulator(object):
                     acceptStr+= 'parameter # '+str(i)+' acceptance = '+str(nAcc/nTot)+'\n'
                     if stage=='ST':
                         ##check each rate to choose up/down shift and do so and update shiftStr
-                        shiftStr+= 'parameter # '+str(i)+" shifting sigma "+str(sigmas[i])
-                        if ((nAcc/nTot)>0.35)and(sigmas[i]<self.sigPercentMAX):
-                            sigmas[i]+=self.sigPercentMIN
-                        elif ((nAcc/nTot)<0.25)and(sigmas[i]>self.sigPercentMIN):
-                            sigmas[i]-=self.sigPercentMIN
-                        shiftStr+=str(sigmas[i])+"\n"
+                        shiftStr+= 'parameter # '+str(i)+" shifting sigma "+str(sigs[i])
+                        if ((nAcc/nTot)>0.35)and(sigs[i]<self.sigPercentMAX):
+                            sigmasOut[i]+=self.sigPercentMIN
+                        elif ((nAcc/nTot)<0.25)and(sigs[i]>self.sigPercentMIN):
+                            sigmasOut[i]-=self.sigPercentMIN
+                        shiftStr+=str(sigmasOut[i])+"\n"
                 self.acceptBoolAry = []
                 self.parIntVaryAry = []
                 ##Log some summary for this step
                 self.log.info(acceptStr+shiftStr)
-        return sigmas
+        return sigmasOut
     
     def simulatorFunc(self,stage='',startParams=[],startSigmas=[]):
         """
@@ -316,22 +333,45 @@ class Simulator(object):
         temp = 1.0
         if (stage=='SA')or(stage=='MC'):
             ## get starting params and sigmas as these two stages start at a random point
-            params = self.increment(params=np.zeros((len(self.rangeMins))),stage='MC')
-            sigmas = self.starterSigmas
+            sigmas = copy.deepcopy(self.starterSigmas)
+            proposedPars = self.increment(np.zeros((len(self.rangeMins))),sigmas,stage='MC')
+            
             if stage=='SA':
                 temp=self.dictVal('strtTemp')
         else:
-            params = startParams
-            sigmas = startSigmas
-        ###Get a jumping routine for SA working???!!! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            proposedPars = copy.deepcopy(startParams)
+            sigmas = copy.deepcopy(startSigmas)
+            
+        if False:
+            print 'VALS AT START OF SIM:'
+            print 'params = '+repr(proposedPars)
+            print 'rangeMins = '+repr(self.rangeMins)
+            print 'rangeMaxs = '+repr(self.rangeMaxs)
+            print 'sigmas = '+repr(sigmas)
+            print 'paramInts = '+repr(self.paramInts)
+            print '-'*25
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
-            (params,inRange)=self.rangeCheck(params,len(acceptedParams),stage)
+            
+            (proposedPars,inRange)=self.rangeCheck(proposedPars,len(acceptedParams),stage)
+            #print 'sample = '+str(sample)+", temp = "+str(temp)+", number accepted = "+str(len(acceptedParams))+', inRange = '+repr(inRange)
             if inRange:
-                self.Orbit.calculate(modelData,params)
-                (params,accept) = self.accept(sample,params,modelData,len(acceptedParams),temp,stage)
+                self.Orbit.calculate(modelData,proposedPars)
+                (params,accept) = self.accept(sample,proposedPars,modelData,len(acceptedParams),temp,stage)
                 if accept:
                     acceptedParams.append(params)
-            params = self.increment(params,sigmas,stage)
+                    #print 'acceptedParams[-1] = '+repr(acceptedParams[-1])
+                    #print 'params just accepted are: '+repr(params)
+            if len(acceptedParams)>0:
+                latestPars=acceptedParams[-1]
+                #print 'latest accepted = '+repr(latestPars)
+                #print 'acceptedParams[-1] = '+repr(acceptedParams[-1])
+                #print 'reset params to latest accepted'
+            else:
+                latestPars = proposedPars
+                #print 'reset params to latest proposed as NONE accepted yet'
+            proposedPars = self.increment(latestPars,sigmas,stage)
+            #print 'latest proposed = '+repr(proposedPars)
+            #print 'latestPars-proposed = '+repr(latestPars-proposedPars)
             temp = self.tempDrop(sample,temp,stage)
             sigmas = self.sigTune(sample,sigmas,stage)
             if (True)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):#self.dictVal('SILENT')

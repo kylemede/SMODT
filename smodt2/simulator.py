@@ -260,7 +260,7 @@ class Simulator(object):
                 priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
                 priorsRatio*= (self.dictVal('distPrior')(paramsOut[2])/self.dictVal('distPrior')(self.paramsLast[2])) 
                 lhs = np.random.uniform(0.0, 1.0)
-                if False:# stage=='ST':
+                if stage=='MCMC':
                     print '\nself.paramsLast[11] = '+repr(self.paramsLast[11])
                     print 'paramsOut[11] = '+repr(paramsOut[11])
                     print 'paramsOut[11] = '+repr(paramsOut[11])
@@ -396,12 +396,12 @@ class Simulator(object):
         ##Follows these steps: inRange?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? DONE ->write output data
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
             (proposedPars,inRange)=self.rangeCheck(proposedPars,len(acceptedParams),stage)
-            #if 0.2<temp<3.0:
-            #    print 'sample = '+str(sample)+", temp = "+str(temp)+", # accepted = "+str(self.acceptCount)+", # saved = "+str(len(acceptedParams))+', inRange = '+repr(inRange)
+            if stage=='MCMC':
+                print 'sample = '+str(sample)+", temp = "+str(temp)+", # accepted = "+str(self.acceptCount)+", # saved = "+str(len(acceptedParams))+', inRange = '+repr(inRange)
+            if (stage=='MCMC')and (sample>1000):
+                break
             if inRange:
                 self.Orbit.calculate(modelData,proposedPars)
-                #if (stage=='ST')and(sample==10000):
-                #    break
                 (params,accept) = self.accept(sample,proposedPars,modelData,len(acceptedParams),temp,stage)
                 if accept and (stage=='MC'):
                     acceptedParams.append(params)
@@ -415,8 +415,7 @@ class Simulator(object):
                 latestPars = proposedPars
             proposedPars = self.increment(latestPars,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
-            if stage=="ST":
-                sigmas = self.sigTune(sample,sigmas,stage)
+            sigmas = self.sigTune(sample,sigmas,stage)
             if (True)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):#self.dictVal('SILENT')
                 bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), 'Complete so far.')
         if True:#self.dictVal('SILENT')

@@ -342,6 +342,8 @@ class Simulator(object):
         sumStr+= "Average acceptance rate = "+str(float(self.acceptCount)/float(self.dictVal(self.stgNsampDict[stage])))+"\n"
         sumStr+= "Total number of steps stored = "+str(totSaved)+"\n"
         sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
+        sumStr+="Last params = "+repr(self.paramsLast)+'\n'
+        sumStr+="Best params = "+repr(self.paramsBest)+'\n'
         if (stage=="ST")or(stage=="MCMC"):
             sumStr+=self.acceptStr+self.shiftStr
         self.log.info(sumStr)

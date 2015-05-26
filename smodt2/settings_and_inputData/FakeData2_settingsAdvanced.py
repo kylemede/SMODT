@@ -5,7 +5,7 @@ import constants
 ########################################
 #Define the priors as python functions #
 ########################################
-#NOTE: key max = 8characters, value+comment max = 68 characters.
+#NOTE: key max = 8characters, value+comment max = 47 characters.
 #NOTE: only change the code and not the name of the functions or their inputs.
 def ePrior(e,P):
     if (P*constants.daysPerYear<1000.0)and(simpleSettingsDict['eMAX']!=0):
@@ -44,7 +44,7 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
-'chiMAX' : (500.0,"Max reduced chiSquared during SA or MC"),
+'chiMAX' : (100.0,"Max reduced chiSquared during SA or MC"),
 # set to 'true' to have NOTHING print to screen while running [bool]
 'SILENT' : True,
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
@@ -78,15 +78,17 @@ advancedDict = {
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :True,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(1000000,"Number of Annealing samples"),
+'nSAsamp' :(100000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (800.0,"SA starting temperature."),
+'strtTemp' : (100.0,"SA starting temperature."),
 # Number of temperature steps over Simulated Annealing [int]
-'nTemps'  : (1000,"Number of temperature steps during SA."),
+'nTmpStps'  : (1000,"Number of temperature steps during SA."),
 # number of samples to draw for sigma tuning stage [int] 
-'nSTsamp' :(500000,"Number of Tuning samples"),
+'nSTsamp' :(1000000,"Number of Tuning samples"),
 # number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]
-'nSigmas': (1000,"Times to calc acceptance (and tune sigmas during ST)."),
+'nSigStps': (100,"Times to calc acceptance and tune sigmas."),
+# interval of accepted values between storing in output array (for SA,ST,MCMC, not MC) [int]
+'saveInt' : (10,"Interval between saving params, for all but MC."),
 # Make plots of MCMC progress plots? [bool]
 'pltMCMCprog' :False,
 # Make plots of Simulated Annealing progress plots? [bool]

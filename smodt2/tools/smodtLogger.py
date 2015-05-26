@@ -199,5 +199,5 @@ def logSystemInfo(log):
     infoStr+="\n"+'Total RAM = '+str(totMem)+'[GB], with ~ '+str(percentMem)+"% already in use at simulation start"
     infoStr+="\n"+'Python Version = '+repr(platform.python_version())
     infoStr+="\n"+'='*50
-    log.info(infoStr)
+    log.debug(infoStr)
         

@@ -7,7 +7,7 @@ import sys
 import pyfits
 #np.set_printoptions(precision=15)
 
-log = smodtLogger.getLogger('main.tools',lvl=100,addFH=False)
+log = smodtLogger.getLogger('main.tools',lvl=100,addFH=False)#$$$$ NONE OF THESE WILL MAKE IT TO FINAL LOG!!!!!
 
 def test():
     log.info("inside the tools test func")
@@ -275,12 +275,13 @@ def writeFits(baseFilename,data,settingsDict):
     hdulist = pyfits.HDUList([hdu])
     header = hdulist[0].header
     ##load up header with tuples from settingsDict
-    #print "starting to load up header with tuples from settingsDict"
     for key in settingsDict:
         if type(settingsDict[key])==tuple:
             header[key]=settingsDict[key]
-            #print "adding '"+key+"' = "+repr(settingsDict[key])
+            if len(settingsDict[key][1])>47:
+                log.warning("comment too long for pyfits headers:"+settingsDict[key][1])
     hdulist.writeto(os.path.join(settingsDict['finalFolder'],baseFilename))
+    log.info("output file written to:below\n"+os.path.join(settingsDict['finalFolder'],baseFilename))
     hdulist.close()
     ## check resulting fits file header
     if False:

@@ -154,8 +154,9 @@ class Simulator(object):
         """
         parsOut = copy.deepcopy(pars)
         varyInt=0
+        sig = 0
         ## vary all the params if mcONLY
-        if stage=='MC':
+        if  ('MCMC'not in stage) and (stage=='MC'):
             for i in range(0,len(pars)):
                 if i in self.paramInts:
                     parsOut[i]=np.random.uniform(self.rangeMins[i],self.rangeMaxs[i])
@@ -174,15 +175,15 @@ class Simulator(object):
                 parsOut[5]=parsOut[6]
             else:
                 parsOut[6]=parsOut[5]
-        if False:
-            #print 'params = '+repr(params)
-            print 'varyInt = '+str(varyInt)
+        if (stage=='MCMC')and(False):
+            #print '\nvaryInt = '+str(varyInt)
             print 'input params[varyInt] = '+repr(pars[varyInt])
-            print 'sigmas = '+repr(sigs)
-            print 'sigmas[varyInt] = '+repr(sigs[varyInt])
-            print 'parsOut[varyInt] = '+repr(parsOut[varyInt])
+            #print 'sigmas = '+repr(sigs)
+            #print 'sigmas[varyInt] = '+repr(sigs[varyInt])
+            print 'sig = '+str(sig)
+            #print 'parsOut[varyInt] = '+repr(parsOut[varyInt])
             print 'parsOut-params = '+repr(parsOut-pars)
-            print 'after2 params[varyInt] = '+repr(parsOut[varyInt])
+            #print 'after2 params[varyInt] = '+repr(parsOut[varyInt])
         return parsOut
     
     def rangeCheck(self,pars,numAccepted=0,stage=''):
@@ -240,37 +241,37 @@ class Simulator(object):
             print '(diffs**2)/(errors**2) = \n'+repr((diffs**2)/(errors**2))
             print 'chiSquared = '+str(paramsOut[11])
         accept = False
-        if stage=='MC':
+        if ('MCMC' not in stage)and(stage=='MC'):
             if (paramsOut[11]/self.nu)<self.dictVal('chiMAX'):
                 accept=True
         else:
-            #handle case where doing SA and nothing accepted yet
-            if (stage=='SA')and(self.acceptCount==0):
-                if (paramsOut[11]/self.nu)<self.dictVal('chiMAX'):
-                    #Forces an acceptance of current parameters.  Right idea???$$$$$$$$$$$$$$$
-                    accept=True
+#             #handle case where doing SA and nothing accepted yet
+#             if (stage=='SA')and(self.acceptCount==0):
+#                 if (paramsOut[11]/self.nu)<self.dictVal('chiMAX'):
+#                     #Forces an acceptance of current parameters.  Right idea???$$$$$$$$$$$$$$$
+#                     accept=True
+#             else:
             ## For SA after first sample, MCMC, and ST
-            else:
-                likelihoodRatio = np.e**((self.paramsLast[11] - paramsOut[11])/ (2.0*temp))
-                ###### put all prior funcs together in dict??
-                priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
-                priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
-                priorsRatio*= (self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
-                priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
-                priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
-                priorsRatio*= (self.dictVal('distPrior')(paramsOut[2])/self.dictVal('distPrior')(self.paramsLast[2])) 
-                lhs = np.random.uniform(0.0, 1.0)
-                if stage=='MCMC':
-                    print '\nself.paramsLast[11] = '+repr(self.paramsLast[11])
-                    print 'paramsOut[11] = '+repr(paramsOut[11])
-                    print 'paramsOut[11] = '+repr(paramsOut[11])
-                    print 'priorsRatio = '+repr(priorsRatio)
-                    print 'likelihoodRatio = '+repr(likelihoodRatio)
-                    print 'priorsRatio*likelihoodRatio = '+repr(priorsRatio*likelihoodRatio)
-                    print 'lhs = '+repr(lhs)
-                    print 'lhs<=rhs = '+repr(lhs<=(priorsRatio*likelihoodRatio))
-                if lhs<=(priorsRatio*likelihoodRatio):
-                    accept = True
+            likelihoodRatio = np.e**((self.paramsLast[11] - paramsOut[11])/(2.0*temp))
+            ###### put all prior funcs together in dict??
+            priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
+            priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
+            priorsRatio*= (self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
+            priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
+            priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
+            priorsRatio*= (self.dictVal('distPrior')(paramsOut[2])/self.dictVal('distPrior')(self.paramsLast[2])) 
+            lhs = np.random.uniform(0.0, 1.0)
+            if stage=='MCMC':
+                print 'params Diff = '+repr(self.paramsLast - paramsOut)
+                print '\nself.paramsLast[11] = '+repr(self.paramsLast[11])
+                print 'paramsOut[11] = '+repr(paramsOut[11])
+                print 'priorsRatio = '+repr(priorsRatio)
+                print 'likelihoodRatio = '+repr(likelihoodRatio)
+                print 'priorsRatio*likelihoodRatio = '+repr(priorsRatio*likelihoodRatio)
+                print 'lhs = '+repr(lhs)
+                print 'lhs<=rhs = '+repr(lhs<=(priorsRatio*likelihoodRatio))
+            if lhs<=(priorsRatio*likelihoodRatio):
+                accept = True
         if accept:
             self.acceptCount+=1
             self.acceptBoolAry.append(1)
@@ -396,9 +397,9 @@ class Simulator(object):
         ##Follows these steps: inRange?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? DONE ->write output data
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
             (proposedPars,inRange)=self.rangeCheck(proposedPars,len(acceptedParams),stage)
-            if stage=='MCMC':
-                print 'sample = '+str(sample)+", temp = "+str(temp)+", # accepted = "+str(self.acceptCount)+", # saved = "+str(len(acceptedParams))+', inRange = '+repr(inRange)
-            if (stage=='MCMC')and (sample>1000):
+            #if stage=='MCMC':
+            #    print 'sample = '+str(sample)+", temp = "+str(temp)+", # accepted = "+str(self.acceptCount)+", # saved = "+str(len(acceptedParams))+', inRange = '+repr(inRange)
+            if (stage=='MCMC')and (sample>10000):
                 break
             if inRange:
                 self.Orbit.calculate(modelData,proposedPars)

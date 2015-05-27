@@ -81,13 +81,16 @@ advancedDict = {
 'nSAsamp' :(50000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
 'strtTemp' : (50.0,"SA starting temperature."),
-# Number of temperature steps over Simulated Annealing [int]
+# Number of temperature steps over Simulated Annealing [int].  
+# Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/50)!
 'nTmpStps'  : (1000,"Number of temperature steps during SA."),
-# number of samples to draw for sigma tuning stage [int] 
+# number of samples to draw for sigma tuning stage [int].
 'nSTsamp' :(50000,"Number of Tuning samples"),
-# number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]
+# number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]. 
+# Allowed vals [1,nSTsamp) Ideal is int(nSTsamp/2000)!
 'nSigStps': (25,"Times to calc acceptance and tune sigmas."),
 # interval of accepted values between storing in output array (for SA,ST,MCMC, not MC) [int]
+# Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
 'saveInt' : (10,"Interval between saving params, for all but MC."),
 # Make plots of MCMC progress plots? [bool]
 'pltMCMCprog' :False,

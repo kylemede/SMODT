@@ -41,12 +41,6 @@ class Simulator(object):
         self.parIntVaryAry = []
         self.sigPercentMAX = 1.0 #$$ Put in settings dict???
         self.sigPercentMIN = 0.005 #$$ Put in settings dict???
-        #Load real data here? doesn't change so might as well
-        #could also make the empty model data array here too
-        ##Examples
-        #(memTrackProc,memLogFilename) = self.starter()
-        #self._memLogFilename = memLogFilename
-        #self._memTrackProc = memTrackProc
            
     def starter(self):
         """
@@ -86,27 +80,14 @@ class Simulator(object):
                0,\
                self.dictVal('KMIN')]
         sigSize = 0.05
-#         sigmas = [sigSize*(self.dictVal('mass1MAX')-self.dictVal('mass1MIN')),\
-#                sigSize*(self.dictVal('mass2MAX')-self.dictVal('mass2MIN')),\
-#                sigSize*(self.dictVal('distMAX')-self.dictVal('distMIN')),\
-#                sigSize*(self.dictVal('OmegaMAX')-self.dictVal('OmegaMIN')),\
-#                sigSize*(self.dictVal('eMAX')-self.dictVal('eMIN')),\
-#                sigSize*(self.dictVal('TMAX')-self.dictVal('TMIN')),\
-#                sigSize*(self.dictVal('TMAX')-self.dictVal('TMIN')),\
-#                sigSize*(self.dictVal('PMAX')-self.dictVal('PMIN')),\
-#                sigSize*(self.dictVal('incMAX')-self.dictVal('incMIN')),\
-#                sigSize*(self.dictVal('omegaMAX')-self.dictVal('omegaMIN')),\
-#                0,\
-#                0,\
-#                sigSize*(self.dictVal('KMAX')-self.dictVal('KMIN'))]
         sigmas = [sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,0,0,sigSize]
         for i in range(0,len(self.dictVal('vMINs'))):
             sigmas.append(sigSize)
             rangeMins.append(self.dictVal('vMINs')[i])
             rangeMaxs.append(self.dictVal('vMAXs')[i])
-        
         #figure out which parameters are varying in this run.
         #don't vary atot or chiSquared ever, and take care of TcEqualT cases
+        ###$$$$$$$$$$$$$$$ Still need to handle the Kvary option!!!!!!!!!!!!!!!!!!!!!!!!!!!!!$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         paramInts = []
         for i in range(0,len(rangeMins)):
             if (i!=10)and(i!=11):
@@ -130,11 +111,6 @@ class Simulator(object):
         nu = nDIepochs*2+nRVepochs-nVars
         nuDI = nDIepochs*2-nDIvars
         nuRV = nRVepochs-nRVvars
-        if False:
-            print 'rangeMins = '+repr(rangeMins)
-            print 'rangeMaxs = '+repr(rangeMaxs)
-            print 'sigmas = '+repr(sigmas)
-            print 'paramInts = '+repr(paramInts)
         return (rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
     
     def dictVal(self,key):
@@ -150,7 +126,8 @@ class Simulator(object):
     
     def increment(self,pars=[],sigs=[],stage=''):
         """
-        Randomly increment one, or all, of the parameters.
+        Increment all varying parameters if MC.
+        Else, just increment one of them at random.
         """
         parsOut = copy.deepcopy(pars)
         varyInt=0
@@ -165,27 +142,14 @@ class Simulator(object):
         else:
             varyInt = self.paramInts[np.random.randint(0,len(self.paramInts))]
             self.parIntVaryAry.append(varyInt)
-            #print '\nbefore params[varyInt] = '+repr(pars[varyInt])
-            #print 'np.random.uniform(params[varyInt]-sigmas[varyInt],params[varyInt]+sigmas[varyInt])   ='+repr(np.random.uniform(params[varyInt]-sigmas[varyInt],params[varyInt]+sigmas[varyInt]))
             sig = sigs[varyInt]*(self.rangeMaxs[varyInt]-self.rangeMins[varyInt])
-            parsOut[varyInt]=np.random.uniform(pars[varyInt]-sig,pars[varyInt]+sig) 
-            #print 'after params[varyInt] = '+repr(parsOut[varyInt])           
+            parsOut[varyInt]=np.random.uniform(pars[varyInt]-sig,pars[varyInt]+sig)        
         ## if TcEqualT, push the varied one into the other
         if self.dictVal('TcEqualT'):
             if self.dictVal('TcStep'):
                 parsOut[5]=parsOut[6]
             else:
                 parsOut[6]=parsOut[5]
-        if (stage=='MCMC')and False:
-            mask = np.array([1,1,1,1,1,1,1,1,1,1,0,0,0,1])
-            print '\nvaryInt = '+str(varyInt)
-            #print 'input params[varyInt] = '+repr(pars[varyInt])
-            #print 'sigmas = '+repr(sigs)
-            #print 'sigmas[varyInt] = '+repr(sigs[varyInt])
-            #print 'sig = '+str(sig)
-            #print 'parsOut[varyInt] = '+repr(parsOut[varyInt])
-            print 'parsOut-params = '+repr((parsOut-pars)*mask)
-            #print 'after2 params[varyInt] = '+repr(parsOut[varyInt])
         return parsOut
     
     def rangeCheck(self,pars,numAccepted=0,stage=''):
@@ -241,16 +205,10 @@ class Simulator(object):
             print '(diffs**2)/(errors**2) = \n'+repr((diffs**2)/(errors**2))
             print 'chiSquared = '+str(paramsOut[11])
         accept = False
-        if ('MCMC' not in stage)and(stage=='MC'):
+        if stage=='MC':
             if (paramsOut[11]/self.nu)<self.dictVal('chiMAX'):
                 accept=True
         else:
-#             #handle case where doing SA and nothing accepted yet
-#             if (stage=='SA')and(self.acceptCount==0):
-#                 if (paramsOut[11]/self.nu)<self.dictVal('chiMAX'):
-#                     #Forces an acceptance of current parameters.  Right idea???$$$$$$$$$$$$$$$
-#                     accept=True
-#             else:
             ## For SA after first sample, MCMC, and ST
             likelihoodRatio = np.e**((self.paramsLast[11] - paramsOut[11])/(2.0*temp))
             ###### put all prior funcs together in dict??
@@ -260,18 +218,7 @@ class Simulator(object):
             priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
             priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
             priorsRatio*= (self.dictVal('distPrior')(paramsOut[2])/self.dictVal('distPrior')(self.paramsLast[2])) 
-            lhs = np.random.uniform(0.0, 1.0)
-            if (stage=='MCMC')and False:
-                mask = np.array([1,1,1,1,1,1,1,1,1,1,0,0,0,1])
-                print '\nparams Diff = '+repr((self.paramsLast - paramsOut)*mask)
-                #print 'self.paramsLast[11] = '+repr(self.paramsLast[11])
-                #print 'paramsOut[11] = '+repr(paramsOut[11])
-                #print 'priorsRatio = '+repr(priorsRatio)
-                #print 'likelihoodRatio = '+repr(likelihoodRatio)
-                print 'priorsRatio*likelihoodRatio = '+repr(priorsRatio*likelihoodRatio)
-                #print 'lhs = '+repr(lhs)
-                print 'lhs<=rhs = '+repr(lhs<=(priorsRatio*likelihoodRatio))
-            if lhs<=(priorsRatio*likelihoodRatio):
+            if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
                 accept = True
         if accept:
             self.acceptCount+=1
@@ -280,9 +227,8 @@ class Simulator(object):
             self.latestSumStr = 'Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
         else:
             self.acceptBoolAry.append(0)
-        ## Write a short summary to log
         if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
-            ##Log some summary for this step
+            ##log a summary
             sumStr = "below\n# Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
             sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
             self.log.debug(sumStr)
@@ -294,7 +240,7 @@ class Simulator(object):
         Total temperature range is [strtTemp,0.1), so the minimum 
         temperature is actually <1.0 meaning the last few temperature drops 
         will really push the currently found minimum towards its peak.
-        There will be a fixed number of temperature steps = 'nTemps'.
+        There will be a fixed number of temperature steps = 'nTmpStps'.
         """
         if stage=='SA':
             if sample%(self.dictVal('nSAsamp')//self.dictVal('nTmpStps'))==0:
@@ -304,10 +250,10 @@ class Simulator(object):
     def sigTune(self,sample,sigs=[],stage=''):
         """
         Check if it is time to calculate the acceptance rate.
-        If stage is 'ST'== Sigma Tuning, then it will also tune the 
-        sigmas.  If 'MCMC' then it will just calculate the acceptance 
-        rate.  In both cases, if it the sample (i) is at 10% of the total number 
-        of samples, a summary message will also be written to the log.
+        If stage is ST, then it will also tune the sigmas.
+        If MCMC then it will just calculate the acceptance 
+        rate.  In both cases, 'nSigStps' throughout the simulation 
+        a summary message will also be written to the log.
         """
         sigmasOut = copy.deepcopy(sigs)
         if (stage=='ST')or(stage=='MCMC'):
@@ -363,14 +309,13 @@ class Simulator(object):
         self.acceptBoolAry = []
         self.parIntVaryAry = []
     
-    def simulatorFunc(self,stage='',startParams=[],startSigmas=[]):
+    def simulatorFunc(self,stage='',chainNum=1,startParams=[],startSigmas=[]):
         """
         The core function to perform the requested stage of the simulation ('MC','SA','ST','MCMC').
         If stage is SA or ST: final (params,sigmas) are returned, else nothing.
         """
-        
         tic=timeit.default_timer()
-        self.log.info("Trying "+str(self.dictVal(self.stgNsampDict[stage]))+" samples in sim mode = "+stage)
+        self.log.info("Trying "+str(self.dictVal(self.stgNsampDict[stage]))+" samples for chain #"+str(chainNum)+" in "+stage+" mode.")
         bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
         modelData = np.zeros((len(self.realData),3))
         acceptedParams = []
@@ -379,7 +324,6 @@ class Simulator(object):
             ## get starting params and sigmas as these two stages start at a random point
             sigmas = copy.deepcopy(self.starterSigmas)
             proposedPars = self.increment(np.zeros((len(self.rangeMins))),sigmas,stage='MC')
-            
             if stage=='SA':
                 temp=self.dictVal('strtTemp')
         else:
@@ -398,26 +342,17 @@ class Simulator(object):
         ##Follows these steps: inRange?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? DONE ->write output data
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
             (proposedPars,inRange)=self.rangeCheck(proposedPars,len(acceptedParams),stage)
-            #if stage=='MCMC':
-            #    print "-"*100+'\nsample = '+str(sample)+", temp = "+str(temp)+", # accepted = "+str(self.acceptCount)+", # saved = "+str(len(acceptedParams))+', inRange = '+repr(inRange)
-            #if (stage=='MCMC')and (sample>100):
-            #    break
             if inRange:
                 self.Orbit.calculate(modelData,proposedPars)
                 (params,accept) = self.accept(sample,proposedPars,modelData,len(acceptedParams),temp,stage)
                 if accept:
                     latestPars = copy.deepcopy(params)
-                    #print 'storing latest accepted params'
                     if ('MCMC' not in stage)and(stage=='MC'):
                         acceptedParams.append(params)
                     elif (self.acceptCount%self.dictVal('saveInt'))==0:
                         acceptedParams.append(params)                   
             else:
                 self.acceptBoolAry.append(0)
-#             if len(acceptedParams)>0:
-#                 latestPars=acceptedParams[-1]
-#             else:
-#                 latestPars = proposedPars
             proposedPars = self.increment(latestPars,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
             sigmas = self.sigTune(sample,sigmas,stage)
@@ -426,8 +361,7 @@ class Simulator(object):
         if True:#self.dictVal('SILENT')
             bar.render(100, 'Complete so far.')
         toc=timeit.default_timer()
-        self.log.info(stage+" it took: "+str(toc-tic)+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$$$$$$$$$$$$$$
-        #print '\nmodelData = \n'+repr(acceptedParams)
+        self.log.info(stage+" it took: "+str(int(toc-tic))+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$
         self.endSummary(len(acceptedParams),temp,stage)
         outFname = tools.writeFits('outputData'+stage+'.fits',acceptedParams,self.settingsDict)
         if stage=='ST':
@@ -437,6 +371,4 @@ class Simulator(object):
         elif(stage=='MC')or(stage=='MCMC'):
             return outFname
         
-        
-
-        
+#END OF FILE      

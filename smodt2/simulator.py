@@ -150,12 +150,13 @@ class Simulator(object):
     
     def increment(self,pars=[],sigs=[],stage=''):
         """
-        Randomly increment one of the parameters
+        Randomly increment one, or all, of the parameters.
         """
         parsOut = copy.deepcopy(pars)
         varyInt=0
         sig = 0
-        ## vary all the params if mcONLY
+        ## vary all the params if MC, 
+        ##(or special cases at beginning of SA where this func is called pretending to be MC.)
         if  ('MCMC'not in stage) and (stage=='MC'):
             for i in range(0,len(pars)):
                 if i in self.paramInts:
@@ -175,14 +176,15 @@ class Simulator(object):
                 parsOut[5]=parsOut[6]
             else:
                 parsOut[6]=parsOut[5]
-        if (stage=='MCMC')and(False):
-            #print '\nvaryInt = '+str(varyInt)
-            print 'input params[varyInt] = '+repr(pars[varyInt])
+        if (stage=='MCMC')and False:
+            mask = np.array([1,1,1,1,1,1,1,1,1,1,0,0,0,1])
+            print '\nvaryInt = '+str(varyInt)
+            #print 'input params[varyInt] = '+repr(pars[varyInt])
             #print 'sigmas = '+repr(sigs)
             #print 'sigmas[varyInt] = '+repr(sigs[varyInt])
-            print 'sig = '+str(sig)
+            #print 'sig = '+str(sig)
             #print 'parsOut[varyInt] = '+repr(parsOut[varyInt])
-            print 'parsOut-params = '+repr(parsOut-pars)
+            print 'parsOut-params = '+repr((parsOut-pars)*mask)
             #print 'after2 params[varyInt] = '+repr(parsOut[varyInt])
         return parsOut
     
@@ -196,9 +198,8 @@ class Simulator(object):
             if i in self.paramInts:
                 if (self.rangeMins[i]>pars[i])or(pars[i]>self.rangeMaxs[i]):
                     inRange=False
-                    #print 'out of range param was # '+str(i)+" val = "+repr(pars[i])
         if ((inRange==False)and(numAccepted==0))and(stage=='SA'):
-            #jump as starting position was not in dead space.
+            ##jump as starting position was not in dead space for SA only.
             paramsOut = self.increment(pars,np.zeros(pars.shape),stage='MC')
             self.log.debug("Nothing accepted yet, so jumping to new starting position.")
             inRange=True
@@ -232,8 +233,7 @@ class Simulator(object):
             if self.latestSumStr=='':
                 self.latestSumStr='Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))
         if False:
-            print ''
-            print 'reals = \n'+repr(self.realData[:,[1,3,5]])
+            print '\nreals = \n'+repr(self.realData[:,[1,3,5]])
             print 'modelData = \n'+repr(modelData)
             print 'real-model = \n'+repr(self.realData[:,[1,3,5]]-modelData)
             print 'diffs = \n'+repr(diffs)
@@ -261,14 +261,15 @@ class Simulator(object):
             priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
             priorsRatio*= (self.dictVal('distPrior')(paramsOut[2])/self.dictVal('distPrior')(self.paramsLast[2])) 
             lhs = np.random.uniform(0.0, 1.0)
-            if stage=='MCMC':
-                print 'params Diff = '+repr(self.paramsLast - paramsOut)
-                print '\nself.paramsLast[11] = '+repr(self.paramsLast[11])
-                print 'paramsOut[11] = '+repr(paramsOut[11])
-                print 'priorsRatio = '+repr(priorsRatio)
-                print 'likelihoodRatio = '+repr(likelihoodRatio)
+            if (stage=='MCMC')and False:
+                mask = np.array([1,1,1,1,1,1,1,1,1,1,0,0,0,1])
+                print '\nparams Diff = '+repr((self.paramsLast - paramsOut)*mask)
+                #print 'self.paramsLast[11] = '+repr(self.paramsLast[11])
+                #print 'paramsOut[11] = '+repr(paramsOut[11])
+                #print 'priorsRatio = '+repr(priorsRatio)
+                #print 'likelihoodRatio = '+repr(likelihoodRatio)
                 print 'priorsRatio*likelihoodRatio = '+repr(priorsRatio*likelihoodRatio)
-                print 'lhs = '+repr(lhs)
+                #print 'lhs = '+repr(lhs)
                 print 'lhs<=rhs = '+repr(lhs<=(priorsRatio*likelihoodRatio))
             if lhs<=(priorsRatio*likelihoodRatio):
                 accept = True
@@ -331,7 +332,6 @@ class Simulator(object):
                         self.shiftStr+=str(sigmasOut[i])+"\n"
                 self.acceptBoolAry = []
                 self.parIntVaryAry = []
-                ##Log some summary for this step
                 self.log.debug(self.acceptStr+self.shiftStr)
         return sigmasOut
     
@@ -385,6 +385,7 @@ class Simulator(object):
         else:
             proposedPars = copy.deepcopy(startParams)
             sigmas = copy.deepcopy(startSigmas)
+        latestPars = copy.deepcopy(proposedPars)
         self.resetTracked(proposedPars)
         startStr='VALS AT START OF '+stage+' SIM:\n'
         startStr+= 'params = '+repr(proposedPars)+'\n'
@@ -398,22 +399,25 @@ class Simulator(object):
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
             (proposedPars,inRange)=self.rangeCheck(proposedPars,len(acceptedParams),stage)
             #if stage=='MCMC':
-            #    print 'sample = '+str(sample)+", temp = "+str(temp)+", # accepted = "+str(self.acceptCount)+", # saved = "+str(len(acceptedParams))+', inRange = '+repr(inRange)
-            if (stage=='MCMC')and (sample>10000):
-                break
+            #    print "-"*100+'\nsample = '+str(sample)+", temp = "+str(temp)+", # accepted = "+str(self.acceptCount)+", # saved = "+str(len(acceptedParams))+', inRange = '+repr(inRange)
+            #if (stage=='MCMC')and (sample>100):
+            #    break
             if inRange:
                 self.Orbit.calculate(modelData,proposedPars)
                 (params,accept) = self.accept(sample,proposedPars,modelData,len(acceptedParams),temp,stage)
-                if accept and (stage=='MC'):
-                    acceptedParams.append(params)
-                elif accept and ((self.acceptCount%self.dictVal('saveInt'))==0):
-                    acceptedParams.append(params)
+                if accept:
+                    latestPars = copy.deepcopy(params)
+                    #print 'storing latest accepted params'
+                    if ('MCMC' not in stage)and(stage=='MC'):
+                        acceptedParams.append(params)
+                    elif (self.acceptCount%self.dictVal('saveInt'))==0:
+                        acceptedParams.append(params)                   
             else:
                 self.acceptBoolAry.append(0)
-            if len(acceptedParams)>0:
-                latestPars=acceptedParams[-1]
-            else:
-                latestPars = proposedPars
+#             if len(acceptedParams)>0:
+#                 latestPars=acceptedParams[-1]
+#             else:
+#                 latestPars = proposedPars
             proposedPars = self.increment(latestPars,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
             sigmas = self.sigTune(sample,sigmas,stage)

@@ -6,12 +6,11 @@ double testFunc(double t){
     return t;
 };
 
-void Orbit::loadomegaOffsets(double omegaoffsetDI,double omegaoffsetRV){
+void Orbit::loadStaticVars(double omegaoffsetDI,double omegaoffsetRV,bool Tcstep,bool TcequalT){
 	omegaOffsetDI = omegaoffsetDI;
 	omegaOffsetRV = omegaoffsetRV;
-	//std::cout<<"loading omega offsets"<<std::endl;
-	//std::cout<<"omegaOffsetDI = "<<omegaOffsetDI <<std::endl;
-	//std::cout<<"omegaOffsetRV = "<<omegaOffsetRV <<std::endl;
+	TcStep = Tcstep;
+	TcEqualT = TcequalT;
 };
 
 void Orbit::loadRealData(double *xx, int xx_nx, int xx_ny){
@@ -85,11 +84,11 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//std::cout<<"M after = "<<M*(180.0/pi)<<std::endl;
 		if ((M!=0)and(M!=(2.0*pi))){
 			Eprime = M+params[4]*sin(M)+((params[4]*params[4])/(2.0*M))*sin(2.0*M);
-			NewtonCount = 0;
-			while ( (fabs(E-Eprime)>1.0e-10)&&(NewtonCount<50) ){
+			newtonCount = 0;
+			while ( (fabs(E-Eprime)>1.0e-10)&&(newtonCount<50) ){
 				E = Eprime;
 				Eprime = E-((E-params[4]*sin(E)-M)/(1.0-params[4]*cos(E)));
-				NewtonCount +=1;
+				newtonCount +=1;
 			}
 			//double check it satisfies the original equation
 			if (fabs((E-params[4]*sin(E))-M)>1.0e-5){

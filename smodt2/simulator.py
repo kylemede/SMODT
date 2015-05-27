@@ -20,7 +20,7 @@ class Simulator(object):
         self.log = tools.getLogger('main.simulator',lvl=100,addFH=False)
         tools.logSystemInfo(self.log)
         self.Orbit = tools.cppTools.Orbit()
-        self.Orbit.loadomegaOffsets(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'))
+        self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'),self.dictVal('TcStep'),self.dictVal('TcEqualT'))
         self.realData = tools.loadRealData(os.path.join(self.dictVal('settingsDir'),self.dictVal('prepend')))
         self.Orbit.loadRealData(self.realData)
         self.Orbit.loadConstants(constants.Grav,constants.pi,constants.KGperMsun, constants.daysPerYear,constants.secPerYear,constants.MperAU)

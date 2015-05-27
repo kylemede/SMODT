@@ -8,8 +8,15 @@
 class Orbit{
 public:
     //obj variables
+	//extras
     double testDouble;
-    int NewtonCount;
+    // simple internals
+        bool verbose;
+        int newtonCount;
+    //for T <-> Tc calc
+    bool TcStep;
+    bool TcEqualT;
+    //to handle omega offsets
     double omegaOffsetDI;
     double omegaOffsetRV;
     double omegaDI;
@@ -33,7 +40,7 @@ public:
     
     //funcs
     //for passing in a STATIC 2D data array of Real data into the object
-    void loadomegaOffsets(double omegaoffsetDI,double omegaoffsetRV);
+    void loadStaticVars(double omegaoffsetDI,double omegaoffsetRV,bool Tcstep,bool TcequalT);
     void loadRealData(double *xx, int xx_nx, int xx_ny);
     //For loading in the global constants
     void loadConstants(double Grav_in,double pi_in,double KGperMsun_in, double daysPerYear_in,double secPerYear_in,double MperAU_in);

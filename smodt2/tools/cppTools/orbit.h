@@ -14,21 +14,16 @@ public:
         bool verbose;
         int newtonCount;
     //for T <-> Tc calc
-    bool TcStep;
-    bool TcEqualT;
+    bool TcAfterT;
+    double ta,halfE,mTTc,deltaT;
     //to handle omega offsets
-    double omegaOffsetDI;
-    double omegaOffsetRV;
-    double omegaDI;
-    double omegaRV;
+    double omegaOffsetDI,omegaOffsetRV,omegaDI,omegaRV;
     //declare REAL static data array
     double* dataRealAry;
-    int dataRealAry_nx;
-    int dataRealAry_ny;
+    int dataRealAry_nx,dataRealAry_ny;
     //declare MODEL in place data array
 	double* dataModelAry;
-	int dataModelAry_nx;
-	int dataModelAry_ny;
+	int dataModelAry_nx,dataModelAry_ny;
 	double* params;
 	int params_n;
     //Declare all doubles used inside Orbit class.
@@ -40,7 +35,7 @@ public:
     
     //funcs
     //for passing in a STATIC 2D data array of Real data into the object
-    void loadStaticVars(double omegaoffsetDI,double omegaoffsetRV,bool Tcstep,bool TcequalT);
+    void loadStaticVars(double omegaoffsetDI,double omegaoffsetRV,bool TcafterT);
     void loadRealData(double *xx, int xx_nx, int xx_ny);
     //For loading in the global constants
     void loadConstants(double Grav_in,double pi_in,double KGperMsun_in, double daysPerYear_in,double secPerYear_in,double MperAU_in);

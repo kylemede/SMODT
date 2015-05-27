@@ -634,16 +634,17 @@ The pictorial representation of these three anomalies is summarized in Figure \r
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[scale=0.4]{Figures/Anomalies-MOD.png}
-\caption[Diagram of Anomalies]{A diagram to compare the Eccentric, Mean and True anomalies of an orbiting planet.  The planet is marked as P, the central is S, and the center of the ellipse is C in this plot. }
+\caption[Diagram of Anomalies]{A diagram to compare the Eccentric, Mean and True anomalies of an orbiting planet.  The planet is marked as P, the central star is S, and the center of the ellipse is C in this plot. }
 \label{fig:Anomalies}
 \end{center}
 \end{figure}
+\clearpage
 %----------------------------------------------------------------------------------------------------------------------------------
 \subsection{Converting between $T_o$ and $T_{ij}$}\label{sec:ToTcCalculator}
 
 Used by the Radial Velocity model, not needed by the Astrometry model and is thus set to zero for those calculations.
 
-In order to avoid biasing against circular solutions, one approach is to step through the parameter space using the Time of Inferior Conjunction ($T_{ij}$), instead of the Time of Periapsis ($T_o$).  From the Earth's prospective, $T_{ij}$ is when the companion object is located between the Earth and the primary (shown as {\color{green}$T_{ij}$} in Figure \ref{fig:ToTcDiagram}), and $T_o$ is when the companion crosses the plane of the sky moving away from the Earth, \citep{heintz}.  In the radial velocity method, at $T_{ij}$ the motion of the planet will be completely parallel to the plane of the sky, with no component along the line of sight to the Earth, resulting in a measured radial velocity of zero.  By understanding these two definitions, it is possible to calculate one from the other if the values for the eccentricity, {\it e}, and argument of periapsis, $\omega$, are known.
+In order to avoid biasing against circular solutions, one approach is to step through the parameter space using the Time of Inferior Conjunction ($T_{ij}$), instead of the Time of Periapsis ($T_o$).  From the Earth's prospective, $T_{ij}$ is when the companion object is located between the Earth and the primary (shown as {\color{green}$T_{ij}$} in Figure \ref{fig:ToTcDiagram}), and $T_o$ is the companion is at its closest approach to the primary, \citep{heintz}. In the radial velocity method, at $T_{ij}$ the motion of the planet will be completely parallel to the plane of the sky, with no component along the line of sight to the Earth, resulting in a measured radial velocity of zero.  By understanding these two definitions, it is possible to calculate one from the other if the values for the eccentricity, {\it e}, and argument of periapsis, $\omega$, are known.
 
 First, considering the plane of the sky is perpendicular to the line of sight (see Figures \ref{fig:orbElements} \& \ref{fig:ToTcDiagram}), it can be understood that the True Anomaly ($\theta_s$) of the companion at the Time of Inferior Conjunction will equal 90$^{\circ}$.  Then:
 

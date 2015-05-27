@@ -381,7 +381,7 @@ void MCMCorbFuncObj::simulator()
 			//update non-updated T if it was 0 in the dictionary
 			if ((T_proposed==0)||(Tc_proposed==0))
 			{
-				// calculate starting To from provided Tc, or the other way around it TcStepping==False
+				// calculate starting To from provided Tc, or the other way around if TcStepping==False
 				// calculate the To value from proposed values (omega, e, P & Tc)
 				eccArgPeri2ToTcType EATT;
 				EATT.period = period_proposed;

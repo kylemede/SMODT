@@ -6,11 +6,10 @@ double testFunc(double t){
     return t;
 };
 
-void Orbit::loadStaticVars(double omegaoffsetDI,double omegaoffsetRV,bool Tcstep,bool TcequalT){
+void Orbit::loadStaticVars(double omegaoffsetDI,double omegaoffsetRV,bool TcafterT){
 	omegaOffsetDI = omegaoffsetDI;
 	omegaOffsetRV = omegaoffsetRV;
-	TcStep = Tcstep;
-	TcEqualT = TcequalT;
+	TcAfterT = TcafterT;
 };
 
 void Orbit::loadRealData(double *xx, int xx_nx, int xx_ny){
@@ -69,6 +68,39 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	}
 	omegaDI = params[9]+omegaOffsetDI;
 	omegaRV = params[9]+omegaOffsetRV;
+	//Calculate Tc <-> T if needed
+	// from here NOT DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	std::cout<<"e = "<<params[4]<<std::endl;
+	std::cout<<"T = "<<params[5]<<std::endl;
+	std::cout<<"Tc = "<<params[6]<<std::endl;
+	std::cout<<"P = "<<params[7]<<std::endl;
+	omega = params[9];TcAfterT  ta,halfE,mTTc,deltaT;
+	//if T=Tc already, do nothing.
+	if (params[5]!=params[6]){
+		if ((params[4]==0)||((params[9]==90.0)and(TcAfterT))||((params[9]==270.0)and(!TcAfterT))){
+			//Circular, so just set equal.
+			if (params[6]==0)
+				params[5]=params[6];
+			else
+				params[6]=params[5];
+		}
+		else{
+			ta = pi/2.0 - params[9]*(pi/180.0);
+			if (ta<0.0)
+				ta+=2.0*pi;
+			halfE = atan2(sqrt(1.0-params[4])*sin(ta/2.0),sqrt(1.0+params[4])*cos(ta/2.0));
+			mTTc = 2.0*halfE-params[4]*sin(2.0*halfE);
+			deltaT = (mTTc*params[7]*daysPerYear)/(2.0*pi);
+			if (params[9]>90.0):
+					deltaT-=params[7]*daysPerYear;
+		}
+	}
+
+	// up to here NOT DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
 	//start loop over each epoch of data
 	for (int i=0;i<dataModelAry_nx; i++){
 		if (verbose)//$$$$$$$$$$$$$$$$$$$$$$$$$

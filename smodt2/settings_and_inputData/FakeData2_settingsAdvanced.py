@@ -111,6 +111,8 @@ advancedDict = {
 'TcStep' : (False,"Step in Tc not T?"),
 # take the time of center transit (inferior conjunction) into account? [bool]
 'TcEqualT' : (True,"Fix Tc=T?"),
+# Does Time of Center Transit occur after Time of Last Periapsis? [bool]
+"TcAfterT"  :(True,"Tc happens after T?"),
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
 'omegaPrv' : (0.0,"Custom fixed val added to RV omega in model"),
 ##################################################

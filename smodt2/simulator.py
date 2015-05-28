@@ -39,8 +39,6 @@ class Simulator(object):
         self.shiftStr = ''
         self.acceptBoolAry = []
         self.parIntVaryAry = []
-        self.sigPercentMAX = 1.0 #$$ Put in settings dict???
-        self.sigPercentMIN = 0.005 #$$ Put in settings dict???
            
     def starter(self):
         """
@@ -90,11 +88,13 @@ class Simulator(object):
         paramInts = []
         for i in range(0,len(rangeMins)):
             if (i!=10)and(i!=11):
-                if self.dictVal('Kdirect')and(i==8):
-                    if (self.dictVal('dataMode')!='RV'):
-                        self.log.error("Kdirect was requested, but dataMode!=RV!  Will vary inc anyway!")
-                        if rangeMaxs[i]!=0:
-                            paramInts.append(i)
+                if (i==8)or(i==12):
+                    if (self.dictVal('dataMode')!='RV')or(self.dictVal('Kdirect')==False):
+                        if (rangeMaxs[8]!=0)and(i==8):
+                            paramInts.append(8)
+                    elif self.dictVal('Kdirect'):
+                        if (rangeMaxs[12]!=0)and(i==12):
+                            paramInts.append(12)                                           
                 elif rangeMaxs[i]!=0:
                     if self.dictVal('TcEqualT'):
                         if self.dictVal('TcStep'):
@@ -105,6 +105,7 @@ class Simulator(object):
                                 paramInts.append(i)
                     else:
                         paramInts.append(i)
+        #print 'paramInts = '+repr(paramInts)
         #find total number of RV and DI epochs in real data
         nDIepochs = np.sum(np.where(self.realData[:,1]!=0))
         nRVepochs = np.sum(np.where(self.realData[:,5]!=0))
@@ -236,6 +237,10 @@ class Simulator(object):
             sumStr = "below\n# Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
             sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
             self.log.debug(sumStr)
+        if False:
+            print 'priorsRatio = '+str(priorsRatio)
+            print 'inc priorsRatio = '+str(self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
+            print 'likelihoodRatio = '+str(likelihoodRatio)
         return (paramsOut,accept)
     
     def tempDrop(self,sample,temp,stage=''):
@@ -275,10 +280,10 @@ class Simulator(object):
                     if stage=='ST':
                         ##check each rate to choose up/down shift and do so and update shiftStr
                         self.shiftStr+= 'parameter # '+str(i)+" shifting sigma "+str(sigs[i])+" -> "
-                        if ((float(nAcc)/float(nTot))>0.35)and(sigs[i]<self.sigPercentMAX):
-                            sigmasOut[i]+=self.sigPercentMIN
-                        elif ((float(nAcc)/float(nTot))<0.25)and(sigs[i]>self.sigPercentMIN):
-                            sigmasOut[i]-=self.sigPercentMIN
+                        if ((float(nAcc)/float(nTot))>0.35)and(sigs[i]<self.dictVal('sigMax')):
+                            sigmasOut[i]+=self.dictVal('sigMin')
+                        elif ((float(nAcc)/float(nTot))<0.25)and(sigs[i]>self.dictVal('sigMin')):
+                            sigmasOut[i]-=self.dictVal('sigMin')
                         self.shiftStr+=str(sigmasOut[i])+"\n"
                 self.acceptBoolAry = []
                 self.parIntVaryAry = []

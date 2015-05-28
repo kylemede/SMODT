@@ -149,7 +149,7 @@ def loadRealData(filenameRoot,dataMode='3D'):
             if epochs[i]==rvData[rvCounter,0]:
                 realData[i,5:]=rvData[rvCounter,1:]
                 rvCounter+=1
-    print 'dataMode'+dataMode+'->realData = '+repr(realData)
+    #print 'dataMode'+dataMode+'->realData = '+repr(realData)
     return realData
             
 def loadSettingsDict(filenameRoot):

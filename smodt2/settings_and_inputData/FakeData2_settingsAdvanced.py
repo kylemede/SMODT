@@ -88,6 +88,10 @@ advancedDict = {
 # number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]. 
 # Allowed vals [1,nSTsamp) Ideal is int(nSTsamp/2000)!
 'nSigStps': (25,"Times to calc acceptance and tune sigmas."),
+# Maximum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
+'sigMax' :(1.0,'Maximum ratio of params range,for step size.'),
+# Minimum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
+'sigMin' :(0.02,'Minimum ratio of params range,for step size.'),
 # interval of accepted values between storing in output array (for SA,ST,MCMC, not MC) [int]
 # Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
 'saveInt' : (10,"Interval between saving params, for all but MC."),

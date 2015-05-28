@@ -50,8 +50,8 @@ simpleSettingsDict={
 #a_totMIN :2,
 #a_totMAX :7,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
-'KMIN' : 0,
-'KMAX' : 0,
+'KMIN' : 1000,
+'KMAX' : 1300,
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
 'vMINs' :[-150],

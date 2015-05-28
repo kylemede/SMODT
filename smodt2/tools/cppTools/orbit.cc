@@ -166,7 +166,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//Calculate RV
 		//--------------------------
 		if (dataRealAry[5+i*dataRealAry_ny]!=0){
-			dataModelAry[2+i*dataModelAry_ny]=K*(cos(thetaRV+omegaRV*(pi/180.0))+params[4]*cos(omegaRV*(pi/180.0)));
+			dataModelAry[2+i*dataModelAry_ny]=params[12]*(cos(thetaRV+omegaRV*(pi/180.0))+params[4]*cos(omegaRV*(pi/180.0)));
 			if (false){
 				std::cout<<"theta deg V2.0 = "<<(thetaRV*(180.0/pi))<<std::endl;
 				std::cout<<"cos(theta+omegaRV*(pi/180.0)) = "<<cos(thetaRV+omegaRV*(pi/180.0))<<std::endl;

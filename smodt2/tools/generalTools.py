@@ -143,7 +143,7 @@ def loadRealData(filenameRoot,dataMode='3D'):
     for i in range(epochs.shape[0]):
         if len(diEpochs)>0:
             if epochs[i]==diData[diCounter,0]:
-                realData[i,1:5]=diData[diCounter]
+                realData[i,1:5]=diData[diCounter,1:]
                 diCounter+=1
         if len(rvEpochs)>0:
             if epochs[i]==rvData[rvCounter,0]:

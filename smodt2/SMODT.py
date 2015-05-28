@@ -15,7 +15,7 @@ def smodt():
     'main'
     """
     settingsDict = tools.startup(sys.argv)
-    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=20)
+    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=settingsDict['logLevel'])
     log.debug("Prepend string passed in was '"+settingsDict['prepend']+"'")
     Sim = simulator.Simulator(settingsDict)
     
@@ -46,10 +46,10 @@ def smodt():
         #print '-'*50+'\n\n\n'
         (paramsSA,sigmasSA) = Sim.simulatorFunc('SA')
         ## ST call
-        print '-'*50+'\n\n\n'
+        #print '-'*50+'\n\n\n'
         (paramsST,sigmasST) = Sim.simulatorFunc('ST',paramsSA,sigmasSA)
         ##MCMC call
-        print '-'*50+'\n\n\n'
+        #print '-'*50+'\n\n\n'
         outFname = Sim.simulatorFunc('MCMC',paramsST,sigmasST)
         print 'FINAL OUTFILE :\n'+outFname    
     

@@ -103,28 +103,30 @@ def loadRVdata(filename):
                 
     return np.array(rvData)
     
-def loadRealData(filenameRoot):
+def loadRealData(filenameRoot,dataMode='3D'):
     """
     Load the observed real data into a numpy array.
     This will be a combination of the RV and DI data,sorted into cronological order.
     filenameRoot would be the absolute path plus the prepend to the settings files.
     ex. '/run/..../SMODT/settings_and_inputData/FakeData_'
     """
-    diFilename = filenameRoot+'DIdata.dat'
-    rvFilename = filenameRoot+'RVdata.dat'
-    if False:
-        print 'using diFilename = '+diFilename
-        print 'using rvFilename = '+rvFilename
     diEpochs = []
     rvEpochs = []
-    if os.path.exists(diFilename):
-        diData = loadDIdata(diFilename)
-        #print 'diData = '+repr(diData)
-        diEpochs = diData[:,0]
-    if os.path.exists(rvFilename):
-        rvData = loadRVdata(rvFilename)
-        #print 'rvData = '+repr(rvData)
-        rvEpochs = rvData[:,0]
+    if dataMode!='RV':
+        diFilename = filenameRoot+'DIdata.dat'
+        if False:
+            print 'using diFilename = '+diFilename        
+        if os.path.exists(diFilename):
+            diData = loadDIdata(diFilename)
+            diEpochs = diData[:,0]
+    if dataMode!='DI':
+        rvFilename = filenameRoot+'RVdata.dat'
+        if False:
+            print 'using rvFilename = '+rvFilename
+        if os.path.exists(rvFilename):
+            rvData = loadRVdata(rvFilename)
+            rvEpochs = rvData[:,0]
+            
     #load in epochs from both sets, sort and kill double entries
     epochsTemp = np.concatenate((diEpochs,rvEpochs))
     epochsTemp.sort()
@@ -135,19 +137,19 @@ def loadRealData(filenameRoot):
     epochs = np.array(epochs)
     realData = np.zeros((epochs.shape[0],8))
     realData[:,2]=realData[:,4]=realData[:,6]=np.inf
-    #print 'epochs = '+repr(epochs)
+    realData[:,0]=epochs[:]
     diCounter = 0
     rvCounter = 0
     for i in range(epochs.shape[0]):
         if len(diEpochs)>0:
             if epochs[i]==diData[diCounter,0]:
-                realData[i,0:5]=diData[diCounter]
+                realData[i,1:5]=diData[diCounter]
                 diCounter+=1
         if len(rvEpochs)>0:
             if epochs[i]==rvData[rvCounter,0]:
                 realData[i,5:]=rvData[rvCounter,1:]
                 rvCounter+=1
-    #print 'realData = '+repr(realData)
+    print 'dataMode'+dataMode+'->realData = '+repr(realData)
     return realData
             
 def loadSettingsDict(filenameRoot):
@@ -233,7 +235,7 @@ def startup(argv):
     ## Make a directory (folder) to place all the files from this simulation run
     settingsDict['finalFolder'] = os.path.join(settingsDict['outDir'],settingsDict['outRoot'])
     if os.path.exists(settingsDict['finalFolder']):
-        if settingsDict['SILENT']==False:
+        if settingsDict['logLevel']<100:
             print '\n'+'$'*50
             print 'WARNING!! the folder:\n"'+settingsDict['finalFolder']+'"\nALREADY EXISTS!'
             print 'You can overwrite the data in it, or exit this simulation.'
@@ -245,7 +247,7 @@ def startup(argv):
             os.mkdir(settingsDict['finalFolder'])
         elif (('n' in YN) or ('N' in YN)):
             sys.exit()
-        if settingsDict['SILENT']==False:
+        if settingsDict['logLevel']<100:
             print '$'*50+'\n'
     else:
         os.mkdir(settingsDict['finalFolder'])

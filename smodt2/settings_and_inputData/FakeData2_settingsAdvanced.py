@@ -19,7 +19,10 @@ def pPrior(P):
         return 1.0
 def incPrior(inc):
     if simpleSettingsDict['incMAX']!=simpleSettingsDict['incMIN']!=0:
-        return np.sin(inc*(constants.pi/180.0))
+        if inc==0:
+            return 1.0
+        else:
+            return np.sin(inc*(constants.pi/180.0))
     else:
         return 1.0
 def mass1Prior(mass):
@@ -45,12 +48,8 @@ advancedDict = {
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
 'chiMAX' : (25.0,"Max reduced chiSquared during MC"),
-# set to 'true' to have NOTHING print to screen while running [bool]
-'SILENT' : True,
-# set to 'false' to receive extra prints from the main simulations progress for testing [bool]
-'quiet' : True,
-# set to 'true' to receive prints from the functions called by main for testing [bool]
-'verbose' : False,
+# set level of log messages to screen [int]: choices ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
+'logLevel' : 20,
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :10,
 # make plot of posterior distributions? [bool]
@@ -107,6 +106,8 @@ advancedDict = {
 'fitPrime' : (False,"Fit primary's orbit?"),
 # Are the RVs in the RVdata.dat for the Primary star? [bool]
 'primeRVs' : (True,"RVs measured from Primary?"),
+# Draw values for K directly, do NOT calculate it [bool]. Kills varying of Inclination.  Only possible in RV only mode.
+'Kdirect'  : (True,'Vary K direct, do not calc it'),
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 'TcStep' : (False,"Step in Tc not T?"),
 # take the time of center transit (inferior conjunction) into account? [bool]
@@ -143,7 +144,6 @@ advancedDict = {
 
 def gaussian(x,mu,sig):
     return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
-
 
 ######################
 # Merge the two dicts#

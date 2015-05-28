@@ -128,7 +128,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	//calc those that are static for each epoch
 	atot =pow(((params[7]*params[7]*secPerYear*secPerYear*Grav*KGperMsun*(params[0]+params[1]))/(4.0*pi*pi)),(1.0/3.0));
 	params[10]=atot/MperAU;
-	if (dataRealAry[5]!=0){
+	if ((dataRealAry[5]!=0)&&(params[12]==0)){
 		K = ((2.0*pi*((atot)/(1.0+(params[0]/params[1])))*sin(params[8]*(pi/180.0)))/(params[7]*secPerYear*pow((1.0-params[4]*params[4]),(1.0/2.0))));
 		params[12]=K;
 	}

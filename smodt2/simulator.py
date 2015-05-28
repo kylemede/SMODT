@@ -19,12 +19,12 @@ class Simulator(object):
         self.settingsDict = settingsDict
         self.log = tools.getLogger('main.simulator',lvl=100,addFH=False)
         tools.logSystemInfo(self.log)
+        self.realData = tools.loadRealData(os.path.join(self.dictVal('settingsDir'),self.dictVal('prepend')),dataMode=self.dictVal('dataMode'))
+        (self.rangeMaxs,self.rangeMins,self.starterSigmas,self.paramInts,self.nu,self.nuDI,self.nuRV) = self.starter()
         self.Orbit = tools.cppTools.Orbit()
         self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'))
-        self.realData = tools.loadRealData(os.path.join(self.dictVal('settingsDir'),self.dictVal('prepend')))
         self.Orbit.loadRealData(self.realData)
         self.Orbit.loadConstants(constants.Grav,constants.pi,constants.KGperMsun, constants.daysPerYear,constants.secPerYear,constants.MperAU)
-        (self.rangeMaxs,self.rangeMins,self.starterSigmas,self.paramInts,self.nu,self.nuDI,self.nuRV) = self.starter()
         self.seed = int(timeit.default_timer())
         self.log.debug("random number seed = "+str(self.seed))
         np.random.seed(self.seed)
@@ -87,11 +87,15 @@ class Simulator(object):
             rangeMaxs.append(self.dictVal('vMAXs')[i])
         #figure out which parameters are varying in this run.
         #don't vary atot or chiSquared ever, and take care of TcEqualT cases
-        ###$$$$$$$$$$$$$$$ Still need to handle the Kvary option!!!!!!!!!!!!!!!!!!!!!!!!!!!!!$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         paramInts = []
         for i in range(0,len(rangeMins)):
             if (i!=10)and(i!=11):
-                if rangeMaxs[i]!=0:
+                if self.dictVal('Kdirect')and(i==8):
+                    if (self.dictVal('dataMode')!='RV'):
+                        self.log.error("Kdirect was requested, but dataMode!=RV!  Will vary inc anyway!")
+                        if rangeMaxs[i]!=0:
+                            paramInts.append(i)
+                elif rangeMaxs[i]!=0:
                     if self.dictVal('TcEqualT'):
                         if self.dictVal('TcStep'):
                             if i!=5:
@@ -109,8 +113,12 @@ class Simulator(object):
         nRVvars = np.sum(np.where(paramInts!=3))
         nVars = len(paramInts)
         nu = nDIepochs*2+nRVepochs-nVars
-        nuDI = nDIepochs*2-nDIvars
-        nuRV = nRVepochs-nRVvars
+        nuDI = 1
+        nuRV=1
+        if nDIepochs>0:
+            nuDI = nDIepochs*2-nDIvars
+        if nRVepochs>0:
+            nuRV = nRVepochs-nRVvars
         return (rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
     
     def dictVal(self,key):
@@ -150,6 +158,10 @@ class Simulator(object):
                 parsOut[5]=parsOut[6]
             else:
                 parsOut[6]=parsOut[5]
+        ## if Kdirect not set, then inclination varys.
+        ## then K=0 going into Orbit so Orbit will calc it
+        if 8 in self.paramInts:
+            parsOut[12] = 0
         return parsOut
     
     def rangeCheck(self,pars,numAccepted=0,stage=''):
@@ -348,10 +360,10 @@ class Simulator(object):
             proposedPars = self.increment(latestPars,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
             sigmas = self.sigTune(sample,sigmas,stage)
-            if (True)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):#self.dictVal('SILENT')
-                bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), 'Complete so far.')
-        if True:#self.dictVal('SILENT')
-            bar.render(100, 'Complete so far.')
+            if (self.dictVal('logLevel')<100)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):
+                bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), stage+' complete so far.')
+        if self.dictVal('logLevel')<100:
+            bar.render(100,stage+' complete so far.')
         toc=timeit.default_timer()
         self.log.info(stage+" it took: "+str(int(toc-tic))+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$
         self.endSummary(len(acceptedParams),temp,stage)

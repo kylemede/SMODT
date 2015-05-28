@@ -43,8 +43,8 @@ advancedDict = {
 ########################
 ### General Settings ###
 ########################
-# This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
-'chiMAX' : (100.0,"Max reduced chiSquared during SA or MC"),
+# This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
+'chiMAX' : (25.0,"Max reduced chiSquared during MC"),
 # set to 'true' to have NOTHING print to screen while running [bool]
 'SILENT' : True,
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
@@ -66,7 +66,7 @@ advancedDict = {
 ###$$$$$$$$$$$$$$$$$$$$$$ Keep in final version $$$$$$$$$$$$$$$$$$$$$$$$$$
 # Copy output non-data files to a Dropbox folder? [bool]  
 'CopyToDB' :False,
-'dbFolder' : '/run/media/kmede/Data1/Todai_Work/Dropbox/SMODT-outputCopies/',
+'dbFolder' : '/run/media/kmede/HOME/Dropbox/SMODT-outputCopies/',
 ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ############################
 # Settings for MCMC mode ###
@@ -80,7 +80,7 @@ advancedDict = {
 # number of samples to draw for simulated annealing stage [int] 
 'nSAsamp' :(50000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (50.0,"SA starting temperature."),
+'strtTemp' : (100.0,"SA starting temperature."),
 # Number of temperature steps over Simulated Annealing [int].  
 # Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/50)!
 'nTmpStps'  : (1000,"Number of temperature steps during SA."),
@@ -111,8 +111,6 @@ advancedDict = {
 'TcStep' : (False,"Step in Tc not T?"),
 # take the time of center transit (inferior conjunction) into account? [bool]
 'TcEqualT' : (True,"Fix Tc=T?"),
-# Does Time of Center Transit occur after Time of Last Periapsis? [bool]
-"TcAfterT"  :(True,"Tc happens after T?"),
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
 'omegaPrv' : (0.0,"Custom fixed val added to RV omega in model"),
 ##################################################

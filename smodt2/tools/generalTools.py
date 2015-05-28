@@ -223,9 +223,9 @@ def startup(argv):
         except:
             print '\nWarning: the settings file prepended feature is not working correctly !!\n'    
     ######################### FIND MORE ELEGANT WAY TO DO THIS!!!!############################
-    tempRoot = '/run/media/kmede/Data1/Todai_Work/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/settings_and_inputData/'+prepend###$$$$ this will be handled with setup.py??? How to know where SMODT is on disk??
+    tempRoot = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/settings_and_inputData/'+prepend###$$$$ this will be handled with setup.py??? How to know where SMODT is on disk??
     settingsDict = loadSettingsDict(tempRoot)
-    settingsDict['smodtdir']='/run/media/kmede/Data1/Todai_Work/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/'###$$$$ this will be handled with setup.py??? How to know where SMODT is on disk??
+    settingsDict['smodtdir']='/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/'###$$$$ this will be handled with setup.py??? How to know where SMODT is on disk??
     settingsDict['settingsDir']=os.path.join(settingsDict['smodtdir'],'settings_and_inputData/')
     settingsDict['prepend']=prepend
     #####################################################################################

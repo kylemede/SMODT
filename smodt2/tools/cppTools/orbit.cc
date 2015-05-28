@@ -6,10 +6,76 @@ double testFunc(double t){
     return t;
 };
 
-void Orbit::loadStaticVars(double omegaoffsetDI,double omegaoffsetRV,bool TcafterT){
+void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
+	//------------------
+	//Calculate TA and E
+	//Remember that in RV, there is a shift due to the Tc!=T, that doesn't exist in DI.
+	//------------------
+	//std::cout<<"\necc = "<<ecc<<", T = "<<T<<", Tc = "<<Tc<<", P = "<<P<<", epoch = "<<epoch<<std::endl;
+	thetaRV=0;
+	EDI=0;
+	//for RV
+	M = (2.0*pi*(epoch-2.0*T+Tc))/(P*daysPerYear);
+	M -= (int)(M/(2.0*pi))*(2.0*pi);//shift into [-360,360]
+	if ((M!=0)and(M!=(2.0*pi))){
+		Eprime = M+ecc*sin(M)+((ecc*ecc)/(2.0*M))*sin(2.0*M);
+		newtonCount = 0;
+		while ( (fabs(E-Eprime)>1.0e-10)&&(newtonCount<50) ){
+			E = Eprime;
+			Eprime = E-((E-ecc*sin(E)-M)/(1.0-ecc*cos(E)));
+			newtonCount +=1;
+		}
+		//double check it satisfies the original equation
+		if (fabs((E-ecc*sin(E))-M)>1.0e-5){
+			std::cout<<"PROBLEM!! resulting E from Newton's loop isn't within error limit!!!"<<std::endl;
+			if (true){
+				std::cout<<"M = "<<M <<std::endl;
+				std::cout<<"e = "<<ecc<<std::endl;
+				std::cout<<"T = "<<T<<std::endl;
+				std::cout<<"Tc = "<<Tc<<std::endl;
+				std::cout<<"P = "<<P<<std::endl;
+				std::cout<<"Eprime = "<<Eprime <<"\n" <<std::endl;
+			}
+		}
+		//std::cout<<"E RV = "<<E<<std::endl;
+		thetaPrime = acos((cos(E)-ecc)/(1.0-ecc*cos(E)));
+		if (E>pi)
+			thetaPrime = 2.0*pi-thetaPrime;
+		thetaRV = thetaPrime;
+	}
+	//for DI
+	if (T!=Tc){
+		M = (2.0*pi*(epoch-T))/(P*daysPerYear);
+		M -= (int)(M/(2.0*pi))*(2.0*pi);//shift into [-360,360]
+		if ((M!=0)and(M!=(2.0*pi))){
+			Eprime = M+ecc*sin(M)+((ecc*ecc)/(2.0*M))*sin(2.0*M);
+			newtonCount = 0;
+			while ( (fabs(E-Eprime)>1.0e-10)&&(newtonCount<50) ){
+				E = Eprime;
+				Eprime = E-((E-ecc*sin(E)-M)/(1.0-ecc*cos(E)));
+				newtonCount +=1;
+			}
+			//double check it satisfies the original equation
+			if (fabs((E-ecc*sin(E))-M)>1.0e-5){
+				std::cout<<"PROBLEM!! resulting E from Newton's loop isn't within error limit!!!"<<std::endl;
+				if (true){
+					std::cout<<"M = "<<M <<std::endl;
+					std::cout<<"e = "<<ecc<<std::endl;
+					std::cout<<"T = "<<T<<std::endl;
+					std::cout<<"Tc = "<<Tc<<std::endl;
+					std::cout<<"P = "<<P<<std::endl;
+					std::cout<<"Eprime = "<<Eprime <<"\n" <<std::endl;
+				}
+			}
+		}
+	}
+	EDI = E;
+	//std::cout<<"\nin anomaly calc: EDI = "<<EDI<<", thetaRV = "<<thetaRV<<std::endl;//$$$$$$$$$$$$$$$$$$
+};
+
+void Orbit::loadStaticVars(double omegaoffsetDI,double omegaoffsetRV){
 	omegaOffsetDI = omegaoffsetDI;
 	omegaOffsetRV = omegaoffsetRV;
-	TcAfterT = TcafterT;
 };
 
 void Orbit::loadRealData(double *xx, int xx_nx, int xx_ny){
@@ -69,15 +135,9 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	omegaDI = params[9]+omegaOffsetDI;
 	omegaRV = params[9]+omegaOffsetRV;
 	//Calculate Tc <-> T if needed
-	// from here NOT DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	std::cout<<"e = "<<params[4]<<std::endl;
-	std::cout<<"T = "<<params[5]<<std::endl;
-	std::cout<<"Tc = "<<params[6]<<std::endl;
-	std::cout<<"P = "<<params[7]<<std::endl;
-	omega = params[9];TcAfterT  ta,halfE,mTTc,deltaT;
-	//if T=Tc already, do nothing.
 	if (params[5]!=params[6]){
-		if ((params[4]==0)||((params[9]==90.0)and(TcAfterT))||((params[9]==270.0)and(!TcAfterT))){
+		//if T=Tc already, do nothing.
+		if ((params[4]==0)||(omegaRV==90.0)){
 			//Circular, so just set equal.
 			if (params[6]==0)
 				params[5]=params[6];
@@ -85,70 +145,31 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 				params[6]=params[5];
 		}
 		else{
-			ta = pi/2.0 - params[9]*(pi/180.0);
-			if (ta<0.0)
-				ta+=2.0*pi;
+			ta = pi/2.0 - omegaRV*(pi/180.0);
 			halfE = atan2(sqrt(1.0-params[4])*sin(ta/2.0),sqrt(1.0+params[4])*cos(ta/2.0));
 			mTTc = 2.0*halfE-params[4]*sin(2.0*halfE);
 			deltaT = (mTTc*params[7]*daysPerYear)/(2.0*pi);
-			if (params[9]>90.0):
-					deltaT-=params[7]*daysPerYear;
+			if (params[6]==0)
+				params[6] = params[5]+deltaT;
+			else
+				params[5] = params[6]-deltaT;
 		}
 	}
-
-	// up to here NOT DONE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-
 	//start loop over each epoch of data
 	for (int i=0;i<dataModelAry_nx; i++){
 		if (verbose)//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"\nepoch "<<dataRealAry[0+i*dataRealAry_ny]<<":"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
-		//------------------
-		//Calculate TA and E
-		//------------------
-		M = (2.0*pi*(dataRealAry[0+i*dataRealAry_ny]-2.0*params[5]+params[6])/(params[7]*daysPerYear));
-		//std::cout<<"M before = "<<M*(180.0/pi)<<std::endl;
-		M -= (int)(M/(2.0*pi))*(2.0*pi);//shift into [-360,360]
-		//if (M<0)
-		//	M+=2.0*pi;
-		//std::cout<<"M after = "<<M*(180.0/pi)<<std::endl;
-		if ((M!=0)and(M!=(2.0*pi))){
-			Eprime = M+params[4]*sin(M)+((params[4]*params[4])/(2.0*M))*sin(2.0*M);
-			newtonCount = 0;
-			while ( (fabs(E-Eprime)>1.0e-10)&&(newtonCount<50) ){
-				E = Eprime;
-				Eprime = E-((E-params[4]*sin(E)-M)/(1.0-params[4]*cos(E)));
-				newtonCount +=1;
-			}
-			//double check it satisfies the original equation
-			if (fabs((E-params[4]*sin(E))-M)>1.0e-5){
-				std::cout<<"PROBLEM!! resulting E from Newton's loop isn't within error limit!!!"<<std::endl;
-				if (true){
-					std::cout<<"M = "<<M <<std::endl;
-					std::cout<<"e = "<<params[4]<<std::endl;
-					std::cout<<"T = "<<params[5]<<std::endl;
-					std::cout<<"Tc = "<<params[6]<<std::endl;
-					std::cout<<"P = "<<params[7]<<std::endl;
-					std::cout<<"Eprime = "<<Eprime <<"\n" <<std::endl;
-				}
-			}
-			thetaPrime = acos((cos(E)-params[4])/(1.0-params[4]*cos(E)));
-			if (E>pi)
-				thetaPrime = 2.0*pi-thetaPrime;
-			theta = thetaPrime;
-		}
-		else
-			theta=E= 0.0;
+		//Calculate true anomaly for RV and eccentric anomaly for DI
+		anomalyCalc(params[4],params[5],params[6],params[7],dataRealAry[0+i*dataRealAry_ny]);
+		//std::cout<<"in calc: EDI = "<<EDI<<", thetaRV = "<<thetaRV<<std::endl;//$$$$$$$$$$$$$$$$$$
 		//--------------------------
 		//Calculate RV
 		//--------------------------
 		if (dataRealAry[5+i*dataRealAry_ny]!=0){
-			dataModelAry[2+i*dataModelAry_ny]=K*(cos(theta+omegaRV*(pi/180.0))+params[4]*cos(omegaRV*(pi/180.0)));
+			dataModelAry[2+i*dataModelAry_ny]=K*(cos(thetaRV+omegaRV*(pi/180.0))+params[4]*cos(omegaRV*(pi/180.0)));
 			if (false){
-				std::cout<<"theta deg V2.0 = "<<(theta*(180.0/pi))<<std::endl;
-				std::cout<<"cos(theta+omegaRV*(pi/180.0)) = "<<cos(theta+omegaRV*(pi/180.0))<<std::endl;
+				std::cout<<"theta deg V2.0 = "<<(thetaRV*(180.0/pi))<<std::endl;
+				std::cout<<"cos(theta+omegaRV*(pi/180.0)) = "<<cos(thetaRV+omegaRV*(pi/180.0))<<std::endl;
 				std::cout<<"cos(omegaRV*(pi/180.0)) = "<< cos(omegaRV*(pi/180.0))<<std::endl;
 				std::cout<<"params[4]*cos(omegaRV*(pi/180.0)) = "<< params[4]*cos(omegaRV*(pi/180.0))<<std::endl;
 				std::cout<<"dataModelAry[2+i*dataModelAry_ny] = "<<dataModelAry[2+i*dataModelAry_ny] <<std::endl;
@@ -171,8 +192,8 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 			F = ((atot/MperAU)/params[2])*(-cos(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))-sin(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
 			G = ((atot/MperAU)/params[2])*(-sin(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))+cos(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
 			// The coordinates of the unit orbital ellipse in the true plane (Binnendijk)
-			X = cos(E)-params[4];
-			Y = sqrt(1.0-params[4]*params[4])*sin(E);
+			X = cos(EDI)-params[4];
+			Y = sqrt(1.0-params[4]*params[4])*sin(EDI);
 			// Calculate the predicted x&y in ["]
 			//KEY NOTE: x_TH-I = y_plot = North
 			//          y_TH-I = x_plot = East

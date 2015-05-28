@@ -20,7 +20,7 @@ class Simulator(object):
         self.log = tools.getLogger('main.simulator',lvl=100,addFH=False)
         tools.logSystemInfo(self.log)
         self.Orbit = tools.cppTools.Orbit()
-        self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'),self.dictVal('TcStep'),self.dictVal('TcEqualT'))
+        self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'))
         self.realData = tools.loadRealData(os.path.join(self.dictVal('settingsDir'),self.dictVal('prepend')))
         self.Orbit.loadRealData(self.realData)
         self.Orbit.loadConstants(constants.Grav,constants.pi,constants.KGperMsun, constants.daysPerYear,constants.secPerYear,constants.MperAU)
@@ -196,14 +196,6 @@ class Simulator(object):
             self.paramsBest = paramsOut
             if self.latestSumStr=='':
                 self.latestSumStr='Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))
-        if False:
-            print '\nreals = \n'+repr(self.realData[:,[1,3,5]])
-            print 'modelData = \n'+repr(modelData)
-            print 'real-model = \n'+repr(self.realData[:,[1,3,5]]-modelData)
-            print 'diffs = \n'+repr(diffs)
-            print 'errors = \n'+repr(errors)
-            print '(diffs**2)/(errors**2) = \n'+repr((diffs**2)/(errors**2))
-            print 'chiSquared = '+str(paramsOut[11])
         accept = False
         if stage=='MC':
             if (paramsOut[11]/self.nu)<self.dictVal('chiMAX'):
@@ -309,7 +301,7 @@ class Simulator(object):
         self.acceptBoolAry = []
         self.parIntVaryAry = []
     
-    def simulatorFunc(self,stage='',chainNum=1,startParams=[],startSigmas=[]):
+    def simulatorFunc(self,stage='',startParams=[],startSigmas=[],chainNum=1):
         """
         The core function to perform the requested stage of the simulation ('MC','SA','ST','MCMC').
         If stage is SA or ST: final (params,sigmas) are returned, else nothing.

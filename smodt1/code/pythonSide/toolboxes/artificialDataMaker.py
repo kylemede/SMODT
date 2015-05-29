@@ -5,24 +5,31 @@ import DItoolbox as diTools
 
 def calc_orbit():
     """
-    This is a test function to produce a Keplerian orbit in RA,Dec,RV to verify SMODT.
-    NOTE: the accuracy of the output values is accurate to 'one part in 10 to the 5', 
-          due to the simple center differencing used to calculate the velocities from the positions and times.
+    This is a tool to produce a Keplerian orbit in RA,Dec,RV to verify SMODT.
+    It just computes Kepler orbit positions and velocities then rotates 
+    them into the observed values in the plane of the sky.
     
-    From his email:
-    "
-    The program calc_orbit.py gives you an eight column file:
-    1. phase
-    2. time (years)
-    3. x position of secondary (arcsec)
-    4. y position of secondary (arcsec)
-    5. radial velocity of secondary (km/s)
-    6. x position of primary (arcsec)
-    7. y position of primary (arcsec)
-    8. radial velocity of primary (km/s)
-    
-    I just computed a Kepler orbit's positions and velocities and rotated them.
-    "
+    NOTE: the accuracy of the output values is to 'one part in 10^5', 
+          due to the simple center differencing used to calculate the velocities 
+          from the positions and times.
+          
+    Outputs are 3 files matching formats used in SMODT2.0 DI, SMODT1.0 DI, and matching RV format.
+    #mockdata-SMODT2format-DI.dat has columns:
+    #1. JD
+    #2. RA (x) ["]
+    #3. RA ERROR ["]
+    #4. Dec (y) ["]
+    #5. Dec ERROR ["]
+    #mockdata-SMODT1format-DI.dat has columns:
+    #1. JD
+    #2. Position Angle [deg]
+    #3. Position Angle ERROR [deg]
+    #4. Separation Angle ["]
+    #5. Separation Angle ERROR ["]
+    #mockdata-SMODTformat-RV.dat has colunns:
+    #1. JD
+    #6. RV of primary (or secondary) rel to CofM [m/s]
+    #7. RV ERROR [m/s]
     """
     #Computer Directory
     baseSaveDir='/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
@@ -68,18 +75,17 @@ def calc_orbit():
     print "Mass 1 = "+str(M_primary)+" Msun"
     print "Mass 2 = "+str(M_primary/massratio)+" Msun"
     print "System distance = "+str(distance)+" PC "
+    #settings prints
     if storePrimaryRVs:
         print "Saving RVs of primary star relative to Center of Mass\n"
     else:
         print "Saving RVs of companion relative to Center of Mass\n"
-    #settings prints
     print 'Errors were calculated as '+str(percentError)+"% of the median value in the observables"
     if realizeErrors:
         print 'Data values were realized from the errors'
     else:
         print 'Data values are perfect with NO realization of the errors'
     print str(NumDataPointsOut)+" epochs will be calculated and stored\n"
-        
         
     # Positions of both components in km relative to center of mass
     ke = pyasl.KeplerEllipse(a1, period, e=e, Omega=0.)
@@ -98,18 +104,6 @@ def calc_orbit():
     
     # Velocities in km/s using centered differencing
     vel_A = (pos_A[2:] - pos_A[:-2])/(t[2] - t[0])/(86400*365.2422)
-    if False:
-        vel_A2 = pos_A.copy()
-        vel_A2 = (pos_A[1:] - pos_A[:-1])/(t[1] - t[0])/(86400*365.2422)
-        print "pos_A = "+repr(pos_A[0:10])+"\n"+repr(pos_A[-10:])+"\n"
-        print "Vel_A before = "+repr(vel_A[0:10])+"\n"+repr(vel_A[-10:])+"\n"
-        print "Vel_A after = "+repr(vel_A2[0:10])+"\n"+repr(vel_A2[-10:])+"\n"
-        print "pos_A[2]-pos_A[0] = "+str(pos_A[2]-pos_A[0])+", t[2] - t[0] = "+str(t[2] - t[0])
-        print "(pos_A[2]-pos_A[0])/(t[2] - t[0])/(86400*365.2422) = "+str((pos_A[2]-pos_A[0])/(t[2] - t[0])/(86400*365.24))
-        print "\npos_A[1]-pos_A[0] = "+str(pos_A[1]-pos_A[0])+", t[1] - t[0] = "+str(t[1] - t[0])
-        print "(pos_A[1]-pos_A[0])/(t[1] - t[0])/(86400*365.2422) = "+str((pos_A[1]-pos_A[0])/(t[1] - t[0])/(86400*365.24))
-        print "(t[2] - t[0])*365.24 = "+str((t[2] - t[0])*365.2422)
-        print "(t[1] - t[0])*365.24 = "+str((t[1] - t[0])*365.2422)
     pos_A = pos_A[1:-1]
     vel_B = (pos_B[2:] - pos_B[:-2])/(t[2] - t[0])/(86400*365.2422)
     pos_B = pos_B[1:-1]
@@ -155,6 +149,7 @@ def calc_orbit():
     vel_B = np.array(vel_Bnew)
     t=np.array(tnew)
 
+    #make an ary for raw forms of the data.
     data = np.zeros((pos_A.shape[0], 8))
     data[:, 0] = t*2*np.pi/period #1. phase
     data[:, 1] = t # 2. time (years)
@@ -165,6 +160,7 @@ def calc_orbit():
     data[:, 6] = pos_B[:, 1]*km_to_arcsec #7. y position of primary (arcsec)
     data[:, 7] = vel_B[:, 2] #8. radial velocity of primary (km/s)
     
+    #update raw forms to initial SMODT versions
     data2 = np.zeros((pos_A.shape[0],5))
     data2[:,0] = data[:, 1]*365.2422+TimeLastPeri #JD 
     data2[:,1] = pos_A[:, 1]*km_to_arcsec - pos_B[:, 1]*km_to_arcsec #Ythi=Xplot=RA  separation between two bodies based on primary being at 0,0 ["]
@@ -172,12 +168,9 @@ def calc_orbit():
     data2[:,3] = vel_B[:, 2]*1000.0 # RV of primary compared to center of mass origin[ m/s]
     data2[:,4] = vel_A[:, 2]*1000.0 # RV of secondary compared to center of mass origin[ m/s]
     
-    #calculate error and use it to realize the errors in the RV data if requested
     #calculate error and use it to realize the errors in the DI data if requested
     errorRA = np.median(np.abs(data2[:,1]))*(percentError/100.0)
-    #print 'errorRA = '+str(errorRA)
     errorDec = np.median(np.abs(data2[:,2]))*(percentError/100.0)
-    #print 'errorDec = '+str(errorDec)
     errorRA = np.max([errorRA,errorDec])
     errorDec = np.max([errorRA,errorDec])
     #print 'Using larger of two DI errors for both = '+str(errorDec)
@@ -185,6 +178,7 @@ def calc_orbit():
         for i in range(pos_A.shape[0]):
             data2[i,1]+=np.random.normal(0,errorRA)
             data2[i,2] += np.random.normal(0,errorDec)
+    #calculate error and use it to realize the errors in the RV data if requested
     errorRVprimary = np.median(np.abs(data2[:,3]))*(percentError/100.0)
     errorRVsecondary = np.median(np.abs(data2[:,4]))*(percentError/100.0)
     if realizeErrors:
@@ -215,20 +209,7 @@ def calc_orbit():
     errorSA2 = np.median(np.abs(data3[:,3]))*(percentError/100.0)
     #print "errorSA2 = "+str(errorSA2)
     data3[:,4] = errorSA2
-    
-#     #calculate error and use it to realize the errors in the DI data if requested
-#     errorPA = np.median(np.abs(data3[:,1]))*(percentError/100.0)
-#     data3[:,2] = errorPA*1.7
-#     if realizeErrors:
-#         for i in range(pos_A.shape[0]):
-#             data3[i,1] += np.random.normal(0,errorPA)
-#     errorSA = np.median(np.abs(data3[:,3]))*(percentError/100.0)
-#     data3[:,4] = errorSA
-#     if realizeErrors:
-#         for i in range(pos_A.shape[0]):
-#             data3[i,3]+=np.random.normal(0,errorSA)
-        
-    #output data3 has format ->SMODT format with DI and RV combined into one file
+    #output data3 has format ->SMODT1.0 format with DI and RV combined into one ary
     #1. JD
     #2. Position Angle [deg]
     #3. Position Angle ERROR [deg]
@@ -237,34 +218,32 @@ def calc_orbit():
     #6. RV of primary (or secondary) rel to CofM [m/s]
     #7. RV ERROR [m/s]
     
-    
-    #load up data for SMODT2.0 format
-    data4 = np.empty((pos_A.shape[0],7))
-    data4[:,0] = data2[:, 0]#1. JD
-    data4[:,1] = data2[:,1]#2. RA (x) ["]
-    data4[:,2] = errorRA #3. RA ERROR ["]
-    data4[:,3] = data2[:,2]#4. Dec (y) ["]
-    data4[:,4] = errorDec#5. Dec ERROR ["]
-    #output data4 has format ->SMODT format with DI and RV combined into one file
+    ####################################################################################
+    #load up data for into arys for SMODT2.0 DI, SMODT1.0 DI, and matching format for RV
+    ####################################################################################
+    #dataDI2 has columns:
     #1. JD
     #2. RA (x) ["]
     #3. RA ERROR ["]
     #4. Dec (y) ["]
     #5. Dec ERROR ["]
+    #dataDI1 has columns:
+    #1. JD
+    #2. Position Angle [deg]
+    #3. Position Angle ERROR [deg]
+    #4. Separation Angle ["]
+    #5. Separation Angle ERROR ["]
+    #dataRV has colunns:
+    #1. JD
     #6. RV of primary (or secondary) rel to CofM [m/s]
     #7. RV ERROR [m/s]
     if storePrimaryRVs:
         data3[:,5] = data2[:,3]
         data3[:,6] = errorRVprimary
-        data4[:,5] = data2[:,3]
-        data4[:,6] = errorRVprimary
+        
     else:
         data3[:,5] = data2[:,4]
         data3[:,6] = errorRVsecondary
-        data4[:,5] = data2[:,4]
-        data4[:,6] = errorRVsecondary
-    print "resulting data files have "+str(len(data3[:,3]))+" epochs"
-    ## split these up into two separate files
     dataDI1 = np.empty((pos_A.shape[0],5))
     dataDI1[:,0] = data3[:,0]
     dataDI1[:,1] = data3[:,1]
@@ -272,21 +251,23 @@ def calc_orbit():
     dataDI1[:,3] = data3[:,3]
     dataDI1[:,4] = data3[:,4]
     dataDI2 = np.empty((pos_A.shape[0],5))
-    dataDI2[:,0] = data4[:,0]
-    dataDI2[:,1] = data4[:,1]
-    dataDI2[:,2] = data4[:,2]
-    dataDI2[:,3] = data4[:,3]
-    dataDI2[:,4] = data4[:,4]
+    dataDI2[:,0] = data2[:, 0]#1. JD
+    dataDI2[:,1] = data2[:,1]#2. RA (x) ["]
+    dataDI2[:,2] = errorRA #3. RA ERROR ["]
+    dataDI2[:,3] = data2[:,2]#4. Dec (y) ["]
+    dataDI2[:,4] = errorDec#5. Dec ERROR ["]
     dataRV = np.empty((pos_A.shape[0],3))
     dataRV[:,0] = data3[:,0]
     dataRV[:,1] = data3[:,5]
     dataRV[:,2] = data3[:,6]
+    print "resulting data files have "+str(len(data3[:,3]))+" epochs"
     
     ##write files to disk
     if False:
+        #raw all in one format, NOT for SMODT use.
         np.savetxt(os.path.join(baseSaveDir,'mockdata.dat'), data, fmt="%.10g")
-        #np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat.dat'), data3, fmt="%.10g")
     if True:
+        #3 files for SMODT 1.0 AND 2.0 formats.  RV formats are the same, so only write one of them.
         np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODT1format-DI.dat'), dataDI1, fmt="%.10g")
         np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODTformat-RV.dat'), dataRV, fmt="%.10g")
         np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODT2format-DI.dat'), dataDI2, fmt="%.10g")

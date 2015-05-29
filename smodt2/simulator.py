@@ -7,8 +7,6 @@ import tools
 import timeit
 from settings_and_inputData import constants
 
-
-
 class Simulator(object):
     """
     This is the Simulator parent class.  

@@ -127,8 +127,9 @@ class Simulator(object):
         self.settingsDict['nu'] = (nu,"Total nu")
         self.settingsDict['nuDI'] = (nuDI,"nu for DI")
         self.settingsDict['nuRV'] = (nuDI,"nu for RV")
-        self.settingsDict['parInts'] = paramInts
-        
+        paramIntsStr = repr(paramInts).replace(' ','')
+        self.settingsDict['parInts'] = (paramIntsStr,"Varried params")
+
         return (rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
     
     def dictVal(self,key):
@@ -299,7 +300,7 @@ class Simulator(object):
                 self.log.debug(self.acceptStr+self.shiftStr)
         return sigmasOut
     
-    def endSummary(self,totSaved,temp,stage=''):
+    def endSummary(self,totSaved,temp,sigmas,stage=''):
         """
         Make a final summary of important statistics for the chain.
         """
@@ -310,6 +311,8 @@ class Simulator(object):
         sumStr+="Last params = "+repr(self.paramsLast)+'\n'
         sumStr+="Best params = "+repr(self.paramsBest)+'\n'
         if (stage=="ST")or(stage=="MCMC"):
+            if stage=='ST':
+                sumStr+="Final Sigmas = "+repr(sigmas)+'\n'
             sumStr+=self.acceptStr+self.shiftStr
         self.log.info(sumStr)
     
@@ -380,12 +383,12 @@ class Simulator(object):
             bar.render(100,stage+' complete so far.')
         toc=timeit.default_timer()
         self.log.info(stage+" it took: "+str(int(toc-tic))+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$
-        self.endSummary(len(acceptedParams),temp,stage)
+        self.endSummary(len(acceptedParams),temp,sigmas,stage)
         outFname = tools.writeFits('outputData'+stage+'.fits',acceptedParams,self.settingsDict)
         if stage=='ST':
             return (latestPars,sigmas)
         elif stage=='SA':
-            return (self.paramsBest,np.ones(np.array(sigmas).shape)*0.01)
+            return (self.paramsBest,np.ones(np.array(sigmas).shape)*0.01,self.bestRedChiSqr)
         elif(stage=='MC')or(stage=='MCMC'):
             return outFname
         

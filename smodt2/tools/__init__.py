@@ -13,3 +13,4 @@ from progressbar.progressbar import ProgressBar
  
 import cppTools
 
+from plotTools import summaryPlotter

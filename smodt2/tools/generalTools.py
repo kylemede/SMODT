@@ -203,9 +203,9 @@ def startup(argv):
         except:
             print '\nWarning: the settings file prepended feature is not working correctly !!\n'    
     ######################### FIND MORE ELEGANT WAY TO DO THIS!!!!############################
-    tempRoot = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/settings_and_inputData/'+prepend###$$$$ this will be handled with setup.py??? How to know where SMODT is on disk??
-    settingsDict = loadSettingsDict(tempRoot)
-    settingsDict['smodtdir']='/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/'###$$$$ this will be handled with setup.py??? How to know where SMODT is on disk??
+    tempRoot = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/'###$$$$ this will be handled with setup.py??? How to know where SMODT is on disk??
+    settingsDict = loadSettingsDict(tempRoot+'settings_and_inputData/'+prepend)
+    settingsDict['smodtdir']=tempRoot
     settingsDict['settingsDir']=os.path.join(settingsDict['smodtdir'],'settings_and_inputData/')
     settingsDict['prepend']=prepend
     #####################################################################################
@@ -213,7 +213,7 @@ def startup(argv):
     ## Make a directory (folder) to place all the files from this simulation run
     settingsDict['finalFolder'] = os.path.join(settingsDict['outDir'],settingsDict['outRoot'])
     if os.path.exists(settingsDict['finalFolder']):
-        if settingsDict['logLevel']<100: ## Handle this with a 'clob' bool in dict??? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        if settingsDict['logLevel']<50: ## Handle this with a 'clob' bool in dict??? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             print '\n'+'$'*50
             print 'WARNING!! the folder:\n"'+settingsDict['finalFolder']+'"\nALREADY EXISTS!'
             print 'You can overwrite the data in it, or exit this simulation.'
@@ -225,7 +225,7 @@ def startup(argv):
             os.mkdir(settingsDict['finalFolder'])
         elif (('n' in YN) or ('N' in YN)):
             sys.exit()
-        if settingsDict['logLevel']<100:
+        if settingsDict['logLevel']<50:
             print '$'*50+'\n'
     else:
         os.mkdir(settingsDict['finalFolder'])
@@ -290,6 +290,37 @@ def loadFits(filename):
         log.critical("fits file does not exist!!! filename =\n"+str(filename))
         head=data=False
     return (head,data)
+
+def combineFits(filenames):
+    """
+    combine the data in multiple SMODT2 fits files together.
+    Used primarily for after multi-process runs.
+    """
+    outFname = os.path.join(os.path.dirname(filename[0]),"combinedData.fits")
+    (head0,dataALL) = loadFits(filename[0])
+    for filename in filenames:
+        (head,data) = loadFits(filename)
+        dataALL = np.concatenate((data0,data))
+    hdu = pyfits.PrimaryHDU(dataALL)
+    hdulist = pyfits.HDUList([hdu])
+    header = hdulist[0].header
+    for key in head0:
+        header[key]=head0[key]
+    hdulist.writeto(outFname)
+    log.info("output file written to:below\n"+outFname)
+    hdulist.close()
+    return outFname
+
+def getParInts(head):
+    """
+    convert string version of paramInts into a list again.
+    """
+    s = head['parInts'] 
+    ints = s.split("[")[1].split("]")[0].split(',')
+    parInts = []
+    for i in ints:
+        parInts.append(int(i))  
+    return parInts
         
 def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False,fast=True):
     """
@@ -306,6 +337,8 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
         (dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReader(filename, colNum)
     
         if len(dataAry>0):
+            #Convert data array to a sorted numpy array
+            dataAry = np.sort(dataAry)
             size = dataAry.size
         
             if bestCentered:

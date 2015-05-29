@@ -6,6 +6,7 @@ plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
 import constants as const
 import generalTools as genTools
+import smodtLogger
 
 log = smodtLogger.getLogger('main.plotTools',lvl=100,addFH=False)
 
@@ -481,18 +482,16 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
     if verbose:
         print s
 
-def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1):
+def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True):
     """
-    This advanced plotting function will plot all the data in a 3x3 grid (or 3x1) on a single figure.  The data will be plotted
-    in histograms that can be will be normalized to a max of 1.0 and the data can be weighted if desired.  The 
+    This advanced plotting function will plot all the data in a 3x4 grid on a single figure.  The data will be plotted
+    in histograms that will be normalized to a max of 1.0.  The 
     confidence levels of the data can be calculated and the resulting histograms will have the bars inside the
     68% bin shaded as dark grey and 95% as light grey and the rest will be white.
     
-    :param nu:       The value of nu to convert chi squared to reduced chi squared.
-    :type nu:        float32
     """
     quiet = True
-    verbose = False
+    verbose = True
     latex=True
     plotFormat = 'eps'
     forceRecalc = False
@@ -504,41 +503,31 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1)
     if latex:
         plt.rc('text', usetex=True)
         plt.rcParams['text.latex.unicode']=True  
-        
+    
     ## find number of RV datasets
-    if os.path.exists(outputDataFilename):  
-        datadir = os.path.dirname(outputDataFilename)
-        
-        ## get log
-        logFilename = os.path.join(datadir,'processManagerLogFile.txt')
-        log = open(logFilename,'a')
-        log.write('\n'+75*'#'+'\n Inside summaryPlotter \n'+75*'#'+'\n')
+    if head!=False:  
+        log.debug(' Inside summaryPlotter')
          
         s= '\nCreating summary plot for file:\n'+outputDataFilename
         s=s+ '\nInput plotfilename:\n'+plotFilename
-        if verbose:
-            print s
-        log.write(s+'\n')
+        log.info(s)
         
-        
-           
         # check if the passed in value for plotFilename includes format extension
         if '.'+plotFormat not in plotFilename:
             plotFilename = plotFilename+"."+plotFormat
-            print 'updating plotFilename to:\n'+plotFilename
+            log.debug('updating plotFilename to:\n'+plotFilename)
         else:
             plotFilename = plotFilename
-            print 'plotfilename was found to already have the format extension'
-            
-        paramList = [0,1,2,3,4,5,6,7]
-        paramFileStrs = ['Omega','e','To', 'Tc','P','i','omega','a_total']
-        paramStrs = ['Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]']
+        
+        paramList = genTools.getParInts(head)    
+        print 'paramList = '+repr(paramList) 
+        paramFileStrs = ['M1','M2','dist','Omega','e','To', 'Tc','P','i','omega','a_total','chiSquared']
+        paramStrs = ['M1 [Msun]','M2 [Msun]','Distance [PC]','Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]','chiSquared']
         if latex:
-            paramStrs = ['$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]']
-            
+            paramStrs = ['$M_1$ [$M_{sun}$]','$M_2$ [$M_{sun}$]','$Distance$ [PC]','$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]','chiSquared']
+
         #perfectVals = [70.0,0.5,2457000.0,2457000.0,5.0,40.0,50.0,3.34718746581]
         if head["nRVdsets"]>0:
-            paramList.append(9)
             paramFileStrs.append('K')
             if latex:
                 paramStrs.append('$K$ [m/s]')
@@ -546,68 +535,57 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1)
                 paramStrs.append('K [m/s]')
             #perfectVals.append(4933.18419284)
             for dataset in range(1,head["nRVdsets"]+1):
-                paramList.append(9+dataset)
                 paramFileStrs.append('offset_'+str(dataset))
                 if latex:
                     paramStrs.append("$offset_{"+str(dataset)+"}$ [m/s]")
                 else:
                     paramStrs.append('offset '+str(dataset)+' [m/s]')
                 #perfectVals.append(0.0)
-            
+        
         ## run through all the data files and parameters requested and make histogram files
         for i in range(0,len(paramList)):
-            if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i)+'.dat'))==False)or forceRecalc:
+            if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(paramList[i])+'.dat'))==False)or forceRecalc:
                 if verbose:
                     print 'Initial Plotting for parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[i]+", for file:\n"+outputDataFilename
-                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
+                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(paramList[i]))
                 (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
-                #(log,data,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = genTools.dataReader(outputDataFilename, paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False)
                 histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
-                if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat'))==False)or forceRecalc:
-                    np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat'),CLevels)
+                if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(paramList[i])+'.dat'))==False)or forceRecalc:
+                    np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(paramList[i])+'.dat'),CLevels)
                     if verbose:
-                        print 'confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat')
+                        print 'confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(paramList[i])+'.dat')
         
         # Create empty figure to be filled up with plots
         fig = plt.figure(figsize=(10,10)) 
                     
         ## make combined/stacked plot for each parameter in list
         for i in range(0,len(paramList)):
-            startTime = timeit.default_timer()
             s='\nStarting to plot shaded hist for '+paramStrs[i]
             if verbose:
                 print s
             subPlot = fig.add_subplot(3,4,i+1)
             
-            histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
-            print 'Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[i]#+" for file:\n"+outputDataFilename
+            histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(paramList[i]))
+            print 'Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[paramList[i]]#+" for file:\n"+outputDataFilename
             xLim=False
             CLevels=False
             if shadeConfLevels:
-                CLevels=np.loadtxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat'))
+                CLevels=np.loadtxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(paramList[i])+'.dat'))
             showYlabel=False
             if (i==0)or(i==4)or(i==8):
                 showYlabel = True
-            subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[i],xLims=xLim,latex=latex,showYlabel=showYlabel)
-            
-            # record the time the chain finished and print
-            endTime = timeit.default_timer()
-            totalTimeString = genTools.timeString(endTime-startTime)
-            s=s+'That took '+totalTimeString+' to complete.\n'  ##### only print in !'silent' mode to track time
-            if quiet==False:
-                print s            
+            subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[paramList[i]],xLims=xLim,latex=latex,showYlabel=showYlabel)         
             
         ## Save file if requested.
         if verbose:
             print '\nStarting to save param hist figure:'
         if plotFilename!='':
             plt.savefig(plotFilename,format=plotFormat)
+            plt.close()
             s= 'Summary plot saved to: '+plotFilename
-            print s
             if quiet==False:
                 print s
-            #log.write(s+'\n')
-        plt.close()
+            log.info(s)
         if True:
             print 'converting to PDF as well'
             os.system("epstopdf "+plotFilename)

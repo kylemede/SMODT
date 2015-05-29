@@ -3,6 +3,7 @@
 import tools
 import simulator
 import sys
+import os
 import numpy as np
 
 """
@@ -31,30 +32,38 @@ def smodt():
 #     P = 15.0
 #     inc =  30.0
 #     offset = 0.0
-    
+
 #     params = np.array([Mass1,Mass2,Sys_Dist_PC,Omega,e,T,T_center,P,inc,omega,0,0,0,offset])
-#     paramsST = np.array( [  9.37145408e-01,   1.98238112e-01,   5.02014226e+00,\
-#          6.15361129e+01,   4.15495712e-01,   2.45700439e+06,\
-#          2.45700439e+06,   1.50199284e+01,   2.93666210e+01,\
-#          1.09005939e+02,   6.35043912e+00,   4.04673143e+01,\
-#          1.18546830e+03,   1.12011498e+02])
-#     sigmasST = np.array([ 0.06 ,  0.07 ,  0.05 ,  0.06 ,  0.06 ,  0.055,  0.01 ,  0.07 ,\
-#         0.06 ,  0.065,  0.01 ,  0.01 ,  0.01 ,  0.085])
+    paramsST = np.array([  9.50122214e-01,   2.21670225e-01,   5.05405775e+00,
+         6.07928962e+01,   4.08889781e-01,   2.45700081e+06,
+         2.45700081e+06,   1.50094339e+01,   2.71264582e+01,
+         1.09266595e+02,   6.41461741e+00,   3.40786762e+01,
+         1.20316127e+03,   1.83558842e+00])
+    sigmasST = np.array([ 0.03,  0.07,  0.13,  0.13,  0.09,  0.17,  0.01,  0.09,  0.09,
+        0.21,  0.01,  0.01,  0.01,  0.05])
+    bestRedChiSqr=1.0
     if True:
         ##mcONLYcall
-        #outFname = Sim.simulatorFunc('MC')
+        outMCFname = Sim.simulatorFunc('MC')
         ## SA call
-        #print '-'*50+'\n\n\n'
-        (paramsSA,sigmasSA) = Sim.simulatorFunc('SA')
-        ## ST call
-        #print '-'*50+'\n\n\n'
-        (paramsST,sigmasST) = Sim.simulatorFunc('ST',paramsSA,sigmasSA)
-        ##MCMC call
-        #print '-'*50+'\n\n\n'
-        outFname = Sim.simulatorFunc('MCMC',paramsST,sigmasST)
-        print 'FINAL OUTFILE :\n'+outFname    
+        (paramsSA,sigmasSA,bestRedChiSqr) = Sim.simulatorFunc('SA')
+        if bestRedChiSqr<settingsDict['chiMAX'][0]:
+            ## ST call
+            (paramsST,sigmasST) = Sim.simulatorFunc('ST',paramsSA,sigmasSA)
+            ##MCMC call
+            outMCMCFname = Sim.simulatorFunc('MCMC',paramsST,sigmasST)
+            print 'FINAL OUTFILE :\n'+outMCMCFname    
+        
+            if True:
+                ## Post-processing goes here!!
+                plotFilename = os.path.join(os.path.dirname(outMCFname),'SummaryPlotMC')
+                tools.summaryPlotter(outMCFname, plotFilename, shadeConfLevels=True)
+                plotFilename = os.path.join(os.path.dirname(outMCMCFname),'SummaryPlotMCMC')
+                tools.summaryPlotter(outMCMCFname, plotFilename, shadeConfLevels=True)
+        else:
+            log.critical("NO ORBIT WITH REDUCED CHISQUARED BELOW "+str(settingsDict['chiMAX'][0])+" WAS FOUND!!!")
     
-    ## Post-processing goes here!!
+    
     if False:
         ## Test to kill soon after done $$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         omega = 20.0

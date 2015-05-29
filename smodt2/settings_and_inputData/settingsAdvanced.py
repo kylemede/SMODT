@@ -1,3 +1,4 @@
+#@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 import numpy as np
 from settingsSimple import simpleSettingsDict
 import constants
@@ -5,7 +6,7 @@ import constants
 ########################################
 #Define the priors as python functions #
 ########################################
-#NOTE: key max = 8characters, value+comment max = 68 characters.
+#NOTE: key max = 8characters, value+comment max = 68 characters, comment Max=47 it seems in testing.
 #NOTE: only change the code and not the name of the functions or their inputs.
 def ePrior(e,P):
     if (P*constants.daysPerYear<1000.0)and(simpleSettingsDict['eMAX']!=0):
@@ -19,22 +20,25 @@ def pPrior(P):
         return 1.0
 def incPrior(inc):
     if simpleSettingsDict['incMAX']!=simpleSettingsDict['incMIN']!=0:
-        return np.sin(inc*(constants.pi/180.0))
+        if inc==0:
+            return 1.0
+        else:
+            return np.sin(inc*(constants.pi/180.0))
     else:
         return 1.0
 def mass1Prior(mass):
     if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
-        return gaussian(mass, mass1Est, mass1Err)
+        return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
     else:
         return 1.0
 def mass2Prior(mass):
     if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
-        return gaussian(mass, mass2Est, mass2Err)
+        return gaussian(mass, advancedDict['mass2Est'][0], advancedDict['mass2Err'][0])
     else:
         return 1.0
 def distPrior(dist):
     if simpleSettingsDict['distMIN']!=simpleSettingsDict['distMAX']!=0:
-        return gaussian(dist, distEst, distErr)
+        return gaussian(dist, advancedDict['distEst'][0], advancedDict['distErr'][0])
     else:
         return 1.0
 
@@ -43,16 +47,12 @@ advancedDict = {
 ########################
 ### General Settings ###
 ########################
-# This will set the maximum reduced ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo and Simulated Annealing, not MCMC!! [double]
-'chiMAX' : (50.0,"Max reduced chiSquared during SA or MC"),
-# set to 'true' to have NOTHING print to screen while running [bool]
-'SILENT' : True,
-# set to 'false' to receive extra prints from the main simulations progress for testing [bool]
-'quiet' : True,
-# set to 'true' to receive prints from the functions called by main for testing [bool]
-'verbose' : False,
-# Simulated Annealing starting temperature [double]
-'strtTemp' : (800.0,"SA starting temperature."),
+# This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
+'chiMAX' : (10.0,"Max reduced chiSquared during MC"),
+# set level of log messages to screen [int],recommend 50. choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
+'logLevel' : 50,
+#number of times to produce a summary log msg during a stage's progress [int]
+'nSumry'  :10,
 # make plot of posterior distributions? [bool]
 'pltDists' :True,
 # make plots of RV and DI/AM orbit fits [bool]
@@ -66,7 +66,7 @@ advancedDict = {
 ###$$$$$$$$$$$$$$$$$$$$$$ Keep in final version $$$$$$$$$$$$$$$$$$$$$$$$$$
 # Copy output non-data files to a Dropbox folder? [bool]  
 'CopyToDB' :False,
-'dbFolder' : '/run/media/kmede/Data1/Todai_Work/Dropbox/SMODT-outputCopies/',
+'dbFolder' : '/run/media/kmede/HOME/Dropbox/SMODT-outputCopies/',
 ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ############################
 # Settings for MCMC mode ###
@@ -78,9 +78,24 @@ advancedDict = {
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :True,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(1000000,"Number of Annealing samples"),
-# number of samples to draw for sigma tuning stage [int] 
-'nSTsamp' :(500000,"Number of Tuning samples"),
+'nSAsamp' :(200000,"Number of Annealing samples"),
+# Simulated Annealing starting temperature [double]
+'strtTemp' : (350.0,"SA starting temperature."),
+# Number of temperature steps over Simulated Annealing [int].  
+# Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/50)!
+'nTmpStps'  : (1000,"Number of temperature steps during SA."),
+# number of samples to draw for sigma tuning stage [int].
+'nSTsamp' :(70000,"Number of Tuning samples"),
+# number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]. 
+# Allowed vals [1,nSTsamp) Ideal is int(nSTsamp/2000)!
+'nSigStps': (35,"Times to calc acceptance and tune sigmas."),
+# Maximum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
+'sigMax' :(1.0,'Maximum ratio of params range,for step size.'),
+# Minimum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
+'sigMin' :(0.02,'Minimum ratio of params range,for step size.'),
+# interval of accepted values between storing in output array (for SA,ST,MCMC, not MC) [int]
+# Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
+'saveInt' : (10,"Interval between saving params, for all but MC."),
 # Make plots of MCMC progress plots? [bool]
 'pltMCMCprog' :False,
 # Make plots of Simulated Annealing progress plots? [bool]
@@ -96,6 +111,8 @@ advancedDict = {
 'fitPrime' : (False,"Fit primary's orbit?"),
 # Are the RVs in the RVdata.dat for the Primary star? [bool]
 'primeRVs' : (True,"RVs measured from Primary?"),
+# Draw values for K directly, do NOT calculate it [bool]. Kills varying of Inclination.  Only possible in RV only mode.
+'Kdirect'  : (False,'Vary K direct, do not calc it'),
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 'TcStep' : (False,"Step in Tc not T?"),
 # take the time of center transit (inferior conjunction) into account? [bool]
@@ -132,7 +149,6 @@ advancedDict = {
 
 def gaussian(x,mu,sig):
     return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
-
 
 ######################
 # Merge the two dicts#

@@ -291,43 +291,22 @@ def loadFits(filename):
         head=data=False
     return (head,data)
         
-def confLevelFinder(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False,fast=True):
+def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False,fast=True):
     """
     A function to find the 68.3 and 95.4% confidence levels in a given output data file's column.
     
     return [[68.3% minimum, 68.3% maximum],[95.5% minimum, 95.5% maximum]]
     
-    columnNum must be an int.
-    
-    file format must be:
-        
-        line1: title
-        line2: data headings
-        line3: space delimited data
-        line4: space delimited data
-    
+    columnNum must be an int.    
     """
     verboseInternal = False
     bestCentered = False
     log.debug('Inside confLevelFinder')
     if os.path.exists(filename):
-        if fast:
-            ignoreConstParam = False
-        else:
-            ignoreConstParam = True
-        (log,dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReader(filename, columNum, returnData=True, returnChiSquareds=True, returnBestDataVal=True, ignoreConstParam=ignoreConstParam)
+        (dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReader(filename, colNum)
     
         if len(dataAry>0):
-            #Convert data array to a numpy array
-            dataAry = np.sort(dataAry)
-            # find range of data's values
-            dataMax = dataAry[-1]
-            dataMin = dataAry[0]
             size = dataAry.size
-            if (size%2)==0:
-                dataMedian = (dataAry[size / 2 - 1] + dataAry[size / 2]) / 2
-            else:
-                dataMedian = dataAry[size / 2]
         
             if bestCentered:
                 mid = np.where(dataAry==bestDataVal)[0][0]
@@ -430,168 +409,25 @@ def confLevelFinder(filename, columNum=False, returnData=False, returnChiSquared
     else:
         log.critical( "confLevelFinder: ERROR!!!! file doesn't exist")
         
-def dataReader(filename, columNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False, ignoreConstParam=False):
+def dataReader(filename, colNum=0):
     """
     Read in the data for a single column of data.
     """
     verboseInternal = False
     ## First get ranges of param and ChiSquared values
-    log.debug('\nOpening and finding ranges for data in column # '+str(columNum))
+    log.debug('\nOpening and finding ranges for data in column # '+str(colNum))
     
     ## Check if file has useful data for that column#
     (head,data) = loadFits(filename)
     if head!=False:
         TotalSamples=data.shape[0]
-
-        
-        
-        # find values at start, mid and end of file
-        fp = open(filename,'r')
-        lastColLoc = 0
-        dataValueStart = dataValueMid = dataValueEnd =0
-        for i,line in enumerate(fp):
-            if i==(0+2):
-                splitAry = line.split()
-                lastColLoc = len(splitAry)-1
-                dataValueStart = float(splitAry[columNum])
-                if verboseInternal:
-                    print '\nstart = '+str(dataValueStart)+'\n'
-            elif i==((numDataLines//2)+2):
-                splitAry = line.split()
-                dataValueMid = float(splitAry[columNum])
-                if verboseInternal:
-                    print '\nmid = '+str(dataValueMid)+'\n'
-            elif i==numDataLines:
-                splitAry = line.split()
-                dataValueEnd = float(splitAry[columNum])
-                if verboseInternal:
-                    print '\nend = '+str(dataValueEnd)+'\n'
-        fp.close()
-        
-        doesntVary = True
-        dataAry = []
-        chiSquareds = []
-        bestOrbit = 0
-        bestDataVal = 0
-        totalAccepted = 0
-        chiSquaredMin=1e6
-        dataMax = 0
-        dataMin = 1e9
-        if ((dataValueStart!=dataValueMid)and(dataValueStart!=dataValueEnd)):
-            if gotLog:
-                log.write("Values for parameter found to be constant!!")
-            if verboseInternal:
-                print "Values for parameter found to be constant!!"
-            doesntVary = False
-            
-        if ((doesntVary==True)and(ignoreConstParam==False)):
-            if returnData:
-                dataAry = [dataValueStart]*TotalSamples
-            if returnChiSquareds:
-                chiSquareds = [0]*TotalSamples
-        elif ((doesntVary==False)or(ignoreConstParam==True)):#or(fast==False):  
-            s=''
-            fp = open(filename,'r')
-            #Old string parsing directly version UPDATED
-            startTime2 = timeit.default_timer()
-            totalAccepted = 0
-            dataAry = [None]*TotalSamples
-            if returnChiSquareds:
-                chiSquareds = [None]*TotalSamples
-            j = 0
-            lineNum=0
-            numNoDataLines=0
-            firstDataLine = ""
-            lastDataLine = ""
-            firstJ = ""
-            lastJ = ""
-            for i,line in enumerate(fp):
-                lineNum+=1
-                if line[0].isdigit():
-                    s2 = "?"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
-                    if firstDataLine=="":
-                        firstDataLine=line
-                    try:
-                        dataLineCols = line.split()
-                        ## this should never happen, but it is a check for a double decimal value
-                        decimalSplit = dataLineCols[columNum].split('.')
-                        if len(decimalSplit)>2:
-                            dataValue = float(decimalSplit[0]+'.'+decimalSplit[1])
-                        else:
-                            dataValue = float(dataLineCols[columNum])
-                        #s = "1060"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
-                        chiSquared = float(dataLineCols[8])
-                        #s = "1062"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
-                        s2 =" chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
-                        #if (chiSquared==0)or(dataValue==0):
-                            # if verboseInternal:
-                            #     print line
-                        if firstJ=="":
-                            firstJ=j
-                        s2+="\nIn itter loop, j="+str(j)+", totalAccepted="+str(totalAccepted)+", len(dataAry)="+str(len(dataAry))
-                        if totalAccepted>len(dataAry):
-                            print "\n*** totalAccepted>len(dataAry) ***"
-                            print s2
-                            break
-                        else:
-                            try:
-                                dataAry[j]=dataValue
-                            except:
-                                print s2
-                                print "\nfailed to load data into dataArray"+", chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)
-                            if returnChiSquareds:
-                                try:
-                                    chiSquareds[j]=chiSquared
-                                except:
-                                    print s2
-                                    print "\nfailed to load chiSquared into chiSquareds array"+", chiSquared = "+str(chiSquared)+", dataValue = "+str(dataValue)
-                            totalAccepted+=1
-                            j+=1
-                        #s = "1074"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
-                        if dataValue>dataMax:
-                            dataMax = dataValue
-                        #s = "1077"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
-                        if dataValue<dataMin:
-                            dataMin = dataValue
-                        #s = "1080"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$
-                        if chiSquared<chiSquaredMin:
-                            chiSquaredMin = chiSquared
-                            bestDataVal = dataValue
-                            bestOrbit=lineNum   
-                        #s = "1085"#$$$$$$$$$$$ DEBUGGING $$$$$$$$$$   
-                    except:
-                        print "code line failed = "+s2
-                        print 'Failed for line: '+line 
-                else:
-                    numNoDataLines+=1
-            endTime2 = timeit.default_timer()
-            totalTime = (endTime2-startTime2) # in seconds
-            totalTimeString = timeString(totalTime)
-            s=s+ '\nUPDATED Direct data loading took '+totalTimeString+' to complete.\n' 
-            s=s+'The resulting arrays had '+str(totalAccepted)+' elements, with best value '+str(bestDataVal)+', and minChiSquared '+str(chiSquaredMin)
-            if gotLog:
-                log.write(s+'\n')
-            if verboseInternal:
-                print s+"\n"
-            lastDataLine = line
-            lastJ = j
-            fp.close()
-        dataAry = np.array(dataAry)
-        dataMedian = np.median(dataAry)
-        s=  '\nTotal number of orbits = '+str(totalAccepted)
-        if verboseInternal:
-            s+=", len(dataAry)="+str(len(dataAry))+", i = "+str(i)+", j = "+str(j)
-            s+=", fistJ = "+str(firstJ)+", lastJ = "+str(lastJ)
-            s+=", lineNum = "+str(lineNum)+", numDataLines = "+str(numDataLines)+", numNoDataLines = "+str(numNoDataLines)
-            s+="\nfirstDataLine = "+firstDataLine+"\nlastDataLine = "+lastDataLine+"\n"
-        s=s+'\nBest value found was '+str(bestDataVal)+", at line Number "+str(bestOrbit)+", and had a chiSquared = "+str(chiSquaredMin)
-        s=s+'\nMedian value = '+str(dataMedian)
-        s=s+'\n[Min,Max] values found for data were '+repr([dataMin,dataMax])
-        if gotLog:
-            log.write(s+'\n')
-        if verboseInternal:
-            print s
-            print "first and last elements of dataAry are "+str(dataAry[0])+", "+str(dataAry[-1])+"\n"
-        
-        return (log,dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd])
+        dataAry = data[:,colNum]
+        chiSquareds = data[:,11]
+        bestDataVal = dataAry[np.where(chiSquareds==np.min(chiSquareds))][0]          
+        return (dataAry,chiSquareds,[bestDataVal,np.median(dataAry),dataAry[0],dataAry[len(dataAry)//2],dataAry[-1]])                
+                                         
+                                         
+                                         
+                                         
+                                         
     

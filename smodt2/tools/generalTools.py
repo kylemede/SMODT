@@ -174,10 +174,9 @@ def loadSettingsDict(filenameRoot):
         os.remove(os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/constants.py'))
     except:
         temp=True
-    #print '\n'+filenameRoot+'settingsSimple.py\n'
     shutil.copy(filenameRoot+'settingsSimple.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsSimple.py'))
     shutil.copy(filenameRoot+'settingsAdvanced.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsAdvanced.py'))
-    shutil.copy(os.path.dirname(filenameRoot)+'/constants.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/constants.py'))
+    shutil.copy(os.path.join(smodtHeadDir,'SMODT/smodt2/tools/constants.py'),os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/constants.py'))
     if False:
         print 'Copied simple to:\n'+os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsSimple.py')
         print 'Copied advanced to:\n'+os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsAdvanced.py')
@@ -191,30 +190,18 @@ def loadSettingsDict(filenameRoot):
     #######################################################
     omegaFdi = 0
     omegaFrv = 0
-    #print '1,omegaFdi = '+str(omegaFdi)
-    #print '1,omegaFrv = '+str(omegaFrv)
-    #print "settingsDict['primeRVs'] = "+repr(settingsDict['primeRVs'][0])
-    #print "settingsDict['fitPrime'] = "+repr(settingsDict['fitPrime'][0])
     #first using RV special bools
     if (settingsDict['primeRVs'][0] and settingsDict['fitPrime'][0]):
         omegaFdi=-180.0
-        #print '2,omegaFdi = '+str(omegaFdi)
     elif (settingsDict['primeRVs'][0] and(settingsDict['fitPrime'][0]==False)):
         omegaFrv=180.0
-        #print '2,omegaFrv = '+str(omegaFrv)
     #now update due to fixed argPeriPlus values
     omegaFdi+=settingsDict['omegaPdi'][0]
     omegaFrv+=settingsDict['omegaPrv'][0]
-    #print "settingsDict['omegaPdi'][0] = "+str(settingsDict['omegaPdi'][0])
-    #print "settingsDict['omegaPrv'][0] = "+str(settingsDict['omegaPrv'][0])
-    #print '3,omegaFdi = '+str(omegaFdi)
-    #print '3,omegaFrv = '+str(omegaFrv)
     settingsDict['omegaFdi'] = (omegaFdi,"Total fixed val added to DI omega in model")
     settingsDict['omegaFrv'] = (omegaFrv,"Total fixed val added to RV omega in model")
     
     return settingsDict
-    #print "settingsDict['pPrior'](3.0) ="+str(settingsDict['pPrior'](3.0))
-
     
 def startup(argv):    
     ## Pull in settings filename prepend from command line args, if provided

@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from PyAstronomy import pyasl
+import constants
 
 def calc_orbit():
     """
@@ -37,33 +38,30 @@ def calc_orbit():
     massratio = 5.0
     M_primary = 1.0 #Solar masses
     distance = 5.0 #parsecs
-    km_to_arcsec = 1/149597870.7/distance # convert km to arcsecond
-    
-    #constants
-    G = 6.67259e-8 #cgs
-    
+    km_to_arcsec = 1/(constants.MperAU/1000.0)/distance # convert km to arcsecond
+
     #Orbital Elements
     TimeLastPeri = 2457000.0 #JD
     e = 0.4
     period = 15. # years
-    Omega = 60*np.pi/180 # Longitude of ascending node
-    omega = 110*np.pi/180 # Argument of periastron
-    i = 30*np.pi/180 # Inclination
+    Omega = 60*constants.pi/180 # Longitude of ascending node
+    omega = 110*constants.pi/180 # Argument of periastron
+    i = 30*constants.pi/180 # Inclination
  
-    mu = G*M_primary*1.9884e33*(1 + 1./massratio) #gravitational parameter
-    a = (mu*(period*86400*365.2422)**2/4/np.pi**2)**(1./3) #in cm
+    mu = constants.Gcgs*M_primary*(KGperMsun*1000.0)*(1 + 1./massratio) #gravitational parameter
+    a = (mu*(period*constants.secPerYear)**2/4/constants.pi**2)**(1./3) #in cm
     a_km = a/1e5 #to km
-    a_AU = a_km/149597870.7 #to AU
+    a_AU = a_km/(constants.MperAU/1000.0) #to AU
     a2 = a_km/(massratio + 1.)
     a1 = a_km - a2 # Semimajor axis of the low-mass component (in km)
     
     # print input orbital elements
     print "\n\nOrbital Elements Used:\ne = "+str(e)
     print "period = "+str(period)+" Years"
-    print "LongAN = "+str(Omega*180.0/np.pi)+" deg"
-    print "ArgPeri = "+str(omega*180.0/np.pi)+" deg"
+    print "LongAN = "+str(Omega*180.0/constants.pi)+" deg"
+    print "ArgPeri = "+str(omega*180.0/constants.pi)+" deg"
     print "a_total = "+str(a_AU)+" AU"
-    print "inclination = "+str(i*180.0/np.pi)+" deg"
+    print "inclination = "+str(i*180.0/constants.pi)+" deg"
     print "Time of Last Periapsis = "+str(TimeLastPeri)+" JD"
     print "Mass 1 = "+str(M_primary)+" Msun"
     print "Mass 2 = "+str(M_primary/massratio)+" Msun"
@@ -155,7 +153,7 @@ def calc_orbit():
     
     #update raw forms to initial SMODT versions
     data2 = np.zeros((pos_A.shape[0],5))
-    data2[:,0] = data[:, 1]*365.2422+TimeLastPeri #JD 
+    data2[:,0] = data[:, 1]*constants.daysPerYear+TimeLastPeri #JD 
     data2[:,1] = pos_A[:, 1]*km_to_arcsec - pos_B[:, 1]*km_to_arcsec #Ythi=Xplot=RA  separation between two bodies based on primary being at 0,0 ["]
     data2[:,2] = pos_A[:, 0]*km_to_arcsec - pos_B[:, 0]*km_to_arcsec #Xthi=Yplot=Dec  separation between two bodies based on primary being at 0,0 ["]
     data2[:,3] = vel_B[:, 2]*1000.0 # RV of primary compared to center of mass origin[ m/s]

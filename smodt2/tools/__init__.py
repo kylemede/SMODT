@@ -13,4 +13,3 @@ from progressbar.progressbar import ProgressBar
  
 import cppTools
 
-

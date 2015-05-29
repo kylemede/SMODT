@@ -5,7 +5,7 @@ from scipy.constants.codata import precision
 #np.set_printoptions(precision=15)
 import tools
 import timeit
-from settings_and_inputData import constants
+from tools import constants
 
 class Simulator(object):
     """

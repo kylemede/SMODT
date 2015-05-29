@@ -1,3 +1,4 @@
+#@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 import numpy as np
 import os
 import copy
@@ -17,7 +18,7 @@ class Simulator(object):
         self.log = tools.getLogger('main.simulator',lvl=100,addFH=False)
         tools.logSystemInfo(self.log)
         self.realData = tools.loadRealData(os.path.join(self.dictVal('settingsDir'),self.dictVal('prepend')),dataMode=self.dictVal('dataMode'))
-        (self.rangeMaxs,self.rangeMins,self.starterSigmas,self.paramInts,self.nu,self.nuDI,self.nuRV) = self.starter()
+        (self.rangeMaxs,self.rangeMins,self.starterSigmas,self.paramInts,self.nu,self.nuDI,self.nuRV) = self.starter() 
         self.Orbit = tools.cppTools.Orbit()
         self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'))
         self.Orbit.loadRealData(self.realData)
@@ -74,6 +75,7 @@ class Simulator(object):
                0,\
                0,\
                self.dictVal('KMIN')]
+        #start with uniform sigma values
         sigSize = 0.05
         sigmas = [sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,0,0,sigSize]
         for i in range(0,len(self.dictVal('vMINs'))):
@@ -81,7 +83,7 @@ class Simulator(object):
             rangeMins.append(self.dictVal('vMINs')[i])
             rangeMaxs.append(self.dictVal('vMAXs')[i])
         #figure out which parameters are varying in this run.
-        #don't vary atot or chiSquared ever, and take care of TcEqualT cases
+        #don't vary atot or chiSquared ever, and take care of TcEqualT and Kdirect cases
         paramInts = []
         for i in range(0,len(rangeMins)):
             if (i!=10)and(i!=11):
@@ -104,8 +106,8 @@ class Simulator(object):
                         paramInts.append(i)
         #print 'paramInts = '+repr(paramInts)
         #find total number of RV and DI epochs in real data
-        nDIepochs = np.sum(np.where(self.realData[:,1]!=0))
-        nRVepochs = np.sum(np.where(self.realData[:,5]!=0))
+        nDIepochs = np.sum(np.where(self.realData[:,1]!=0,1,0))
+        nRVepochs = np.sum(np.where(self.realData[:,5]!=0,1,0))
         nEpochs = len(self.realData[:,0])
         nDIvars = np.sum(np.where(paramInts<10))
         nRVvars = np.sum(np.where(paramInts!=3))
@@ -117,6 +119,16 @@ class Simulator(object):
             nuDI = nDIepochs*2-nDIvars
         if nRVepochs>0:
             nuRV = nRVepochs-nRVvars
+        #load these into settings dict
+        self.settingsDict["nRVdsets"] = (len(self.dictVal('vMINs')),"Number of RV data sets")
+        self.settingsDict['nDIepoch'] = (nDIepochs,"Number of DI epochs")
+        self.settingsDict['nRVepoch'] = (nRVepochs,"Number of RV epochs")
+        self.settingsDict['n3Depoch'] = (nEpochs,"Number of 3D epochs")
+        self.settingsDict['nu'] = (nu,"Total nu")
+        self.settingsDict['nuDI'] = (nuDI,"nu for DI")
+        self.settingsDict['nuRV'] = (nuDI,"nu for RV")
+        self.settingsDict['parInts'] = paramInts
+        
         return (rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
     
     def dictVal(self,key):

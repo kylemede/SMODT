@@ -1,3 +1,4 @@
+#@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 import numpy as np
 from settingsSimple import simpleSettingsDict
 import constants
@@ -5,7 +6,7 @@ import constants
 ########################################
 #Define the priors as python functions #
 ########################################
-#NOTE: key max = 8characters, value+comment max = 47 characters.
+#NOTE: key max = 8characters, value+comment max = 68 characters, comment Max=47 it seems in testing.
 #NOTE: only change the code and not the name of the functions or their inputs.
 def ePrior(e,P):
     if (P*constants.daysPerYear<1000.0)and(simpleSettingsDict['eMAX']!=0):

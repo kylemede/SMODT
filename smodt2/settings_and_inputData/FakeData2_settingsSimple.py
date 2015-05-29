@@ -1,3 +1,4 @@
+#@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]

@@ -1,3 +1,4 @@
+//@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 #if !defined(ORBIT_H)
 #define ORBIT_H 1
 #include<string>

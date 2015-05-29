@@ -1,3 +1,4 @@
+//@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 #include "orbit.h"
 
 double testFunc(double t){

@@ -1,3 +1,4 @@
+#@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 import logging
 import platform
 import psutil

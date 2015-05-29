@@ -5,7 +5,6 @@ import shutil
 import numpy as np
 import sys
 import pyfits
-#np.set_printoptions(precision=15)
 
 log = smodtLogger.getLogger('main.tools',lvl=100,addFH=False)#$$$$ NONE OF THESE WILL MAKE IT TO FINAL LOG!!!!!
 
@@ -23,7 +22,6 @@ def loadDIdata(filename):
     .
     .
     .
-    
     
     Data must be in the columns:
     obsDate[JD] x["] x_error["] y["] y_error["]
@@ -57,7 +55,6 @@ def loadRVdata(filename):
     .
     .
     
-    
     Data must be in the columns:
     obsDate[JD] RV[m/s] RV_error[m/s] jitter[m/s] datasetNumber[int]
     NOTE: datasetNumber is optional, if not provided they will be automatically set to 0,1,2... following the order of the data in the file.
@@ -75,7 +72,6 @@ def loadRVdata(filename):
         if line=='\n':
             jitterLast = 0
             datasetNumLast+=1
-        #log.debug("line was:'"+line+"'")#$$$$$$$$$$$$$$$$$$$$$$$$
         if len(line.split())>2:
             if line.split()[0].replace('.','',1).isdigit() and line.split()[1].replace('.','',1).replace('-','',1).isdigit():
                 curDataAry = [float(line.split()[0]),float(line.split()[1])]
@@ -94,12 +90,6 @@ def loadRVdata(filename):
                         log.error("could not convert 5th element of split into datasetNum.  5th element was: "+str(line.split()[4]))
                 curDataAry.append(datasetNumLast)
                 rvData.append(curDataAry)
-#             else:
-#                 print '0th and 1st column vals not numbers, \nline:'+line
-#                 print '0th = '+repr(line.split()[0].replace('.','',1).isdigit())
-#                 print '1st = '+repr(line.split()[1].replace('.','',1).replace('-','',1).isdigit())
-#         else:
-#             print "line had less than 2 columns, \nline:"+line
                 
     return np.array(rvData)
     

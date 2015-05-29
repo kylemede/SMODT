@@ -1,11 +1,10 @@
 import numpy as np
 import os
 import copy
-from scipy.constants.codata import precision
-#np.set_printoptions(precision=15)
+#from scipy.constants.codata import precision
 import tools
 import timeit
-from tools import constants
+from tools import constants as const
 
 class Simulator(object):
     """
@@ -22,7 +21,7 @@ class Simulator(object):
         self.Orbit = tools.cppTools.Orbit()
         self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'))
         self.Orbit.loadRealData(self.realData)
-        self.Orbit.loadConstants(constants.Grav,constants.pi,constants.KGperMsun, constants.daysPerYear,constants.secPerYear,constants.MperAU)
+        self.Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
         self.seed = int(timeit.default_timer())
         self.log.debug("random number seed = "+str(self.seed))
         np.random.seed(self.seed)

@@ -48,7 +48,7 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (10.0,"Max reduced chiSquared during MC"),
+'chiMAX' : (35.0,"Max reduced chiSquared during MC"),
 # set level of log messages to screen [int],recommend 50. choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 50,
 #number of times to produce a summary log msg during a stage's progress [int]

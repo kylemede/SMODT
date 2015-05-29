@@ -491,7 +491,7 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True):
     
     """
     quiet = True
-    verbose = True
+    verbose = False
     latex=True
     plotFormat = 'eps'
     forceRecalc = False
@@ -520,7 +520,7 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True):
             plotFilename = plotFilename
         
         paramList = genTools.getParInts(head)    
-        print 'paramList = '+repr(paramList) 
+        #print 'paramList = '+repr(paramList) 
         paramFileStrs = ['M1','M2','dist','Omega','e','To', 'Tc','P','i','omega','a_total','chiSquared']
         paramStrs = ['M1 [Msun]','M2 [Msun]','Distance [PC]','Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]','chiSquared']
         if latex:
@@ -566,7 +566,8 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True):
             subPlot = fig.add_subplot(3,4,i+1)
             
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(paramList[i]))
-            print 'Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[paramList[i]]#+" for file:\n"+outputDataFilename
+            if quiet==False:
+                print 'Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[paramList[i]]#+" for file:\n"+outputDataFilename
             xLim=False
             CLevels=False
             if shadeConfLevels:
@@ -578,7 +579,8 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True):
             
         ## Save file if requested.
         if verbose:
-            print '\nStarting to save param hist figure:'
+            if quiet==False:
+                print '\nStarting to save param hist figure:'
         if plotFilename!='':
             plt.savefig(plotFilename,format=plotFormat)
             plt.close()
@@ -587,7 +589,8 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True):
                 print s
             log.info(s)
         if True:
-            print 'converting to PDF as well'
+            if quiet==False:
+                print 'converting to PDF as well'
             os.system("epstopdf "+plotFilename)
             
 def star(R, x0, y0, color='w', N=5, thin = 0.5):

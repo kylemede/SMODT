@@ -314,6 +314,7 @@ class Simulator(object):
             if stage=='ST':
                 sumStr+="Final Sigmas = "+repr(sigmas)+'\n'
             sumStr+=self.acceptStr+self.shiftStr
+        sumStr+='\n'+'='*70+'\n'
         self.log.info(sumStr)
     
     def resetTracked(self,pars):

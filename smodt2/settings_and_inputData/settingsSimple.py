@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (100000,"Number of MCMC or MC samples"),
+'nSamples' : (2000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -20,14 +20,14 @@ simpleSettingsDict={
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.5,
-'mass1MAX' : 1.5,
+'mass1MIN' : 0.1,
+'mass1MAX' : 2.0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.1,
-'mass2MAX' : 0.3,
+'mass2MIN' : 0.01,
+'mass2MAX' : 0.5,
 # Minimum/Maximum allowed value for the system distance from Earth [double][PC]
-'distMIN' : 4.0,
-'distMAX' : 6.0,
+'distMIN' : 2.0,
+'distMAX' : 8.0,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 20.0,
 'OmegaMAX' : 110.0,
@@ -36,14 +36,14 @@ simpleSettingsDict={
 'eMAX' : 0.6,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2456900,
-'TMAX' : 2457150,
+'TMIN' : 2456700,
+'TMAX' : 2457350,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 12.0,
 'PMAX' : 17.0,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 10,
-'incMAX' : 50.0,
+'incMIN' : 1,
+'incMAX' : 60.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 80,
 'omegaMAX' : 140,
@@ -55,8 +55,8 @@ simpleSettingsDict={
 'KMAX' : 1300,
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-'vMINs' :[-150],
-'vMAXs' :[150],
+'vMINs' :[-550],
+'vMAXs' :[550],
 }
 
 

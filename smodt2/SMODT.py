@@ -42,6 +42,8 @@ def smodt():
     sigmasST = np.array([ 0.03,  0.07,  0.13,  0.13,  0.09,  0.17,  0.01,  0.09,  0.09,
         0.21,  0.01,  0.01,  0.01,  0.05])
     bestRedChiSqr=1.0
+    outMCFname=''
+    outMCMCFname=''
     if True:
         ##mcONLYcall
         outMCFname = Sim.simulatorFunc('MC')
@@ -52,14 +54,16 @@ def smodt():
             (paramsST,sigmasST) = Sim.simulatorFunc('ST',paramsSA,sigmasSA)
             ##MCMC call
             outMCMCFname = Sim.simulatorFunc('MCMC',paramsST,sigmasST)
-            print 'FINAL OUTFILE :\n'+outMCMCFname    
+            print 'FINAL MCMC OUTFILE :\n'+outMCMCFname    
         
             if True:
                 ## Post-processing goes here!!
-                plotFilename = os.path.join(os.path.dirname(outMCFname),'SummaryPlotMC')
-                tools.summaryPlotter(outMCFname, plotFilename, shadeConfLevels=True)
-                plotFilename = os.path.join(os.path.dirname(outMCMCFname),'SummaryPlotMCMC')
-                tools.summaryPlotter(outMCMCFname, plotFilename, shadeConfLevels=True)
+                if os.path.exists(outMCFname):
+                    plotFilename = os.path.join(os.path.dirname(outMCFname),'SummaryPlotMC')
+                    tools.summaryPlotter(outMCFname, plotFilename, shadeConfLevels=True)
+                if os.path.exists(outMCFname):
+                    plotFilename = os.path.join(os.path.dirname(outMCMCFname),'SummaryPlotMCMC')
+                    tools.summaryPlotter(outMCMCFname, plotFilename, shadeConfLevels=True)
         else:
             log.critical("NO ORBIT WITH REDUCED CHISQUARED BELOW "+str(settingsDict['chiMAX'][0])+" WAS FOUND!!!")
     

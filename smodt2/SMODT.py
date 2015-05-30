@@ -5,12 +5,73 @@ import simulator
 import sys
 import os
 import numpy as np
+from multiprocessing import Process
 
 """
     This is the 'main' of SMODT. 
     It will start things off, call the appropriate set of 
     simulation and post-processing steps.
 """
+
+
+class singleProc(Process):
+    """
+    This is the Manager object that controls the a single processes for a 
+    SMODT2.0 simulation run.  It is called by the multiProcessStarter once for 
+    each chain/process requested by the user through the simulation settings 
+    file.
+    
+    :param str settingsDict: settings Dictionary
+    :param str fNameBase: File name, including the full path, for the output 
+        data files.
+    :param list stageList: List of stages to run ex.['MC','SA','ST','MCMC'] 
+        lives.
+    :param int chainNum: number of this chain
+    """
+    def __init__(self, settingsDict, stageList, chainNum=1):
+        
+        Process.__init__(self)
+        self.chainNum = chainNum
+        self.log = tools.getLogger('main.singleProcess',lvl=100,addFH=False)
+        self.settingsDict = settingsDict 
+        self.stageList = stageList
+        self.Sim = simulator.Simulator(settingsDict)
+        
+    def run(self):
+        self.settingsDict['']
+        self.log.info('Starting to run process for file: '+fNameBase)
+        if 'MC' in self.stageList:
+            outMCFname = self.Sim.simulatorFunc('MC')
+        if 'SA' in self.stageList:
+            (paramsSA,sigmasSA,bestRedChiSqr) = self.Sim.simulatorFunc('SA')
+        if bestRedChiSqr<self.settingsDict['chiMAX'][0]:
+            if 'ST' in self.stageList:
+                (paramsST,sigmasST) = self.Sim.simulatorFunc('ST',paramsSA,sigmasSA)
+            if 'MCMC' in self.stageList:
+                outMCMCFname = self.Sim.simulatorFunc('MCMC',paramsST,sigmasST)
+                self.log.info('FINAL MCMC OUTFILE :\n'+outMCMCFname)
+        else:
+            self.log.critical()  
+               
+def multiProcStarter(settingsDict):
+    """
+    This will call singleProcessStarter to handle each individual chain.   
+    The output dataFile for each chain will be returned as a list of filenames.
+        
+    :param dict settingsDict: A standard SMODT2.0 settings dictionary.
+    """
+    master = []
+    for procNumber in range(settingsDict['numChains'][0]):
+        master.append(singleProc(settingsDict,stageList,procNumber))
+        master[procNumber].start()
+    for procNumber in range(settingsDict['numChains'][0]):
+        master[procNumber].join()    
+    
+    dataFiles = []
+    for processNumber in range(settingsDict['numChains'][0]):
+        dataFiles.append(master[processNumber].filename)
+   
+    return dataFiles
 
 def smodt():
     """
@@ -60,10 +121,10 @@ def smodt():
                 ## Post-processing goes here!!
                 if os.path.exists(outMCFname):
                     plotFilename = os.path.join(os.path.dirname(outMCFname),'SummaryPlotMC')
-                    tools.summaryPlotter(outMCFname, plotFilename, shadeConfLevels=True)
+                    tools.summaryPlotter(outMCFname, plotFilename,stage="MC", shadeConfLevels=True)
                 if os.path.exists(outMCMCFname):
                     plotFilename = os.path.join(os.path.dirname(outMCMCFname),'SummaryPlotMCMC')
-                    tools.summaryPlotter(outMCMCFname, plotFilename, shadeConfLevels=True)
+                    tools.summaryPlotter(outMCMCFname, plotFilename,stage="MCMC", shadeConfLevels=True)
         else:
             log.critical("NO ORBIT WITH REDUCED CHISQUARED BELOW "+str(settingsDict['chiMAX'][0])+" WAS FOUND!!!")
     

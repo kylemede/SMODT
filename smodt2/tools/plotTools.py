@@ -482,7 +482,7 @@ def stackedPosteriorsPlotterFunc(outputDataFilenames, plotFilename,ALLparams=Tru
     if verbose:
         print s
 
-def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True):
+def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevels=True):
     """
     This advanced plotting function will plot all the data in a 3x4 grid on a single figure.  The data will be plotted
     in histograms that will be normalized to a max of 1.0.  The 
@@ -544,16 +544,16 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True):
         
         ## run through all the data files and parameters requested and make histogram files
         for i in range(0,len(paramList)):
-            if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(paramList[i])+'.dat'))==False)or forceRecalc:
+            if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+str(paramList[i])+'.dat'))==False)or forceRecalc:
                 if verbose:
                     print 'Initial Plotting for parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[i]+", for file:\n"+outputDataFilename
-                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(paramList[i]))
+                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+str(paramList[i]))
                 (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
                 histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
-                if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(paramList[i])+'.dat'))==False)or forceRecalc:
-                    np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(paramList[i])+'.dat'),CLevels)
+                if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+str(paramList[i])+'.dat'))==False)or forceRecalc:
+                    np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+str(paramList[i])+'.dat'),CLevels)
                     if verbose:
-                        print 'confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(paramList[i])+'.dat')
+                        print 'confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+str(paramList[i])+'.dat')
         
         # Create empty figure to be filled up with plots
         fig = plt.figure(figsize=(10,10)) 
@@ -565,13 +565,13 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True):
                 print s
             subPlot = fig.add_subplot(3,4,i+1)
             
-            histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(paramList[i]))
+            histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+str(paramList[i]))
             if quiet==False:
                 print 'Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[paramList[i]]#+" for file:\n"+outputDataFilename
             xLim=False
             CLevels=False
             if shadeConfLevels:
-                CLevels=np.loadtxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(paramList[i])+'.dat'))
+                CLevels=np.loadtxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+str(paramList[i])+'.dat'))
             showYlabel=False
             if (i==0)or(i==4)or(i==8):
                 showYlabel = True

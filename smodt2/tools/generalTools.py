@@ -293,26 +293,24 @@ def loadFits(filename):
         head=data=False
     return (head,data)
 
-def combineFits(filenames):
+def combineFits(filenames,outFname):
     """
     combine the data in multiple SMODT2 fits files together.
     Used primarily for after multi-process runs.
     """
-    outFname = os.path.join(os.path.dirname(filename[0]),"combinedData.fits")
-    (head0,dataALL) = loadFits(filename[0])
+    (head0,dataALL) = loadFits(filenames[0])
     for filename in filenames:
         (head,data) = loadFits(filename)
-        dataALL = np.concatenate((data0,data))
+        dataALL = np.concatenate((dataALL,data))
     hdu = pyfits.PrimaryHDU(dataALL)
     hdulist = pyfits.HDUList([hdu])
     header = hdulist[0].header
     for key in head0:
         header[key]=head0[key]
     hdulist.writeto(outFname)
-    log.info("output file written to:below\n"+outFname)
     hdulist.close()
-    return outFname
-
+    log.info("output file written to:below\n"+outFname)
+    
 def getParInts(head):
     """
     convert string version of paramInts into a list again.

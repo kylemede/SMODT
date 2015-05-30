@@ -331,7 +331,7 @@ class Simulator(object):
         self.acceptBoolAry = []
         self.parIntVaryAry = []
     
-    def simulatorFunc(self,stage='',startParams=[],startSigmas=[],chainNum=1):
+    def simulatorFunc(self,stage='',chainNum=1,startParams=[],startSigmas=[]):
         """
         The core function to perform the requested stage of the simulation ('MC','SA','ST','MCMC').
         If stage is SA or ST: final (params,sigmas) are returned, else nothing.
@@ -378,14 +378,14 @@ class Simulator(object):
             proposedPars = self.increment(latestPars,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
             sigmas = self.sigTune(sample,sigmas,stage)
-            if (self.dictVal('logLevel')<100)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):
-                bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), stage+' complete so far.')
-        if self.dictVal('logLevel')<100:
-            bar.render(100,stage+' complete so far.')
+            if (self.dictVal('logLevel')<50)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):
+                bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), stage+str(chainNum)+' complete so far.')
+        if self.dictVal('logLevel')<50:
+            bar.render(100,stage+str(chainNum)+' complete so far.')
         toc=timeit.default_timer()
         self.log.info(stage+" it took: "+str(int(toc-tic))+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$
         self.endSummary(len(acceptedParams),temp,sigmas,stage)
-        outFname = tools.writeFits('outputData'+stage+'.fits',acceptedParams,self.settingsDict)
+        outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',acceptedParams,self.settingsDict)
         if stage=='ST':
             return (latestPars,sigmas)
         elif stage=='SA':

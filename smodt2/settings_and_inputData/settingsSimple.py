@@ -2,10 +2,10 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (1000000,"Number of MCMC or MC samples"),
+'nSamples' : (100000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (7,"Number of chains"),
+'nChains' : (20,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]

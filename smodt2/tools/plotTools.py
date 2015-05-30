@@ -591,7 +591,10 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
         if True:
             if quiet==False:
                 print 'converting to PDF as well'
-            os.system("epstopdf "+plotFilename)
+            try:
+                os.system("epstopdf "+plotFilename)
+            except:
+                log.warning("Seems epstopdf failed.  Check if it is installed properly.")
             
 def star(R, x0, y0, color='w', N=5, thin = 0.5):
     """

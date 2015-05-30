@@ -4,6 +4,7 @@ import tools
 import simulator
 import sys
 import os
+import timeit
 import numpy as np
 from multiprocessing import Process
 
@@ -78,7 +79,7 @@ def smodt():
     ##IDEA: could call the set of processes to only perform on stage at a time
     ##     Then choose the best output from all of them as the start of the next
     ##     stage.  good idea???
-    
+    tic=timeit.default_timer()
     #make list of stages to run
     stageList = []
     if settingsDict['symMode'][0]=='MC':
@@ -96,8 +97,12 @@ def smodt():
         master[procNumber].start()
     for procNumber in range(settingsDict['nChains'][0]):
         master[procNumber].join()    
+    toc=timeit.default_timer()
+    log.info("ALL stages took a total of "+str(int(toc-tic))+' seconds')
+    
     
     ## load up lists of output files
+    tic=timeit.default_timer()
     mcmcFiles = []
     mcFiles = []
     for procNumber in range(settingsDict['nChains'][0]):
@@ -121,16 +126,34 @@ def smodt():
     if len(mcmcFiles)>0:
         outMCMCFname = os.path.join(os.path.dirname(mcmcFiles[0]),"outputMCMC-ALL.fits")
         tools.combineFits(mcmcFiles,outMCMCFname)
-    ## plot posteriors
+    
+    ## calc and strip burn-in?
+    
+    ## plot posteriors?
     if settingsDict['pltDists']:
         if os.path.exists(outMCFname):
             plotFilename = os.path.join(os.path.dirname(outMCFname),'SummaryPlotMC')
-            tools.summaryPlotter(outMCFname, plotFilename, shadeConfLevels=True)
+            tools.summaryPlotter(outMCFname, plotFilename, stage='MC',shadeConfLevels=True)
         if os.path.exists(outMCMCFname):
             plotFilename = os.path.join(os.path.dirname(outMCMCFname),'SummaryPlotMCMC')
-            tools.summaryPlotter(outMCMCFname, plotFilename, shadeConfLevels=True)
+            tools.summaryPlotter(outMCMCFname, plotFilename,stage='MCMC', shadeConfLevels=True)
+            
+    ## orbit plots?
+    
+    ## progress plots?
+    
+    ##calc R?
+    
+    ## calc correlation length?
+    
+    ## make summary file
+    
+    
+            
+    ##clean up files (move to folders or delete them)
    
-        
+    toc=timeit.default_timer()
+    log.info("Post-processing took a total of "+str(int(toc-tic))+' seconds')
     log.info("End of SMODT2.0 main")
 
 if __name__ == '__main__':

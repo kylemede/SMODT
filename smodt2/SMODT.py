@@ -98,11 +98,11 @@ def smodt():
     for procNumber in range(settingsDict['nChains'][0]):
         master[procNumber].join()    
     toc=timeit.default_timer()
-    log.info("ALL stages took a total of "+str(int(toc-tic))+' seconds')
+    log.info("\n\nALL stages took a total of "+str(int(toc-tic))+' seconds\n\n')
     
     
     ## load up lists of output files
-    tic=timeit.default_timer()
+    tic2=timeit.default_timer()
     mcmcFiles = []
     mcFiles = []
     for procNumber in range(settingsDict['nChains'][0]):
@@ -153,7 +153,8 @@ def smodt():
     ##clean up files (move to folders or delete them)
    
     toc=timeit.default_timer()
-    log.info("Post-processing took a total of "+str(int(toc-tic))+' seconds')
+    log.info("Post-processing took a total of "+str(int(toc-tic2))+' seconds')
+    log.info("\n\nEVERYTHING took a total of "+str(int(toc-tic))+' seconds\n\n')
     log.info("End of SMODT2.0 main")
 
 if __name__ == '__main__':

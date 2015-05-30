@@ -244,7 +244,7 @@ class Simulator(object):
             self.acceptBoolAry.append(0)
         if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
             ##log a summary
-            sumStr = "below\n# Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
+            sumStr = "below\nStage= "+stage+", # Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
             sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
             self.log.debug(sumStr)
         if False:

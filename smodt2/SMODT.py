@@ -46,12 +46,12 @@ def smodt():
     outMCMCFname=''
     if True:
         ##mcONLYcall
-        outMCFname = Sim.simulatorFunc('MC')
+        #outMCFname = Sim.simulatorFunc('MC')
         ## SA call
-        (paramsSA,sigmasSA,bestRedChiSqr) = Sim.simulatorFunc('SA')
+        #(paramsSA,sigmasSA,bestRedChiSqr) = Sim.simulatorFunc('SA')
         if bestRedChiSqr<settingsDict['chiMAX'][0]:
             ## ST call
-            (paramsST,sigmasST) = Sim.simulatorFunc('ST',paramsSA,sigmasSA)
+            #(paramsST,sigmasST) = Sim.simulatorFunc('ST',paramsSA,sigmasSA)
             ##MCMC call
             outMCMCFname = Sim.simulatorFunc('MCMC',paramsST,sigmasST)
             print 'FINAL MCMC OUTFILE :\n'+outMCMCFname    
@@ -61,7 +61,7 @@ def smodt():
                 if os.path.exists(outMCFname):
                     plotFilename = os.path.join(os.path.dirname(outMCFname),'SummaryPlotMC')
                     tools.summaryPlotter(outMCFname, plotFilename, shadeConfLevels=True)
-                if os.path.exists(outMCFname):
+                if os.path.exists(outMCMCFname):
                     plotFilename = os.path.join(os.path.dirname(outMCMCFname),'SummaryPlotMCMC')
                     tools.summaryPlotter(outMCMCFname, plotFilename, shadeConfLevels=True)
         else:

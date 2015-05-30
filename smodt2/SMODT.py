@@ -144,7 +144,7 @@ def smodt():
     
     ##calc R?
     
-    ## calc correlation length?
+    ## calc correlation length??
     
     ## make summary file
     

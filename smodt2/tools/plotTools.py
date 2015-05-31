@@ -2,6 +2,7 @@
 import numpy as np
 import os
 import pylab
+import copy
 plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
 import constants as const
@@ -124,7 +125,7 @@ def addRVdataToPlot(subPlot,realData,alf=1.0,color='blue',plotErrorBars=False):
         subPlot.plot(realData[i,0],realData[i,5],c='k',marker='.',markersize=6)
     return subPlot
 
-def addDIdataToPlot(subPlot,realData,asConversion,telescopeView=False):
+def addDIdataToPlot(subPlot,realData,asConversion):
     """
     To plot a '+' for each data point with width and height matching the errors converted 
     to x,y coords.
@@ -135,10 +136,7 @@ def addDIdataToPlot(subPlot,realData,asConversion,telescopeView=False):
     ymax = np.max(realData[:,3]+realData[:,4])
     for i in range(0,realData.shape[0]):
         xCent = realData[i,1]
-        yCent = realData[i,3]
-        if telescopeView:
-            xCent = -xCent
-            yCent = -yCent            
+        yCent = realData[i,3]           
         left = xCent-realData[i,2]
         right = xCent+realData[i,2]
         top = yCent+realData[i,4]
@@ -347,13 +345,16 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
     Orbit.calculate(fitData,orbParams)
 
     if False:
-        ## Get 1/4 locations #Might not need this anymore as we don't plot semi-major axis...
+        ## Get 1/4 locations (useful for drawing semi-major axis, and finding loc of COM)
         fakeRealDataQuarter = np.ones((4,8))
         for i in range(0,4):
             fakeRealDataQuarter[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/4.0))
         Orbit.loadRealData(fakeRealDataQuarter)
         fitDataQuarter = np.zeros((4,3))
         Orbit.calculate(fitDataQuarter,orbParams)
+        #find loc of COM for possible use
+        xCOM = (fakeRealDataQuarter[3,0]+fakeRealDataQuarter[0,0])/2.0
+        yCOM = (fakeRealDataQuarter[3,1]+fakeRealDataQuarter[0,1])/2.0
 
     ################
     # Make DI plot #
@@ -361,13 +362,64 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
     if settingsDict['dataMode']!='RV':
         fig = plt.figure(1,figsize=(10,9))
         main = fig.add_subplot(111)
+        #determine if to plot [mas] or ["]
+        asConversion=1.0
+        unitStr = '"'
+        if np.min([np.min(realData[:,1]),np.min(realData[:,3])])<1.5:
+            asConversion = 1000.0
+            unitStr = 'mas'
+        ## Draw orbit fit
+        main.plot(fakeRealData[:,1]*asConversion,fakeRealData[:,3]*asConversion,linewidth=2.5,color='Blue') 
+        ## Draw larger star for primary star's location
+        starPolygon = star((asConversion/1000.0)*12.0*orbParams[10],0,0,color='yellow',N=6,thin=0.5)
+        main.add_patch(starPolygon)
+        ## Add DI data to plot
+        (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realData,asConversion)
+        ## set limits and other basics of plot looks
+        xLim = (xmin-(xmax-xmin)*0.05,xmax+(xmax-xmin)*0.05)
+        yLim = (ymin-(ymax-ymin)*0.05,ymax+(ymax-ymin)*0.05)
+        ## FLIP X-AXIS to match backawards Right Ascension definition
+        a = main.axis()
+        main.axis([a[1],a[0],a[2],a[3]])
+        main.axes.set_xlim((xLim[1],xLim[0]))
+        main.axes.set_ylim(yLim)
+        main.tick_params(axis='both',which='major',width=1,length=3,pad=10,direction='in',labelsize=15)
+        main.spines['right'].set_linewidth(1.0)
+        main.spines['bottom'].set_linewidth(1.0)
+        main.spines['top'].set_linewidth(1.0)
+        main.spines['left'].set_linewidth(1.0)
+        main.set_position([0.19,0.15,0.79,0.83])
+        main.set_xlabel('RA ['+unitStr+']', fontsize=30)
+        main.set_ylabel('Dec ['+unitStr+']', fontsize=30)
+        ## save fig to file
+        plotFilename = plotFnameBase+'-DI.png'
+        if plotFilename!='':
+            plt.savefig(plotFilename, dpi=300, orientation='landscape')
+        ## log params used in DI plot
+        orbParamsDI = copy.deepcopy(orbParams)
+        orbParamsDI[9]+=ettingsDict['omegaFdi'][0]
+        log.info('\n'+"*"*50+"Orbital Elements used in DI plot:\n"+repr(orbParamsDI)+'\n'+"*"*50+'\n')
+        plt.close()
 
 
-
-
-
-
-
+    if settingsDict['dataMode']!='DI':
+        
+        
+        ## determin if to plot [KM/s] or [M/s]
+        kmConversion = 1.0/1000.0
+        unitStr = 'KM/s'
+        if np.max(realData[:,5])<1500:
+            kmConversion = 1.0
+            unitStr = 'M/s'
+        
+        ## save fig to file
+        plotFilename = plotFnameBase+'-RV.png'
+        if plotFilename!='':
+            plt.savefig(plotFilename, dpi=300, orientation='landscape')
+        ## log params used in RV plot
+        orbParamsRV = copy.deepcopy(orbParams)
+        orbParamsRV[9]+=ettingsDict['omegaFrv'][0]
+        log.info('\n'+"*"*50+"Orbital Elements used in RV plot:\n"+repr(orbParamsRV)+'\n'+"*"*50+'\n')
 
 
 

@@ -13,7 +13,7 @@ simpleSettingsDict={
 'outRoot' : "SMODT2-FakeData",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
-'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
+'dataMode' : ('DI',"Data Mode (RV,DI,3D)"),
 # mode to run simulation in, choices {'MC','SA','MCMC'} [string]
 'symMode' : ('MCMC',"Simulator mode (MC,SA,MCMC)"),
 ###################################################

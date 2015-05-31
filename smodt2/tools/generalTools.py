@@ -223,7 +223,7 @@ def startup(argv):
         if (('y' in YN) or ('Y' in YN)):
             shutil.rmtree(settingsDict['finalFolder'])
             os.mkdir(settingsDict['finalFolder'])
-        elif (('n' in YN) or ('N' in YN)):
+        else: #elif (('n' in YN) or ('N' in YN)):
             sys.exit()
         if settingsDict['logLevel']<50:
             print '$'*50+'\n'
@@ -399,7 +399,7 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
             s=s+"68.3% error level = "+str(dataMedian-conf68Vals[0])
             s=s+" =>   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
         s=s+'\n'+75*'-'+'\n Leaving confLevelFinder \n'+75*'-'+'\n'
-        log.info(s)
+        log.debug(s)
         
         if verboseInternal:
             print 'returnData = '+repr(returnData)+', returnChiSquareds = '+repr(returnChiSquareds)+', returnBestDataVal = '+repr(returnBestDataVal)
@@ -465,7 +465,8 @@ def findBestOrbit(filename):
     """                  
     (head,data) = loadFits(filename)
     chiBest = np.min(data[:,11])
-    orbBest = data[np.where(data[:,11]==chiBest),:]
+    loc = np.where(data[:,11]==chiBest)
+    orbBest = data[loc[0][0],:]
     log.info("Best fit found to be:\n"+repr(orbBest))
     return orbBest
                                          

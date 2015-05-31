@@ -130,17 +130,17 @@ def addDIdataToPlot(subPlot,realData,asConversion):
     To plot a '+' for each data point with width and height matching the errors converted 
     to x,y coords.
     """
-    xmin = np.min(realData[:,1]-realData[:,2])
-    xmax = np.max(realData[:,1]+realData[:,2])
-    ymin = np.min(realData[:,3]-realData[:,4])
-    ymax = np.max(realData[:,3]+realData[:,4])
+    xmin = np.min(realData[:,1]-realData[:,2])*asConversion
+    xmax = np.max(realData[:,1]+realData[:,2])*asConversion
+    ymin = np.min(realData[:,3]-realData[:,4])*asConversion
+    ymax = np.max(realData[:,3]+realData[:,4])*asConversion
     for i in range(0,realData.shape[0]):
-        xCent = realData[i,1]
-        yCent = realData[i,3]           
-        left = xCent-realData[i,2]
-        right = xCent+realData[i,2]
-        top = yCent+realData[i,4]
-        btm = yCent-realData[i,4]
+        xCent = realData[i,1]*asConversion
+        yCent = realData[i,3]*asConversion
+        left = xCent-realData[i,2]*asConversion
+        right = xCent+realData[i,2]*asConversion
+        top = yCent+realData[i,4]*asConversion
+        btm = yCent-realData[i,4]*asConversion
         subPlot.plot([left,right],[yCent,yCent],linewidth=3,color='k',alpha=1.0)
         subPlot.plot([xCent,xCent],[btm,top],linewidth=3,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])
@@ -219,14 +219,14 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                         print 'confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-param"+str(paramList[i])+'.dat')
         
         # Create empty figure to be filled up with plots
-        fig = plt.figure(figsize=(10,10)) 
+        sumFig = plt.figure(figsize=(10,10)) 
                     
         ## make combined/stacked plot for each parameter in list
         for i in range(0,len(paramList)):
             s='\nStarting to plot shaded hist for '+paramStrs[i]
             if verbose:
                 print s
-            subPlot = fig.add_subplot(3,4,i+1)
+            subPlot = sumFig.add_subplot(3,4,i+1)
             
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-param"+str(paramList[i]))
             if quiet==False:
@@ -246,11 +246,11 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                 print '\nStarting to save param hist figure:'
         if plotFilename!='':
             plt.savefig(plotFilename,format=plotFormat)
-            plt.close()
             s= 'Summary plot saved to: '+plotFilename
             if quiet==False:
                 print s
             log.info(s)
+        plt.close()
         if True:
             if quiet==False:
                 print 'converting to PDF as well'
@@ -337,20 +337,28 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
     
     ##Make model data for 100~1000 points for plotting fit
     nPts = 500
-    fakeRealData = np.ones((nPts,8))
-    for i in range(0,nPts):
+    fakeRealData = np.ones((nPts,8),dtype=np.dtype('d'),order='C')
+    for i in range(0,nPts-1):
         fakeRealData[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/float(nPts)))
+    fakeRealData[nPts-1,0]  = fakeRealData[0,0]+const.daysPerYear*orbParams[7]
+    #print 'fakeRealData[:,0] = '+repr(fakeRealData[:,0])
     Orbit.loadRealData(fakeRealData)
-    fitData = np.zeros((len(fakeRealData),3))
-    Orbit.calculate(fitData,orbParams)
+    fitData = np.ones((nPts,3),dtype=np.dtype('d'),order='C')
+    orbParamsDI = copy.deepcopy(orbParams)
+    orbParamsDI[9]+=settingsDict['omegaFdi'][0]
+    paramsDI = []
+    for par in orbParamsDI:
+        paramsDI.append(par)
+    paramsDI=np.array(paramsDI,dtype=np.dtype('d'),order='C')
+    Orbit.calculate(fitData,paramsDI)
 
     if False:
         ## Get 1/4 locations (useful for drawing semi-major axis, and finding loc of COM)
-        fakeRealDataQuarter = np.ones((4,8))
+        fakeRealDataQuarter = np.ones((4,8),dtype=np.dtype('d'))
         for i in range(0,4):
             fakeRealDataQuarter[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/4.0))
         Orbit.loadRealData(fakeRealDataQuarter)
-        fitDataQuarter = np.zeros((4,3))
+        fitDataQuarter = np.zeros((4,3),dtype=np.dtype('d'))
         Orbit.calculate(fitDataQuarter,orbParams)
         #find loc of COM for possible use
         xCOM = (fakeRealDataQuarter[3,0]+fakeRealDataQuarter[0,0])/2.0
@@ -359,17 +367,17 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
     ################
     # Make DI plot #
     ################
-    if settingsDict['dataMode']!='RV':
-        fig = plt.figure(1,figsize=(10,9))
-        main = fig.add_subplot(111)
+    if settingsDict['dataMode'][0]!='RV':
+        diFig = plt.figure(1,figsize=(10,9))
+        main = diFig.add_subplot(111)
         #determine if to plot [mas] or ["]
         asConversion=1.0
         unitStr = '"'
-        if np.min([np.min(realData[:,1]),np.min(realData[:,3])])<1.5:
+        if abs(np.min([np.min(realData[:,1]),np.min(realData[:,3])]))<1.5:
             asConversion = 1000.0
             unitStr = 'mas'
         ## Draw orbit fit
-        main.plot(fakeRealData[:,1]*asConversion,fakeRealData[:,3]*asConversion,linewidth=2.5,color='Blue') 
+        main.plot(fitData[:,0]*asConversion,fitData[:,1]*asConversion,linewidth=2.5,color='Blue') 
         ## Draw larger star for primary star's location
         starPolygon = star((asConversion/1000.0)*12.0*orbParams[10],0,0,color='yellow',N=6,thin=0.5)
         main.add_patch(starPolygon)
@@ -395,15 +403,21 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
         plotFilename = plotFnameBase+'-DI.png'
         if plotFilename!='':
             plt.savefig(plotFilename, dpi=300, orientation='landscape')
-        ## log params used in DI plot
-        orbParamsDI = copy.deepcopy(orbParams)
-        orbParamsDI[9]+=ettingsDict['omegaFdi'][0]
-        log.info('\n'+"*"*50+"Orbital Elements used in DI plot:\n"+repr(orbParamsDI)+'\n'+"*"*50+'\n')
+            log.info("DI orbit plot saved to:\n"+plotFilename)
         plt.close()
+        ## log params used in DI plot
+        log.info('\n'+"*"*50+"\nOrbital Elements used in DI plot:\n"+repr(paramsDI)+'\n'+"*"*50+'\n')
 
-
-    if settingsDict['dataMode']!='DI':
+    if settingsDict['dataMode'][0]!='DI':
+        fig = plt.figure(1,figsize=(10,9))
+        main = fig.add_subplot(111)
         
+        orbParamsRV = copy.deepcopy(orbParams)
+        orbParamsRV[9]+=settingsDict['omegaFrv'][0]
+        params = []
+        for par in orbParamsRV:
+            params.append(par)
+        params=np.array(params,dtype=np.dtype('d'),order='C')
         
         ## determin if to plot [KM/s] or [M/s]
         kmConversion = 1.0/1000.0
@@ -416,10 +430,9 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
         plotFilename = plotFnameBase+'-RV.png'
         if plotFilename!='':
             plt.savefig(plotFilename, dpi=300, orientation='landscape')
+            log.info("RV orbit plot saved to:\n"+plotFilename)
         ## log params used in RV plot
-        orbParamsRV = copy.deepcopy(orbParams)
-        orbParamsRV[9]+=ettingsDict['omegaFrv'][0]
-        log.info('\n'+"*"*50+"Orbital Elements used in RV plot:\n"+repr(orbParamsRV)+'\n'+"*"*50+'\n')
+        log.info('\n'+"*"*50+"\nOrbital Elements used in RV plot:\n"+repr(orbParamsRV)+'\n'+"*"*50+'\n')
 
 
 

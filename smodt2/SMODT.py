@@ -92,6 +92,7 @@ def smodt():
         stageList = ['SA']
     elif settingsDict['symMode'][0]=='MCMC':
         stageList = ['SA','ST','MCMC']
+    stageList=['MCMC']##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ## Start the number of processes/chains requested
     master = []
     log.info("Going to start "+str(settingsDict['nChains'][0])+" chains, with each running these stages: "+repr(stageList))
@@ -122,16 +123,17 @@ def smodt():
     
     ## find best fit
     if os.path.exists(allFname):
-        bestFit = findBestOrbit(allFname)
+        bestFit = tools.findBestOrbit(allFname)
+    ## orbit plots?
+    if settingsDict['pltOrbit']:
+        plotFnameBase = os.path.join(os.path.dirname(allFname),'orbitPlot'+settingsDict['symMode'][0])
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase)
     ## plot posteriors?
     if settingsDict['pltDists']:
         if os.path.exists(allFname):
             plotFilename = os.path.join(os.path.dirname(allFname),'summaryPlot'+settingsDict['symMode'][0])
             tools.summaryPlotter(allFname, plotFilename,stage=settingsDict['symMode'][0], shadeConfLevels=True)
-    ## orbit plots?
-    if settingsDict['pltOrbit']:
-        plotFnameBase = os.path.join(os.path.dirname(allFname),'orbitPlot'+settingsDict['symMode'][0])
-        orbitPlotter(bestFit,settingsDict,plotFnameBase)
+    
     ## progress plots?
     
     ##calc R?

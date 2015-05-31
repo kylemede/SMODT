@@ -6,6 +6,7 @@ plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
 import constants as const
 import generalTools as genTools
+import cppTools
 import smodtLogger
 
 log = smodtLogger.getLogger('main.plotTools',lvl=100,addFH=False)  
@@ -322,6 +323,53 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
     '-DI.png' and/or '-RV.png' will be added to end of plotFnameBase 
     to make the filenames for each type of plot.
     """
+    log.debug("Starting to make orbit plots")
+    colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    #plt.rc('font',family='serif')
+    plt.rc('text', usetex=False) 
+    
+    ##get the real data
+    realData = genTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'])
+    
+    ## Make Orbit cpp obj
+    Orbit = cppTools.Orbit()
+    Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0])
+    Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
+    
+    ##Make model data for 100~1000 points for plotting fit
+    nPts = 500
+    fakeRealData = np.ones((nPts,8))
+    for i in range(0,nPts):
+        fakeRealData[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/float(nPts)))
+    Orbit.loadRealData(fakeRealData)
+    fitData = np.zeros((len(fakeRealData),3))
+    Orbit.calculate(fitData,orbParams)
+
+    if False:
+        ## Get 1/4 locations #Might not need this anymore as we don't plot semi-major axis...
+        fakeRealDataQuarter = np.ones((4,8))
+        for i in range(0,4):
+            fakeRealDataQuarter[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/4.0))
+        Orbit.loadRealData(fakeRealDataQuarter)
+        fitDataQuarter = np.zeros((4,3))
+        Orbit.calculate(fitDataQuarter,orbParams)
+
+    ################
+    # Make DI plot #
+    ################
+    if settingsDict['dataMode']!='RV':
+        fig = plt.figure(1,figsize=(10,9))
+        main = fig.add_subplot(111)
+
+
+
+
+
+
+
+
+
 
 
 

@@ -116,7 +116,7 @@ def smodt():
     ## combine the data files
     allFname = ''
     if len(outFiles)>0:
-        allFname = os.path.join(os.path.dirname(mcFiles[0]),"output"+settingsDict['symMode'][0]+"-ALL.fits")
+        allFname = os.path.join(os.path.dirname(outFiles[0]),"outputData"+settingsDict['symMode'][0]+"-ALL.fits")
         tools.combineFits(outFiles,allFname)
     ## calc and strip burn-in?
     
@@ -126,7 +126,7 @@ def smodt():
     ## plot posteriors?
     if settingsDict['pltDists']:
         if os.path.exists(allFname):
-            plotFilename = os.path.join(os.path.dirname(allFname),'SummaryPlot'+settingsDict['symMode'][0])
+            plotFilename = os.path.join(os.path.dirname(allFname),'summaryPlot'+settingsDict['symMode'][0])
             tools.summaryPlotter(allFname, plotFilename,stage=settingsDict['symMode'][0], shadeConfLevels=True)
     ## orbit plots?
     if settingsDict['pltOrbit']:

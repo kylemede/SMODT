@@ -98,7 +98,7 @@ def smodt():
     for procNumber in range(settingsDict['nChains'][0]):
         master[procNumber].join()    
     toc=timeit.default_timer()
-    log.info("\n\nALL stages took a total of "+str(int(toc-tic))+' seconds\n\n')
+    log.info("ALL stages took a total of "+str(int(toc-tic))+' seconds')
     
     
     ## load up lists of output files

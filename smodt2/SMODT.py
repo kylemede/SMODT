@@ -13,8 +13,6 @@ from multiprocessing import Process
     It will start things off, call the appropriate set of 
     simulation and post-processing steps.
 """
-
-
 class singleProc(Process):
     """
     This is the Manager object that controls the a single processes for a 
@@ -72,15 +70,21 @@ def smodt():
     """
     'main'
     """
+    ## Call startup to get dict and load up final directories into it.
     settingsDict = tools.startup(sys.argv)
     log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=settingsDict['logLevel'])
     log.debug("Prepend string passed in was '"+settingsDict['prepend']+"'")
-             
+       
+    ##################################
+    # Run nChains for mode requested #
+    ##################################     
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ##IDEA: could call the set of processes to only perform on stage at a time
     ##     Then choose the best output from all of them as the start of the next
     ##     stage.  good idea???
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     tic=timeit.default_timer()
-    #make list of stages to run
+    ##make list of stages to run
     stageList = []
     if settingsDict['symMode'][0]=='MC':
         stageList = ['MC']
@@ -88,7 +92,6 @@ def smodt():
         stageList = ['SA']
     elif settingsDict['symMode'][0]=='MCMC':
         stageList = ['SA','ST','MCMC']
-    stageList = ['MC','SA','ST','MCMC']#$$$$$$$$$$$$$$$$$$$$$$$$$
     ## Start the number of processes/chains requested
     master = []
     log.info("Going to start "+str(settingsDict['nChains'][0])+" chains, with each running these stages: "+repr(stageList))
@@ -100,46 +103,35 @@ def smodt():
     toc=timeit.default_timer()
     log.info("ALL stages took a total of "+str(int(toc-tic))+' seconds')
     
-    
-    ## load up lists of output files
+    ###################
+    # Post-processing # 
+    ###################
+    ## load up list of output files
     tic2=timeit.default_timer()
-    mcmcFiles = []
-    mcFiles = []
+    outFiles = []
     for procNumber in range(settingsDict['nChains'][0]):
-        if 'MCMC' in stageList:
-            fname = os.path.join(settingsDict['finalFolder'],'outputDataMCMC'+str(procNumber)+'.fits')
-            if os.path.exists(fname):
-                mcmcFiles.append(fname)
-        if 'MC' in stageList:
-            fname = os.path.join(settingsDict['finalFolder'],'outputDataMC'+str(procNumber)+'.fits')
-            if os.path.exists(fname):
-                mcFiles.append(fname)
-    ##################
-    ## Post-processing 
-    ##################
+        fname = os.path.join(settingsDict['finalFolder'],'outputData'+settingsDict['symMode'][0]+str(procNumber)+'.fits')
+        if os.path.exists(fname):
+            outFiles.append(fname)      
     ## combine the data files
-    outMCFname = ''
-    outMCMCFname = ''
-    if len(mcFiles)>0:
-        outMCFname = os.path.join(os.path.dirname(mcFiles[0]),"outputMC-ALL.fits")
-        tools.combineFits(mcFiles,outMCFname)
-    if len(mcmcFiles)>0:
-        outMCMCFname = os.path.join(os.path.dirname(mcmcFiles[0]),"outputMCMC-ALL.fits")
-        tools.combineFits(mcmcFiles,outMCMCFname)
-    
+    allFname = ''
+    if len(outFiles)>0:
+        allFname = os.path.join(os.path.dirname(mcFiles[0]),"output"+settingsDict['symMode'][0]+"-ALL.fits")
+        tools.combineFits(outFiles,allFname)
     ## calc and strip burn-in?
     
+    ## find best fit
+    if os.path.exists(allFname):
+        bestFit = findBestOrbit(allFname)
     ## plot posteriors?
     if settingsDict['pltDists']:
-        if os.path.exists(outMCFname):
-            plotFilename = os.path.join(os.path.dirname(outMCFname),'SummaryPlotMC')
-            tools.summaryPlotter(outMCFname, plotFilename, stage='MC',shadeConfLevels=True)
-        if os.path.exists(outMCMCFname):
-            plotFilename = os.path.join(os.path.dirname(outMCMCFname),'SummaryPlotMCMC')
-            tools.summaryPlotter(outMCMCFname, plotFilename,stage='MCMC', shadeConfLevels=True)
-            
+        if os.path.exists(allFname):
+            plotFilename = os.path.join(os.path.dirname(allFname),'SummaryPlot'+settingsDict['symMode'][0])
+            tools.summaryPlotter(allFname, plotFilename,stage=settingsDict['symMode'][0], shadeConfLevels=True)
     ## orbit plots?
-    
+    if settingsDict['pltOrbit']:
+        plotFnameBase = os.path.join(os.path.dirname(allFname),'orbitPlot'+settingsDict['symMode'][0])
+        orbitPlotter(bestFit,settingsDict,plotFnameBase)
     ## progress plots?
     
     ##calc R?
@@ -151,11 +143,13 @@ def smodt():
     
             
     ##clean up files (move to folders or delete them)
-   
+    
+    ## Final log messages and end
     toc=timeit.default_timer()
     log.info("Post-processing took a total of "+str(int(toc-tic2))+' seconds')
     log.info("\n\nEVERYTHING took a total of "+str(int(toc-tic))+' seconds\n\n')
     log.info("End of SMODT2.0 main")
+    ##END MAIN 
 
 if __name__ == '__main__':
     smodt()

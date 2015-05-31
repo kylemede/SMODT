@@ -316,3 +316,16 @@ def epochsToPhases(epochs2,Tc,P_yrs, halfOrbit=False):
         
     return phases2
 
+def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
+    """
+    Make both the DI and RV plots.
+    '-DI.png' and/or '-RV.png' will be added to end of plotFnameBase 
+    to make the filenames for each type of plot.
+    """
+
+
+
+
+
+
+

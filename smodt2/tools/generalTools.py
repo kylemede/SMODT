@@ -459,7 +459,15 @@ def dataReader(filename, colNum=0):
         bestDataVal = dataAry[np.where(chiSquareds==np.min(chiSquareds))][0]          
         return (dataAry,chiSquareds,[bestDataVal,np.median(dataAry),dataAry[0],dataAry[len(dataAry)//2],dataAry[-1]])                
                                          
-                                         
+def findBestOrbit(filename):        
+    """
+    Find the orbital elements for the best fit in a SMODT format fits file.
+    """                  
+    (head,data) = loadFits(filename)
+    chiBest = np.min(data[:,11])
+    orbBest = data[np.where(data[:,11]==chiBest),:]
+    log.info("Best fit found to be:\n"+repr(orbBest))
+    return orbBest
                                          
                                          
                                          

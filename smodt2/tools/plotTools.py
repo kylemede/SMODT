@@ -272,48 +272,31 @@ def star(R, x0, y0, color='w', N=5, thin = 0.5):
         polystar[i] = [r*np.cos(angle)+x0, r*np.sin(angle)+y0]
     return Polygon(polystar, fc=color, ec='black',linewidth=1.5)  
 
-def epochsToPhases(epochs2,Tc,P_yrs, halfOrbit=False):
+def epochsToPhases(epochs,Tc,P_yrs, halfOrbit=False):
     """
-    converter to change the epochs of a 1-D or 2-D array to phases.
-    Output dimensions of phases2 will be same as input epochs2
-    halfOrbit option shifts phases into [-0.5,0.5] range, 
-    rather than [-1,1].
+    Convert the epochs (from a realData ary) into phase values 
+    (ratio of how far from Tc it is), shifted to lie inside [-1,1].
+    if 'halfOrbit'=True, the vals will lie inside [-0.5,0.5].
     """    
-    verbose=False 
-    notAlist = False   
-    if type(epochs2[0])!=list:
-        epochs2 = [epochs2]
-        notAlist = True        
-        
-    phases2 = []
+    verbose=False         
+    phases = []
     P_days = P_yrs*const.daysPerYear
-    for epochs in epochs2:
-        phases = []
-        for epoch in epochs:
-            phaseTimeDiff = epoch - int((epoch-Tc)/P_days)*P_days-Tc #phase shifted into [-P,P]
-            phase = phaseTimeDiff/P_days
-            if halfOrbit:
-                if phase>0.5:
-                    phase = phase-1.0
-                elif phase<-0.5:
-                    phase = phase+1.0
-            phases.append(phase)
-            if verbose:
-                print '\nepoch = ',epoch
-                print 'period [days] = ',P_days
-                print 'phase = ',phase
-                if True:
-                    print str(epoch)+" - "+str(int((epoch-Tc)/P_days)*P_days)+" - "+str(Tc)+" = "+str(phaseTimeDiff)
-        phases2.append(phases)
-    
-    if notAlist:
-        epochs2 = epochs2[0]
-        phases2 = phases2[0]
-    if verbose:
-        print '\nepochs2 array = '+repr(epochs2)
-        print 'phases2 array = '+repr(phases2)
-        
-    return phases2
+    for epoch in epochs:
+        phaseTimeDiff = epoch - int((epoch-Tc)/P_days)*P_days-Tc #phase shifted into [-P,P]
+        if verbose:
+            print str(epoch)+" - "+str(int((epoch-Tc)/P_days)*P_days)+" - "+str(Tc)+" = "+str(phaseTimeDiff)
+        phase = phaseTimeDiff/P_days#phase shifted into [-1,1]
+        if halfOrbit:
+            if phase>0.5:
+                phase = phase-1.0#phase shifted into [-0.5,0.5]
+            elif phase<-0.5:
+                phase = phase+1.0#phase shifted into [-0.5,0.5]
+        phases.append(phase)
+        if verbose:
+            print '\nepoch = ',epoch
+            print 'period [days] = ',P_days
+            print 'phase = ',phase        
+    return phases
 
 def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
     """
@@ -335,40 +318,40 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
     Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0])
     Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
     
-    ##Make model data for 100~1000 points for plotting fit
-    nPts = 500
-    fakeRealData = np.ones((nPts,8),dtype=np.dtype('d'),order='C')
-    for i in range(0,nPts-1):
-        fakeRealData[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/float(nPts)))
-    fakeRealData[nPts-1,0]  = fakeRealData[0,0]+const.daysPerYear*orbParams[7]
-    #print 'fakeRealData[:,0] = '+repr(fakeRealData[:,0])
-    Orbit.loadRealData(fakeRealData)
-    fitData = np.ones((nPts,3),dtype=np.dtype('d'),order='C')
-    orbParamsDI = copy.deepcopy(orbParams)
-    orbParamsDI[9]+=settingsDict['omegaFdi'][0]
-    paramsDI = []
-    for par in orbParamsDI:
-        paramsDI.append(par)
-    paramsDI=np.array(paramsDI,dtype=np.dtype('d'),order='C')
-    Orbit.calculate(fitData,paramsDI)
-
-    if False:
-        ## Get 1/4 locations (useful for drawing semi-major axis, and finding loc of COM)
-        fakeRealDataQuarter = np.ones((4,8),dtype=np.dtype('d'))
-        for i in range(0,4):
-            fakeRealDataQuarter[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/4.0))
-        Orbit.loadRealData(fakeRealDataQuarter)
-        fitDataQuarter = np.zeros((4,3),dtype=np.dtype('d'))
-        Orbit.calculate(fitDataQuarter,orbParams)
-        #find loc of COM for possible use
-        xCOM = (fakeRealDataQuarter[3,0]+fakeRealDataQuarter[0,0])/2.0
-        yCOM = (fakeRealDataQuarter[3,1]+fakeRealDataQuarter[0,1])/2.0
-
     ################
     # Make DI plot #
     ################
     if settingsDict['dataMode'][0]!='RV':
-        diFig = plt.figure(1,figsize=(10,9))
+        ##Make model data for 100~1000 points for plotting fit
+        nPts = 500
+        fakeRealData = np.ones((nPts,8),dtype=np.dtype('d'),order='C')
+        for i in range(0,nPts-1):
+            fakeRealData[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/float(nPts)))
+        fakeRealData[nPts-1,0]  = fakeRealData[0,0]+const.daysPerYear*orbParams[7]
+        #print 'fakeRealData[:,0] = '+repr(fakeRealData[:,0])
+        Orbit.loadRealData(fakeRealData)
+        fitDataDI = np.ones((nPts,3),dtype=np.dtype('d'),order='C')
+        orbParamsDI = copy.deepcopy(orbParams)
+        orbParamsDI[9]+=settingsDict['omegaFdi'][0]
+        #Ensuring that params are in required format for SWIG
+        paramsDI = []
+        for par in orbParamsDI:
+            paramsDI.append(par)
+        paramsDI=np.array(paramsDI,dtype=np.dtype('d'),order='C')
+        Orbit.calculate(fitDataDI,paramsDI)
+        if False:
+            ## Get 1/4 locations (useful for drawing semi-major axis, and finding loc of COM)
+            fakeRealDataQuarter = np.ones((4,8),dtype=np.dtype('d'))
+            for i in range(0,4):
+                fakeRealDataQuarter[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/4.0))
+            Orbit.loadRealData(fakeRealDataQuarter)
+            fitDataQuarter = np.zeros((4,3),dtype=np.dtype('d'))
+            Orbit.calculate(fitDataQuarter,orbParams)
+            #find loc of COM for possible use
+            xCOM = (fakeRealDataQuarter[3,0]+fakeRealDataQuarter[0,0])/2.0
+            yCOM = (fakeRealDataQuarter[3,1]+fakeRealDataQuarter[0,1])/2.0
+
+        diFig = plt.figure(2,figsize=(10,9))
         main = diFig.add_subplot(111)
         #determine if to plot [mas] or ["]
         asConversion=1.0
@@ -377,13 +360,14 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
             asConversion = 1000.0
             unitStr = 'mas'
         ## Draw orbit fit
-        main.plot(fitData[:,0]*asConversion,fitData[:,1]*asConversion,linewidth=2.5,color='Blue') 
+        main.plot(fitDataDI[:,0]*asConversion,fitDataDI[:,1]*asConversion,linewidth=2.5,color='Blue') 
         ## Draw larger star for primary star's location
         starPolygon = star((asConversion/1000.0)*12.0*orbParams[10],0,0,color='yellow',N=6,thin=0.5)
         main.add_patch(starPolygon)
         ## Add DI data to plot
         (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realData,asConversion)
         ## set limits and other basics of plot looks
+        ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ take max/min of fit data into account!!!!!!!!$$$$$$$$$
         xLim = (xmin-(xmax-xmin)*0.05,xmax+(xmax-xmin)*0.05)
         yLim = (ymin-(ymax-ymin)*0.05,ymax+(ymax-ymin)*0.05)
         ## FLIP X-AXIS to match backawards Right Ascension definition
@@ -408,32 +392,102 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
         ## log params used in DI plot
         log.info('\n'+"*"*50+"\nOrbital Elements used in DI plot:\n"+repr(paramsDI)+'\n'+"*"*50+'\n')
 
-    if settingsDict['dataMode'][0]!='DI':
-        fig = plt.figure(1,figsize=(10,9))
-        main = fig.add_subplot(111)
-        
+    ################
+    # Make RV plot #
+    ################
+    if settingsDict['dataMode'][0]!='DI':        
+        realDataRV = copy.deepcopy(realData)
+        ##Make model data for 100~1000 points for plotting fit
+        nPts = 500
+        fakeRealData = np.ones((nPts,8),dtype=np.dtype('d'),order='C')
+        #set all RV offsets to zero
+        fakeRealData[:,7]=0.0
+        for i in range(0,nPts-1):
+            fakeRealData[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/float(nPts)))
+        fakeRealData[nPts-1,0]  = fakeRealData[0,0]+const.daysPerYear*orbParams[7]
+        Orbit.loadRealData(fakeRealData)
+        fitDataRV = np.ones((nPts,3),dtype=np.dtype('d'),order='C')
         orbParamsRV = copy.deepcopy(orbParams)
         orbParamsRV[9]+=settingsDict['omegaFrv'][0]
-        params = []
+        ##Ensuring that params are in required format for SWIG
+        paramsRV = []
         for par in orbParamsRV:
-            params.append(par)
-        params=np.array(params,dtype=np.dtype('d'),order='C')
+            paramsRV.append(par)
+        paramsRV=np.array(paramsRV,dtype=np.dtype('d'),order='C')
+        Orbit.calculate(fitDataRV,paramsRV)
         
-        ## determin if to plot [KM/s] or [M/s]
-        kmConversion = 1.0/1000.0
-        unitStr = 'KM/s'
-        if np.max(realData[:,5])<1500:
-            kmConversion = 1.0
-            unitStr = 'M/s'
+         ##convert epochs to phases for plotting
+        phasesReal = epochsToPhases(copy.deepcopy(realDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=False)
+        phasesFit = epochsToPhases(copy.deepcopy(fitDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=False)
         
-        ## save fig to file
-        plotFilename = plotFnameBase+'-RV.png'
-        if plotFilename!='':
-            plt.savefig(plotFilename, dpi=300, orientation='landscape')
-            log.info("RV orbit plot saved to:\n"+plotFilename)
-        ## log params used in RV plot
-        log.info('\n'+"*"*50+"\nOrbital Elements used in RV plot:\n"+repr(orbParamsRV)+'\n'+"*"*50+'\n')
-
+        ##Need to subtract RV offsets from the RVs 
+        numOffsets = int(len(paramsRV)-13)
+        if numOffsets!=np.max(realDataRV[:7]):
+            log.critical("Number of RV offsets in params does not match largest value in realData[:,7]")
+        else:
+            log.debug("There was a matching number of RV offsets in realData and params, = "+str(numOffsets))
+            for i in range(0,realDataRV.shape[0]):
+                rvBefore = realDataRV[i,5]
+                realDataRV[i,5]-=paramsRV[13+int(realDataRV[i,7])]
+                print str(rvBefore)+' - '+str(paramsRV[13+int(realDataRV[i,7])])+' = '+str(realDataRV[i,6])
+        
+            ## determine if to plot [KM/s] or [M/s]
+            kmConversion = 1.0/1000.0
+            unitStr = 'KM/s'
+            if np.max(realDataRV[:,5])<1500:
+                kmConversion = 1.0
+                unitStr = 'M/s'
+        
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            #######$$$$$$ CHECK ALL THE CODE BELOW THIS AND UPDATE TO 2.0 FORMAT!!!!!!
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            ## start making figure
+            figRV = plt.figure(3,figsize=(10,5))
+            residualsPlot = fig.add_subplot(212)
+            residualsPlot.set_position([0.12,0.15,0.83,0.23])
+            residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=20)
+            residualsPlot.axes.set_ylabel("Residual",fontsize=15)
+            residualsPlot.tick_params(axis='y',which='major',width=3,length=5,pad=10,direction='in',labelsize=8)
+            plt.locator_params(axis='y',nbins=5) #fix number o y-axis label points
+            
+            ## make plot of fit to data
+            fitPlot = fig.add_subplot(211)
+            fitPlot.set_position([0.12,0.38,0.83,0.55])
+            fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
+            fitPlot.plot(phasesFit,fitDataRV[:,5],c='r',linewidth=2.0,alpha=alf)
+            
+            
+            #plot RESIDUAL data and fit, plus build up the chiSquaredStr
+            print '\nabout to load up residuals plot'
+            residualsPlot = addRVdataToPlot(residualsPlot,realDataRV,alf=1.0,color='blue',plotErrorBars=False)
+            ## set limits and other basics of plot looks
+            ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ take max/min of fit data into account!!!!!!!!$$$$$$$$$
+            residualsPlot.axes.set_xlim(??)
+            residualsPlot.axes.set_ylim(??)
+            #residualsPlot=fixPlotBordersAndLabels(residualsPlot)
+            #plot zero vel line?
+            residualsPlot.plot(??,[0,0],c='r',linewidth=2.0)
+            fitPlot.axes.set_xlim(??)
+            fitPlot.axes.set_ylim(??)
+            #fitPlot=fixPlotBordersAndLabels(fitPlot)
+            #yLabel = "RV [m/s]"
+            #if KMperSec:
+            #    yLabel = "RV [km/s]"
+            #fitPlot.axes.set_ylabel(yLabel,fontsize=20)
+            #residualsPlot=fixPlotBordersAndLabels(residualsPlot)
+            
+            
+            
+            ## save fig to file
+            plotFilename = plotFnameBase+'-RV.png'
+            if plotFilename!='':
+                plt.savefig(plotFilename, dpi=300, orientation='landscape')
+                log.info("RV orbit plot saved to:\n"+plotFilename)
+            ## log params used in RV plot
+            log.info('\n'+"*"*50+"\nOrbital Elements used in RV plot:\n"+repr(orbParamsRV)+'\n'+"*"*50+'\n')
+    
 
 
 

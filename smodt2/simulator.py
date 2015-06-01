@@ -45,7 +45,7 @@ class Simulator(object):
         """
         ##check there are matching number of RV datasets and provided min/max vals for offsets
         if np.max(self.realData[:,-1])!=(len(self.dictVal('vMINs'))-1):
-            self.log.error("THE NUMBER OF vMINs/vMAXs DOES NOT MATCH THE NUMBER OF RV DATASETS!!!\n"+\
+            self.log.error("THE NUMBER OF vMINs DOES NOT MATCH THE NUMBER OF RV DATASETS!!!\n"+\
                            "please check the vMINs/vMAXs arrays in the simple settings file\n"+\
                            "to make sure they have matching lengths to the number of RV datasets.")
         ##load up range min,max and sigma arrayS
@@ -78,6 +78,8 @@ class Simulator(object):
         #start with uniform sigma values
         sigSize = 0.05
         sigmas = [sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,0,0,sigSize]
+        if len(self.dictVal('vMINs'))!=len(self.dictVal('vMAXs')):
+            self.log.critical("THE NUMBER OF vMINs NOT EQUAL TO NUMBER OF vMAXs!!!")
         for i in range(0,len(self.dictVal('vMINs'))):
             sigmas.append(sigSize)
             rangeMins.append(self.dictVal('vMINs')[i])

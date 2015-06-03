@@ -112,14 +112,14 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
         
     return plot
 
-def addRVdataToPlot(subPlot,realData,alf=1.0,color='blue',plotErrorBars=False):
+def addRVdataToPlot(subPlot,epochsORphases,RVs,RVerrs,alf=1.0,color='blue',plotErrorBars=False):
     """
     Add '+' markers for the data locations with respective y axis errors 
     shown as the height of the markers. 
     """
-    for i in range(0,realData.shape[0]):
-        xs = [realData[i,0],realData[i,0]]
-        ys = [realData[i,5]-realData[i,6],realData[i,5]+realData[i,6]]
+    for i in range(0,RVs.shape[0]):
+        xs = [epochsORphases[i],epochsORphases[i]]
+        ys = [RVs[i]-RVerrs[i],RVs[i]+RVerrs[i]]
         if plotErrorBars:
             subPlot.plot(xs,ys,c=color,linewidth=2,alpha=alf)
         subPlot.plot(realData[i,0],realData[i,5],c='k',marker='.',markersize=6)
@@ -420,10 +420,6 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
         modelDataRV = np.ones((realDataRV.shape[0],3),dtype=np.dtype('d'),order='C')
         Orbit.calculate(modelDataRV,paramsRV)
         
-        ##convert epochs to phases for plotting
-        phasesReal = epochsToPhases(copy.deepcopy(realDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=False)
-        phasesFit = epochsToPhases(copy.deepcopy(fitDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=False)
-        
         ##Need to subtract RV offsets from the RVs 
         ##The fakeRealData had all offsets set to zero, so realDataRV needs to be "zeroed" to match
         numOffsets = int(len(paramsRV)-13)
@@ -436,6 +432,10 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
                 realDataRV[i,5]-=paramsRV[13+int(realDataRV[i,7])]
                 print str(rvBefore)+' - '+str(paramsRV[13+int(realDataRV[i,7])])+' = '+str(realDataRV[i,6])
         
+            ##convert epochs to phases for plotting
+            phasesReal = epochsToPhases(copy.deepcopy(realDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=False)
+            phasesFit = epochsToPhases(copy.deepcopy(fitDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=False)
+            
             ## determine if to plot [KM/s] or [M/s]
             kmConversion = 1.0/1000.0
             unitStr = '[KM/s]'
@@ -443,53 +443,58 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
                 kmConversion = 1.0
                 unitStr = '[M/s]'
         
-            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            #######$$$$$$ CHECK ALL THE CODE BELOW THIS AND UPDATE TO 2.0 FORMAT!!!!!!
-            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            ## start making figure
+            ## start making figure for residual and fit plots
             figRV = plt.figure(3,figsize=(10,5))
             residualsPlot = fig.add_subplot(212)
             residualsPlot.set_position([0.12,0.15,0.83,0.23])
+            fitPlot = fig.add_subplot(211)
+            fitPlot.set_position([0.12,0.38,0.83,0.55])
             residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=20)
             residualsPlot.axes.set_ylabel("Residual",fontsize=15)
             residualsPlot.tick_params(axis='y',which='major',width=3,length=5,pad=10,direction='in',labelsize=8)
             plt.locator_params(axis='y',nbins=5) #fix number of y-axis label points
+            fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
+            fitPlot.axes.set_ylabel("RV "+unitStr,fontsize=20)
             
-            ## real-model=residual
+            ## real-model=residual, then plot it
             residualData = copy.deepcopy(realDataRV)
             residualData[:,5]-= modelDataRV[:,5]
             
-            residualsPlot = addRVdataToPlot(residualsPlot,residualData,alf=1.0,color='blue',plotErrorBars=False)
-            
-            ## make plot of fit to data
-            fitPlot = fig.add_subplot(211)
-            fitPlot.set_position([0.12,0.38,0.83,0.55])
-            fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
+            ## add real data to plots
+            residualsPlot = addRVdataToPlot(residualsPlot,phasesReal,residualData[:,5],residualData[:,6],alf=1.0,color='blue',plotErrorBars=False)
+            fitPlot = addRVdataToPlot(fitPlot,phasesReal,realDataRV[:,5],realDataRV[:,6],alf=1.0,color='blue',plotErrorBars=False)
+            ##plot fit epochsORphases,RVs,RVerrs
             fitPlot.plot(phasesFit,fitDataRV[:,5],c='r',linewidth=2.0,alpha=alf)
-            fitPlot.axes.set_ylabel("RV "+unitStr,fontsize=20)
-            fitPlot = addRVdataToPlot(fitPlot,realDataRV,alf=1.0,color='blue',plotErrorBars=False)
             
+            ## Find and set limits 
+            xLims = (np.min(np.min(phasesFit),np.min(phasesReal)),np.max(np.max(phasesFit),np.max(phasesReal)))
+            xRange = xLims[1]-xLims[0]
+            xLims = (xLims[0]-xRange*1.05,xLims[1]-xRange*1.05)
+            fitYlims = (np.min(np.min(fitDataRV[:,5]),np.min(realDataRV[:,5])),np.max(np.max(fitDataRV[:,5]),np.max(realDataRV[:,5])))
+            fitYrange = fitYlims[1]-fitYlims[0]
+            fitYlims = (fitYlims[0]-fitYrange*1.05,fitYlims[1]-fitYrange*1.05)
+            residYlims = (np.min(residualData[:,5]),np.max(residualData[:,5]))
+            residYrange = residYlims[1]-residYlims[0]
+            residYlims = (residYlims[0]-residYrange*1.05,residYlims[1]-residYrange*1.05)
+            residualsPlot.axes.set_xlim(xLims)
+            residualsPlot.axes.set_ylim(residYlims)
+            fitPlot.axes.set_xlim(xLims)
+            fitPlot.axes.set_ylim(fitYlims)
+            ##plot zero vel line
+            residualsPlot.plot(xLims,[0,0],c='r',linewidth=2.0)
             
-            ## set limits and other basics of plot looks
-            ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ take max/min of fit data into account!!!!!!!!$$$$$$$$$
-            residualsPlot.axes.set_xlim(??)
-            residualsPlot.axes.set_ylim(??)
-            #residualsPlot=fixPlotBordersAndLabels(residualsPlot)
-            #plot zero vel line?
-            residualsPlot.plot(??,[0,0],c='r',linewidth=2.0)
-            fitPlot.axes.set_xlim(??)
-            fitPlot.axes.set_ylim(??)
-            #fitPlot=fixPlotBordersAndLabels(fitPlot)
-            #yLabel = "RV [m/s]"
-            #if KMperSec:
-            #    yLabel = "RV [km/s]"
-            #fitPlot.axes.set_ylabel(yLabel,fontsize=20)
-            #residualsPlot=fixPlotBordersAndLabels(residualsPlot)
-            
-            
-            
+            ##clean up boarders, axis ticks and such 
+            residualsPlot.tick_params(axis='both',which='major',width=1,length=3,pad=8,direction='in',labelsize=20)
+            residualsPlot.spines['right'].set_linewidth(1.0)
+            residualsPlot.spines['bottom'].set_linewidth(1.0)
+            residualsPlot.spines['top'].set_linewidth(1.0)
+            residualsPlot.spines['left'].set_linewidth(1.0)
+            fitPlot.tick_params(axis='both',which='major',width=1,length=3,pad=8,direction='in',labelsize=20)
+            fitPlot.spines['right'].set_linewidth(1.0)
+            fitPlot.spines['bottom'].set_linewidth(1.0)
+            fitPlot.spines['top'].set_linewidth(1.0)
+            fitPlot.spines['left'].set_linewidth(1.0)
+    
             ## save fig to file
             plotFilename = plotFnameBase+'-RV.png'
             if plotFilename!='':

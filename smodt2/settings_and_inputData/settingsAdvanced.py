@@ -55,11 +55,11 @@ advancedDict = {
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :10,
 # make plot of posterior distributions? [bool]
-'pltDists' :True,
+'pltDists' :False,
 # make plots of RV and DI/AM orbit fits [bool]
 'pltOrbit' :True,
 # Delete chain files after simulation is complete? [bool]
-'delChains' :True,
+'delChains' :False,
 # Delete combined data files after simulation is complete? [bool]
 'delCombined' :False,
 # run 'make' on C++/SWIG code to make sure it is up-to-date [bool]

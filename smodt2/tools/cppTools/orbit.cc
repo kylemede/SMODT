@@ -12,7 +12,7 @@ void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
 	//Calculate TA and E
 	//Remember that in RV, there is a shift due to the Tc!=T, that doesn't exist in DI.
 	//------------------
-	//std::cout<<"\necc = "<<ecc<<", T = "<<T<<", Tc = "<<Tc<<", P = "<<P<<", epoch = "<<epoch<<std::endl;
+	std::cout<<"\necc = "<<ecc<<", T = "<<T<<", Tc = "<<Tc<<", P = "<<P<<", epoch = "<<epoch<<std::endl;
 	thetaRV=0;
 	EDI=0;
 	//for RV
@@ -38,7 +38,7 @@ void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
 				std::cout<<"Eprime = "<<Eprime <<"\n" <<std::endl;
 			}
 		}
-		//std::cout<<"E RV = "<<E<<std::endl;
+		std::cout<<"E RV = "<<E<<std::endl;
 		thetaPrime = acos((cos(E)-ecc)/(1.0-ecc*cos(E)));
 		if (E>pi)
 			thetaPrime = 2.0*pi-thetaPrime;

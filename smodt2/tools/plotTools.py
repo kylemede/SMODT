@@ -122,7 +122,7 @@ def addRVdataToPlot(subPlot,epochsORphases,RVs,RVerrs,alf=1.0,color='blue',plotE
         ys = [RVs[i]-RVerrs[i],RVs[i]+RVerrs[i]]
         if plotErrorBars:
             subPlot.plot(xs,ys,c=color,linewidth=2,alpha=alf)
-        subPlot.plot(realData[i,0],realData[i,5],c='k',marker='.',markersize=6)
+        subPlot.plot(epochsORphases[i],RVs[i],c='k',marker='.',markersize=6)
     return subPlot
 
 def addDIdataToPlot(subPlot,realData,asConversion):
@@ -275,17 +275,17 @@ def star(R, x0, y0, color='w', N=5, thin = 0.5):
 def epochsToPhases(epochs,Tc,P_yrs, halfOrbit=False):
     """
     Convert the epochs (from a realData ary) into phase values 
-    (ratio of how far from Tc it is), shifted to lie inside [-1,1].
+    (ratio of how far from Tc it is), shifted to lie inside [0,1].
     if 'halfOrbit'=True, the vals will lie inside [-0.5,0.5].
     """    
     verbose=False         
     phases = []
     P_days = P_yrs*const.daysPerYear
     for epoch in epochs:
-        phaseTimeDiff = epoch - int((epoch-Tc)/P_days)*P_days-Tc #phase shifted into [-P,P]
+        phaseTimeDiff = epoch - int((epoch-Tc)/P_days)*P_days-Tc #phase shifted into [Tc,Tc+P]
         if verbose:
             print str(epoch)+" - "+str(int((epoch-Tc)/P_days)*P_days)+" - "+str(Tc)+" = "+str(phaseTimeDiff)
-        phase = phaseTimeDiff/P_days#phase shifted into [-1,1]
+        phase = phaseTimeDiff/P_days#phase shifted into [0,1]
         if halfOrbit:
             if phase>0.5:
                 phase = phase-1.0#phase shifted into [-0.5,0.5]
@@ -324,7 +324,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
     if settingsDict['dataMode'][0]!='RV':
         ##Make model data for 100~1000 points for plotting fit
         nPts = 500
-        fakeRealData = np.ones((nPts,8),dtype=np.dtype('d'),order='C')
+        fakeRealData = np.zeros((nPts,8),dtype=np.dtype('d'),order='C')
+        fakeRealData[:,1:4]=1.0
         for i in range(0,nPts-1):
             fakeRealData[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/float(nPts)))
         fakeRealData[nPts-1,0]  = fakeRealData[0,0]+const.daysPerYear*orbParams[7]
@@ -332,7 +333,6 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
         Orbit.loadRealData(fakeRealData)
         fitDataDI = np.ones((nPts,3),dtype=np.dtype('d'),order='C')
         orbParamsDI = copy.deepcopy(orbParams)
-        orbParamsDI[9]+=settingsDict['omegaFdi'][0]
         #Ensuring that params are in required format for SWIG
         paramsDI = []
         for par in orbParamsDI:
@@ -390,7 +390,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
             log.info("DI orbit plot saved to:\n"+plotFilename)
         plt.close()
         ## log params used in DI plot
-        log.info('\n'+"*"*50+"\nOrbital Elements used in DI plot:\n"+repr(paramsDI)+'\n'+"*"*50+'\n')
+        log.info('\n'+"*"*50+"\nOrbital Elements used in DI plot:\n"+repr(orbParamsDI))
+        log.info("\n with an omega value = "+str(orbParamsDI[9]+settingsDict["omegaFdi"][0])+'\n'+"*"*50+'\n')
 
     ################
     # Make RV plot #
@@ -398,18 +399,19 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
     if settingsDict['dataMode'][0]!='DI':        
         realDataRV = copy.deepcopy(realData)
         ##Make model data for 100~1000 points for plotting fit
-        nPts = 500
-        fakeRealData = np.ones((nPts,8),dtype=np.dtype('d'),order='C')
+        nPts = 100
+        fakeRealData = np.zeros((nPts-1,8),dtype=np.dtype('d'),order='C')
+        fakeRealData[:,5] = 1.0
         #set all RV offsets to zero
-        fakeRealData[:,7]=0.0
+        fakeRealData[:,7] = 0.0
+        fakeRealData[:,0] = orbParams[6]-(const.daysPerYear*orbParams[7]/2.0)
         for i in range(0,nPts-1):
-            fakeRealData[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/float(nPts)))
-        fakeRealData[nPts-1,0]  = fakeRealData[0,0]+const.daysPerYear*orbParams[7]
+            fakeRealData[i,0] += const.daysPerYear*orbParams[7]*((i)/float(nPts))
+        #print 'epochs = '+repr(fakeRealData[:,0])
         Orbit.loadRealData(fakeRealData)
-        fitDataRV = np.ones((nPts,3),dtype=np.dtype('d'),order='C')
-        orbParamsRV = copy.deepcopy(orbParams)
-        orbParamsRV[9]+=settingsDict['omegaFrv'][0]
+        fitDataRV = np.ones((nPts-1,3),dtype=np.dtype('d'),order='C')
         ##Ensuring that params are in required format for SWIG
+        orbParamsRV = copy.deepcopy(orbParams)
         paramsRV = []
         for par in orbParamsRV:
             paramsRV.append(par)
@@ -423,65 +425,71 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
         ##Need to subtract RV offsets from the RVs 
         ##The fakeRealData had all offsets set to zero, so realDataRV needs to be "zeroed" to match
         numOffsets = int(len(paramsRV)-13)
-        if numOffsets!=np.max(realDataRV[:7]):
+        if (numOffsets-1)!=np.max(realDataRV[:,7]):
             log.critical("Number of RV offsets in params does not match largest value in realData[:,7]")
+            log.critical("# of offsets in params = "+str(numOffsets)+" != # max in realData = "+str(np.max(realDataRV[:,7])+1))
         else:
             log.debug("There was a matching number of RV offsets in realData and params, = "+str(numOffsets))
             for i in range(0,realDataRV.shape[0]):
                 rvBefore = realDataRV[i,5]
                 realDataRV[i,5]-=paramsRV[13+int(realDataRV[i,7])]
-                print str(rvBefore)+' - '+str(paramsRV[13+int(realDataRV[i,7])])+' = '+str(realDataRV[i,6])
+                #print str(rvBefore)+' - '+str(paramsRV[13+int(realDataRV[i,7])])+' = '+str(realDataRV[i,5])
         
             ##convert epochs to phases for plotting
-            phasesReal = epochsToPhases(copy.deepcopy(realDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=False)
-            phasesFit = epochsToPhases(copy.deepcopy(fitDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=False)
+            phasesReal = epochsToPhases(copy.deepcopy(realDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=True)
+            phasesFit = epochsToPhases(copy.deepcopy(fakeRealData[:,0]),paramsRV[6],paramsRV[7], halfOrbit=True)
+            #print 'phasesReal = '+repr(phasesReal)
+            #print 'phasesFit = '+repr(phasesFit)
+            for i in range(0,len(phasesFit)):
+                print  str(phasesFit[i])+' , '+str(fitDataRV[i,2])
             
             ## determine if to plot [KM/s] or [M/s]
             kmConversion = 1.0/1000.0
             unitStr = '[KM/s]'
-            if np.max(realDataRV[:,5])<1500:
+            if np.max(np.sqrt(realDataRV[:,5]**2.0))<1000:
                 kmConversion = 1.0
                 unitStr = '[M/s]'
         
             ## start making figure for residual and fit plots
             figRV = plt.figure(3,figsize=(10,5))
-            residualsPlot = fig.add_subplot(212)
+            residualsPlot = figRV.add_subplot(212)
             residualsPlot.set_position([0.12,0.15,0.83,0.23])
-            fitPlot = fig.add_subplot(211)
+            fitPlot = figRV.add_subplot(211)
             fitPlot.set_position([0.12,0.38,0.83,0.55])
+            plt.locator_params(axis='y',nbins=4) #fix number of y-axis label points
             residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=20)
             residualsPlot.axes.set_ylabel("Residual",fontsize=15)
             residualsPlot.tick_params(axis='y',which='major',width=3,length=5,pad=10,direction='in',labelsize=8)
-            plt.locator_params(axis='y',nbins=5) #fix number of y-axis label points
+            
             fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
             fitPlot.axes.set_ylabel("RV "+unitStr,fontsize=20)
             
             ## real-model=residual, then plot it
             residualData = copy.deepcopy(realDataRV)
-            residualData[:,5]-= modelDataRV[:,5]
+            residualData[:,5]-= modelDataRV[:,2]
             
             ## add real data to plots
-            residualsPlot = addRVdataToPlot(residualsPlot,phasesReal,residualData[:,5],residualData[:,6],alf=1.0,color='blue',plotErrorBars=False)
-            fitPlot = addRVdataToPlot(fitPlot,phasesReal,realDataRV[:,5],realDataRV[:,6],alf=1.0,color='blue',plotErrorBars=False)
+            residualsPlot = addRVdataToPlot(residualsPlot,phasesReal,residualData[:,5]*kmConversion,residualData[:,6]*kmConversion,alf=1.0,color='k',plotErrorBars=False)
+            fitPlot = addRVdataToPlot(fitPlot,phasesReal,realDataRV[:,5]*kmConversion,realDataRV[:,6]*kmConversion,alf=1.0,color='k',plotErrorBars=False)
             ##plot fit epochsORphases,RVs,RVerrs
-            fitPlot.plot(phasesFit,fitDataRV[:,5],c='r',linewidth=2.0,alpha=alf)
+            fitPlot.plot(phasesFit,fitDataRV[:,2]*kmConversion,c='Blue',linewidth=2.0,alpha=1.0)
             
             ## Find and set limits 
-            xLims = (np.min(np.min(phasesFit),np.min(phasesReal)),np.max(np.max(phasesFit),np.max(phasesReal)))
+            xLims = (np.min([np.min(phasesFit),np.min(phasesReal)]),np.max([np.max(phasesFit),np.max(phasesReal)]))
             xRange = xLims[1]-xLims[0]
             xLims = (xLims[0]-xRange*1.05,xLims[1]-xRange*1.05)
-            fitYlims = (np.min(np.min(fitDataRV[:,5]),np.min(realDataRV[:,5])),np.max(np.max(fitDataRV[:,5]),np.max(realDataRV[:,5])))
+            fitYlims = (np.min([np.min(fitDataRV[:,2]*kmConversion),np.min(realDataRV[:,5]*kmConversion)]),np.max([np.max(fitDataRV[:,2]*kmConversion),np.max(realDataRV[:,5]*kmConversion)]))
             fitYrange = fitYlims[1]-fitYlims[0]
             fitYlims = (fitYlims[0]-fitYrange*1.05,fitYlims[1]-fitYrange*1.05)
-            residYlims = (np.min(residualData[:,5]),np.max(residualData[:,5]))
+            residYlims = (np.min(residualData[:,5]*kmConversion),np.max(residualData[:,5]*kmConversion))
             residYrange = residYlims[1]-residYlims[0]
             residYlims = (residYlims[0]-residYrange*1.05,residYlims[1]-residYrange*1.05)
-            residualsPlot.axes.set_xlim(xLims)
-            residualsPlot.axes.set_ylim(residYlims)
-            fitPlot.axes.set_xlim(xLims)
-            fitPlot.axes.set_ylim(fitYlims)
+            #residualsPlot.axes.set_xlim(xLims)
+            #residualsPlot.axes.set_ylim(residYlims)
+            #fitPlot.axes.set_xlim(xLims)
+            #fitPlot.axes.set_ylim(fitYlims)
             ##plot zero vel line
-            residualsPlot.plot(xLims,[0,0],c='r',linewidth=2.0)
+            residualsPlot.axhline(linewidth=2.0,c='Blue') #adds a x-axis origin line
             
             ##clean up boarders, axis ticks and such 
             residualsPlot.tick_params(axis='both',which='major',width=1,length=3,pad=8,direction='in',labelsize=20)
@@ -494,6 +502,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
             fitPlot.spines['bottom'].set_linewidth(1.0)
             fitPlot.spines['top'].set_linewidth(1.0)
             fitPlot.spines['left'].set_linewidth(1.0)
+            #plot.axhline(linewidth=2.0) #adds a x-axis origin line
+            #plot.axvline(linewidth=2.0) #adds a y-axis origin line
     
             ## save fig to file
             plotFilename = plotFnameBase+'-RV.png'
@@ -501,7 +511,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
                 plt.savefig(plotFilename, dpi=300, orientation='landscape')
                 log.info("RV orbit plot saved to:\n"+plotFilename)
             ## log params used in RV plot
-            log.info('\n'+"*"*50+"\nOrbital Elements used in RV plot:\n"+repr(orbParamsRV)+'\n'+"*"*50+'\n')
+            log.info('\n'+"*"*50+"\nOrbital Elements used in RV plot:\n"+repr(orbParamsRV))
+            log.info("\n with an omega value = "+str(orbParamsRV[9]+settingsDict["omegaFrv"][0])+'\n'+"*"*50+'\n')
     
 
 

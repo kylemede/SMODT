@@ -415,12 +415,17 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
             paramsRV.append(par)
         paramsRV=np.array(paramsRV,dtype=np.dtype('d'),order='C')
         Orbit.calculate(fitDataRV,paramsRV)
+        ## get the predicted values for the realData epochs
+        Orbit.loadRealData(realDataRV)
+        modelDataRV = np.ones((realDataRV.shape[0],3),dtype=np.dtype('d'),order='C')
+        Orbit.calculate(modelDataRV,paramsRV)
         
-         ##convert epochs to phases for plotting
+        ##convert epochs to phases for plotting
         phasesReal = epochsToPhases(copy.deepcopy(realDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=False)
         phasesFit = epochsToPhases(copy.deepcopy(fitDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=False)
         
         ##Need to subtract RV offsets from the RVs 
+        ##The fakeRealData had all offsets set to zero, so realDataRV needs to be "zeroed" to match
         numOffsets = int(len(paramsRV)-13)
         if numOffsets!=np.max(realDataRV[:7]):
             log.critical("Number of RV offsets in params does not match largest value in realData[:,7]")
@@ -433,10 +438,10 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
         
             ## determine if to plot [KM/s] or [M/s]
             kmConversion = 1.0/1000.0
-            unitStr = 'KM/s'
+            unitStr = '[KM/s]'
             if np.max(realDataRV[:,5])<1500:
                 kmConversion = 1.0
-                unitStr = 'M/s'
+                unitStr = '[M/s]'
         
             #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -450,18 +455,23 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
             residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=20)
             residualsPlot.axes.set_ylabel("Residual",fontsize=15)
             residualsPlot.tick_params(axis='y',which='major',width=3,length=5,pad=10,direction='in',labelsize=8)
-            plt.locator_params(axis='y',nbins=5) #fix number o y-axis label points
+            plt.locator_params(axis='y',nbins=5) #fix number of y-axis label points
+            
+            ## real-model=residual
+            residualData = copy.deepcopy(realDataRV)
+            residualData[:,5]-= modelDataRV[:,5]
+            
+            residualsPlot = addRVdataToPlot(residualsPlot,residualData,alf=1.0,color='blue',plotErrorBars=False)
             
             ## make plot of fit to data
             fitPlot = fig.add_subplot(211)
             fitPlot.set_position([0.12,0.38,0.83,0.55])
             fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
             fitPlot.plot(phasesFit,fitDataRV[:,5],c='r',linewidth=2.0,alpha=alf)
+            fitPlot.axes.set_ylabel("RV "+unitStr,fontsize=20)
+            fitPlot = addRVdataToPlot(fitPlot,realDataRV,alf=1.0,color='blue',plotErrorBars=False)
             
             
-            #plot RESIDUAL data and fit, plus build up the chiSquaredStr
-            print '\nabout to load up residuals plot'
-            residualsPlot = addRVdataToPlot(residualsPlot,realDataRV,alf=1.0,color='blue',plotErrorBars=False)
             ## set limits and other basics of plot looks
             ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ take max/min of fit data into account!!!!!!!!$$$$$$$$$
             residualsPlot.axes.set_xlim(??)

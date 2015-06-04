@@ -12,6 +12,153 @@ log = smodtLogger.getLogger('main.genTools',lvl=100,addFH=False)
 def test():
     log.info("inside the tools test func")
     
+def corrLengthCalcVar(paramIN):
+    """
+    This version uses np.var
+    This is the most ideal way to calculate the correlation length, instead of the std based version.
+    
+    This function will calculate the mean correlation length and return its value.
+    This is equal to the number of steps it takes for the variance to equal half of the total chain's variance.
+    This is done in a loop, calculating it in an end-to-end fashion with the result being the mean of those 
+    correlation lengths.  
+    
+    :param paramIN:     parameter array after burn in data stripped
+    :type paramIN:      array (list) of doubles
+    """
+    verbose = False
+    if verbose:
+        print "Entered corrLengthCalcVar"
+    try:
+        varALL = np.var(paramIN)
+    except:
+        useless=0
+    halfVarALL = varALL/2.0
+    CorrLength  = meanCorrLength = len(paramIN)
+    varCur=0
+    
+    if paramIN[0]==paramIN[-1]:
+        if verbose:
+            print 'First and last parameters were the same, so returning a length of the input array.'
+        CorrLength=meanCorrLength=len(paramIN)
+    else:
+        startLoc = 0
+        corrLengths = []
+        notFinished=True
+        while notFinished:
+            for i in range(startLoc,len(paramIN)+1):
+                if i>=len(paramIN):
+                    #hit the end, so stop
+                    notFinished=False
+                    break
+                try:
+                    varCur = np.var(paramIN[startLoc:i])
+                except:
+                    useless=1
+                if varCur>halfVarALL:
+                    CorrLength = i-startLoc
+                    corrLengths.append(CorrLength)
+                    startLoc = i
+                    break
+        if (startLoc==0)and(CorrLength == len(paramIN)):
+            print "PROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
+        meanCorrLength = int(np.mean(corrLengths))
+    if verbose:
+        print 'mean Correlation length found to be = ',meanCorrLength
+        print "Leaving corrLengthCalcVar"
+    return meanCorrLength    
+    
+def mcmcEffPtsCalc(outputDataFilename):
+    """
+    Calculate correlation length and the number of effective steps for each parameter 
+    that was varying during the simulation.  The results are put into the log.
+    """
+    (head,data) = loadFits(outputDataFilename)
+    numSteps = data.shape[0]
+    (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
+    
+    completeStr = '\nThe correlation lengths of all params are:\nFormat: param #, param name, correlation length'
+    completeStr+= ' -> total number of steps/correlation length = number of effective points\n'
+    for i in range(0,len(paramList)):
+        meanCorrLength = corrLengthCalcVar(data[:,paramList[i]])
+        currParamStr = str(paramList[i])+', '+paramStrs[paramList[i]]+", "+str(meanCorrLength)
+        currParamStr+=    ' -> '+str(numSteps)+'/'+str(meanCorrLength)+' = '+str(numSteps/meanCorrLength)+'\n'
+        completeStr+=currParamStr
+    log.info(completeStr)
+    return completeStr
+
+def gelmanRubinCalc(mcmcFileList):
+    """
+    Calculate Gelman-Rubin statistic for each varying param.
+    Input MUST be the list of more than one MCMC chain files.
+    """
+    if os.path.exists(mcmcFileList[0]):
+        (head,data) = loadFits(mcmcFileList[0])
+        (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
+        allStg1vals=np.zeros((len(mcmcFileList),len(paramList),2))
+        for i in range(0,len(mcmcFileList)):
+            log.debug("Starting to calc chain #"+str(i)+' GR values')
+            (head,data) = loadFits(mcmcFileList[i])
+            for j in range(0,len(paramList)):
+                allStg1vals[i,j,0]=np.mean(data[:,j])
+                allStg1vals[i,j,1]=np.var(data[:,j])
+            
+            
+        GRs = []
+        if len(mcmcFileList)>1: 
+            unBiasConversion = float(len(mcmcFileList))/float(len(mcmcFileList)-1.0)
+        else:
+            unBiasConversion=1.0
+        ## calculate values needed for R then calculate R
+        for j in range(0,len(paramList)):
+            
+            means = allStg1vals[:,j,0]
+            vars = allStg1vals[:,j,1]
+            B = Lc*unBiasConversion*np.var(means,axis=0)
+            W = np.mean(vars,axis=0)
+            weightedVar = ((Lc-1.0)/Lc)*W+(1.0/Lc)*B
+            R = np.NAN
+            if (W>0)and(weightedVar>0):
+                R = np.sqrt(weightedVar/W)
+                if verbose:
+                    print "weightedVar = "+str(weightedVar)+", W = "+str(W)+", B = "+str(B)+", Lc = "+str(Lc)     
+                           
+            lineStr=lineStr+'  '+str(R)
+            # calculate 'T' from pg 26 of Ford2006
+            # it is an "estimate of the effective number of independent draws"
+            # and therefore good to compare to the correlation length
+            T = np.NAN
+            if (B!=0)and(weightedVar>0):
+                T = Lc*numChains*np.min([weightedVar/B,1.0])
+            lineStr2=lineStr2+'  '+str(T)
+                
+    else:
+        log.critical("Gelman-Rubin stat can NOT be calculated as file does not exist!!:\n"+chainDataFileList[0])
+
+
+def getParStrs(head,latex=True):
+    """
+    Return matching paramList, paramStrs, paramFileStrs for provided header.
+    """
+    paramList = getParInts(head)    
+    paramFileStrs = ['M1','M2','dist','Omega','e','To', 'Tc','P','i','omega','a_total','chiSquared']
+    paramStrs = ['M1 [Msun]','M2 [Msun]','Distance [PC]','Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]','chiSquared']
+    if latex:
+        paramStrs = ['$M_1$ [$M_{sun}$]','$M_2$ [$M_{sun}$]','$Distance$ [PC]','$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]','chiSquared']
+
+    if head["nRVdsets"]>0:
+        paramFileStrs.append('K')
+        if latex:
+            paramStrs.append('$K$ [m/s]')
+        else:
+            paramStrs.append('K [m/s]')
+        for dataset in range(1,head["nRVdsets"]+1):
+            paramFileStrs.append('offset_'+str(dataset))
+            if latex:
+                paramStrs.append("$offset_{"+str(dataset)+"}$ [m/s]")
+            else:
+                paramStrs.append('offset '+str(dataset)+' [m/s]')
+    return (paramList,paramStrs,paramFileStrs)
+
 def loadDIdata(filename):
     """
     Load the astrometry data into a numpy array.
@@ -311,6 +458,25 @@ def combineFits(filenames,outFname):
     hdulist.close()
     log.info("output file written to:below\n"+outFname)
     
+def summaryFile(finalFits,outFname,grStr,effPtsStr,clStr,burnInStr,bestFit):
+    """
+    Make a file that summarizes the results.
+    """
+    f = open(outFname,'w')
+    (head,data) = loadFits(finalFits)
+    (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
+    f.write('\nBasics:\n')
+    f.write('\nparamList = '+repr(paramList))
+    f.write('\nparamStrs = '+repr(paramStrs))
+    f.write('\nparamFileStrs = '+repr(paramFileStrs))
+    f.write('\nbestFit = '+repr(bestFit))
+    f.write('\n'+grStr)
+    f.write('\n'+effPtsStr)
+    f.write('\n'+clStr)
+    f.write('\n'+burnInStr)
+    f.close()
+    log.info("Summary file written to:\n"+outFname)
+
 def getParInts(head):
     """
     convert string version of paramInts into a list again.
@@ -333,6 +499,7 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
     verboseInternal = False
     bestCentered = False
     log.debug('Inside confLevelFinder')
+    outStr=''
     if os.path.exists(filename):
         (dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReader(filename, colNum)
     
@@ -388,22 +555,24 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
             conf95Vals = [dataValueStart,dataValueStart]
             chiSquareds = 0
             
-        s= "Final 68% range values are: "+repr(conf68Vals)+'\n'
+        s= "\nFinal 68% range values are: "+repr(conf68Vals)+'\n'
         s=s+"Final 95% range values are: "+repr(conf95Vals)+'\n'
         if bestCentered:
             s=s+ "\nerror is centered on best \n"
             s=s+"68.3% error level = "+str(bestDataVal-conf68Vals[0])+'\n'
             s=s+" =>   "+str(dataMedian)+'  +/-  '+str(bestDataVal-conf68Vals[0])+'\n'
+            outStr+=s
         else:
             s=s+ "\nerror is centered on Median \n"
             s=s+"68.3% error level = "+str(dataMedian-conf68Vals[0])
-            s=s+" =>   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
+            s=s+" ->   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
+            outStr+=s
         s=s+'\n'+75*'-'+'\n Leaving confLevelFinder \n'+75*'-'+'\n'
         log.debug(s)
         
         if verboseInternal:
             print 'returnData = '+repr(returnData)+', returnChiSquareds = '+repr(returnChiSquareds)+', returnBestDataVal = '+repr(returnBestDataVal)
-        
+        ## return requested form of results
         if (returnData and returnChiSquareds and (returnBestDataVal==False)):
             if verboseInternal:
                 print 'returning first 3'
@@ -419,7 +588,7 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
         elif (returnData and (returnChiSquareds==False) and returnBestDataVal):
             if verboseInternal:
                 print 'returning data and bestval'
-            returnList =   ([conf68Vals,conf95Vals],dataAry, bestDataVal)
+            returnList =   ([conf68Vals,conf95Vals],dataAry, bestDataVal,outStr) ##MODIFIED
         elif ((returnData==False) and returnChiSquareds):
             if verboseInternal:
                 print 'returning just chiSquareds'

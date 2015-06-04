@@ -37,6 +37,7 @@ class Simulator(object):
         self.shiftStr = ''
         self.acceptBoolAry = []
         self.parIntVaryAry = []
+        self.chainNum =0
            
     def starter(self):
         """
@@ -197,7 +198,7 @@ class Simulator(object):
         if ((inRange==False)and(numAccepted==0))and(stage=='SA'):
             ##jump as starting position was not in dead space for SA only.
             paramsOut = self.increment(pars,np.zeros(pars.shape),stage='MC')
-            self.log.debug("Nothing accepted yet, so jumping to new starting position.")
+            self.log.debug("Chain #"+str(self.chainNum)+" Nothing accepted yet, so jumping to new starting position.")
             inRange=True
         return (paramsOut,inRange)
     
@@ -224,10 +225,10 @@ class Simulator(object):
         chiSquaredRV = np.sum((diffsRV[np.where(diffsRV!=0)]**2)/(errorsRV**2))
         if (paramsOut[11]/self.nu)<self.bestRedChiSqr:
             self.bestRedChiSqr=(paramsOut[11]/self.nu)
-            self.bestSumStr = 'BEST reduced chiSquareds so far: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
+            self.bestSumStr = "Chain #"+str(self.chainNum)+' BEST reduced chiSquareds so far: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
             self.paramsBest = paramsOut
             if self.latestSumStr=='':
-                self.latestSumStr='Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))
+                self.latestSumStr="Chain #"+str(self.chainNum)+' Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))
         accept = False
         if stage=='MC':
             if (paramsOut[11]/self.nu)<self.dictVal('chiMAX'):
@@ -248,12 +249,12 @@ class Simulator(object):
             self.acceptCount+=1
             self.acceptBoolAry.append(1)
             self.paramsLast=paramsOut
-            self.latestSumStr = 'Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
+            self.latestSumStr = "Chain #"+str(self.chainNum)+' Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
         else:
             self.acceptBoolAry.append(0)
         if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
             ##log a summary
-            sumStr = "below\nStage= "+stage+", # Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
+            sumStr = "below\nChain #"+str(self.chainNum)+" Stage= "+stage+", # Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
             sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
             self.log.debug(sumStr)
         if False:
@@ -286,8 +287,8 @@ class Simulator(object):
         sigmasOut = copy.deepcopy(sigs)
         if (stage=='ST')or(stage=='MCMC'):
             if (sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSigStps'))==0)and(self.acceptCount>1):
-                self.acceptStr = '\n'
-                self.shiftStr = '\n'
+                self.acceptStr = "Chain #"+str(self.chainNum)+'\n'
+                self.shiftStr = "Chain #"+str(self.chainNum)+'\n'
                 self.parIntVaryAry = np.array(self.parIntVaryAry)
                 self.acceptBoolAry = np.array(self.acceptBoolAry)
                 self.acceptStr+="Number of steps used to calculate acceptance rate = "+repr(len(self.acceptBoolAry))+'\n'
@@ -313,7 +314,7 @@ class Simulator(object):
         """
         Make a final summary of important statistics for the chain.
         """
-        sumStr = "END OF CHAIN SUMMARY below\nFinalTemp = "+str(temp)+"\nTotal number of steps accepted = "+str(self.acceptCount)+"\n"
+        sumStr = "END OF CHAIN #"+str(self.chainNum)+" SUMMARY below\nFinalTemp = "+str(temp)+"\nTotal number of steps accepted = "+str(self.acceptCount)+"\n"
         sumStr+= "Average acceptance rate = "+str(float(self.acceptCount)/float(self.dictVal(self.stgNsampDict[stage])))+"\n"
         sumStr+= "Total number of steps stored = "+str(totSaved)+"\n"
         sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
@@ -341,7 +342,7 @@ class Simulator(object):
         self.parIntVaryAry = []
     
     def startSummary(self,pars,sigs,stage):
-        startStr='VALS AT START OF '+stage+' SIM:\n'
+        startStr="Chain #"+str(self.chainNum)+' VALS AT START OF '+stage+' SIM:\n'
         startStr+= 'params = '+repr(pars)+'\n'
         startStr+= 'rangeMins = '+repr(self.rangeMins)+'\n'
         startStr+= 'rangeMaxs = '+repr(self.rangeMaxs)+'\n'
@@ -357,6 +358,7 @@ class Simulator(object):
         """
         tic=timeit.default_timer()
         self.log.info("Trying "+str(self.dictVal(self.stgNsampDict[stage]))+" samples for chain #"+str(chainNum)+" in "+stage+" mode.")
+        self.chainNum = chainNum
         bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
         modelData = np.zeros((len(self.realData),3))
         acceptedParams = []

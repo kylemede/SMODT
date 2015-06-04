@@ -181,42 +181,24 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
             log.debug('updating plotFilename to:\n'+plotFilename)
         else:
             plotFilename = plotFilename
-        
-        paramList = genTools.getParInts(head)    
-        #print 'paramList = '+repr(paramList) 
-        paramFileStrs = ['M1','M2','dist','Omega','e','To', 'Tc','P','i','omega','a_total','chiSquared']
-        paramStrs = ['M1 [Msun]','M2 [Msun]','Distance [PC]','Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]','chiSquared']
-        if latex:
-            paramStrs = ['$M_1$ [$M_{sun}$]','$M_2$ [$M_{sun}$]','$Distance$ [PC]','$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]','chiSquared']
-
-        #perfectVals = [70.0,0.5,2457000.0,2457000.0,5.0,40.0,50.0,3.34718746581]
-        if head["nRVdsets"]>0:
-            paramFileStrs.append('K')
-            if latex:
-                paramStrs.append('$K$ [m/s]')
-            else:
-                paramStrs.append('K [m/s]')
-            #perfectVals.append(4933.18419284)
-            for dataset in range(1,head["nRVdsets"]+1):
-                paramFileStrs.append('offset_'+str(dataset))
-                if latex:
-                    paramStrs.append("$offset_{"+str(dataset)+"}$ [m/s]")
-                else:
-                    paramStrs.append('offset '+str(dataset)+' [m/s]')
-                #perfectVals.append(0.0)
+                
+        (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex)
+        (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False)
         
         ## run through all the data files and parameters requested and make histogram files
+        completeCLstr = '\nConfidence Levels are:\n'+'-'*75+'\n'
         for i in range(0,len(paramList)):
-            if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-param"+str(paramList[i])+'.dat'))==False)or forceRecalc:
+            if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[paramList[i]]+'.dat'))==False)or forceRecalc:
                 if verbose:
-                    print 'Initial Plotting for parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[i]+", for file:\n"+outputDataFilename
-                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-param"+str(paramList[i]))
-                (CLevels,data,bestDataVal) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
+                    print 'Initial Plotting for parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[paramList[i]]+", for file:\n"+outputDataFilename
+                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[paramList[i]])
+                (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
+                completeCLstr+=paramStrs2[paramList[i]]+clStr+'\n'+'-'*75+'\n'
                 histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
-                if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-param"+str(paramList[i])+'.dat'))==False)or forceRecalc:
-                    np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-param"+str(paramList[i])+'.dat'),CLevels)
+                if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[paramList[i]]+'.dat'))==False)or forceRecalc:
+                    np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[paramList[i]]+'.dat'),CLevels)
                     if verbose:
-                        print 'confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-param"+str(paramList[i])+'.dat')
+                        print 'confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+str(paramList[i])+'.dat')
         
         # Create empty figure to be filled up with plots
         sumFig = plt.figure(figsize=(10,10)) 
@@ -228,13 +210,13 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                 print s
             subPlot = sumFig.add_subplot(3,4,i+1)
             
-            histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-param"+str(paramList[i]))
+            histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[paramList[i]])
             if quiet==False:
                 print 'Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[paramList[i]]#+" for file:\n"+outputDataFilename
             xLim=False
             CLevels=False
             if shadeConfLevels:
-                CLevels=np.loadtxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-param"+str(paramList[i])+'.dat'))
+                CLevels=np.loadtxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[paramList[i]]+'.dat'))
             showYlabel=False
             if (i==0)or(i==4)or(i==8):
                 showYlabel = True
@@ -258,6 +240,7 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                 os.system("epstopdf "+plotFilename)
             except:
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")
+        return completeCLstr
             
 def star(R, x0, y0, color='w', N=5, thin = 0.5):
     """
@@ -361,13 +344,9 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         #determine if to plot [mas] or ["]
         asConversion=1.0
         unitStr = '"'
-        if latex:
-            unitStr = '[$\arcsec$]'
         if abs(np.min([np.min(realData[:,1]),np.min(realData[:,3])]))<1.5:
             asConversion = 1000.0
             unitStr = '[mas]'
-            if latex:
-                unitStr = '[$mas$]'
         ## Draw orbit fit
         main.plot(fitDataDI[:,0]*asConversion,fitDataDI[:,1]*asConversion,linewidth=2.5,color='Blue') 
         ## Draw larger star for primary star's location
@@ -459,13 +438,9 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             ## determine if to plot [km/s] or [m/s]
             kmConversion = 1.0/1000.0
             unitStr = '[km/s]'
-            if latex:
-                unitStr = '[$km/s$]'
             if np.max(np.sqrt(realDataRV[:,5]**2.0))<1000:
                 kmConversion = 1.0
                 unitStr = '[m/s]'
-                if latex:
-                    unitStr = '[$m/s$]'
             ## start making figure for residual and fit plots
             figRV = plt.figure(3,figsize=(10,5))
             residualsPlot = figRV.add_subplot(212)
@@ -473,10 +448,16 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             fitPlot = figRV.add_subplot(211)
             fitPlot.set_position([0.12,0.38,0.83,0.55])
             residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=20)
-            residualsPlot.axes.set_ylabel("O-C",fontsize=20)
+            residYlabel = 'O-C '
+            if latex:
+                residYlabel = '$O-C$ '
+            residualsPlot.axes.set_ylabel(residYlabel,fontsize=20)
             
             fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
-            fitPlot.axes.set_ylabel("RV "+unitStr,fontsize=20)
+            fitYlabel = 'RV '
+            if latex:
+                fitYlabel = '$RV$ '
+            fitPlot.axes.set_ylabel(fitYlabel+unitStr,fontsize=20)
             
             ## real-model=residual, then plot it
             residualData = copy.deepcopy(realDataRV)

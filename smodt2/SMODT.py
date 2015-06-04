@@ -39,13 +39,13 @@ class singleProc(Process):
     def run(self):
         #$$$$$$$$$$$$$$$$$$$$$$$ TEMP $$$$$$$$$$$$$$$$$$$$$$$$$$
         ##temp params that are good enough to start an MCMC run if that is all we want to test.
-        paramsST = np.array([  1.07274714e+00,   1.77527538e-01,   4.96417753e+00,
-         6.87573708e+01,   4.09298027e-01,   2.45701635e+06,
-         2.45701635e+06,   1.49448020e+01,   3.51095143e+01,
-         1.10365596e+02,   6.53591266e+00,   1.97384721e+01,
-         1.16593874e+03,  -3.50058385e+00])
-        sigmasST = np.array([ 0.03,  0.07,  0.13,  0.13,  0.09,  0.17,  0.01,  0.09,  0.09,
-            0.21,  0.01,  0.01,  0.01,  0.05])
+        paramsST = np.array([9.91460200e-01,   1.98628676e-01,   5.02754554e+00,
+         5.91088681e+01,   4.08044156e-01,   2.45701883e+06,
+         2.45701883e+06,   1.49596676e+01,   2.99163981e+01,
+         1.11421670e+02,   6.43357074e+00,   6.70551229e+01,
+         1.16794139e+03,   5.20187725e+00])
+        sigmasST = np.array([0.09,  0.05,  0.03,  0.01,  0.03,  0.05,  0.01,  0.05,  0.03,
+        0.07,  0.01,  0.01,  0.01,  0.05])
         bestRedChiSqr=1.0
         #$$$$$$$$$$$$$$$$$$$$$$$ TEMP $$$$$$$$$$$$$$$$$$$$$$$$$$
         
@@ -94,7 +94,7 @@ def smodt():
             stageList = ['SA']
         elif settingsDict['symMode'][0]=='MCMC':
             stageList = ['SA','ST','MCMC']
-        #stageList=['MCMC']##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        stageList=['MCMC']##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         ## Start the number of processes/chains requested
         master = []
         log.info("Going to start "+str(settingsDict['nChains'][0])+" chains, with each running these stages: "+repr(stageList))
@@ -122,6 +122,8 @@ def smodt():
             allFname = os.path.join(os.path.dirname(outFiles[0]),"outputData"+settingsDict['symMode'][0]+"-ALL.fits")
             tools.combineFits(outFiles,allFname)
         ## calc and strip burn-in?
+        burnInStr = ''
+        
         
         ## find best fit
         if os.path.exists(allFname):
@@ -140,23 +142,29 @@ def smodt():
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ## orbit plots?
-    if settingsDict['pltOrbit']:
+    if settingsDict['pltOrbit'] and os.path.exists(allFname):
         plotFnameBase = os.path.join(os.path.dirname(allFname),'orbitPlot'+settingsDict['symMode'][0])
         tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps')
     ## plot posteriors?
-    if settingsDict['pltDists']:
-        if os.path.exists(allFname):
-            plotFilename = os.path.join(os.path.dirname(allFname),'summaryPlot'+settingsDict['symMode'][0])
-            tools.summaryPlotter(allFname, plotFilename,stage=settingsDict['symMode'][0], shadeConfLevels=True)
+    clStr = ''
+    if settingsDict['pltDists'] and os.path.exists(allFname):
+        plotFilename = os.path.join(os.path.dirname(allFname),'summaryPlot'+settingsDict['symMode'][0])
+        clStr = tools.summaryPlotter(allFname, plotFilename,stage=settingsDict['symMode'][0], shadeConfLevels=True)
     
     ## progress plots?
     
     ##calc R?
+    grStr = ''
     
-    ## calc correlation length??
+    ## calc correlation length & number effective points?
+    effPtsStr = ''
+    if (settingsDict['symMode'][0]=='MCMC')and (settingsDict['calcCL'] and os.path.exists(allFname)):
+        effPtsStr = tools.mcmcEffPtsCalc(allFname)
     
     ## make summary file
-    
+    if os.path.exists(allFname):
+        summaryFname = os.path.join(os.path.dirname(allFname),'SUMMARY-'+settingsDict['symMode'][0]+".txt")
+        tools.summaryFile(allFname,summaryFname,grStr,effPtsStr,clStr,burnInStr,bestFit)
     
             
     ##clean up files (move to folders or delete them)

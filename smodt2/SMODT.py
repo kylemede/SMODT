@@ -155,7 +155,11 @@ def smodt():
     
     ##calc R?
     grStr = ''
-    
+    if (len(outFiles)>0) and settingsDict['CalcGR']:
+        (GRs,Ts) = gelmanRubinCalc(mcmcFileList)
+        grStr+="GRs = "+repr(GRs)+"\n"
+        grStr+="Ts = "+repr(Ts)+'\n'
+        
     ## calc correlation length & number effective points?
     effPtsStr = ''
     if (settingsDict['symMode'][0]=='MCMC')and (settingsDict['calcCL'] and os.path.exists(allFname)):

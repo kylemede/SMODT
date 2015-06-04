@@ -91,49 +91,45 @@ def gelmanRubinCalc(mcmcFileList):
     Calculate Gelman-Rubin statistic for each varying param.
     Input MUST be the list of more than one MCMC chain files.
     """
+    GRs=[]
+    Ts = []
     if os.path.exists(mcmcFileList[0]):
         (head,data) = loadFits(mcmcFileList[0])
         (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
-        allStg1vals=np.zeros((len(mcmcFileList),len(paramList),2))
+        Nc = len(mcmcFileList)
+        allStg1vals=np.zeros((Nc,len(paramList),3))
+        ##start stage 1
         for i in range(0,len(mcmcFileList)):
             log.debug("Starting to calc chain #"+str(i)+' GR values')
             (head,data) = loadFits(mcmcFileList[i])
+            allStg1vals[i,:,2]=data.shape[0]
             for j in range(0,len(paramList)):
                 allStg1vals[i,j,0]=np.mean(data[:,j])
                 allStg1vals[i,j,1]=np.var(data[:,j])
-            
-            
-        GRs = []
-        if len(mcmcFileList)>1: 
-            unBiasConversion = float(len(mcmcFileList))/float(len(mcmcFileList)-1.0)
-        else:
-            unBiasConversion=1.0
-        ## calculate values needed for R then calculate R
+        ##start stage 2                 
         for j in range(0,len(paramList)):
-            
-            means = allStg1vals[:,j,0]
-            vars = allStg1vals[:,j,1]
-            B = Lc*unBiasConversion*np.var(means,axis=0)
-            W = np.mean(vars,axis=0)
-            weightedVar = ((Lc-1.0)/Lc)*W+(1.0/Lc)*B
-            R = np.NAN
-            if (W>0)and(weightedVar>0):
-                R = np.sqrt(weightedVar/W)
-                if verbose:
-                    print "weightedVar = "+str(weightedVar)+", W = "+str(W)+", B = "+str(B)+", Lc = "+str(Lc)     
-                           
-            lineStr=lineStr+'  '+str(R)
-            # calculate 'T' from pg 26 of Ford2006
-            # it is an "estimate of the effective number of independent draws"
-            # and therefore good to compare to the correlation length
+            ## calculate values needed for R then calculate R
+            W = 0
+            for i in range(0,Nc):
+                Lcfloat = float(allStg1vals[i,j,2])
+                W+=(Lcfloat/(Lcfloat-1.0))*allStg1vals[i,j,1]
+            Ncfloat = float(Nc)
+            W=W/Ncfloat
+            V = np.mean(allStg1vals[:,j,1])+(Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0])
+            R=np.NaN
+            if W!=0:
+                R = np.sqrt(V/W)
+            GRs.append(R)
+            B = (Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0]*allStg1vals[:,j,2])
+            #Uses the mean of Lc values
             T = np.NAN
-            if (B!=0)and(weightedVar>0):
-                T = Lc*numChains*np.min([weightedVar/B,1.0])
-            lineStr2=lineStr2+'  '+str(T)
-                
+            if B!=0:
+                T = np.mean(allStg1vals[:,j,2])*Ncfloat*np.min([(V/B),1.0])
+            Ts.append(T)       
     else:
         log.critical("Gelman-Rubin stat can NOT be calculated as file does not exist!!:\n"+chainDataFileList[0])
-
+    
+    return (GRs,Ts)
 
 def getParStrs(head,latex=True):
     """

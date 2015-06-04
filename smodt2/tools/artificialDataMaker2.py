@@ -28,7 +28,7 @@ def calc_orbit():
     #Computer Directory
     baseSaveDir='/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
     #baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
-    NumDataPointsOut = 10 #must be much less than 10000.  values between 10-500 are suitable.
+    NumDataPointsOut = 25 #must be much less than 10000.  values between 10-500 are suitable.
     storePrimaryRVs = True
     percentError = 5 #error is set to a percentage of the median
     realizeErrors = True
@@ -48,7 +48,7 @@ def calc_orbit():
     omega = 110*constants.pi/180 # Argument of periastron
     i = 30*constants.pi/180 # Inclination
  
-    mu = constants.Gcgs*M_primary*(KGperMsun*1000.0)*(1 + 1./massratio) #gravitational parameter
+    mu = constants.Gcgs*M_primary*(constants.KGperMsun*1000.0)*(1 + 1./massratio) #gravitational parameter
     a = (mu*(period*constants.secPerYear)**2/4/constants.pi**2)**(1./3) #in cm
     a_km = a/1e5 #to km
     a_AU = a_km/(constants.MperAU/1000.0) #to AU
@@ -190,13 +190,6 @@ def calc_orbit():
     #1. JD
     #6. RV of primary (or secondary) rel to CofM [m/s]
     #7. RV ERROR [m/s]
-    if storePrimaryRVs:
-        data3[:,5] = data2[:,3]
-        data3[:,6] = errorRVprimary
-        
-    else:
-        data3[:,5] = data2[:,4]
-        data3[:,6] = errorRVsecondary
     dataDI2 = np.empty((pos_A.shape[0],5))
     dataDI2[:,0] = data2[:, 0]#1. JD
     dataDI2[:,1] = data2[:,1]#2. RA (x) ["]
@@ -204,10 +197,14 @@ def calc_orbit():
     dataDI2[:,3] = data2[:,2]#4. Dec (y) ["]
     dataDI2[:,4] = errorDec#5. Dec ERROR ["]
     dataRV = np.empty((pos_A.shape[0],3))
-    dataRV[:,0] = data3[:,0]
-    dataRV[:,1] = data3[:,5]
-    dataRV[:,2] = data3[:,6]
-    print "resulting data files have "+str(len(data3[:,3]))+" epochs"
+    dataRV[:,0] = data2[:, 0]#1. JD
+    if storePrimaryRVs:
+        dataRV[:,1] = data2[:,3] #RV primary [m/s]
+        dataRV[:,2] = errorRVprimary#RV primary error [m/s]
+    else:
+        dataRV[:,1] = data2[:,4]#RV secondary [m/s]
+        dataRV[:,2] = errorRVsecondary#RV secondary error [m/s]
+    print "resulting data files have "+str(len(dataRV[:,0]))+" epochs"
     
     ##write files to disk
     if False:

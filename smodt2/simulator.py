@@ -106,15 +106,22 @@ class Simulator(object):
                                 paramInts.append(i)
                     else:
                         paramInts.append(i)
-        #print 'paramInts = '+repr(paramInts)
+        paramInts = np.array(paramInts)
         #find total number of RV and DI epochs in real data
         nDIepochs = np.sum(np.where(self.realData[:,1]!=0,1,0))
         nRVepochs = np.sum(np.where(self.realData[:,5]!=0,1,0))
         nEpochs = len(self.realData[:,0])
-        nDIvars = np.sum(np.where(paramInts<10))
-        nRVvars = np.sum(np.where(paramInts!=3))
-        nVars = len(paramInts)
+        nDIvars = np.sum(np.where(paramInts<10,1,0))
+        nRVvars = np.sum(np.where(paramInts!=3,1,0))
+        if nDIepochs==0:
+            nVars = nRVvars
+        elif nRVepochs==0:
+            nVars = nDIvars
+        else:
+            nVars = len(paramInts)
         nu = nDIepochs*2+nRVepochs-nVars
+        self.log.debug('[nEpochs, nDIepochs, nRVepochs] = ['+str(nEpochs)+', '+str(nDIepochs)+', '+str(nRVepochs)+']')
+        self.log.debug('[nVars, nDIvars, nRVvars] = ['+str(nVars)+', '+str(nDIvars)+', '+str(nRVvars)+']')
         nuDI = 1
         nuRV=1
         if nDIepochs>0:
@@ -333,6 +340,16 @@ class Simulator(object):
         self.acceptBoolAry = []
         self.parIntVaryAry = []
     
+    def startSummary(self,pars,sigs,stage):
+        startStr='VALS AT START OF '+stage+' SIM:\n'
+        startStr+= 'params = '+repr(pars)+'\n'
+        startStr+= 'rangeMins = '+repr(self.rangeMins)+'\n'
+        startStr+= 'rangeMaxs = '+repr(self.rangeMaxs)+'\n'
+        startStr+= 'sigmas = '+repr(sigs)+'\n'
+        startStr+= 'paramInts = '+repr(self.paramInts)+'\n'
+        startStr+= '[nu,nuDI,nuRV] = ['+str(self.nu)+', '+str(self.nuDI)+', '+str(self.nuRV)+']\n'
+        self.log.debug(startStr)
+        
     def simulatorFunc(self,stage='',chainNum=1,startParams=[],startSigmas=[]):
         """
         The core function to perform the requested stage of the simulation ('MC','SA','ST','MCMC').
@@ -355,13 +372,7 @@ class Simulator(object):
             sigmas = copy.deepcopy(startSigmas)
         latestPars = copy.deepcopy(proposedPars)
         self.resetTracked(proposedPars)
-        startStr='VALS AT START OF '+stage+' SIM:\n'
-        startStr+= 'params = '+repr(proposedPars)+'\n'
-        startStr+= 'rangeMins = '+repr(self.rangeMins)+'\n'
-        startStr+= 'rangeMaxs = '+repr(self.rangeMaxs)+'\n'
-        startStr+= 'sigmas = '+repr(sigmas)+'\n'
-        startStr+= 'paramInts = '+repr(self.paramInts)+'\n'
-        self.log.debug(startStr)
+        self.startSummary(proposedPars,sigmas,stage)
         ##loop through each sample 
         ##Follows these steps: inRange?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? DONE ->write output data
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):

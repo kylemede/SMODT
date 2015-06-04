@@ -14,10 +14,12 @@ void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
 	//------------------
 	//std::cout<<"\necc = "<<ecc<<", T = "<<T<<", Tc = "<<Tc<<", P = "<<P<<", epoch = "<<epoch<<std::endl;
 	thetaRV=0;
-	EDI=0;
+	E=0;
 	//for RV
 	M = (2.0*pi*(epoch-2.0*T+Tc))/(P*daysPerYear);
 	M -= (int)(M/(2.0*pi))*(2.0*pi);//shift into [-360,360]
+	if (M<0)
+		M+=2.0*pi;//shift into [0,360]
 	if ((M!=0)and(M!=(2.0*pi))){
 		Eprime = M+ecc*sin(M)+((ecc*ecc)/(2.0*M))*sin(2.0*M);
 		newtonCount = 0;
@@ -38,11 +40,13 @@ void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
 				std::cout<<"Eprime = "<<Eprime <<"\n" <<std::endl;
 			}
 		}
-		//std::cout<<"E RV = "<<E<<std::endl;
+		//std::cout<<"E RV [deg] = "<<E*(180.0/pi)<<std::endl;
 		thetaPrime = acos((cos(E)-ecc)/(1.0-ecc*cos(E)));
 		if (E>pi)
 			thetaPrime = 2.0*pi-thetaPrime;
+
 		thetaRV = thetaPrime;
+		//std::cout<<"theta RV [deg] = "<<thetaRV*(180.0/pi)<<std::endl;
 	}
 	//for DI
 	if (T!=Tc){

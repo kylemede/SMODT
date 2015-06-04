@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (10000,"Number of MCMC or MC samples"),
+'nSamples' : (500000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -13,7 +13,7 @@ simpleSettingsDict={
 'outRoot' : "SMODT2-FakeData",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
-'dataMode' : ('RV',"Data Mode (RV,DI,3D)"),
+'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
 # mode to run simulation in, choices {'MC','SA','MCMC'} [string]
 'symMode' : ('MCMC',"Simulator mode (MC,SA,MCMC)"),
 ###################################################

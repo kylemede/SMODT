@@ -298,17 +298,22 @@ def epochsToPhases(epochs,Tc,P_yrs, halfOrbit=False):
             print 'phase = ',phase        
     return phases
 
-def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
+def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
     """
     Make both the DI and RV plots.
     '-DI.png' and/or '-RV.png' will be added to end of plotFnameBase 
     to make the filenames for each type of plot.
     """
+    latex=True
     log.debug("Starting to make orbit plots")
     colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
-    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-    #plt.rc('font',family='serif')
-    plt.rc('text', usetex=False) 
+    #plt.rc('font',**{'family':'serif','serif':['Helvetica']})
+    if latex:
+        plt.rc('text', usetex=True)
+        plt.rcParams['text.latex.unicode']=True  
+    else:
+        plt.rc('font',family='serif')
+        plt.rc('text', usetex=False)
     
     ##get the real data
     realData = genTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'])
@@ -356,9 +361,13 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
         #determine if to plot [mas] or ["]
         asConversion=1.0
         unitStr = '"'
+        if latex:
+            unitStr = '[$\arcsec$]'
         if abs(np.min([np.min(realData[:,1]),np.min(realData[:,3])]))<1.5:
             asConversion = 1000.0
-            unitStr = 'mas'
+            unitStr = '[mas]'
+            if latex:
+                unitStr = '[$mas$]'
         ## Draw orbit fit
         main.plot(fitDataDI[:,0]*asConversion,fitDataDI[:,1]*asConversion,linewidth=2.5,color='Blue') 
         ## Draw larger star for primary star's location
@@ -367,28 +376,38 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
         ## Add DI data to plot
         (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realData,asConversion)
         ## set limits and other basics of plot looks
-        ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ take max/min of fit data into account!!!!!!!!$$$$$$$$$
-        xLim = (xmin-(xmax-xmin)*0.05,xmax+(xmax-xmin)*0.05)
-        yLim = (ymin-(ymax-ymin)*0.05,ymax+(ymax-ymin)*0.05)
+        xLims = (np.min([xmin,np.max(fitDataDI[:,0]*asConversion)]),np.max([xmax,np.max(fitDataDI[:,0]*asConversion)]))
+        yLims = (np.min([ymin,np.max(fitDataDI[:,1]*asConversion)]),np.max([ymax,np.max(fitDataDI[:,1]*asConversion)]))
+        xLims = (xLims[0]-(xLims[1]-xLims[0])*0.05,xLims[1]+(xLims[1]-xLims[0])*0.05)
+        yLims = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)
         ## FLIP X-AXIS to match backawards Right Ascension definition
         a = main.axis()
         main.axis([a[1],a[0],a[2],a[3]])
-        main.axes.set_xlim((xLim[1],xLim[0]))
-        main.axes.set_ylim(yLim)
-        main.tick_params(axis='both',which='major',width=1,length=3,pad=10,direction='in',labelsize=15)
+        main.axes.set_xlim((xLims[1],xLims[0]))
+        main.axes.set_ylim(yLims)
+        main.tick_params(axis='both',which='major',width=1,length=3,pad=10,direction='in',labelsize=25)
         main.spines['right'].set_linewidth(1.0)
         main.spines['bottom'].set_linewidth(1.0)
         main.spines['top'].set_linewidth(1.0)
         main.spines['left'].set_linewidth(1.0)
         main.set_position([0.19,0.15,0.79,0.83])
-        main.set_xlabel('RA ['+unitStr+']', fontsize=30)
-        main.set_ylabel('Dec ['+unitStr+']', fontsize=30)
-        ## save fig to file
-        plotFilename = plotFnameBase+'-DI.png'
+        main.set_xlabel('RA '+unitStr, fontsize=25)
+        main.set_ylabel('Dec '+unitStr, fontsize=25)
+        ## save fig to file and maybe convert to pdf if format=='eps'
+        orientStr = 'landscape'
+        if format=='eps':
+            orientStr = 'portrait'
+        plotFilename = plotFnameBase+'-DI.'+format
         if plotFilename!='':
-            plt.savefig(plotFilename, dpi=300, orientation='landscape')
+            plt.savefig(plotFilename, dpi=300, orientation=orientStr)
             log.info("DI orbit plot saved to:\n"+plotFilename)
         plt.close()
+        if (format=='eps')and True:
+            log.debug('converting to PDF as well')
+            try:
+                os.system("epstopdf "+plotFilename)
+            except:
+                log.warning("Seems epstopdf failed.  Check if it is installed properly.")
         ## log params used in DI plot
         log.info('\n'+"*"*50+"\nOrbital Elements used in DI plot:\n"+repr(orbParamsDI))
         log.info("\n with an omega value = "+str(orbParamsDI[9]+settingsDict["omegaFdi"][0])+'\n'+"*"*50+'\n')
@@ -404,10 +423,9 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
         fakeRealData[:,5] = 1.0
         #set all RV offsets to zero
         fakeRealData[:,7] = 0.0
-        fakeRealData[:,0] = orbParams[6]+(const.daysPerYear*orbParams[7]/2.0)
+        fakeRealData[:,0] = orbParams[6]-(const.daysPerYear*orbParams[7]/2.0)
         for i in range(0,nPts-1):
             fakeRealData[i,0] += const.daysPerYear*orbParams[7]*((i+1)/float(nPts))
-        #print 'epochs = '+repr(fakeRealData[:,0])
         Orbit.loadRealData(fakeRealData)
         fitDataRV = np.ones((nPts-1,3),dtype=np.dtype('d'),order='C')
         ##Ensuring that params are in required format for SWIG
@@ -433,33 +451,29 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
             for i in range(0,realDataRV.shape[0]):
                 rvBefore = realDataRV[i,5]
                 realDataRV[i,5]-=paramsRV[13+int(realDataRV[i,7])]
-                #print str(rvBefore)+' - '+str(paramsRV[13+int(realDataRV[i,7])])+' = '+str(realDataRV[i,5])
-        
+
             ##convert epochs to phases for plotting
             phasesReal = epochsToPhases(copy.deepcopy(realDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=True)
             phasesFit = epochsToPhases(copy.deepcopy(fakeRealData[:,0]),paramsRV[6],paramsRV[7], halfOrbit=True)
-            #print 'phasesReal = '+repr(phasesReal)
-            #print 'phasesFit = '+repr(phasesFit)
-            for i in range(0,len(phasesFit)):
-                print  str(phasesFit[i])+' , '+str(fitDataRV[i,2])
             
-            ## determine if to plot [KM/s] or [M/s]
+            ## determine if to plot [km/s] or [m/s]
             kmConversion = 1.0/1000.0
-            unitStr = '[KM/s]'
+            unitStr = '[km/s]'
+            if latex:
+                unitStr = '[$km/s$]'
             if np.max(np.sqrt(realDataRV[:,5]**2.0))<1000:
                 kmConversion = 1.0
-                unitStr = '[M/s]'
-        
+                unitStr = '[m/s]'
+                if latex:
+                    unitStr = '[$m/s$]'
             ## start making figure for residual and fit plots
             figRV = plt.figure(3,figsize=(10,5))
             residualsPlot = figRV.add_subplot(212)
             residualsPlot.set_position([0.12,0.15,0.83,0.23])
             fitPlot = figRV.add_subplot(211)
             fitPlot.set_position([0.12,0.38,0.83,0.55])
-            plt.locator_params(axis='y',nbins=4) #fix number of y-axis label points
             residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=20)
-            residualsPlot.axes.set_ylabel("Residual",fontsize=15)
-            residualsPlot.tick_params(axis='y',which='major',width=3,length=5,pad=10,direction='in',labelsize=8)
+            residualsPlot.axes.set_ylabel("O-C",fontsize=20)
             
             fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
             fitPlot.axes.set_ylabel("RV "+unitStr,fontsize=20)
@@ -476,23 +490,24 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
             
             ## Find and set limits 
             xLims = (np.min([np.min(phasesFit),np.min(phasesReal)]),np.max([np.max(phasesFit),np.max(phasesReal)]))
-            xRange = xLims[1]-xLims[0]
-            xLims = (xLims[0]-xRange*1.05,xLims[1]-xRange*1.05)
+            xLims = (xLims[0]-(xLims[1]-xLims[0])*.05,xLims[1]+(xLims[1]-xLims[0])*.05)
             fitYlims = (np.min([np.min(fitDataRV[:,2]*kmConversion),np.min(realDataRV[:,5]*kmConversion)]),np.max([np.max(fitDataRV[:,2]*kmConversion),np.max(realDataRV[:,5]*kmConversion)]))
             fitYrange = fitYlims[1]-fitYlims[0]
-            fitYlims = (fitYlims[0]-fitYrange*1.05,fitYlims[1]-fitYrange*1.05)
+            fitYlims = (fitYlims[0]-fitYrange*.05,fitYlims[1]+fitYrange*.05)
             residYlims = (np.min(residualData[:,5]*kmConversion),np.max(residualData[:,5]*kmConversion))
             residYrange = residYlims[1]-residYlims[0]
-            residYlims = (residYlims[0]-residYrange*1.05,residYlims[1]-residYrange*1.05)
-            #residualsPlot.axes.set_xlim(xLims)
-            #residualsPlot.axes.set_ylim(residYlims)
-            #fitPlot.axes.set_xlim(xLims)
-            #fitPlot.axes.set_ylim(fitYlims)
+            residYlims = (residYlims[0]-residYrange*.05,residYlims[1]+residYrange*.05)
+            residualsPlot.axes.set_xlim(xLims)
+            residualsPlot.axes.set_ylim(residYlims)
+            fitPlot.axes.set_xlim(xLims)
+            fitPlot.axes.set_ylim(fitYlims)
             ##plot zero vel line
             residualsPlot.axhline(linewidth=2.0,c='Blue') #adds a x-axis origin line
             
             ##clean up boarders, axis ticks and such 
-            residualsPlot.tick_params(axis='both',which='major',width=1,length=3,pad=8,direction='in',labelsize=20)
+            residualsPlot.tick_params(axis='y',which='major',width=1,length=3,pad=8,direction='in',labelsize=15)
+            residualsPlot.tick_params(axis='x',which='major',width=1,length=3,pad=8,direction='in',labelsize=20)
+            residualsPlot.locator_params(axis='y',nbins=4) #fix number of y-axis label points
             residualsPlot.spines['right'].set_linewidth(1.0)
             residualsPlot.spines['bottom'].set_linewidth(1.0)
             residualsPlot.spines['top'].set_linewidth(1.0)
@@ -502,15 +517,26 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
             fitPlot.spines['bottom'].set_linewidth(1.0)
             fitPlot.spines['top'].set_linewidth(1.0)
             fitPlot.spines['left'].set_linewidth(1.0)
+            fitPlot.locator_params(axis='y',nbins=6) #fix number of y-axis label points
             #plot.axhline(linewidth=2.0) #adds a x-axis origin line
             #plot.axvline(linewidth=2.0) #adds a y-axis origin line
     
-            ## save fig to file
-            plotFilename = plotFnameBase+'-RV.png'
+            ## save fig to file and maybe convert to pdf if format=='eps'
+            orientStr = 'landscape'
+            if format=='eps':
+                orientStr = 'portrait'
+            plotFilename = plotFnameBase+'-RV.'+format
             if plotFilename!='':
-                plt.savefig(plotFilename, dpi=300, orientation='landscape')
+                plt.savefig(plotFilename, dpi=300, orientation=orientStr)
                 log.info("RV orbit plot saved to:\n"+plotFilename)
-            ## log params used in RV plot
+            plt.close()
+            if (format=='eps')and True:
+                log.debug('converting to PDF as well')
+                try:
+                    os.system("epstopdf "+plotFilename)
+                except:
+                    log.warning("Seems epstopdf failed.  Check if it is installed properly.")
+                ## log params used in RV plot
             log.info('\n'+"*"*50+"\nOrbital Elements used in RV plot:\n"+repr(orbParamsRV))
             log.info("\n with an omega value = "+str(orbParamsRV[9]+settingsDict["omegaFrv"][0])+'\n'+"*"*50+'\n')
     

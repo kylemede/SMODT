@@ -39,11 +39,11 @@ class singleProc(Process):
     def run(self):
         #$$$$$$$$$$$$$$$$$$$$$$$ TEMP $$$$$$$$$$$$$$$$$$$$$$$$$$
         ##temp params that are good enough to start an MCMC run if that is all we want to test.
-        paramsST = np.array([  9.50122214e-01,   2.21670225e-01,   5.05405775e+00,
-             6.07928962e+01,   4.08889781e-01,   2.45700081e+06,
-             2.45700081e+06,   1.50094339e+01,   2.71264582e+01,
-             1.09266595e+02,   6.41461741e+00,   3.40786762e+01,
-             1.20316127e+03,   1.83558842e+00])
+        paramsST = np.array([  1.07274714e+00,   1.77527538e-01,   4.96417753e+00,
+         6.87573708e+01,   4.09298027e-01,   2.45701635e+06,
+         2.45701635e+06,   1.49448020e+01,   3.51095143e+01,
+         1.10365596e+02,   6.53591266e+00,   1.97384721e+01,
+         1.16593874e+03,  -3.50058385e+00])
         sigmasST = np.array([ 0.03,  0.07,  0.13,  0.13,  0.09,  0.17,  0.01,  0.09,  0.09,
             0.21,  0.01,  0.01,  0.01,  0.05])
         bestRedChiSqr=1.0
@@ -85,50 +85,64 @@ def smodt():
     ##     stage.  good idea???
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     tic=timeit.default_timer()
-    ##make list of stages to run
-    stageList = []
-    if settingsDict['symMode'][0]=='MC':
-        stageList = ['MC']
-    elif settingsDict['symMode'][0]=='SA':
-        stageList = ['SA']
-    elif settingsDict['symMode'][0]=='MCMC':
-        stageList = ['SA','ST','MCMC']
-    stageList=['MCMC']##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    ## Start the number of processes/chains requested
-    master = []
-    log.info("Going to start "+str(settingsDict['nChains'][0])+" chains, with each running these stages: "+repr(stageList))
-    for procNumber in range(settingsDict['nChains'][0]):
-        master.append(singleProc(settingsDict,Sim,stageList,procNumber))
-        master[procNumber].start()
-    for procNumber in range(settingsDict['nChains'][0]):
-        master[procNumber].join()    
-    toc=timeit.default_timer()
-    log.info("ALL stages took a total of "+str(int(toc-tic))+' seconds')
-    
-    ###################
-    # Post-processing # 
-    ###################
-    ## load up list of output files
-    tic2=timeit.default_timer()
-    outFiles = []
-    for procNumber in range(settingsDict['nChains'][0]):
-        fname = os.path.join(settingsDict['finalFolder'],'outputData'+settingsDict['symMode'][0]+str(procNumber)+'.fits')
-        if os.path.exists(fname):
-            outFiles.append(fname)      
-    ## combine the data files
-    allFname = ''
-    if len(outFiles)>0:
-        allFname = os.path.join(os.path.dirname(outFiles[0]),"outputData"+settingsDict['symMode'][0]+"-ALL.fits")
-        tools.combineFits(outFiles,allFname)
-    ## calc and strip burn-in?
-    
-    ## find best fit
-    if os.path.exists(allFname):
-        bestFit = tools.findBestOrbit(allFname)
+    if True: #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        ##make list of stages to run
+        stageList = []
+        if settingsDict['symMode'][0]=='MC':
+            stageList = ['MC']
+        elif settingsDict['symMode'][0]=='SA':
+            stageList = ['SA']
+        elif settingsDict['symMode'][0]=='MCMC':
+            stageList = ['SA','ST','MCMC']
+        #stageList=['MCMC']##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        ## Start the number of processes/chains requested
+        master = []
+        log.info("Going to start "+str(settingsDict['nChains'][0])+" chains, with each running these stages: "+repr(stageList))
+        for procNumber in range(settingsDict['nChains'][0]):
+            master.append(singleProc(settingsDict,Sim,stageList,procNumber))
+            master[procNumber].start()
+        for procNumber in range(settingsDict['nChains'][0]):
+            master[procNumber].join()    
+        toc=timeit.default_timer()
+        log.info("ALL stages took a total of "+str(int(toc-tic))+' seconds')
+        
+        ###################
+        # Post-processing # 
+        ###################
+        ## load up list of output files
+        tic2=timeit.default_timer()
+        outFiles = []
+        for procNumber in range(settingsDict['nChains'][0]):
+            fname = os.path.join(settingsDict['finalFolder'],'outputData'+settingsDict['symMode'][0]+str(procNumber)+'.fits')
+            if os.path.exists(fname):
+                outFiles.append(fname)      
+        ## combine the data files
+        allFname = ''
+        if len(outFiles)>0:
+            allFname = os.path.join(os.path.dirname(outFiles[0]),"outputData"+settingsDict['symMode'][0]+"-ALL.fits")
+            tools.combineFits(outFiles,allFname)
+        ## calc and strip burn-in?
+        
+        ## find best fit
+        if os.path.exists(allFname):
+            bestFit = tools.findBestOrbit(allFname)
+            
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    if False:
+        tic2=timeit.default_timer()
+        allFname = '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/mockdata-SMODT2format-RV.dat'#$$$$$$$$$$$$$$$$$
+        bestFit = np.array([1.07274714e+00,   1.77527538e-01,   4.96417753e+00,
+             6.87573708e+01,   4.09298027e-01,   2.45701635e+06,
+             2.45701635e+06,   1.49448020e+01,   3.51095143e+01,
+             1.10365596e+02,   6.53591266e+00,   1.97384721e+01,
+             1.16593874e+03,  -3.50058385e+00])
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ## orbit plots?
     if settingsDict['pltOrbit']:
         plotFnameBase = os.path.join(os.path.dirname(allFname),'orbitPlot'+settingsDict['symMode'][0])
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase)
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps')
     ## plot posteriors?
     if settingsDict['pltDists']:
         if os.path.exists(allFname):

@@ -27,14 +27,14 @@ class singleProc(Process):
         lives.
     :param int chainNum: number of this chain
     """
-    def __init__(self, settingsDict, stageList, chainNum=1):
+    def __init__(self, settingsDict, SimObj, stageList, chainNum=1):
         
         Process.__init__(self)
         self.chainNum = chainNum
         self.log = tools.getLogger('main.singleProcess',lvl=100,addFH=False)
         self.settingsDict = settingsDict 
         self.stageList = stageList
-        self.Sim = simulator.Simulator(settingsDict)
+        self.Sim = SimObj
         
     def run(self):
         #$$$$$$$$$$$$$$$$$$$$$$$ TEMP $$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -74,6 +74,7 @@ def smodt():
     settingsDict = tools.startup(sys.argv)
     log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=settingsDict['logLevel'])
     log.debug("Prepend string passed in was '"+settingsDict['prepend']+"'")
+    Sim = simulator.Simulator(settingsDict)
        
     ##################################
     # Run nChains for mode requested #
@@ -97,7 +98,7 @@ def smodt():
     master = []
     log.info("Going to start "+str(settingsDict['nChains'][0])+" chains, with each running these stages: "+repr(stageList))
     for procNumber in range(settingsDict['nChains'][0]):
-        master.append(singleProc(settingsDict,stageList,procNumber))
+        master.append(singleProc(settingsDict,Sim,stageList,procNumber))
         master[procNumber].start()
     for procNumber in range(settingsDict['nChains'][0]):
         master[procNumber].join()    

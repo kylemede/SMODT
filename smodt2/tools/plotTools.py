@@ -404,9 +404,9 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase=""):
         fakeRealData[:,5] = 1.0
         #set all RV offsets to zero
         fakeRealData[:,7] = 0.0
-        fakeRealData[:,0] = orbParams[6]-(const.daysPerYear*orbParams[7]/2.0)
+        fakeRealData[:,0] = orbParams[6]+(const.daysPerYear*orbParams[7]/2.0)
         for i in range(0,nPts-1):
-            fakeRealData[i,0] += const.daysPerYear*orbParams[7]*((i)/float(nPts))
+            fakeRealData[i,0] += const.daysPerYear*orbParams[7]*((i+1)/float(nPts))
         #print 'epochs = '+repr(fakeRealData[:,0])
         Orbit.loadRealData(fakeRealData)
         fitDataRV = np.ones((nPts-1,3),dtype=np.dtype('d'),order='C')

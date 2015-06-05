@@ -226,7 +226,27 @@ def simulator(paramSettingsDict):
 #         bestOrbit = [70.0, 0.5, 2457000., 2457000., 5.0, 40.0, 50.0, 3.34718746581, 0, [0], 0]#$$$$$$$$$$$$$$$$
 #     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 #     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    
+
+
+    ############################################################
+    ## Make DI ellipse plot if DI data exists
+    ############################################################
+    DIdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['DIdataFilename'])
+    chiSquaredStrDI=''
+    if os.path.exists(DIdatafilename)and ((paramSettingsDict['RVonly']==False)and(paramSettingsDict['makeOrbitPlots'])):
+        s = '**** Starting to make a DI orbit plot ****'
+        print s
+        PMlogFile.write(s)
+        DIdataDict = tools.di.DIdataToDict(DIdatafilename)
+        orbitEllipsePlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'orbitEllipsePlot')
+        #update argPeri value to take offset into account
+        argPeriUse = bestOrbit[6]+paramSettingsDict['argPeriOffsetDI']
+        chiSquaredStrDI = tools.plot.orbitEllipsePlotter(bestOrbit[0],bestOrbit[1],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7],bestOrbit[2],\
+                             sysDataDict,DIdataDict,plotFilename=orbitEllipsePlotFilename,show=False, nuDI=nuDI)          
+        s = '****   Back from making a DI orbit plot   ****\n'
+        if paramSettingsDict['SILENT']==False:
+            print s
+        PMlogFile.write(s)
     
     ############################################################
     ## make general parameter result summary figures
@@ -252,26 +272,6 @@ def simulator(paramSettingsDict):
             PMlogFile.write(s)
             if False:
                 tools.plot.stackedPosteriorsPlotterFunc([dataFinalFilename],keyPosteriorsPlotFile)
-            
-    ############################################################
-    ## Make DI ellipse plot if DI data exists
-    ############################################################
-    DIdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['DIdataFilename'])
-    chiSquaredStrDI=''
-    if os.path.exists(DIdatafilename)and ((paramSettingsDict['RVonly']==False)and(paramSettingsDict['makeOrbitPlots'])):
-        s = '**** Starting to make a DI orbit plot ****'
-        print s
-        PMlogFile.write(s)
-        DIdataDict = tools.di.DIdataToDict(DIdatafilename)
-        orbitEllipsePlotFilename = os.path.join(paramSettingsDict['outputData_dir'],'orbitEllipsePlot')
-        #update argPeri value to take offset into account
-        argPeriUse = bestOrbit[6]+paramSettingsDict['argPeriOffsetDI']
-        chiSquaredStrDI = tools.plot.orbitEllipsePlotter(bestOrbit[0],bestOrbit[1],bestOrbit[4],bestOrbit[5],argPeriUse,bestOrbit[7],bestOrbit[2],\
-                             sysDataDict,DIdataDict,plotFilename=orbitEllipsePlotFilename,show=False, nuDI=nuDI)          
-        s = '****   Back from making a DI orbit plot   ****\n'
-        if paramSettingsDict['SILENT']==False:
-            print s
-        PMlogFile.write(s)
         
     ############################################################
     ## Make RV scatter.trend plots if RV data exists

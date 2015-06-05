@@ -96,6 +96,9 @@ class Simulator(object):
                     elif self.dictVal('Kdirect'):
                         if (rangeMaxs[12]!=0)and(i==12):
                             paramInts.append(12)                                           
+                elif (i==3):
+                    if (self.dictVal('dataMode')!='RV')and(rangeMaxs[3]!=0):
+                        paramInts.append(3)
                 elif rangeMaxs[i]!=0:
                     if self.dictVal('TcEqualT'):
                         if self.dictVal('TcStep'):

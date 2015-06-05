@@ -93,27 +93,39 @@ def gelmanRubinCalc(mcmcFileList):
     """
     GRs=[]
     Ts = []
+    grStr = ""
     if os.path.exists(mcmcFileList[0]):
+        ###########################################################
+        ## stage 1 ->  load up values for each param in each chain.
+        ## allStg1vals = [chain#, param#, (mean,variance,Lc)]
+        ## stage 2 ->  Use them to compare between chains 
+        ##             then calc R and T.
+        ###########################################################
         (head,data) = loadFits(mcmcFileList[0])
         (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
         Nc = len(mcmcFileList)
-        allStg1vals=np.zeros((Nc,len(paramList),3))
         ##start stage 1
+        allStg1vals=np.zeros((Nc,len(paramList),3))
         for i in range(0,len(mcmcFileList)):
             log.debug("Starting to calc chain #"+str(i)+' GR values')
             (head,data) = loadFits(mcmcFileList[i])
             allStg1vals[i,:,2]=data.shape[0]
             for j in range(0,len(paramList)):
-                allStg1vals[i,j,0]=np.mean(data[:,j])
-                allStg1vals[i,j,1]=np.var(data[:,j])
-        ##start stage 2                 
+                log.debug("calculating stage 1 of GR for chain #"+str(i)+", param: "+paramStrs[j])
+                allStg1vals[i,j,0]=np.mean(data[:,paramList[j]])
+                allStg1vals[i,j,1]=np.var(data[:,paramList[j]])
+        ##start stage 2         
+        rHighest = 0
+        tLowest = 1e9       
+        rHighStr = ''
+        tLowStr = ''
         for j in range(0,len(paramList)):
-            ## calculate values needed for R then calculate R
+            log.debug("Starting stage 2 for param: "+paramStrs[j])
+            Ncfloat = float(Nc)
             W = 0
             for i in range(0,Nc):
                 Lcfloat = float(allStg1vals[i,j,2])
                 W+=(Lcfloat/(Lcfloat-1.0))*allStg1vals[i,j,1]
-            Ncfloat = float(Nc)
             W=W/Ncfloat
             V = np.mean(allStg1vals[:,j,1])+(Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0])
             R=np.NaN
@@ -126,10 +138,18 @@ def gelmanRubinCalc(mcmcFileList):
             if B!=0:
                 T = np.mean(allStg1vals[:,j,2])*Ncfloat*np.min([(V/B),1.0])
             Ts.append(T)       
+            grStr+=paramStrs[j]+" had R = "+str(R)+", T = "+str(T)+'\n'
+            if T<tLowest:
+                tLowest=T
+                tLowStr="Lowest T = "+str(T)+' for '+paramStrs[j]+'\n'
+            if R>rHighest:
+                rHighest=R
+                rHighStr="Highest R = "+str(R)+' for '+paramStrs[j]+'\n'
+        grStr+='\nWorst R&T values were:\n'+rHighStr+tLowStr+'\n'
     else:
         log.critical("Gelman-Rubin stat can NOT be calculated as file does not exist!!:\n"+chainDataFileList[0])
     
-    return (GRs,Ts)
+    return (GRs,Ts,grStr)
 
 def getParStrs(head,latex=True):
     """

@@ -116,15 +116,16 @@ def smodt():
             fname = os.path.join(settingsDict['finalFolder'],'outputData'+settingsDict['symMode'][0]+str(procNumber)+'.fits')
             if os.path.exists(fname):
                 outFiles.append(fname)      
+        
+        ## calc and strip burn-in?
+        burnInStr = ''
+        
         ## combine the data files
         allFname = ''
         if len(outFiles)>0:
             allFname = os.path.join(os.path.dirname(outFiles[0]),"outputData"+settingsDict['symMode'][0]+"-ALL.fits")
             tools.combineFits(outFiles,allFname)
-        ## calc and strip burn-in?
-        burnInStr = ''
-        
-        
+            
         ## find best fit
         if os.path.exists(allFname):
             bestFit = tools.findBestOrbit(allFname)
@@ -156,9 +157,9 @@ def smodt():
     ##calc R?
     grStr = ''
     if (len(outFiles)>0) and settingsDict['CalcGR']:
-        (GRs,Ts) = gelmanRubinCalc(mcmcFileList)
-        grStr+="GRs = "+repr(GRs)+"\n"
-        grStr+="Ts = "+repr(Ts)+'\n'
+        (GRs,Ts,grStr) = gelmanRubinCalc(mcmcFileList)
+        #grStr+="GRs = "+repr(GRs)+"\n"
+        #rStr+="Ts = "+repr(Ts)+'\n'
         
     ## calc correlation length & number effective points?
     effPtsStr = ''

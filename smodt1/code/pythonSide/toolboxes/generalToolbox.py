@@ -2464,7 +2464,12 @@ def findArrayMin(ary):
     """
     min=1e9
     try:
-        min = np.min(ary)
+        ary2 = np.array(ary)
+        min = np.min(ary2)
+        #print 'min with np = '+repr(min)
+        if type(min)==list:
+            min = np.min(min)
+            #print 'min with np 2 = '+repr(min)
     except:
         if type(ary)==list:
             for subEl in ary:
@@ -2474,11 +2479,11 @@ def findArrayMin(ary):
                             for subsubsubEl in subsubEl:
                                 if min>subsubsubEl:
                                     min = subsubsubEl
-                                    #print 'new min = ',min
+                                    print 'new min = ',min
                         else:
                             if min>subsubEl:
                                 min = subsubEl
-                                #print 'new min = ',min
+                                print 'new min = ',min
                 else:
                     if min>subEl:
                         min = subEl
@@ -2498,7 +2503,11 @@ def findArrayMax(ary):
     """
     max = -1e9
     try:
-        max = np.max(ary)
+        ary2 = np.array(ary)
+        max = np.max(ary2)
+        if type(max)==list:
+            max = np.max(max)
+            #print 'min with np 2 = '+repr(min)
     except:
         if type(ary)==list:
             for subEl in ary:

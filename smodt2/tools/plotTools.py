@@ -194,7 +194,7 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
         for i in range(0,len(paramList)):
             if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[paramList[i]]+'.dat'))==False)or forceRecalc:
                 if verbose:
-                    print 'Initial Plotting for parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[paramList[i]]+", for file:\n"+outputDataFilename
+                    print 'Initial Plotting for parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs2[paramList[i]]+", for file:\n"+outputDataFilename
                 histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[paramList[i]])
                 (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
                 completeCLstr+=paramStrs2[paramList[i]]+clStr+'\n'+'-'*75+'\n'
@@ -205,18 +205,22 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                         print 'confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+str(paramList[i])+'.dat')
         
         # Create empty figure to be filled up with plots
-        sumFig = plt.figure(figsize=(10,10)) 
+        if len(paramList)>12:
+            sumFig = plt.figure(figsize=(9,12))
+        else:
+            sumFig = plt.figure(figsize=(10,10)) 
                     
         ## make combined/stacked plot for each parameter in list
         for i in range(0,len(paramList)):
-            s='\nStarting to plot shaded hist for '+paramStrs[i]
-            if verbose:
-                print s
-            subPlot = sumFig.add_subplot(3,4,i+1)
+            log.debug('Starting to plot shaded hist for '+paramStrs2[paramList[i]])
+            if len(paramList)>12:
+                subPlot = sumFig.add_subplot(4,4,i+1)
+            else:
+                subPlot = sumFig.add_subplot(3,4,i+1)
             
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[paramList[i]])
             if quiet==False:
-                print 'Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[paramList[i]]#+" for file:\n"+outputDataFilename
+                print 'Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs2[paramList[i]]#+" for file:\n"+outputDataFilename
             xLim=False
             CLevels=False
             if shadeConfLevels:
@@ -303,8 +307,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         plt.rc('text', usetex=False)
     
     ##get the real data
-    realData = genTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'])
-    
+    realData = genTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
     ## Make Orbit cpp obj
     Orbit = cppTools.Orbit()
     Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0])
@@ -400,27 +403,31 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
     ################
     if settingsDict['dataMode'][0]!='DI':        
         realDataRV = copy.deepcopy(realData)
-        ##Make model data for 100~1000 points for plotting fit
-        nPts = 100
-        fakeRealData = np.zeros((nPts-1,8),dtype=np.dtype('d'),order='C')
-        fakeRealData[:,5] = 1.0
-        #set all RV offsets to zero
-        fakeRealData[:,7] = 0.0
-        fakeRealData[:,0] = orbParams[6]-(const.daysPerYear*orbParams[7]/2.0)
-        for i in range(0,nPts-1):
-            fakeRealData[i,0] += const.daysPerYear*orbParams[7]*((i+1)/float(nPts))
-        Orbit.loadRealData(fakeRealData)
-        fitDataRV = np.ones((nPts-1,3),dtype=np.dtype('d'),order='C')
         ##Ensuring that params are in required format for SWIG
         orbParamsRV = copy.deepcopy(orbParams)
         paramsRV = []
         for par in orbParamsRV:
             paramsRV.append(par)
         paramsRV=np.array(paramsRV,dtype=np.dtype('d'),order='C')
-        Orbit.calculate(fitDataRV,paramsRV)
-        ## get the predicted values for the realData epochs
+        ##Make model data for 100~1000 points for plotting fit
+        nPts = 100
+        fakeRealData = np.zeros((nPts-1,8),dtype=np.dtype('d'),order='C')
+        fakeRealData[:,5] = 1.0
+        #set all RV offsets to zero
+        fakeRealData[:,7] = 0.0
+        fakeOrbParams = copy.deepcopy(paramsRV)
+        fakeOrbParams[13:]=0.0
+        #print 'fakeOrbParams = '+repr(fakeOrbParams)
+        fakeRealData[:,0] = orbParams[6]-(const.daysPerYear*orbParams[7]/2.0)
+        for i in range(0,nPts-1):
+            fakeRealData[i,0] += const.daysPerYear*orbParams[7]*((i+1)/float(nPts))
+        Orbit.loadRealData(fakeRealData)
+        fitDataRV = np.ones((nPts-1,3),dtype=np.dtype('d'),order='C')
+        Orbit.calculate(fitDataRV,fakeOrbParams)
+        ## get the predicted values for the realData epochsparamsRV
         Orbit.loadRealData(realDataRV)
         modelDataRV = np.ones((realDataRV.shape[0],3),dtype=np.dtype('d'),order='C')
+        #print 'paramsRV = '+repr(paramsRV)
         Orbit.calculate(modelDataRV,paramsRV)
         
         ##Need to subtract RV offsets from the RVs 
@@ -431,10 +438,13 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             log.critical("# of offsets in params = "+str(numOffsets)+" != # max in realData = "+str(np.max(realDataRV[:,7])+1))
         else:
             log.debug("There was a matching number of RV offsets in realData and params, = "+str(numOffsets))
-            for i in range(0,realDataRV.shape[0]):
-                rvBefore = realDataRV[i,5]
-                realDataRV[i,5]-=paramsRV[13+int(realDataRV[i,7])]
-
+            #for i in range(0,realDataRV.shape[0]):
+            #    print 'before offset subtract realData = '+str(realDataRV[i,0])+', '+str(realDataRV[i,5])+", "+str(realDataRV[i,6])+", "+str(realDataRV[i,7])
+            zeroedRealDataRV = copy.deepcopy(realDataRV)
+            for i in range(0,zeroedRealDataRV.shape[0]):
+                rvBefore = zeroedRealDataRV[i,5]
+                zeroedRealDataRV[i,5]-=paramsRV[13+int(zeroedRealDataRV[i,7])]
+            
             ##convert epochs to phases for plotting
             phasesReal = epochsToPhases(copy.deepcopy(realDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=True)
             phasesFit = epochsToPhases(copy.deepcopy(fakeRealData[:,0]),paramsRV[6],paramsRV[7], halfOrbit=True)
@@ -442,7 +452,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             ## determine if to plot [km/s] or [m/s]
             kmConversion = 1.0/1000.0
             unitStr = '[km/s]'
-            if np.max(np.sqrt(realDataRV[:,5]**2.0))<1000:
+            if np.max(np.sqrt(zeroedRealDataRV[:,5]**2.0))<1000:
                 kmConversion = 1.0
                 unitStr = '[m/s]'
             ## start making figure for residual and fit plots
@@ -467,16 +477,21 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             residualData = copy.deepcopy(realDataRV)
             residualData[:,5]-= modelDataRV[:,2]
             
+            #for i in range(0,residualData.shape[0]):
+            #    print 'residual Data = '+str(residualData[i,0])+', '+str(residualData[i,5])+", "+str(residualData[i,6])+", "+str(residualData[i,7])
+            #for i in range(0,modelDataRV.shape[0]):
+            #    print 'model Data = '+str(modelDataRV[i,2])
+            
             ## add real data to plots
             residualsPlot = addRVdataToPlot(residualsPlot,phasesReal,residualData[:,5]*kmConversion,residualData[:,6]*kmConversion,alf=1.0,color='k',plotErrorBars=False)
-            fitPlot = addRVdataToPlot(fitPlot,phasesReal,realDataRV[:,5]*kmConversion,realDataRV[:,6]*kmConversion,alf=1.0,color='k',plotErrorBars=False)
+            fitPlot = addRVdataToPlot(fitPlot,phasesReal,zeroedRealDataRV[:,5]*kmConversion,zeroedRealDataRV[:,6]*kmConversion,alf=1.0,color='k',plotErrorBars=False)
             ##plot fit epochsORphases,RVs,RVerrs
             fitPlot.plot(phasesFit,fitDataRV[:,2]*kmConversion,c='Blue',linewidth=2.0,alpha=1.0)
             
             ## Find and set limits 
             xLims = (np.min([np.min(phasesFit),np.min(phasesReal)]),np.max([np.max(phasesFit),np.max(phasesReal)]))
             xLims = (xLims[0]-(xLims[1]-xLims[0])*.05,xLims[1]+(xLims[1]-xLims[0])*.05)
-            fitYlims = (np.min([np.min(fitDataRV[:,2]*kmConversion),np.min(realDataRV[:,5]*kmConversion)]),np.max([np.max(fitDataRV[:,2]*kmConversion),np.max(realDataRV[:,5]*kmConversion)]))
+            fitYlims = (np.min([np.min(fitDataRV[:,2]*kmConversion),np.min(zeroedRealDataRV[:,5]*kmConversion)]),np.max([np.max(fitDataRV[:,2]*kmConversion),np.max(zeroedRealDataRV[:,5]*kmConversion)]))
             fitYrange = fitYlims[1]-fitYlims[0]
             fitYlims = (fitYlims[0]-fitYrange*.05,fitYlims[1]+fitYrange*.05)
             residYlims = (np.min(residualData[:,5]*kmConversion),np.max(residualData[:,5]*kmConversion))

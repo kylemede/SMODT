@@ -156,7 +156,7 @@ def smodt():
     
     ##calc R?
     grStr = ''
-    if (len(outFiles)>0) and settingsDict['CalcGR']:
+    if (len(outFiles)>0) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
         (GRs,Ts,grStr) = gelmanRubinCalc(mcmcFileList)
         #grStr+="GRs = "+repr(GRs)+"\n"
         #rStr+="Ts = "+repr(Ts)+'\n'

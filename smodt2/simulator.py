@@ -24,7 +24,6 @@ class Simulator(object):
         self.Orbit.loadRealData(self.realData)
         self.Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
         self.seed = int(timeit.default_timer())
-        self.log.debug("random number seed = "+str(self.seed))
         np.random.seed(self.seed)
         self.paramsLast = 0
         self.paramsBest = 0
@@ -193,8 +192,15 @@ class Simulator(object):
         paramsOut = copy.deepcopy(pars)
         for i in range(0,len(pars)):
             if i in self.paramInts:
-                if (self.rangeMins[i]>pars[i])or(pars[i]>self.rangeMaxs[i]):
-                    inRange=False
+                if (i==6)and(self.dictVal('TcStep')):
+                    if (self.rangeMins[i]>pars[i])or(pars[i]>self.rangeMaxs[i]):
+                        inRange=False
+                elif (i==5)and(self.dictVal('TcStep')==False):
+                    if (self.rangeMins[i]>pars[i])or(pars[i]>self.rangeMaxs[i]):
+                        inRange=False
+                elif (i!=5) and (i!=6):
+                    if (self.rangeMins[i]>pars[i])or(pars[i]>self.rangeMaxs[i]):
+                        inRange=False
         if ((inRange==False)and(numAccepted==0))and(stage=='SA'):
             ##jump as starting position was not in dead space for SA only.
             paramsOut = self.increment(pars,np.zeros(pars.shape),stage='MC')
@@ -327,11 +333,10 @@ class Simulator(object):
         sumStr+='\n'+'='*70+'\n'
         self.log.info(sumStr)
     
-    def resetTracked(self,pars):
+    def resetTracked(self):
         """
         Reset the internal strings, arys and counters.
         """
-        self.paramsLast = pars
         self.bestSumStr = ''
         self.latestSumStr = ''
         self.acceptStr = ''
@@ -340,6 +345,9 @@ class Simulator(object):
         self.acceptCount = 0
         self.acceptBoolAry = []
         self.parIntVaryAry = []
+        self.seed = int(timeit.default_timer()/(self.chainNum+1))
+        self.log.debug("Chain# "+str(self.chainNum)+" has random number seed = "+str(self.seed))
+        np.random.seed(self.seed)
     
     def startSummary(self,pars,sigs,stage):
         startStr="Chain #"+str(self.chainNum)+' VALS AT START OF '+stage+' SIM:\n'
@@ -359,6 +367,7 @@ class Simulator(object):
         tic=timeit.default_timer()
         self.log.info("Trying "+str(self.dictVal(self.stgNsampDict[stage]))+" samples for chain #"+str(chainNum)+" in "+stage+" mode.")
         self.chainNum = chainNum
+        self.resetTracked()
         bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
         modelData = np.zeros((len(self.realData),3))
         acceptedParams = []
@@ -373,7 +382,7 @@ class Simulator(object):
             proposedPars = copy.deepcopy(startParams)
             sigmas = copy.deepcopy(startSigmas)
         latestPars = copy.deepcopy(proposedPars)
-        self.resetTracked(proposedPars)
+        self.paramsLast = proposedPars
         self.startSummary(proposedPars,sigmas,stage)
         ##loop through each sample 
         ##Follows these steps: inRange?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? DONE ->write output data

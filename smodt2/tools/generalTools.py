@@ -232,14 +232,15 @@ def loadRVdata(filename):
     rvData = []
     datasetNumLast = 0
     jitterLast = 0
+    lastWasDataLine=False
+    thisIsDataLine = False
     for line in lines:
-        #print "lnStart:"+line+":lnEnd"
-        if line=='\n':
-            jitterLast = 0
-            datasetNumLast+=1
-            #print 'incrementing datasetNum'
+        #print "line = "+line
+        lastWasDataLine=thisIsDataLine
+        thisIsDataLine=False
         if len(line.split())>2:
             if line.split()[0].replace('.','',1).isdigit() and line.split()[1].replace('.','',1).replace('-','',1).isdigit():
+                thisIsDataLine=True
                 curDataAry = [float(line.split()[0]),float(line.split()[1])]
                 #if jitter was provided on first line of data set
                 if len(line.split())>3:
@@ -257,7 +258,10 @@ def loadRVdata(filename):
                 curDataAry.append(datasetNumLast)
                 #print repr(curDataAry)
                 rvData.append(curDataAry)
-                
+        if lastWasDataLine and (thisIsDataLine==False):
+            jitterLast = 0
+            datasetNumLast+=1
+            #print 'incrementing datasetNum'
     return np.array(rvData)
     
 def loadRealData(filenameRoot,dataMode='3D'):
@@ -284,6 +288,8 @@ def loadRealData(filenameRoot,dataMode='3D'):
             rvData = loadRVdata(rvFilename)
             rvEpochs = rvData[:,0]
     #print 'rvData = '+repr(rvData)
+    #for i in range(0,rvData.shape[0]):
+    #    print 'ORIG rv data = '+str(rvData[i,0])+', '+str(rvData[i,1])+", "+str(rvData[i,2])+", "+str(rvData[i,3])
     ##load in epochs from both sets, sort and kill double entries
     epochsTemp = np.concatenate((diEpochs,rvEpochs))
     epochsTemp.sort()
@@ -303,7 +309,9 @@ def loadRealData(filenameRoot,dataMode='3D'):
         if len(rvEpochs)>0:
             if epochs[i] in rvData[:,0]:
                 realData[i,5:]=rvData[np.where(rvData[:,0]==epochs[i])[0],1:]
-    print 'dataMode'+dataMode+'->realData = '+repr(realData)
+    #print 'dataMode'+dataMode+'->realData = '+repr(realData)
+    #for i in range(0,realData.shape[0]):
+    #    print 'realData = '+str(realData[i,0])+', '+str(realData[i,5])+", "+str(realData[i,6])+", "+str(realData[i,7])
     return realData
             
 def loadSettingsDict(filenameRoot):
@@ -354,6 +362,7 @@ def loadSettingsDict(filenameRoot):
     omegaFrv+=settingsDict['omegaPrv'][0]
     settingsDict['omegaFdi'] = (omegaFdi,"Total fixed val added to DI omega in model")
     settingsDict['omegaFrv'] = (omegaFrv,"Total fixed val added to RV omega in model")
+    log.debug("Setting fixed omega offsets to:\nomegaFdi = "+str(omegaFdi)+"\nomegaFrv = "+str(omegaFrv))
     
     return settingsDict
     

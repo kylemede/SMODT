@@ -2764,7 +2764,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     #3: primaryRVs parameter in call will set the semi-major value used to a_1 rather than a_2 if K=0, else K provided will be used. 
     Thus, providing K allows the user to ignore this parameter. 
     """
-    verbose = False
+    verbose = True
     addLegend = False
     plotErrorBars = True
     makeTrendPlot = True
@@ -2898,7 +2898,10 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             offset = RVoffsets[orb][dataset]
             s="offset being subtracted from RV data for orb #"+str(orb)+"/"+str(len(e))+", dataset #"+str(dataset)+" is "+str(offset)+"\n"
             numEpochsTotal+=len(RVsIN[dataset])
-            RVsOUT.append(RVsIN[dataset]-offset)
+            l = RVsIN[dataset]
+            for i in range(0,len(RVsIN[dataset])):
+                l[i]-=offset
+            RVsOUT.append(l)
         log.write(s+'\n')
         if verbose:
             print s
@@ -3416,7 +3419,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             paramsLegndStr+='\n'
         else:
             paramsLegndStr+=', '
-        paramsLegndStr += 'offset '+str(dataset)+'= '+str(RVoffsets[dataset])
+        paramsLegndStr += 'offset '+str(dataset)+'= '+str(RVoffsets[0][dataset])
     paramsLegndStr += chiSquaredStr
     if verbose:
         print paramsLegndStr

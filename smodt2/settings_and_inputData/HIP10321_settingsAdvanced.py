@@ -48,14 +48,14 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (15000.0,"Max reduced chiSquared during MC"),
+'chiMAX' : (10000.0,"Max reduced chiSquared during MC and SA"),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 10,
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :10,
 # make plot of posterior distributions? [bool]
-'pltDists' :True,
+'pltDists' :False,
 # make plots of RV and DI/AM orbit fits [bool]
 'pltOrbit' :True,
 # Delete chain files after simulation is complete? [bool]
@@ -117,9 +117,9 @@ advancedDict = {
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 'TcStep' : (False,"Step in Tc not T?"),
 # take the time of center transit (inferior conjunction) into account? [bool]
-'TcEqualT' : (True,"Fix Tc=T?"),
+'TcEqualT' : (False,"Fix Tc=T?"),
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
-'omegaPrv' : (0.0,"Custom fixed val added to RV omega in model"),
+'omegaPrv' : (-180.0,"Custom fixed val added to RV omega in model"),
 ##################################################
 ## Special settings DI model:
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
@@ -128,14 +128,14 @@ advancedDict = {
 # System Information #
 ######################
 #best estimate of primary's mass, and error [double][Msun]
-'mass1Est' : (1.0,"Primary's estimated mass"),
-'mass1Err' : (0.1,"Primary's estimated mass error"),
+'mass1Est' : (1.09,"Primary's estimated mass"),
+'mass1Err' : (0.5,"Primary's estimated mass error"),
 #best estimate of secondary's mass, and error [double][Msun]
-'mass2Est' : (0.2,"Secondary's estimated mass"),
-'mass2Err' : (0.1,"Secondary's estimated mass error"),
+'mass2Est' : (0.0818,"Secondary's estimated mass"),
+'mass2Err' : (0.002,"Secondary's estimated mass error"),
 #best estimate of system's distance from Earth, and error [double][PC]
-'distEst' : (5.0,"Estimated System Distance"),
-'distErr' : (0.1,"Estimated System Distance error"),
+'distEst' : (26.846,"Estimated System Distance"),
+'distErr' : (0.04,"Estimated System Distance error"),
 ##################################
 # Push prior functions into dict #
 ##################################

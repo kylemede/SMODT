@@ -494,7 +494,10 @@ def summaryFile(finalFits,outFname,grStr,effPtsStr,clStr,burnInStr,bestFit):
     f.write('\nparamList = '+repr(paramList))
     f.write('\nparamStrs = '+repr(paramStrs))
     f.write('\nparamFileStrs = '+repr(paramFileStrs))
-    f.write('\nbestFit = '+repr(bestFit))
+    bestStr = 'Best fit values are:\n'
+    for i in range(len(bestFit)):
+        bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
+    f.write(bestStr)
     f.write('\n'+grStr)
     f.write('\n'+effPtsStr)
     f.write('\n'+clStr)

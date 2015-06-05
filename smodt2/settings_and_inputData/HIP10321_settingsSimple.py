@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (100000,"Number of MCMC or MC samples"),
+'nSamples' : (40000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -23,8 +23,8 @@ simpleSettingsDict={
 'mass1MIN' : 0.01,
 'mass1MAX' : 2.2,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.07,
-'mass2MAX' : 0.09,
+'mass2MIN' : 0.06,
+'mass2MAX' : 0.095,
 # Minimum/Maximum allowed value for the system distance from Earth [double][PC]
 'distMIN' : 26.4,
 'distMAX' : 27.2,
@@ -32,28 +32,28 @@ simpleSettingsDict={
 'OmegaMIN' : 1.0,
 'OmegaMAX' : 180.0,
 # Minimum/Maximum allowed value for the Eccentricity [double]
-'eMIN' : 0.34,
-'eMAX' : 0.38,
+'eMIN' : 0.345,
+'eMAX' : 0.365,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
 'TMIN' : 2450000,
-'TMAX' : 2455900,
+'TMAX' : 2452500,
 # Minimum/Maximum allowed value for the Period [double][yrs]
-'PMIN' : 19.0,
-'PMAX' : 21.0,
+'PMIN' : 19.5,
+'PMAX' : 20.5,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
 'incMIN' : 1.0,
 'incMAX' : 89.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : 166,
-'omegaMAX' : 174.0,
+'omegaMIN' : 168,
+'omegaMAX' : 170.0,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
-'KMIN' : 835,
-'KMAX' : 870,
+'KMIN' : 845,
+'KMAX' : 865,
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-'vMINs' :[6100,300,6200],
-'vMAXs' :[6200,400,6400],
+'vMINs' :[6100,300,6250],
+'vMAXs' :[6250,400,6400],
 }
 
 

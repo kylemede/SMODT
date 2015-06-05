@@ -90,8 +90,8 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     plot.axes.set_ylim([0.0,1.02])
     if xLims!=False:
         plot.axes.set_xlim(xLims)
-    plt.locator_params(axis='x',nbins=3) # maximum number of x labels
-    plt.locator_params(axis='y',nbins=3) # maximum number of y labels
+    plot.locator_params(axis='x',nbins=4) # maximum number of x labels
+    plot.locator_params(axis='y',nbins=5) # maximum number of y labels
     plot.tick_params(axis='both',which='major',width=1,length=2,pad=4,direction='in',labelsize=10)
     plot.spines['right'].set_linewidth(0.7)
     plot.spines['bottom'].set_linewidth(0.7)

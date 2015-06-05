@@ -100,9 +100,13 @@ class Simulator(object):
                     elif self.dictVal('Kdirect'):
                         if (rangeMaxs[12]!=0)and(i==12):
                             paramInts.append(12)                                           
-                elif (i==3):
-                    if (self.dictVal('dataMode')!='RV')and(rangeMaxs[3]!=0):
-                        paramInts.append(3)
+                elif (i==3)or(i==0)or(i==1):
+                    if (self.dictVal('dataMode')!='RV'):
+                        if(rangeMaxs[i]!=0):
+                            paramInts.append(i)
+                    elif self.dictVal('Kdirect')==False:
+                        if(rangeMaxs[i]!=0):
+                            paramInts.append(i)
                 elif rangeMaxs[i]!=0:
                     if (i==5)or(i==6):
                         if self.dictVal('TcStep')and(i!=5):
@@ -118,12 +122,12 @@ class Simulator(object):
         nEpochs = len(self.realData[:,0])
         #Take mass1 and dist from those include in nu calcs
         paramIntsClean = copy.deepcopy(paramInts)
-        notInNuInts = [0,2,7,8]
+        notInNuInts = [0,2,7,8]        
         for val in notInNuInts:
             paramIntsClean=paramIntsClean[np.where(paramIntsClean!=val)]
         nDIvars = np.sum(np.where(paramIntsClean<10,1,0))
-        #print 'DIvars = '+repr(paramIntsClean[np.where(paramIntsClean<10)])
-        #print 'RVvars = '+repr(paramIntsClean[np.where(paramIntsClean!=3)])
+        print 'DIvars = '+repr(paramIntsClean[np.where(paramIntsClean<10)])
+        print 'RVvars = '+repr(paramIntsClean[np.where(paramIntsClean!=3)])
         nRVvars = np.sum(np.where(paramIntsClean!=3,1,0))
         if nDIepochs==0:
             nVars = nRVvars

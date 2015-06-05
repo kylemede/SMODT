@@ -56,7 +56,7 @@ class singleProc(Process):
             self.log.info('chain #'+str(self.chainNum)+' MC OUTFILE :\n'+outMCFname)
         if 'SA' in self.stageList:
             (paramsSA,sigmasSA,bestRedChiSqr) = self.Sim.simulatorFunc('SA',self.chainNum)
-        if bestRedChiSqr<self.settingsDict['chiMAX'][0]:
+        if bestRedChiSqr<self.settingsDict['cMaxMCMC'][0]:
             if 'ST' in self.stageList:
                 (paramsST,sigmasST) = self.Sim.simulatorFunc('ST',self.chainNum,paramsSA,sigmasSA)
             if 'MCMC' in self.stageList:

@@ -89,7 +89,11 @@ class Simulator(object):
         paramInts = []
         for i in range(0,len(rangeMins)):
             if (i!=10)and(i!=11):
-                if (i==8)or(i==12):
+                if (i>12):
+                    if self.dictVal('dataMode')!='DI':
+                        if rangeMaxs[i]!=0:
+                            paramInts.append(i) 
+                elif (i==8)or(i==12):
                     if (self.dictVal('dataMode')!='RV')or(self.dictVal('Kdirect')==False):
                         if (rangeMaxs[8]!=0)and(i==8):
                             paramInts.append(8)
@@ -100,12 +104,10 @@ class Simulator(object):
                     if (self.dictVal('dataMode')!='RV')and(rangeMaxs[3]!=0):
                         paramInts.append(3)
                 elif rangeMaxs[i]!=0:
-                    if self.dictVal('TcEqualT'):
-                        if self.dictVal('TcStep'):
-                            if i!=5:
+                    if (i==5)or(i==6):
+                        if self.dictVal('TcStep')and(i!=5):
                                 paramInts.append(i)
-                        else:
-                            if i!=6:
+                        elif (self.dictVal('TcStep')==False)and(i!=6):
                                 paramInts.append(i)
                     else:
                         paramInts.append(i)
@@ -114,8 +116,15 @@ class Simulator(object):
         nDIepochs = np.sum(np.where(self.realData[:,2]<1e6,1,0))
         nRVepochs = np.sum(np.where(self.realData[:,6]<1e6,1,0))
         nEpochs = len(self.realData[:,0])
-        nDIvars = np.sum(np.where(paramInts<10,1,0))
-        nRVvars = np.sum(np.where(paramInts!=3,1,0))
+        #Take mass1 and dist from those include in nu calcs
+        paramIntsClean = copy.deepcopy(paramInts)
+        notInNuInts = [0,2,7,8]
+        for val in notInNuInts:
+            paramIntsClean=paramIntsClean[np.where(paramIntsClean!=val)]
+        nDIvars = np.sum(np.where(paramIntsClean<10,1,0))
+        #print 'DIvars = '+repr(paramIntsClean[np.where(paramIntsClean<10)])
+        #print 'RVvars = '+repr(paramIntsClean[np.where(paramIntsClean!=3)])
+        nRVvars = np.sum(np.where(paramIntsClean!=3,1,0))
         if nDIepochs==0:
             nVars = nRVvars
         elif nRVepochs==0:
@@ -204,7 +213,7 @@ class Simulator(object):
                 elif (i!=5) and (i!=6):
                     if (self.rangeMins[i]>pars[i])or(pars[i]>self.rangeMaxs[i]):
                         inRange=False
-        if ((inRange==False)and(numAccepted==0))and(stage=='SA'):
+        if (numAccepted==0)and(stage=='SA'):
             ##jump as starting position was not in dead space for SA only.
             paramsOut = self.increment(pars,np.zeros(pars.shape),stage='MC')
             self.log.debug("Chain #"+str(self.chainNum)+" Nothing accepted yet, so jumping to new starting position.")
@@ -238,6 +247,7 @@ class Simulator(object):
             self.paramsBest = paramsOut
             if self.latestSumStr=='':
                 self.latestSumStr="Chain #"+str(self.chainNum)+' Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))
+        ## check if this step is accepted
         accept = False
         if stage=='MC':
             if (paramsOut[11]/self.nu)<self.dictVal('chiMAX'):
@@ -265,7 +275,7 @@ class Simulator(object):
             ##log a summary
             sumStr = "below\nChain #"+str(self.chainNum)+" Stage= "+stage+", # Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
             sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
-            self.log.debug(sumStr)
+            self.log.info(sumStr)
         if False:
             print 'priorsRatio = '+str(priorsRatio)
             print 'inc priorsRatio = '+str(self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))

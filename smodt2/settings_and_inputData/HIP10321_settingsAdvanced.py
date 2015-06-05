@@ -32,10 +32,11 @@ def mass1Prior(mass):
     else:
         return 1.0
 def mass2Prior(mass):
-    if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
-        return gaussian(mass, advancedDict['mass2Est'][0], advancedDict['mass2Err'][0])
-    else:
-        return 1.0
+    return 1.0
+#     if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
+#         return gaussian(mass, advancedDict['mass2Est'][0], advancedDict['mass2Err'][0])
+#     else:
+#         return 1.0
 def distPrior(dist):
     if simpleSettingsDict['distMIN']!=simpleSettingsDict['distMAX']!=0:
         return gaussian(dist, advancedDict['distEst'][0], advancedDict['distErr'][0])
@@ -48,10 +49,10 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (15000.0,"Max reduced chiSquared during MC and SA"),
+'chiMAX' : (1000.0,"Max reduced chiSquared during MC and SA"),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 10,
+'logLevel' : 20,
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :10,
 # make plot of posterior distributions? [bool]
@@ -79,17 +80,17 @@ advancedDict = {
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(1000000,"Number of Annealing samples"),
+'nSAsamp' :(100000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (1750.0,"SA starting temperature."),
+'strtTemp' : (500.0,"SA starting temperature."),
 # Number of temperature steps over Simulated Annealing [int].  
 # Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/50)!
 'nTmpStps'  : (1000,"Number of temperature steps during SA."),
 # number of samples to draw for sigma tuning stage [int].
-'nSTsamp' :(100000,"Number of Tuning samples"),
+'nSTsamp' :(70000,"Number of Tuning samples"),
 # number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]. 
 # Allowed vals [1,nSTsamp) Ideal is int(nSTsamp/2000)!
-'nSigStps': (50,"Times to calc acceptance and tune sigmas."),
+'nSigStps': (35,"Times to calc acceptance and tune sigmas."),
 # Maximum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
 'sigMax' :(1.0,'Maximum ratio of params range,for step size.'),
 # Minimum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
@@ -129,7 +130,7 @@ advancedDict = {
 ######################
 #best estimate of primary's mass, and error [double][Msun]
 'mass1Est' : (1.09,"Primary's estimated mass"),
-'mass1Err' : (0.5,"Primary's estimated mass error"),
+'mass1Err' : (0.25,"Primary's estimated mass error"),
 #best estimate of secondary's mass, and error [double][Msun]
 'mass2Est' : (0.0818,"Secondary's estimated mass"),
 'mass2Err' : (0.002,"Secondary's estimated mass error"),

@@ -5,14 +5,14 @@
 ### General Settings ###
 ########################
 # This will set the maximum ChiSquared value to accept and write to the output file.  ONLY for Monte Carlo, not MCMC!! [double]
-chiSquaredMax =1000
+chiSquaredMax =100000
 # The number of samples orbital parameters to try/draw [int]
 numSamples =10000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =10
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-numChains =1
+numChains =5
 # set to 'true' to ONLY PRINT the ABSOLUTE MINIMUM of messages about progress to the screen [bool]
 SILENT = false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]
@@ -65,7 +65,7 @@ removeBurnIn = False
 # Calculate the Correlation lengths of each chain? [bool]
 calcCorrLengths =false
 # number of samples to draw for simAnneal stage [int] 
-numSamples_SimAnneal =1000000
+numSamples_SimAnneal =3000000
 # Make plots of MCMC progress plots? [bool]
 makeMCMCprogPlots =false
 # Make plots of Simulated Annealing progress plots? [bool]

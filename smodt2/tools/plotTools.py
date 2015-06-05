@@ -452,7 +452,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             ## determine if to plot [km/s] or [m/s]
             kmConversion = 1.0/1000.0
             unitStr = '[km/s]'
-            if np.max(np.sqrt(zeroedRealDataRV[:,5]**2.0))<1000:
+            if np.max(np.sqrt(zeroedRealDataRV[:,5]**2.0))<1500:
                 kmConversion = 1.0
                 unitStr = '[m/s]'
             ## start making figure for residual and fit plots

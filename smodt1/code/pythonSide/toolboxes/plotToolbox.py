@@ -125,8 +125,8 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
     plot.axes.set_ylim([0.0,1.02])
     if xLims!=False:
         plot.axes.set_xlim(xLims)
-    plt.locator_params(axis='x',nbins=5) # maximum number of x labels
-    plt.locator_params(axis='y',nbins=6) # maximum number of y labels
+    plot.locator_params(axis='x',nbins=5) # maximum number of x labels
+    plot.locator_params(axis='y',nbins=6) # maximum number of y labels
     plot.tick_params(axis='both',which='major',width=3,length=4,pad=6,direction='in',labelsize=25)
     plot.spines['right'].set_linewidth(2.0)
     plot.spines['bottom'].set_linewidth(2.0)
@@ -189,8 +189,8 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     plot.axes.set_ylim([0.0,1.02])
     if xLims!=False:
         plot.axes.set_xlim(xLims)
-    plt.locator_params(axis='x',nbins=3) # maximum number of x labels
-    plt.locator_params(axis='y',nbins=3) # maximum number of y labels
+    plot.locator_params(axis='x',nbins=3) # maximum number of x labels
+    plot.locator_params(axis='y',nbins=3) # maximum number of y labels
     plot.tick_params(axis='both',which='major',width=1,length=2,pad=4,direction='in',labelsize=10)
     plot.spines['right'].set_linewidth(0.7)
     plot.spines['bottom'].set_linewidth(0.7)
@@ -297,8 +297,8 @@ def histConverter(chiSquareds, data, plot, xlabel, confLevels=False, weight=Fals
                 plot.plot(binsUse,n,color=lineColor,linewidth=4)
                 plot.axes.set_ylim([0.0,1.1])
         
-        plt.locator_params(axis='x',nbins=5) # maximum number of x labels
-        #plt.locator_params(axis='y',nbins=6) # maximum number of y labels
+        plot.locator_params(axis='x',nbins=5) # maximum number of x labels
+        #plot.locator_params(axis='y',nbins=6) # maximum number of y labels
         if True:
             #update the y limit and its ticks and tick labels
             if not logY:
@@ -3292,7 +3292,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
     residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=20)
     residualsPlot.axes.set_ylabel("Residual",fontsize=15)
     residualsPlot.tick_params(axis='y',which='major',width=3,length=5,pad=10,direction='in',labelsize=8)
-    plt.locator_params(axis='y',nbins=5)
+    residualsPlot.locator_params(axis='y',nbins=5)
     #colorsList = ['b','m','k','g','y','o','p']
     
     #plot RESIDUAL data and fit, plus build up the chiSquaredStr

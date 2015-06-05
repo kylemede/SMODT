@@ -118,11 +118,12 @@ def addRVdataToPlot(subPlot,epochsORphases,RVs,RVerrs,alf=1.0,color='blue',plotE
     shown as the height of the markers. 
     """
     for i in range(0,RVs.shape[0]):
-        xs = [epochsORphases[i],epochsORphases[i]]
-        ys = [RVs[i]-RVerrs[i],RVs[i]+RVerrs[i]]
-        if plotErrorBars:
-            subPlot.plot(xs,ys,c=color,linewidth=2,alpha=alf)
-        subPlot.plot(epochsORphases[i],RVs[i],c='k',marker='.',markersize=6)
+        if RVerrs[i]<1e6:
+            xs = [epochsORphases[i],epochsORphases[i]]
+            ys = [RVs[i]-RVerrs[i],RVs[i]+RVerrs[i]]
+            if plotErrorBars:
+                subPlot.plot(xs,ys,c=color,linewidth=2,alpha=alf)
+            subPlot.plot(epochsORphases[i],RVs[i],c='k',marker='.',markersize=6)
     return subPlot
 
 def addDIdataToPlot(subPlot,realData,asConversion):
@@ -130,17 +131,20 @@ def addDIdataToPlot(subPlot,realData,asConversion):
     To plot a '+' for each data point with width and height matching the errors converted 
     to x,y coords.
     """
-    xmin = np.min(realData[:,1]-realData[:,2])*asConversion
-    xmax = np.max(realData[:,1]+realData[:,2])*asConversion
-    ymin = np.min(realData[:,3]-realData[:,4])*asConversion
-    ymax = np.max(realData[:,3]+realData[:,4])*asConversion
-    for i in range(0,realData.shape[0]):
-        xCent = realData[i,1]*asConversion
-        yCent = realData[i,3]*asConversion
-        left = xCent-realData[i,2]*asConversion
-        right = xCent+realData[i,2]*asConversion
-        top = yCent+realData[i,4]*asConversion
-        btm = yCent-realData[i,4]*asConversion
+    ## copy realData and kill off parts where DI errors are 1e6
+    diData = copy.deepcopy(realData)
+    diData = diData[np.where(diData[:,2]<1e6)[0],:]
+    xmin = np.min(diData[:,1]-diData[:,2])*asConversion
+    xmax = np.max(diData[:,1]+diData[:,2])*asConversion
+    ymin = np.min(diData[:,3]-diData[:,4])*asConversion
+    ymax = np.max(diData[:,3]+diData[:,4])*asConversion
+    for i in range(0,diData.shape[0]):
+        xCent = diData[i,1]*asConversion
+        yCent = diData[i,3]*asConversion
+        left = xCent-diData[i,2]*asConversion
+        right = xCent+diData[i,2]*asConversion
+        top = yCent+diData[i,4]*asConversion
+        btm = yCent-diData[i,4]*asConversion
         subPlot.plot([left,right],[yCent,yCent],linewidth=3,color='k',alpha=1.0)
         subPlot.plot([xCent,xCent],[btm,top],linewidth=3,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])

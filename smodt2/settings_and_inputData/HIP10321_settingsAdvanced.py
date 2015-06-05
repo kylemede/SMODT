@@ -48,10 +48,10 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (150.0,"Max reduced chiSquared during MC"),
+'chiMAX' : (15000.0,"Max reduced chiSquared during MC"),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 30,
+'logLevel' : 10,
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :10,
 # make plot of posterior distributions? [bool]
@@ -73,23 +73,23 @@ advancedDict = {
 # Settings for MCMC mode ###
 ############################
 # Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
-'CalcBurn' :(True,"Calculate Burn-in?"),
+'CalcBurn' :(False,"Calculate Burn-in?"),
 # remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?
-'delBurn' : (True,"Remove Burn-in?"),
+'delBurn' : (False,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
-'calcCL' :True,
+'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(200000,"Number of Annealing samples"),
+'nSAsamp' :(2000000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (350.0,"SA starting temperature."),
+'strtTemp' : (750.0,"SA starting temperature."),
 # Number of temperature steps over Simulated Annealing [int].  
 # Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/50)!
-'nTmpStps'  : (1000,"Number of temperature steps during SA."),
+'nTmpStps'  : (10000,"Number of temperature steps during SA."),
 # number of samples to draw for sigma tuning stage [int].
-'nSTsamp' :(70000,"Number of Tuning samples"),
+'nSTsamp' :(100000,"Number of Tuning samples"),
 # number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]. 
 # Allowed vals [1,nSTsamp) Ideal is int(nSTsamp/2000)!
-'nSigStps': (35,"Times to calc acceptance and tune sigmas."),
+'nSigStps': (50,"Times to calc acceptance and tune sigmas."),
 # Maximum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
 'sigMax' :(1.0,'Maximum ratio of params range,for step size.'),
 # Minimum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
@@ -102,7 +102,7 @@ advancedDict = {
 # Make plots of Simulated Annealing progress plots? [bool]
 'pltSAprog' :False,
 # Calculate the Gelman-Rubin statistic? [bool]
-'CalcGR' :True,
+'CalcGR' :False,
 # How many times do you want the Gelman-Rubin statistic calculated [int]
 'nGRcalc' :10,
 #####################################
@@ -113,7 +113,7 @@ advancedDict = {
 # Are the RVs in the RVdata.dat for the Primary star? [bool]
 'primeRVs' : (True,"RVs measured from Primary?"),
 # Draw values for K directly, do NOT calculate it [bool]. Kills varying of Inclination.  Only possible in RV only mode.
-'Kdirect'  : (False,'Vary K direct, do not calc it'),
+'Kdirect'  : (True,'Vary K direct, do not calc it'),
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 'TcStep' : (False,"Step in Tc not T?"),
 # take the time of center transit (inferior conjunction) into account? [bool]

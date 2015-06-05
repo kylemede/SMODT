@@ -233,9 +233,11 @@ def loadRVdata(filename):
     datasetNumLast = 0
     jitterLast = 0
     for line in lines:
+        #print "lnStart:"+line+":lnEnd"
         if line=='\n':
             jitterLast = 0
             datasetNumLast+=1
+            #print 'incrementing datasetNum'
         if len(line.split())>2:
             if line.split()[0].replace('.','',1).isdigit() and line.split()[1].replace('.','',1).replace('-','',1).isdigit():
                 curDataAry = [float(line.split()[0]),float(line.split()[1])]
@@ -253,6 +255,7 @@ def loadRVdata(filename):
                     except:
                         log.error("could not convert 5th element of split into datasetNum.  5th element was: "+str(line.split()[4]))
                 curDataAry.append(datasetNumLast)
+                #print repr(curDataAry)
                 rvData.append(curDataAry)
                 
     return np.array(rvData)
@@ -268,7 +271,7 @@ def loadRealData(filenameRoot,dataMode='3D'):
     rvEpochs = []
     if dataMode!='RV':
         diFilename = filenameRoot+'DIdata.dat'
-        if False:
+        if True:
             print 'using diFilename = '+diFilename        
         if os.path.exists(diFilename):
             diData = loadDIdata(diFilename)
@@ -280,8 +283,8 @@ def loadRealData(filenameRoot,dataMode='3D'):
         if os.path.exists(rvFilename):
             rvData = loadRVdata(rvFilename)
             rvEpochs = rvData[:,0]
-            
-    #load in epochs from both sets, sort and kill double entries
+    #print 'rvData = '+repr(rvData)
+    ##load in epochs from both sets, sort and kill double entries
     epochsTemp = np.concatenate((diEpochs,rvEpochs))
     epochsTemp.sort()
     epochs = []
@@ -290,20 +293,17 @@ def loadRealData(filenameRoot,dataMode='3D'):
             epochs.append(epoch)
     epochs = np.array(epochs)
     realData = np.zeros((epochs.shape[0],8))
-    realData[:,2]=realData[:,4]=realData[:,6]=np.inf
+    ##set error values to 1e6 which signals not to calculate the predicted version in orbit.cc
+    realData[:,2]=realData[:,4]=realData[:,6]=1e6
     realData[:,0]=epochs[:]
-    diCounter = 0
-    rvCounter = 0
     for i in range(epochs.shape[0]):
         if len(diEpochs)>0:
-            if epochs[i]==diData[diCounter,0]:
-                realData[i,1:5]=diData[diCounter,1:]
-                diCounter+=1
+            if epochs[i] in diData[:,0]:
+                realData[i,1:5]=diData[np.where(diData[:,0]==epochs[i])[0],1:]
         if len(rvEpochs)>0:
-            if epochs[i]==rvData[rvCounter,0]:
-                realData[i,5:]=rvData[rvCounter,1:]
-                rvCounter+=1
-    #print 'dataMode'+dataMode+'->realData = '+repr(realData)
+            if epochs[i] in rvData[:,0]:
+                realData[i,5:]=rvData[np.where(rvData[:,0]==epochs[i])[0],1:]
+    print 'dataMode'+dataMode+'->realData = '+repr(realData)
     return realData
             
 def loadSettingsDict(filenameRoot):

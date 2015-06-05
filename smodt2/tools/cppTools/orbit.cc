@@ -133,7 +133,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	//calc those that are static for each epoch
 	atot =pow(((params[7]*params[7]*secPerYear*secPerYear*Grav*KGperMsun*(params[0]+params[1]))/(4.0*pi*pi)),(1.0/3.0));
 	params[10]=atot/MperAU;
-	if ((dataRealAry[5]!=0)&&(params[12]==0)){
+	if ((dataRealAry[6]<1e6)&&(params[12]==0)){
 		K = ((2.0*pi*((atot)/(1.0+(params[0]/params[1])))*sin(params[8]*(pi/180.0)))/(params[7]*secPerYear*pow((1.0-params[4]*params[4]),(1.0/2.0))));
 		params[12]=K;
 	}
@@ -170,7 +170,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//--------------------------
 		//Calculate RV
 		//--------------------------
-		if (dataRealAry[5+i*dataRealAry_ny]!=0){
+		if (dataRealAry[6+i*dataRealAry_ny]<1e6){
 			dataModelAry[2+i*dataModelAry_ny]=params[12]*(cos(thetaRV+omegaRV*(pi/180.0))+params[4]*cos(omegaRV*(pi/180.0)))+params[13+int(dataRealAry[7+i*dataRealAry_ny])];
 			if (false){
 				std::cout<<"theta deg V2.0 = "<<(thetaRV*(180.0/pi))<<std::endl;
@@ -190,7 +190,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//--------------------------
 		//Calculate x,y
 		//--------------------------
-		if ((dataRealAry[1+i*dataRealAry_ny]!=0)&&(dataRealAry[3+i*dataRealAry_ny]!=0)){
+		if ((dataRealAry[2+i*dataRealAry_ny]<1e6)&&(dataRealAry[4+i*dataRealAry_ny]<1e6)){
 			// calculate all the Thiele-Innes constants in ["]
 			A = ((atot/MperAU)/params[2])*(cos(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))-sin(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
 			B = ((atot/MperAU)/params[2])*(sin(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))+cos(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));

@@ -109,8 +109,8 @@ class Simulator(object):
                         paramInts.append(i)
         paramInts = np.array(paramInts)
         #find total number of RV and DI epochs in real data
-        nDIepochs = np.sum(np.where(self.realData[:,1]!=0,1,0))
-        nRVepochs = np.sum(np.where(self.realData[:,5]!=0,1,0))
+        nDIepochs = np.sum(np.where(self.realData[:,2]<1e6,1,0))
+        nRVepochs = np.sum(np.where(self.realData[:,6]<1e6,1,0))
         nEpochs = len(self.realData[:,0])
         nDIvars = np.sum(np.where(paramInts<10,1,0))
         nRVvars = np.sum(np.where(paramInts!=3,1,0))

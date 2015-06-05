@@ -94,7 +94,7 @@ def smodt():
             stageList = ['SA']
         elif settingsDict['symMode'][0]=='MCMC':
             stageList = ['SA','ST','MCMC']
-        stageList=['MCMC']##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #stageList=['MCMC']##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         ## Start the number of processes/chains requested
         master = []
         log.info("Going to start "+str(settingsDict['nChains'][0])+" chains, with each running these stages: "+repr(stageList))

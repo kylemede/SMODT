@@ -87,65 +87,47 @@ def mcmcEffPtsCalc(outputDataFilename):
     log.info(completeStr)
     return completeStr
 
-# def burnInCalcMultiFile(mcmcFnames,combinedFname):
-#     """
-#     NOTE: SMODT was designed to start the full MCMC chain from the last point of the 
-#         Sigma Tuning stage.  As this stage effectively acts as a form of burn-in period
-#         the burn-in value found from the pure MCMC tends to be very short.
-# 
-#     Calculate the burn in for a set of MCMC chains following the formulation of Tegmark.
-#     
-#     Burn-in is defined as the first point in a chain when the chi squared is equal or less
-#      than the median value of all the chains in the simulation.  Thus, there MUST 
-#      be more than 1 chain to perform this calculation.
-#     """
-#     verbose=False
-#     
-#     chiSquaredsALL = np.array([])
-#     
-#     ALLfilename = os.path.join(os.path.dirname(dataFilenames[0]),'outputData-ALL.dat')
-#     (log,dataAry,chiSquaredsALL,bestsAry) = dataReader(ALLfilename, columNum=False, returnData=False, returnChiSquareds=True)
-#         
-#     # calculate median of 'all' array
-#     if type(chiSquaredsALL)!=np.ndarray:
-#         chiSquaredsALL = np.array(chiSquaredsALL)
-#     medainALL = np.median(chiSquaredsALL,axis=0)         
-#     
-#     if verbose:
-#         print "medainALL = "+str(medainALL)
-#     
-#     burnInLengths = []
-#     s=''
-#     for filename in dataFilenames:
-#         if os.path.exists(filename):
-#             #find chain number and update logFilename with path and number
-#             s += "\n"+os.path.basename(filename)
-#             chainNumStr = s[s.find('chain_')+6:s.find('chain_')+6+1]
-#             datadir = os.path.dirname(filename)
-#             logFilename = os.path.join(datadir,'log-chain_'+chainNumStr+'.txt')
-#             log = open(logFilename,'a')
-#             log.write('\n'+75*'+'+'\n Inside burnInCalc \n'+75*'+'+'\n')
-#             if simAnneal:
-#                 log.write('Calculating the burn-in for the last 25% of the Simulated Annealing run:\n')
-#             else:
-#                 log.write("Calculating the burn-in for MCMC run:\n")
-#             
-#             (log,dataAry,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=False, returnData=False, returnChiSquareds=True)
-#             if simAnneal:
-#                 chiSquaredsChain = chiSquaredsChain[startMCMCsample:-1]
-#             #medianChain = np.median(chiSquaredsChain)
-#             burnInLength = burnInCalcFunc(chiSquaredsChain, medainALL, jumpy=False)
-#             burnInLengths.append(burnInLength)
-#             
-#             s += '\nmedian value for all chains = '+str(medainALL)
-#             s += "\nTotal number of points in the chain = "+str(len(chiSquaredsChain))+"\n"
-#             s += "Burn-in length = "+str(burnInLength)+"\n"
-#             log.write(s+"\n\n")
-#             if verbose:
-#                 print 'For chain # '+chainNumStr+s
-#     log.close()
-#     
-#     return (s,burnInLengths)
+def burnInCalc(mcmcFnames,combinedFname):
+    """
+    NOTE: SMODT was designed to start the full MCMC chain from the last point of the 
+        Sigma Tuning stage.  As this stage effectively acts as a form of burn-in period
+        the burn-in value found from the pure MCMC tends to be very short.
+ 
+    Calculate the burn in for a set of MCMC chains following the formulation of Tegmark.
+     
+    Burn-in is defined as the first point in a chain when the chi squared is equal or less
+     than the median value of all the chains in the simulation.  Thus, there MUST 
+     be more than 1 chain to perform this calculation.
+    """
+    log.debug("Starting to calculate burn-in.")
+     
+    chiSquaredsALL = np.array([])
+    burnInLengths = []
+    s=''
+    # calculate median of combined data ary
+    (head,data) = loadFits(combinedFname)
+    chiSqsALL = data[:,11]
+    if type(chiSqsALL)!=np.ndarray:
+        chiSqsALL = np.array(chiSqsALL)
+    medainALL = np.median(chiSqsALL,axis=0)         
+    log.debug("medainALL = "+str(medainALL))
+    ## calculate location of medianALL in each chain
+    for filename in mcmcFnames:
+        if os.path.exists(filename):
+            (head,data) = loadFits(combinedFname)
+            chiSqsChain = data[:,11]
+            #medianChain = np.median(chiSquaredsChain)
+            burnInLength = burnInCalcFunc(chiSquaredsChain, medainALL)
+            for i in range(0,len(chiSqsChain)):
+                if chiSqsChain[i]<medainALL:
+                    burnInLength = i+1
+                    break
+            burnInLengths.append(burnInLength)
+            s += '\nmedian value for all chains = '+str(medainALL)
+            s += "\nTotal number of points in the chain = "+str(len(chiSqsChain))+"\n"
+            s += "Burn-in length = "+str(burnInLength)+"\n"
+            log.debug(s+"\n\n")
+    return (s,burnInLengths)
 
 def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
     """
@@ -611,6 +593,7 @@ def summaryFile(settingsDict,stageList,finalFits,outFname,grStr,effPtsStr,clStr,
     bestStr = '\n'+'-'*20+'\nBest fit values are:\n'+'-'*20+'\n'
     for i in range(len(bestFit)):
         bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
+    bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[i]/float(head['nu'][0]))+'\n'+'*'*45
     f.write(bestStr)
     f.write('\n'+grStr)
     f.write('\n'+effPtsStr)

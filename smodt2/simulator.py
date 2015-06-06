@@ -312,8 +312,8 @@ class Simulator(object):
         sigmasOut = copy.deepcopy(sigs)
         if (stage=='ST')or(stage=='MCMC'):
             if (sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSigStps'))==0)and(self.acceptCount>1):
-                self.acceptStr = "Chain #"+str(self.chainNum)+'\n'
-                self.shiftStr = "Chain #"+str(self.chainNum)+'\n'
+                self.acceptStr = '\n'+stage+" chain #"+str(self.chainNum)+'\n'
+                self.shiftStr = ''
                 self.parIntVaryAry = np.array(self.parIntVaryAry)
                 self.acceptBoolAry = np.array(self.acceptBoolAry)
                 self.acceptStr+="Number of steps used to calculate acceptance rate = "+repr(len(self.acceptBoolAry))+'\n'
@@ -324,7 +324,7 @@ class Simulator(object):
                     self.acceptStr+= 'parameter # '+str(i)+' acceptance = '+str(float(nAcc)/float(nTot))+'\n'
                     if stage=='ST':
                         ##check each rate to choose up/down shift and do so and update shiftStr
-                        self.shiftStr+= 'parameter # '+str(i)+" shifting sigma "+str(sigs[i])+" -> "
+                        self.shiftStr+= '\n'+stage+" chain #"+str(self.chainNum)+'\nparameter # '+str(i)+" shifting sigma "+str(sigs[i])+" -> "
                         if ((float(nAcc)/float(nTot))>0.35)and(sigs[i]<self.dictVal('sigMax')):
                             sigmasOut[i]+=self.dictVal('sigMin')
                         elif ((float(nAcc)/float(nTot))<0.25)and(sigs[i]>self.dictVal('sigMin')):

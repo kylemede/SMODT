@@ -476,9 +476,9 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             ## start making figure for residual and fit plots
             figRV = plt.figure(3,figsize=(10,5))
             residualsPlot = figRV.add_subplot(212)
-            residualsPlot.set_position([0.12,0.15,0.83,0.23])
+            residualsPlot.set_position([0.13,0.15,0.83,0.23])
             fitPlot = figRV.add_subplot(211)
-            fitPlot.set_position([0.12,0.38,0.83,0.55])
+            fitPlot.set_position([0.13,0.38,0.83,0.55])
             residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=20)
             residYlabel = 'O-C '
             if latex:

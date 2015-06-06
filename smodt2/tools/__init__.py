@@ -14,6 +14,8 @@ from generalTools import mcmcEffPtsCalc
 from generalTools import summaryFile
 from generalTools import gelmanRubinCalc
 from generalTools import cleanUp
+from generalTools import burnInCalc
+from generalTools import burnInStripper
 
 from progressbar.progressbar import ProgressBar
  

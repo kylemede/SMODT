@@ -53,7 +53,7 @@ advancedDict = {
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(2.6,'Max reduced chiSquared to enter ST.'),
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(2.24,'Max reduced chiSquared to enter MCMC.'),
+'cMaxMCMC':(2.22,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 20,
@@ -77,9 +77,9 @@ advancedDict = {
 ############################
 # Settings for MCMC mode ###
 ############################
-# Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] $$$$$ still not coded up $$$
-'CalcBurn' :(False,"Calculate Burn-in?"),
-# remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?$$$$$ still not coded up $$$
+# Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
+'CalcBurn' :False,
+# remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by ST though...)? [bool]
 'delBurn' : (False,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :True,

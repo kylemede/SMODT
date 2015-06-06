@@ -90,50 +90,58 @@ def smodt():
     ##     stage.  good idea???
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     tic=timeit.default_timer()
-    if True: #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        ##make list of stages to run
-        stageList = []
-        if settingsDict['symMode'][0]=='MC':
-            stageList = ['MC']
-        elif settingsDict['symMode'][0]=='SA':
-            stageList = ['SA']
-        elif settingsDict['symMode'][0]=='MCMC':
-            stageList = ['SA','ST','MCMC']
-        #stageList=['MCMC']##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        ## Start the number of processes/chains requested
-        master = []
-        log.info("Going to start "+str(settingsDict['nChains'][0])+" chains, with each running these stages: "+repr(stageList))
-        for procNumber in range(settingsDict['nChains'][0]):
-            master.append(singleProc(settingsDict,Sim,stageList,procNumber))
-            master[procNumber].start()
-        for procNumber in range(settingsDict['nChains'][0]):
-            master[procNumber].join()    
-        toc=timeit.default_timer()
-        log.info("ALL stages took a total of "+str(int(toc-tic))+' seconds')
-        
-        ###################
-        # Post-processing # 
-        ###################
-        ## load up list of output files
-        tic2=timeit.default_timer()
-        outFiles = []
-        for procNumber in range(settingsDict['nChains'][0]):
-            fname = os.path.join(settingsDict['finalFolder'],'outputData'+settingsDict['symMode'][0]+str(procNumber)+'.fits')
-            if os.path.exists(fname):
-                outFiles.append(fname)      
-        
-        ## calc and strip burn-in?
-        burnInStr = ''
-        
-        ## combine the data files
-        allFname = ''
-        if len(outFiles)>0:
-            allFname = os.path.join(os.path.dirname(outFiles[0]),"combined"+settingsDict['symMode'][0]+"data.fits")
-            tools.combineFits(outFiles,allFname)
-            
-        ## find best fit
-        if os.path.exists(allFname):
-            bestFit = tools.findBestOrbit(allFname)
+    ##make list of stages to run
+    stageList = []
+    if settingsDict['symMode'][0]=='MC':
+        stageList = ['MC']
+    elif settingsDict['symMode'][0]=='SA':
+        stageList = ['SA']
+    elif settingsDict['symMode'][0]=='MCMC':
+        stageList = ['SA','ST','MCMC']
+    #stageList=['MCMC']##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    ## Start the number of processes/chains requested
+    master = []
+    log.info("Going to start "+str(settingsDict['nChains'][0])+" chains, with each running these stages: "+repr(stageList))
+    for procNumber in range(settingsDict['nChains'][0]):
+        master.append(singleProc(settingsDict,Sim,stageList,procNumber))
+        master[procNumber].start()
+    for procNumber in range(settingsDict['nChains'][0]):
+        master[procNumber].join()    
+    toc=timeit.default_timer()
+    log.info("ALL stages took a total of "+str(int(toc-tic))+' seconds')
+    
+    ###################
+    # Post-processing # 
+    ###################
+    ## load up list of output files
+    tic2=timeit.default_timer()
+    outFiles = []
+    for procNumber in range(settingsDict['nChains'][0]):
+        fname = os.path.join(settingsDict['finalFolder'],'outputData'+settingsDict['symMode'][0]+str(procNumber)+'.fits')
+        if os.path.exists(fname):
+            outFiles.append(fname)      
+    
+    ## combine the data files
+    allFname = ''
+    if len(outFiles)>0:
+        allFname = os.path.join(os.path.dirname(outFiles[0]),"combined"+settingsDict['symMode'][0]+"data.fits")
+        tools.combineFits(outFiles,allFname)
+    
+    ## calc and strip burn-in?
+    burnInStr = ''
+    strippedAllFname = ''
+    if (len(outFiles)>0)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
+        (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
+        if settingsDict['delBurn'][0]:
+            strippedFnames = tools.burnInStripper(outFiles,burnInLengths)
+            ## combine stripped files to make final file?
+            if len(strippedFnames)>0:
+                strippedAllFname = os.path.join(os.path.dirname(strippedFnames[0]),"combined-BIstripped-MCMCdata.fits")
+                tools.combineFits(strippedFnames,strippedAllFname)
+    
+    ## find best fit
+    if os.path.exists(allFname):
+        bestFit = tools.findBestOrbit(allFname)
             
     ## orbit plots?
     if settingsDict['pltOrbit'] and os.path.exists(allFname):
@@ -162,8 +170,7 @@ def smodt():
     postTime = toc-tic2
     allTime = toc-tic
     if os.path.exists(allFname):
-        summaryFname = os.path.join(os.path.dirname(allFname),'SUMMARY-'+settingsDict['symMode'][0]+".txt")
-        tools.summaryFile(settingsDict,stageList,allFname,summaryFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime)
+        tools.summaryFile(settingsDict,stageList,allFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime)
         
     ##clean up files (move to folders or delete them)
     tools.cleanUp(settingsDict,stageList,allFname)

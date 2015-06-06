@@ -73,6 +73,7 @@ def mcmcEffPtsCalc(outputDataFilename):
     Calculate correlation length and the number of effective steps for each parameter 
     that was varying during the simulation.  The results are put into the log.
     """
+    log.info("Starting to calculate correlation lengths")
     (head,data) = loadFits(outputDataFilename)
     numSteps = data.shape[0]
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
@@ -99,11 +100,10 @@ def burnInCalc(mcmcFnames,combinedFname):
      than the median value of all the chains in the simulation.  Thus, there MUST 
      be more than 1 chain to perform this calculation.
     """
-    log.debug("Starting to calculate burn-in.")
+    log.info("Starting to calculate burn-in.")
      
     chiSquaredsALL = np.array([])
     burnInLengths = []
-    s=''
     # calculate median of combined data ary
     (head,data) = loadFits(combinedFname)
     chiSqsALL = data[:,11]
@@ -111,23 +111,50 @@ def burnInCalc(mcmcFnames,combinedFname):
         chiSqsALL = np.array(chiSqsALL)
     medainALL = np.median(chiSqsALL,axis=0)         
     log.debug("medainALL = "+str(medainALL))
+    s = '\nmedian value for all chains = '+str(medainALL)
     ## calculate location of medianALL in each chain
     for filename in mcmcFnames:
         if os.path.exists(filename):
-            (head,data) = loadFits(combinedFname)
+            (head,data) = loadFits(filename)
             chiSqsChain = data[:,11]
             #medianChain = np.median(chiSquaredsChain)
-            burnInLength = burnInCalcFunc(chiSquaredsChain, medainALL)
             for i in range(0,len(chiSqsChain)):
                 if chiSqsChain[i]<medainALL:
                     burnInLength = i+1
                     break
             burnInLengths.append(burnInLength)
-            s += '\nmedian value for all chains = '+str(medainALL)
-            s += "\nTotal number of points in the chain = "+str(len(chiSqsChain))+"\n"
-            s += "Burn-in length = "+str(burnInLength)+"\n"
-            log.debug(s+"\n\n")
+            s2 = "\nfor chain #"+str(head['chainNum'][0])
+            s2 += "\nTotal number of points in the chain = "+str(len(chiSqsChain))+"\n"
+            s2 += "Burn-in length = "+str(burnInLength)+"\n"
+            s+=s2
+            log.debug(s2)
+    log.debug(s)
     return (s,burnInLengths)
+
+def burnInStripper(mcmcFnames,burnInLengths):
+    """
+    Strip the initial burn-in off each chain.
+    """
+    newFnames=[]
+    for i in range(0,len(mcmcFnames)):
+        filename = mcmcFnames[i]
+        burnIn = burnInLengths[i]
+        if os.path.exists(filename):
+            (head,data) = loadFits(filename)
+            ##strip burn-in and write to new fits             
+            hdu = pyfits.PrimaryHDU(data[burnIn:,:])
+            hdulist = pyfits.HDUList([hdu])
+            newHead = hdulist[0].header
+            for key in head:
+                newHead[key]=(head[key],head.comments[key])
+            n = os.path.splitext(os.path.basename(filename))
+            newFname = os.path.join(settingsDict['finalFolder'],n[0]+'_BIstripped.fits')
+            hdulist.writeto(newFname)
+            log.info("output file written to:below\n"+newFname)
+            hdulist.close()
+            newFname.append(newFname)
+            log.debug("burn-in stripped file written to:\n"+newFname)
+    return newFnames
 
 def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
     """
@@ -136,9 +163,10 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
     """
     GRs=[]
     Ts = []
-    grStr = ""
+    grStr = '\n'+'-'*40+"\nGelman-Rubin Results:\n"+'-'*40+'\n'
     Lcfloat = float(nMCMCsamp)
     if os.path.exists(mcmcFileList[0]):
+        log.info("Starting to calculate R&T")
         ###########################################################
         ## stage 1 ->  load up values for each param in each chain.
         ## allStg1vals = [chain#, param#, (mean,variance,Lc)]
@@ -164,7 +192,7 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
         rHighStr = ''
         tLowStr = ''
         for j in range(0,len(paramList)):
-            log.debug("Starting stage 2 for param: "+paramStrs[j])
+            log.debug("Starting stage 2 for param: "+paramStrs[paramList[j]])
             Ncfloat = float(Nc)
             ##calc R
             W = 0
@@ -186,13 +214,13 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
                 #T = np.mean(allStg1vals[:,j,2])*Ncfloat*np.min([(V/B),1.0])
                 T = Lcfloat*Ncfloat*np.min([(V/B),1.0])
             Ts.append(T)       
-            grStr+=paramStrs[j]+" had R = "+str(R)+", T = "+str(T)+'\n'
+            grStr+=paramStrs[paramList[j]]+" had R = "+str(R)+", T = "+str(T)+'\n'
             if T<tLowest:
                 tLowest=T
-                tLowStr="Lowest T = "+str(T)+' for '+paramStrs[j]+'\n'
+                tLowStr="Lowest T = "+str(T)+' for '+paramStrs[paramList[j]]+'\n'
             if R>rHighest:
                 rHighest=R
-                rHighStr="Highest R = "+str(R)+' for '+paramStrs[j]+'\n'
+                rHighStr="Highest R = "+str(R)+' for '+paramStrs[paramList[j]]+'\n'
         grStr+='\nWorst R&T values were:\n'+rHighStr+tLowStr+'\n'
     else:
         log.critical("Gelman-Rubin stat can NOT be calculated as file does not exist!!:\n"+chainDataFileList[0])
@@ -572,11 +600,12 @@ def combineFits(filenames,outFname):
     hdulist.close()
     log.info("output file written to:below\n"+outFname)
     
-def summaryFile(settingsDict,stageList,finalFits,outFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime):
+def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime):
     """
     Make a file that summarizes the results.
     """
-    f = open(outFname,'w')
+    summaryFname = os.path.join(settingsDict['finalFolder'],'RESULTS.txt')
+    f = open(summaryFname,'w')
     (head,data) = loadFits(finalFits)
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
     f.write('\n'+'-'*7+'\nBasics:\n'+'-'*7)
@@ -600,7 +629,7 @@ def summaryFile(settingsDict,stageList,finalFits,outFname,grStr,effPtsStr,clStr,
     f.write('\n'+clStr)
     f.write('\n'+burnInStr)
     f.close()
-    log.info("Summary file written to:\n"+outFname)  
+    log.info("Summary file written to:\n"+summaryFname)  
 
 def getParInts(head):
     """

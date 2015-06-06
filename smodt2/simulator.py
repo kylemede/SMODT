@@ -14,17 +14,6 @@ class Simulator(object):
     Simulated Annealing, Sigma Tunning, and pure MCMC simulations.
     """
     def __init__(self,settingsDict):
-        self.settingsDict = settingsDict
-        self.log = tools.getLogger('main.simulator',lvl=100,addFH=False)
-        tools.logSystemInfo(self.log)
-        self.realData = tools.loadRealData(os.path.join(self.dictVal('settingsDir'),self.dictVal('prepend')),dataMode=self.dictVal('dataMode'))
-        (self.rangeMaxs,self.rangeMins,self.starterSigmas,self.paramInts,self.nu,self.nuDI,self.nuRV) = self.starter() 
-        self.Orbit = tools.cppTools.Orbit()
-        self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'))
-        self.Orbit.loadRealData(self.realData)
-        self.Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
-        self.seed = int(timeit.default_timer())
-        np.random.seed(self.seed)
         self.paramsLast = 0
         self.paramsBest = 0
         self.bestSumStr = ''
@@ -37,7 +26,19 @@ class Simulator(object):
         self.acceptBoolAry = []
         self.parIntVaryAry = []
         self.chainNum =0
-           
+        self.settingsDict = settingsDict
+        self.log = tools.getLogger('main.simulator',lvl=100,addFH=False)
+        tools.logSystemInfo(self.log)
+        self.realData = tools.loadRealData(os.path.join(self.dictVal('settingsDir'),self.dictVal('prepend')),dataMode=self.dictVal('dataMode'))
+        (self.rangeMaxs,self.rangeMins,self.starterSigmas,self.paramInts,self.nu,self.nuDI,self.nuRV) = self.starter() 
+        self.Orbit = tools.cppTools.Orbit()
+        self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'))
+        self.Orbit.loadRealData(self.realData)
+        self.Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
+        self.seed = int(timeit.default_timer())#reset in resetTracked()
+        np.random.seed(self.seed)
+        
+        
     def starter(self):
         """
         Things needed by all simulator modes that can be internal, but 
@@ -156,6 +157,7 @@ class Simulator(object):
         self.settingsDict['nuRV'] = (nuDI,"nu for RV")
         paramIntsStr = repr(paramInts).replace(' ','')
         self.settingsDict['parInts'] = (paramIntsStr,"Varried params")
+        self.settingsDict['chainNum'] = (self.chainNum,"chain number")
 
         return (rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
     

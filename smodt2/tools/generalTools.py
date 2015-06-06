@@ -483,18 +483,20 @@ def combineFits(filenames,outFname):
     hdulist.close()
     log.info("output file written to:below\n"+outFname)
     
-def summaryFile(finalFits,outFname,grStr,effPtsStr,clStr,burnInStr,bestFit):
+def summaryFile(finalFits,outFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime):
     """
     Make a file that summarizes the results.
     """
     f = open(outFname,'w')
     (head,data) = loadFits(finalFits)
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
-    f.write('\nBasics:\n')
-    f.write('\nparamList = '+repr(paramList))
-    f.write('\nparamStrs = '+repr(paramStrs))
-    f.write('\nparamFileStrs = '+repr(paramFileStrs))
-    bestStr = 'Best fit values are:\n'
+    f.write('\nBasics:\n'+'-'*7)
+    f.write('Post-Processing took: '+str(postTime)+' seconds\n')
+    f.write('Total simulation took: '+str(allTime)+' seconds\n')
+    f.write('\nparamList:\n'+repr(paramList))
+    f.write('\nparamStrs:\n'+repr(paramStrs))
+    f.write('\nparamFileStrs:\n'+repr(paramFileStrs))
+    bestStr = '\n'+'-'*20+'\nBest fit values are:\n'+'-'*20+'\n'
     for i in range(len(bestFit)):
         bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
     f.write(bestStr)

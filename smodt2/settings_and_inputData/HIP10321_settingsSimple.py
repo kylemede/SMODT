@@ -5,7 +5,7 @@ simpleSettingsDict={
 'nSamples' : (1000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (7,"Number of chains"),
+'nChains' : (25,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
@@ -39,21 +39,21 @@ simpleSettingsDict={
 'TMIN' : 2450000,
 'TMAX' : 2452500,
 # Minimum/Maximum allowed value for the Period [double][yrs]
-'PMIN' : 19.5,
-'PMAX' : 20.5,
+'PMIN' : 18,
+'PMAX' : 22,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
 'incMIN' : 1.0,
 'incMAX' : 89.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : 168,
+'omegaMIN' : 160,
 'omegaMAX' : 180.0,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
-'KMIN' : 845,
+'KMIN' : 800,
 'KMAX' : 900,
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
 'vMINs' :[6100,300,6250],
-'vMAXs' :[6250,400,6400],
+'vMAXs' :[6250,500,6400],
 }
 
 

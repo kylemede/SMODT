@@ -49,12 +49,12 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (25.0,"Max reduced chiSquared during MC and SA"),
+'chiMAX' : (100.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed reduced chiSquared out of SA before entering ST/MCMC [double]
 'cMaxMCMC':(3.0,'Max reduced chiSquared to enter ST/MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 20,
+'logLevel' : 30,
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :20,
 # make plot of posterior distributions? [bool]
@@ -82,14 +82,14 @@ advancedDict = {
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(500000,"Number of Annealing samples"),
+'nSAsamp' :(100000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (500.0,"SA starting temperature."),
+'strtTemp' : (1000.0,"SA starting temperature."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
 'strtSig' : (0.25,"Starting percent param range for SA"),
 # Number of temperature steps over Simulated Annealing [int].  
-# Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/50)!
+# Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/100)!
 'nTmpStps'  : (1000,"Number of temperature steps during SA."),
 # number of samples to draw for sigma tuning stage [int].
 'nSTsamp' :(70000,"Number of Tuning samples"),

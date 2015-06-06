@@ -126,8 +126,8 @@ class Simulator(object):
         for val in notInNuInts:
             paramIntsClean=paramIntsClean[np.where(paramIntsClean!=val)]
         nDIvars = np.sum(np.where(paramIntsClean<10,1,0))
-        print 'DIvars = '+repr(paramIntsClean[np.where(paramIntsClean<10)])
-        print 'RVvars = '+repr(paramIntsClean[np.where(paramIntsClean!=3)])
+        self.log.debug('DIvars = '+repr(paramIntsClean[np.where(paramIntsClean<10)]))
+        self.log.debug('RVvars = '+repr(paramIntsClean[np.where(paramIntsClean!=3)]))
         nRVvars = np.sum(np.where(paramIntsClean!=3,1,0))
         if nDIepochs==0:
             nVars = nRVvars
@@ -422,7 +422,7 @@ class Simulator(object):
             if (self.dictVal('logLevel')<50)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):
                 bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), stage+str(chainNum)+' complete so far.')
         if self.dictVal('logLevel')<50:
-            bar.render(100,stage+str(chainNum)+' complete so far.')
+            bar.render(100,stage+str(chainNum)+' complete!\n')
         toc=timeit.default_timer()
         self.log.info(stage+" it took: "+str(int(toc-tic))+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$
         self.endSummary(len(acceptedParams),temp,sigmas,stage)

@@ -63,8 +63,8 @@ class singleProc(Process):
                 outMCMCFname = self.Sim.simulatorFunc('MCMC',self.chainNum,paramsST,sigmasST)
                 self.log.info('chain #'+str(self.chainNum)+' MCMC OUTFILE :\n'+outMCMCFname)
         else:
-            self.log.critical("NO ORBIT WITH A CHISQUARED < "+str(self.settingsDict['chiMAX'][0])+\
-                              " WAS FOUND FOR CHAIN #"+str(self.chainNum))  
+            self.log.critical("NO ORBIT WITH A REDUCED CHISQUARED < "+str(self.settingsDict['cMaxMCMC'][0])+\
+                              " WAS FOUND FOR CHAIN #"+str(self.chainNum)+'\n')  
                
 def smodt():
     """
@@ -80,7 +80,7 @@ def smodt():
     # Run nChains for mode requested #
     ##################################     
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    ##IDEA: could call the set of processes to only perform on stage at a time
+    ##IDEA: could call the set of processes to only perform one stage at a time
     ##     Then choose the best output from all of them as the start of the next
     ##     stage.  good idea???
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -142,6 +142,7 @@ def smodt():
     
     ## progress plots?
     
+    
     ##calc R?
     grStr = ''
     if (len(outFiles)>0) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
@@ -152,18 +153,19 @@ def smodt():
     if (settingsDict['symMode'][0]=='MCMC')and (settingsDict['calcCL'] and os.path.exists(allFname)):
         effPtsStr = tools.mcmcEffPtsCalc(allFname)
     
-    ## make summary file
-    if os.path.exists(allFname):
-        summaryFname = os.path.join(os.path.dirname(allFname),'SUMMARY-'+settingsDict['symMode'][0]+".txt")
-        tools.summaryFile(allFname,summaryFname,grStr,effPtsStr,clStr,burnInStr,bestFit)
-    
-            
     ##clean up files (move to folders or delete them)
     
-    ## Final log messages and end
+    
+    ## make summary file
     toc=timeit.default_timer()
-    log.info("Post-processing took a total of "+str(int(toc-tic2))+' seconds')
-    log.info("\n\nEVERYTHING took a total of "+str(int(toc-tic))+' seconds\n\n')
+    postTime = toc-tic2
+    allTime = toc-tic
+    if os.path.exists(allFname):
+        summaryFname = os.path.join(os.path.dirname(allFname),'SUMMARY-'+settingsDict['symMode'][0]+".txt")
+        tools.summaryFile(allFname,summaryFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime)
+    ## Final log messages and end
+    log.info("Post-processing took a total of "+str(int(postTime))+' seconds')
+    log.info("\n\nEVERYTHING took a total of "+str(int(allTime))+' seconds\n\n')
     log.info("End of SMODT2.0 main")
     ##END MAIN 
 

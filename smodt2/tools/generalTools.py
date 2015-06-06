@@ -78,7 +78,7 @@ def mcmcEffPtsCalc(outputDataFilename):
     numSteps = data.shape[0]
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
     
-    completeStr = '\nThe correlation lengths of all params are:\nFormat: param #, param name, correlation length'
+    completeStr = '\n'+'-'*45+'\nThe correlation lengths of all params are:\n'+'-'*45+'\nparam #, param name, correlation length'
     completeStr+= ' -> total number of steps/correlation length = number of effective points\n'
     for i in range(0,len(paramList)):
         meanCorrLength = corrLengthCalcVar(data[:,paramList[i]])
@@ -163,7 +163,7 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
     """
     GRs=[]
     Ts = []
-    grStr = '\n'+'-'*40+"\nGelman-Rubin Results:\n"+'-'*40+'\n'
+    grStr = '\n'+'-'*30+"\nGelman-Rubin Results:\n"+'-'*30+'\n'
     Lcfloat = float(nMCMCsamp)
     if os.path.exists(mcmcFileList[0]):
         log.info("Starting to calculate R&T")
@@ -226,6 +226,21 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
         log.critical("Gelman-Rubin stat can NOT be calculated as file does not exist!!:\n"+chainDataFileList[0])
     
     return (GRs,Ts,grStr)
+
+def timeStrMaker(deltaT):
+    """
+    Convert a time in seconds into a nicer string.
+    """
+    timeStr = ''
+    if deltaT>60:
+        if deltaT>(60*60):
+            hr = int(deltaT//(60*60))
+            timeStr = str(hr)+" hours and "+str(int(deltaT-hr*60))+" minutes"
+        else:
+            m = int(deltaT//(60))
+            timeStr = str(hr)+" minutes and "+str(int(deltaT-m*60))+" seconds"
+    else:
+        timeStr = str(int(deltaT))+' seconds'
 
 def getParStrs(head,latex=True):
     """
@@ -622,7 +637,7 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
     bestStr = '\n'+'-'*20+'\nBest fit values are:\n'+'-'*20+'\n'
     for i in range(len(bestFit)):
         bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
-    bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[i]/float(head['nu'][0]))+'\n'+'*'*45
+    bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[11]/float(head['nu']))+'\n'+'*'*45
     f.write(bestStr)
     f.write('\n'+grStr)
     f.write('\n'+effPtsStr)

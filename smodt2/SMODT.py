@@ -130,7 +130,7 @@ def smodt():
     ## calc and strip burn-in?
     burnInStr = ''
     strippedAllFname = ''
-    if (len(outFiles)>0)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
+    if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
         (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
         if settingsDict['delBurn'][0]:
             strippedFnames = tools.burnInStripper(outFiles,burnInLengths)
@@ -157,12 +157,12 @@ def smodt():
     
     ## calc correlation length & number effective points?
     effPtsStr = ''
-    if (settingsDict['symMode'][0]=='MCMC')and (settingsDict['calcCL'] and os.path.exists(allFname)):
+    if ((len(outFiles)>1)and(settingsDict['symMode'][0]=='MCMC'))and (settingsDict['calcCL'] and os.path.exists(allFname)):
         effPtsStr = tools.mcmcEffPtsCalc(allFname)
         
     ##calc R?
     grStr = ''
-    if (len(outFiles)>0) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
+    if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
         (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
         
     ## make summary file

@@ -55,15 +55,19 @@ class singleProc(Process):
             outMCFname = self.Sim.simulatorFunc('MC',self.chainNum)
             self.log.info('chain #'+str(self.chainNum)+' MC OUTFILE :\n'+outMCFname)
         if 'SA' in self.stageList:
-            (paramsSA,sigmasSA,bestRedChiSqr) = self.Sim.simulatorFunc('SA',self.chainNum)
-        if bestRedChiSqr<self.settingsDict['cMaxMCMC'][0]:
+            (paramsSA,sigmasSA,bestRedChiSqrSA) = self.Sim.simulatorFunc('SA',self.chainNum)
+        if bestRedChiSqrSA<self.settingsDict['chiMaxST'][0]:
             if 'ST' in self.stageList:
-                (paramsST,sigmasST) = self.Sim.simulatorFunc('ST',self.chainNum,paramsSA,sigmasSA)
-            if 'MCMC' in self.stageList:
-                outMCMCFname = self.Sim.simulatorFunc('MCMC',self.chainNum,paramsST,sigmasST)
-                self.log.info('chain #'+str(self.chainNum)+' MCMC OUTFILE :\n'+outMCMCFname)
+                (paramsST,sigmasST,bestRedChiSqrST) = self.Sim.simulatorFunc('ST',self.chainNum,paramsSA,sigmasSA)
+            if bestRedChiSqrST<self.settingsDict['cMaxMCMC'][0]:
+                if 'MCMC' in self.stageList:
+                    outMCMCFname = self.Sim.simulatorFunc('MCMC',self.chainNum,paramsST,sigmasST)
+                    self.log.info('chain #'+str(self.chainNum)+' MCMC OUTFILE :\n'+outMCMCFname)
+            else:
+                self.log.critical("NO ST SOLUTION WITH A REDUCED CHISQUARED < "+str(self.settingsDict['cMaxMCMC'][0])+\
+                                  " WAS FOUND FOR CHAIN #"+str(self.chainNum)+'\n')  
         else:
-            self.log.critical("NO ORBIT WITH A REDUCED CHISQUARED < "+str(self.settingsDict['cMaxMCMC'][0])+\
+            self.log.critical("NO SA SOLUTION WITH A REDUCED CHISQUARED < "+str(self.settingsDict['chiMaxST'][0])+\
                               " WAS FOUND FOR CHAIN #"+str(self.chainNum)+'\n')  
                
 def smodt():

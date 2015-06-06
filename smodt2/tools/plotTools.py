@@ -3,6 +3,7 @@ import numpy as np
 import os
 import pylab
 import copy
+import glob
 plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
 import constants as const
@@ -190,7 +191,7 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
         (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False)
         
         ## run through all the data files and parameters requested and make histogram files
-        completeCLstr = '\nConfidence Levels are:\n'+'-'*75+'\n'
+        completeCLstr = '-'*23+'\nConfidence Levels are:\n'+'-'*75+'\n'
         for i in range(0,len(paramList)):
             if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[paramList[i]]+'.dat'))==False)or forceRecalc:
                 if verbose:
@@ -248,6 +249,22 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                 os.system("epstopdf "+plotFilename)
             except:
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")
+        
+        ## Get hist and conflevel files to move to their own subfolder        
+        histFiles = []
+        hF = glob.glob(os.path.join(os.path.dirname(outputDataFilename),"hist*.dat"))
+        cF = glob.glob(os.path.join(os.path.dirname(outputDataFilename),"confLevels*.dat"))
+        for i in range(0,len(hF)):
+            histFiles.append(hF[i])
+            histFiles.append(cF[i])
+        histFolder = os.path.join(os.path.dirname(outputDataFilename),"histData")
+        os.mkdir(histFolder)
+        for f in histFiles:
+            try:
+                shutil.move(f,os.path.join(histFolder,os.path.basename(f)))
+            except:
+                log.error('failed to move file:\n'+f+'\ninto hist folder.')
+        
         return completeCLstr
             
 def star(R, x0, y0, color='w', N=5, thin = 0.5):

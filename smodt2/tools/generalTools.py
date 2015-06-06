@@ -3,6 +3,7 @@
 import smodtLogger
 import os
 import shutil
+import glob
 import numpy as np
 import sys
 import pyfits
@@ -366,7 +367,15 @@ def loadSettingsDict(filenameRoot):
     
     return settingsDict
     
-def startup(argv):    
+def startup(argv):
+    """
+    -Figure out important directories
+    -copy settings files to temp directory to combine them into the master settings dict
+    -get master settings dict
+    -make output folder
+    -remake the SWIG tools?
+    -copy all SMODT2.0 code into output dir for emergencies.    
+    """    
     ## Pull in settings filename prepend from command line args, if provided
     prepend = ''
     if len(argv)>1:
@@ -490,8 +499,8 @@ def summaryFile(finalFits,outFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTi
     f = open(outFname,'w')
     (head,data) = loadFits(finalFits)
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
-    f.write('\nBasics:\n'+'-'*7)
-    f.write('Post-Processing took: '+str(postTime)+' seconds\n')
+    f.write('\n'+'-'*7+'\nBasics:\n'+'-'*7)
+    f.write('\nPost-Processing took: '+str(postTime)+' seconds\n')
     f.write('Total simulation took: '+str(allTime)+' seconds\n')
     f.write('\nparamList:\n'+repr(paramList))
     f.write('\nparamStrs:\n'+repr(paramStrs))
@@ -506,6 +515,20 @@ def summaryFile(finalFits,outFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTi
     f.write('\n'+burnInStr)
     f.close()
     log.info("Summary file written to:\n"+outFname)
+
+def cleanUp(settingsDict):
+    """
+    Clean up final directory after simulation completes
+    """
+    ##del SA chain files
+    
+    ##del ST chain files
+    
+    ##del MCMC chain files
+    
+    ##del MCMC combined file
+    
+    
 
 def getParInts(head):
     """

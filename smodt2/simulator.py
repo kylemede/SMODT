@@ -75,7 +75,7 @@ class Simulator(object):
                0,\
                0,\
                self.dictVal('KMIN')]
-        #start with uniform sigma values
+        ##start with uniform sigma values
         sigSize = self.dictVal('strtSig')
         sigmas = [sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,0,0,sigSize]
         if len(self.dictVal('vMINs'))!=len(self.dictVal('vMAXs')):
@@ -84,8 +84,9 @@ class Simulator(object):
             sigmas.append(sigSize)
             rangeMins.append(self.dictVal('vMINs')[i])
             rangeMaxs.append(self.dictVal('vMAXs')[i])
-        #figure out which parameters are varying in this run.
-        #don't vary atot or chiSquared ever, and take care of TcEqualT and Kdirect cases
+        ##figure out which parameters are varying in this run.
+        ##don't vary atot or chiSquared ever, 
+        ##and take care of TcEqualT and Kdirect cases
         paramInts = []
         for i in range(0,len(rangeMins)):
             if (i!=10)and(i!=11):
@@ -116,13 +117,14 @@ class Simulator(object):
                     else:
                         paramInts.append(i)
         paramInts = np.array(paramInts)
-        #find total number of RV and DI epochs in real data
+        ##find total number of RV and DI epochs in real data
         nDIepochs = np.sum(np.where(self.realData[:,2]<1e6,1,0))
         nRVepochs = np.sum(np.where(self.realData[:,6]<1e6,1,0))
         nEpochs = len(self.realData[:,0])
-        #Take mass1 and dist from those include in nu calcs
+        ##Take mass1, dist, inc and period from those include in nu calcs
+        ##as they have clear priors.
         paramIntsClean = copy.deepcopy(paramInts)
-        notInNuInts = [0,2,7,8]        
+        notInNuInts = [0,2,7,8]      
         for val in notInNuInts:
             paramIntsClean=paramIntsClean[np.where(paramIntsClean!=val)]
         nDIvars = np.sum(np.where(paramIntsClean<10,1,0))
@@ -218,7 +220,7 @@ class Simulator(object):
                     if (self.rangeMins[i]>pars[i])or(pars[i]>self.rangeMaxs[i]):
                         inRange=False
         if (numAccepted==0)and(stage=='SA'):
-            ##jump as starting position was not in dead space for SA only.
+            ##Jump as starting position was in poor part of param space. for SA only.
             paramsOut = self.increment(pars,np.zeros(pars.shape),stage='MC')
             self.log.debug("Chain #"+str(self.chainNum)+" Nothing accepted yet, so jumping to new starting position.")
             inRange=True
@@ -247,10 +249,10 @@ class Simulator(object):
         chiSquaredRV = np.sum((diffsRV[np.where(diffsRV!=0)]**2)/(errorsRV**2))
         if (paramsOut[11]/self.nu)<self.bestRedChiSqr:
             self.bestRedChiSqr=(paramsOut[11]/self.nu)
-            self.bestSumStr = "Chain #"+str(self.chainNum)+' BEST reduced chiSquareds so far: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
+            self.bestSumStr = stage+" chain #"+str(self.chainNum)+' BEST reduced chiSquareds so far: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
             self.paramsBest = paramsOut
             if self.latestSumStr=='':
-                self.latestSumStr="Chain #"+str(self.chainNum)+' Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))
+                self.latestSumStr=stage+" chain #"+str(self.chainNum)+' Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))
         ## check if this step is accepted
         accept = False
         if stage=='MC':
@@ -272,12 +274,12 @@ class Simulator(object):
             self.acceptCount+=1
             self.acceptBoolAry.append(1)
             self.paramsLast=paramsOut
-            self.latestSumStr = "Chain #"+str(self.chainNum)+' Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
+            self.latestSumStr = stage+" chain #"+str(self.chainNum)+' Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
         else:
             self.acceptBoolAry.append(0)
         if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
             ##log a summary
-            sumStr = "below\nChain #"+str(self.chainNum)+" Stage= "+stage+", # Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
+            sumStr = "below\n"+stage+" chain #"+str(self.chainNum)+", # Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
             sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
             self.log.info(sumStr)
         if False:
@@ -337,8 +339,10 @@ class Simulator(object):
         """
         Make a final summary of important statistics for the chain.
         """
-        sumStr = "END OF CHAIN #"+str(self.chainNum)+" SUMMARY below\nFinalTemp = "+str(temp)+"\nTotal number of steps accepted = "+str(self.acceptCount)+"\n"
-        sumStr+= "Average acceptance rate = "+str(float(self.acceptCount)/float(self.dictVal(self.stgNsampDict[stage])))+"\n"
+        sumStr = "END OF "+stage+" CHAIN #"+str(self.chainNum)+" SUMMARY below\nFinalTemp = "
+        sumStr+= str(temp)+"\nTotal number of steps accepted = "+str(self.acceptCount)+"\n"
+        sumStr+= "Average acceptance rate = "
+        sumStr+=str(float(self.acceptCount)/float(self.dictVal(self.stgNsampDict[stage])))+"\n"
         sumStr+= "Total number of steps stored = "+str(totSaved)+"\n"
         sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
         sumStr+="Last params = "+repr(self.paramsLast)+'\n'
@@ -402,7 +406,7 @@ class Simulator(object):
         self.paramsLast = proposedPars
         self.startSummary(proposedPars,sigmas,stage)
         ##loop through each sample 
-        ##Follows these steps: inRange?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? DONE ->write output data
+        ##Follows these steps: in Range?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? DONE ->write output data
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
             (proposedPars,inRange)=self.rangeCheck(proposedPars,len(acceptedParams),stage)
             if inRange:
@@ -428,8 +432,9 @@ class Simulator(object):
         self.endSummary(len(acceptedParams),temp,sigmas,stage)
         outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',acceptedParams,self.settingsDict)
         if stage=='ST':
-            return (latestPars,sigmas)
+            return (latestPars,sigmas,self.bestRedChiSqr)
         elif stage=='SA':
+            #start ST at the best location with tight sigmas, and it will tune to ideal sigmas
             return (self.paramsBest,np.ones(np.array(sigmas).shape)*0.01,self.bestRedChiSqr)
         elif(stage=='MC')or(stage=='MCMC'):
             return outFname

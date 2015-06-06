@@ -281,7 +281,7 @@ class Simulator(object):
             ##log a summary
             sumStr = "below\n"+stage+" chain #"+str(self.chainNum)+", # Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
             sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
-            self.log.info(sumStr)
+            self.log.debug(sumStr)
         if False:
             print 'priorsRatio = '+str(priorsRatio)
             print 'inc priorsRatio = '+str(self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
@@ -352,7 +352,7 @@ class Simulator(object):
                 sumStr+="Final Sigmas = "+repr(sigmas)+'\n'
             sumStr+=self.acceptStr+self.shiftStr
         sumStr+='\n'+'='*70+'\n'
-        self.log.info(sumStr)
+        self.log.debug(sumStr)
     
     def resetTracked(self):
         """

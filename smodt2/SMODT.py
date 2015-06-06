@@ -61,6 +61,7 @@ class singleProc(Process):
                 (paramsST,sigmasST,bestRedChiSqrST) = self.Sim.simulatorFunc('ST',self.chainNum,paramsSA,sigmasSA)
             if bestRedChiSqrST<self.settingsDict['cMaxMCMC'][0]:
                 if 'MCMC' in self.stageList:
+                    self.log.info('chain #'+str(self.chainNum)+" made it to the MCMC stage :-)")
                     outMCMCFname = self.Sim.simulatorFunc('MCMC',self.chainNum,paramsST,sigmasST)
                     self.log.info('chain #'+str(self.chainNum)+' MCMC OUTFILE :\n'+outMCMCFname)
             else:

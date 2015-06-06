@@ -50,7 +50,7 @@ class singleProc(Process):
         #$$$$$$$$$$$$$$$$$$$$$$$ TEMP $$$$$$$$$$$$$$$$$$$$$$$$$$
         
         ## run each requested stage
-        self.log.info('Starting to run process #'+str(self.chainNum))
+        self.log.debug('Starting to run process #'+str(self.chainNum))
         if 'MC' in self.stageList:
             outMCFname = self.Sim.simulatorFunc('MC',self.chainNum)
             self.log.info('chain #'+str(self.chainNum)+' MC OUTFILE :\n'+outMCFname)
@@ -61,14 +61,14 @@ class singleProc(Process):
                 (paramsST,sigmasST,bestRedChiSqrST) = self.Sim.simulatorFunc('ST',self.chainNum,paramsSA,sigmasSA)
             if bestRedChiSqrST<self.settingsDict['cMaxMCMC'][0]:
                 if 'MCMC' in self.stageList:
-                    self.log.info('chain #'+str(self.chainNum)+" made it to the MCMC stage :-)")
+                    self.log.warning('chain #'+str(self.chainNum)+" made it to the MCMC stage :-)")
                     outMCMCFname = self.Sim.simulatorFunc('MCMC',self.chainNum,paramsST,sigmasST)
                     self.log.info('chain #'+str(self.chainNum)+' MCMC OUTFILE :\n'+outMCMCFname)
             else:
-                self.log.critical("NO ST SOLUTION WITH A REDUCED CHISQUARED < "+str(self.settingsDict['cMaxMCMC'][0])+\
+                self.log.warning("NO ST SOLUTION WITH A REDUCED CHISQUARED < "+str(self.settingsDict['cMaxMCMC'][0])+\
                                   " WAS FOUND FOR CHAIN #"+str(self.chainNum)+'\n')  
         else:
-            self.log.critical("NO SA SOLUTION WITH A REDUCED CHISQUARED < "+str(self.settingsDict['chiMaxST'][0])+\
+            self.log.warning("NO SA SOLUTION WITH A REDUCED CHISQUARED < "+str(self.settingsDict['chiMaxST'][0])+\
                               " WAS FOUND FOR CHAIN #"+str(self.chainNum)+'\n')  
                
 def smodt():
@@ -128,7 +128,7 @@ def smodt():
         ## combine the data files
         allFname = ''
         if len(outFiles)>0:
-            allFname = os.path.join(os.path.dirname(outFiles[0]),"outputData"+settingsDict['symMode'][0]+"-ALL.fits")
+            allFname = os.path.join(os.path.dirname(outFiles[0]),"combined"+settingsDict['symMode'][0]+"data.fits")
             tools.combineFits(outFiles,allFname)
             
         ## find best fit
@@ -145,29 +145,28 @@ def smodt():
         plotFilename = os.path.join(os.path.dirname(allFname),'summaryPlot'+settingsDict['symMode'][0])
         clStr = tools.summaryPlotter(allFname, plotFilename,stage=settingsDict['symMode'][0], shadeConfLevels=True)
     
-    ## progress plots?
+    ## progress plots?  INCLUDE?? maybe kill this one.
     
-    
-    ##calc R?
-    grStr = ''
-    if (len(outFiles)>0) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
-        (GRs,Ts,grStr) = gelmanRubinCalc(mcmcFileList)
-        
     ## calc correlation length & number effective points?
     effPtsStr = ''
     if (settingsDict['symMode'][0]=='MCMC')and (settingsDict['calcCL'] and os.path.exists(allFname)):
         effPtsStr = tools.mcmcEffPtsCalc(allFname)
-    
-    ##clean up files (move to folders or delete them)
-    
-    
+        
+    ##calc R?
+    grStr = ''
+    if (len(outFiles)>0) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
+        (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
+        
     ## make summary file
     toc=timeit.default_timer()
     postTime = toc-tic2
     allTime = toc-tic
     if os.path.exists(allFname):
         summaryFname = os.path.join(os.path.dirname(allFname),'SUMMARY-'+settingsDict['symMode'][0]+".txt")
-        tools.summaryFile(allFname,summaryFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime)
+        tools.summaryFile(settingsDict,stageList,allFname,summaryFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime)
+        
+    ##clean up files (move to folders or delete them)
+    tools.cleanUp(settingsDict,stageList,allFname)
     ## Final log messages and end
     log.info("Post-processing took a total of "+str(int(postTime))+' seconds')
     log.info("\n\nEVERYTHING took a total of "+str(int(allTime))+' seconds\n\n')

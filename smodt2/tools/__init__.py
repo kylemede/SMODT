@@ -12,6 +12,8 @@ from generalTools import combineFits
 from generalTools import findBestOrbit
 from generalTools import mcmcEffPtsCalc
 from generalTools import summaryFile
+from generalTools import gelmanRubinCalc
+from generalTools import cleanUp
 
 from progressbar.progressbar import ProgressBar
  

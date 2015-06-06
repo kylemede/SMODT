@@ -87,7 +87,67 @@ def mcmcEffPtsCalc(outputDataFilename):
     log.info(completeStr)
     return completeStr
 
-def gelmanRubinCalc(mcmcFileList):
+# def burnInCalcMultiFile(mcmcFnames,combinedFname):
+#     """
+#     NOTE: SMODT was designed to start the full MCMC chain from the last point of the 
+#         Sigma Tuning stage.  As this stage effectively acts as a form of burn-in period
+#         the burn-in value found from the pure MCMC tends to be very short.
+# 
+#     Calculate the burn in for a set of MCMC chains following the formulation of Tegmark.
+#     
+#     Burn-in is defined as the first point in a chain when the chi squared is equal or less
+#      than the median value of all the chains in the simulation.  Thus, there MUST 
+#      be more than 1 chain to perform this calculation.
+#     """
+#     verbose=False
+#     
+#     chiSquaredsALL = np.array([])
+#     
+#     ALLfilename = os.path.join(os.path.dirname(dataFilenames[0]),'outputData-ALL.dat')
+#     (log,dataAry,chiSquaredsALL,bestsAry) = dataReader(ALLfilename, columNum=False, returnData=False, returnChiSquareds=True)
+#         
+#     # calculate median of 'all' array
+#     if type(chiSquaredsALL)!=np.ndarray:
+#         chiSquaredsALL = np.array(chiSquaredsALL)
+#     medainALL = np.median(chiSquaredsALL,axis=0)         
+#     
+#     if verbose:
+#         print "medainALL = "+str(medainALL)
+#     
+#     burnInLengths = []
+#     s=''
+#     for filename in dataFilenames:
+#         if os.path.exists(filename):
+#             #find chain number and update logFilename with path and number
+#             s += "\n"+os.path.basename(filename)
+#             chainNumStr = s[s.find('chain_')+6:s.find('chain_')+6+1]
+#             datadir = os.path.dirname(filename)
+#             logFilename = os.path.join(datadir,'log-chain_'+chainNumStr+'.txt')
+#             log = open(logFilename,'a')
+#             log.write('\n'+75*'+'+'\n Inside burnInCalc \n'+75*'+'+'\n')
+#             if simAnneal:
+#                 log.write('Calculating the burn-in for the last 25% of the Simulated Annealing run:\n')
+#             else:
+#                 log.write("Calculating the burn-in for MCMC run:\n")
+#             
+#             (log,dataAry,chiSquaredsChain,bestsAry) = dataReader(filename, columNum=False, returnData=False, returnChiSquareds=True)
+#             if simAnneal:
+#                 chiSquaredsChain = chiSquaredsChain[startMCMCsample:-1]
+#             #medianChain = np.median(chiSquaredsChain)
+#             burnInLength = burnInCalcFunc(chiSquaredsChain, medainALL, jumpy=False)
+#             burnInLengths.append(burnInLength)
+#             
+#             s += '\nmedian value for all chains = '+str(medainALL)
+#             s += "\nTotal number of points in the chain = "+str(len(chiSquaredsChain))+"\n"
+#             s += "Burn-in length = "+str(burnInLength)+"\n"
+#             log.write(s+"\n\n")
+#             if verbose:
+#                 print 'For chain # '+chainNumStr+s
+#     log.close()
+#     
+#     return (s,burnInLengths)
+
+def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
     """
     Calculate Gelman-Rubin statistic for each varying param.
     Input MUST be the list of more than one MCMC chain files.
@@ -95,6 +155,7 @@ def gelmanRubinCalc(mcmcFileList):
     GRs=[]
     Ts = []
     grStr = ""
+    Lcfloat = float(nMCMCsamp)
     if os.path.exists(mcmcFileList[0]):
         ###########################################################
         ## stage 1 ->  load up values for each param in each chain.
@@ -123,9 +184,10 @@ def gelmanRubinCalc(mcmcFileList):
         for j in range(0,len(paramList)):
             log.debug("Starting stage 2 for param: "+paramStrs[j])
             Ncfloat = float(Nc)
+            ##calc R
             W = 0
             for i in range(0,Nc):
-                Lcfloat = float(allStg1vals[i,j,2])
+                #Lcfloat = float(allStg1vals[i,j,2])
                 W+=(Lcfloat/(Lcfloat-1.0))*allStg1vals[i,j,1]
             W=W/Ncfloat
             V = np.mean(allStg1vals[:,j,1])+(Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0])
@@ -133,11 +195,14 @@ def gelmanRubinCalc(mcmcFileList):
             if W!=0:
                 R = np.sqrt(V/W)
             GRs.append(R)
-            B = (Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0]*allStg1vals[:,j,2])
+            ##calc T
+            #B = (Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0]*allStg1vals[:,j,2])
+            B = (Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0])*Lcfloat
             #Uses the mean of Lc values
             T = np.NAN
             if B!=0:
-                T = np.mean(allStg1vals[:,j,2])*Ncfloat*np.min([(V/B),1.0])
+                #T = np.mean(allStg1vals[:,j,2])*Ncfloat*np.min([(V/B),1.0])
+                T = Lcfloat*Ncfloat*np.min([(V/B),1.0])
             Ts.append(T)       
             grStr+=paramStrs[j]+" had R = "+str(R)+", T = "+str(T)+'\n'
             if T<tLowest:
@@ -423,8 +488,41 @@ def startup(argv):
         os.chdir(cwd)
         log.debug("-"*45+" Done re-making CPP/SWIG tools "+45*"-")
         #print 'moved back to:\n'+cwd
+        
+    ## copy all of current code to output directory
+    codeCopyDir = os.path.join(settingsDict['finalFolder'],'codeUsed')
+    os.mkdir(codeCopyDir)
+    log.debug('Copying all files in the RESULTS folder over to DropBox folder:\n '+codeCopyDir)
+    copytree(settingsDict['smodtdir'], codeCopyDir)
+        
     return settingsDict
         
+
+def cleanUp(settingsDict,stageList,allFname):
+    """
+    Clean up final directory after simulation completes
+    """
+    #os.mkdir(settingsDict['finalFolder'])
+    
+    delFiles = []
+    ##get chain data filenames to delete
+    if settingsDict["delChains"]:
+        for stage in stageList:
+            fnames = glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits"))
+            for i in range(0,len(fnames)):
+                delFiles.append(fnames[i])
+    ##get combined data filename to delete
+    if settingsDict["delCombined"]:
+        delFiles.append(allFname)
+        
+    ##try to delete files
+    for fname in delFiles:
+        try:
+            log.debug('Deleting file: '+os.path.basename(fname))
+            os.remove(fname) 
+        except:
+            log.error('Failed to delete file: '+os.path.basename(fname))
+
 def writeFits(baseFilename,data,settingsDict):
     """
     Data will be written to a fits file with a single PrimaryHDU,
@@ -492,7 +590,7 @@ def combineFits(filenames,outFname):
     hdulist.close()
     log.info("output file written to:below\n"+outFname)
     
-def summaryFile(finalFits,outFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime):
+def summaryFile(settingsDict,stageList,finalFits,outFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime):
     """
     Make a file that summarizes the results.
     """
@@ -505,6 +603,11 @@ def summaryFile(finalFits,outFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTi
     f.write('\nparamList:\n'+repr(paramList))
     f.write('\nparamStrs:\n'+repr(paramStrs))
     f.write('\nparamFileStrs:\n'+repr(paramFileStrs))
+    numFilesStr = '\nTotal Files that finished each stage are:\n'
+    for stage in stageList:
+        fnames = glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits"))
+        numFilesStr+=stage+' = '+str(len(fnames))+'\n'
+    f.write(numFilesStr)
     bestStr = '\n'+'-'*20+'\nBest fit values are:\n'+'-'*20+'\n'
     for i in range(len(bestFit)):
         bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
@@ -514,21 +617,7 @@ def summaryFile(finalFits,outFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTi
     f.write('\n'+clStr)
     f.write('\n'+burnInStr)
     f.close()
-    log.info("Summary file written to:\n"+outFname)
-
-def cleanUp(settingsDict):
-    """
-    Clean up final directory after simulation completes
-    """
-    ##del SA chain files
-    
-    ##del ST chain files
-    
-    ##del MCMC chain files
-    
-    ##del MCMC combined file
-    
-    
+    log.info("Summary file written to:\n"+outFname)  
 
 def getParInts(head):
     """
@@ -693,5 +782,29 @@ def findBestOrbit(filename):
     return orbBest
                                          
                                          
-                                         
+def copytree(src, dst):
+    """
+    Recursively copy a directory and its contents to another directory.
+    
+    WARNING: this is not advised for higher level folders as it can also copy subfolders 
+    thus leading to a very large copy command if not careful.
+    
+    Code taken and simplified from:
+    http://stackoverflow.com/questions/1868714/how-do-i-copy-an-entire-directory-of-files-into-an-existing-directory-using-pyth
+    """
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            try:
+                shutil.copytree(s, d)
+                log.debug("Copying:\n "+repr(s)+'\nto:\n'+repr(d))
+            except:
+                log.error('FAILED while copying:\n'+repr(s)+'\nto:\n'+repr(d))
+        else:
+            try:
+                shutil.copy2(s, d)
+                log.debug("Copying:\n "+repr(s)+'\nto:\n'+repr(d))
+            except:
+                log.error('FAILED while copying:\n'+repr(s)+'\nto:\n'+repr(d))                        
     

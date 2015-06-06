@@ -53,36 +53,36 @@ advancedDict = {
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(2.8,'Max reduced chiSquared to enter ST.'),
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(2.35,'Max reduced chiSquared to enter MCMC.'),
+'cMaxMCMC':(2.26,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 20,
 #number of times to produce a summary log msg during a stage's progress [int]
-'nSumry'  :20,
+'nSumry'  :2,
 # make plot of posterior distributions? [bool]
 'pltDists' : True,
 # make plots of RV and DI/AM orbit fits [bool]
 'pltOrbit' :True,
 # Delete chain files after simulation is complete? [bool]
-'delChains' :False,
+'delChains' :True,
 # Delete combined data files after simulation is complete? [bool]
 'delCombined' :False,
 # run 'make' on C++/SWIG code to make sure it is up-to-date [bool]
 'remake' :False,
 ###$$$$$$$$$$$$$$$$$$$$$$ Keep in final version $$$$$$$$$$$$$$$$$$$$$$$$$$
-# Copy output non-data files to a Dropbox folder? [bool]  
+# Copy output non-data files to a Dropbox folder? [bool]  $$$$$ still not coded up $$$
 'CopyToDB' :False,
 'dbFolder' : '/run/media/kmede/HOME/Dropbox/SMODT-outputCopies/',
 ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ############################
 # Settings for MCMC mode ###
 ############################
-# Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
+# Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] $$$$$ still not coded up $$$
 'CalcBurn' :(False,"Calculate Burn-in?"),
-# remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?
+# remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?$$$$$ still not coded up $$$
 'delBurn' : (False,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
-'calcCL' :False,
+'calcCL' :True,
 # number of samples to draw for simulated annealing stage [int] 
 'nSAsamp' :(100000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
@@ -105,19 +105,19 @@ advancedDict = {
 # interval of accepted values between storing in output array (for SA,ST,MCMC, not MC) [int]
 # Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
 'saveInt' : (10,"Interval between saving params, for all but MC."),
-# Make plots of MCMC progress plots? [bool]
+# Make plots of MCMC progress plots? [bool]$$$$$ still not coded up $$$
 'pltMCMCprog' :False,
-# Make plots of Simulated Annealing progress plots? [bool]
+# Make plots of Simulated Annealing progress plots? [bool]$$$$$ still not coded up $$$
 'pltSAprog' :False,
 # Calculate the Gelman-Rubin statistic? [bool]
-'CalcGR' :False,
-# How many times do you want the Gelman-Rubin statistic calculated [int]
+'CalcGR' :True,
+# How many times do you want the Gelman-Rubin statistic calculated [int]  $$$$$ still not coded up $$$
 'nGRcalc' :10,
 #####################################
 # Special Settings for the models ###
 #####################################
 # fit to the primary's RV orbit [bool]
-'fitPrime' : (True,"Fit primary's orbit?"),
+'fitPrime' : (False,"Fit primary's orbit?"),
 # Are the RVs in the RVdata.dat for the Primary star? [bool]
 'primeRVs' : (True,"RVs measured from Primary?"),
 # Draw values for K directly, do NOT calculate it [bool]. Kills varying of Inclination.  Only possible in RV only mode.

@@ -386,7 +386,7 @@ class Simulator(object):
         If stage is SA or ST: final (params,sigmas) are returned, else nothing.
         """
         tic=timeit.default_timer()
-        self.log.info("Trying "+str(self.dictVal(self.stgNsampDict[stage]))+" samples for chain #"+str(chainNum)+" in "+stage+" mode.")
+        self.log.debug("Trying "+str(self.dictVal(self.stgNsampDict[stage]))+" samples for chain #"+str(chainNum)+" in "+stage+" mode.")
         self.chainNum = chainNum
         self.resetTracked()
         bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
@@ -428,7 +428,7 @@ class Simulator(object):
         if self.dictVal('logLevel')<50:
             bar.render(100,stage+str(chainNum)+' complete!\n')
         toc=timeit.default_timer()
-        self.log.info(stage+" it took: "+str(int(toc-tic))+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$
+        self.log.debug(stage+" it took: "+str(int(toc-tic))+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$
         self.endSummary(len(acceptedParams),temp,sigmas,stage)
         outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',acceptedParams,self.settingsDict)
         if stage=='ST':

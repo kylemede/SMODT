@@ -4,6 +4,7 @@ import os
 import pylab
 import copy
 import glob
+import shutil
 plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
 import constants as const
@@ -263,7 +264,7 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
             try:
                 shutil.move(f,os.path.join(histFolder,os.path.basename(f)))
             except:
-                log.error('failed to move file:\n'+f+'\ninto hist folder.')
+                log.error('failed to move file:\n'+f+'\nintto hist folder:\n'+histFolder)
         
         return completeCLstr
             
@@ -524,7 +525,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             ##clean up boarders, axis ticks and such 
             residualsPlot.tick_params(axis='y',which='major',width=1,length=3,pad=8,direction='in',labelsize=15)
             residualsPlot.tick_params(axis='x',which='major',width=1,length=3,pad=8,direction='in',labelsize=20)
-            residualsPlot.locator_params(axis='y',nbins=4) #fix number of y-axis label points
+            residualsPlot.locator_params(axis='y',nbins=5) #fix number of y-axis label points
             residualsPlot.spines['right'].set_linewidth(1.0)
             residualsPlot.spines['bottom'].set_linewidth(1.0)
             residualsPlot.spines['top'].set_linewidth(1.0)

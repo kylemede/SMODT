@@ -32,10 +32,11 @@ def mass1Prior(mass):
     else:
         return 1.0
 def mass2Prior(mass):
-    if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
-        return gaussian(mass, advancedDict['mass2Est'][0], advancedDict['mass2Err'][0])
-    else:
-        return 1.0
+    return 1.0
+#     if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
+#         return gaussian(mass, advancedDict['mass2Est'][0], advancedDict['mass2Err'][0])
+#     else:
+#         return 1.0
 def distPrior(dist):
     if simpleSettingsDict['distMIN']!=simpleSettingsDict['distMAX']!=0:
         return gaussian(dist, advancedDict['distEst'][0], advancedDict['distErr'][0])
@@ -49,6 +50,8 @@ advancedDict = {
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
 'chiMAX' : (150.0,"Max reduced chiSquared during MC"),
+# maximum allowed reduced chiSquared out of SA before entering ST/MCMC [double]
+'cMaxMCMC':(3.0,'Max reduced chiSquared to enter ST/MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 30,
@@ -82,6 +85,9 @@ advancedDict = {
 'nSAsamp' :(200000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
 'strtTemp' : (350.0,"SA starting temperature."),
+# Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
+# After first trial of SA and ST, take ST output and use here.
+'strtSig' : (0.25,"Starting percent param range for SA"),
 # Number of temperature steps over Simulated Annealing [int].  
 # Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/50)!
 'nTmpStps'  : (1000,"Number of temperature steps during SA."),

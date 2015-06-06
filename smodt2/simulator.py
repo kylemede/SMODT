@@ -76,7 +76,7 @@ class Simulator(object):
                0,\
                self.dictVal('KMIN')]
         #start with uniform sigma values
-        sigSize = 0.05
+        sigSize = self.dictVal('strtSig')
         sigmas = [sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,0,0,sigSize]
         if len(self.dictVal('vMINs'))!=len(self.dictVal('vMAXs')):
             self.log.critical("THE NUMBER OF vMINs NOT EQUAL TO NUMBER OF vMAXs!!!")

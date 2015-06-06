@@ -51,7 +51,7 @@ advancedDict = {
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
 'chiMAX' : (25.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed reduced chiSquared out of SA before entering ST/MCMC [double]
-'cMaxMCMC':(4.0,'Max reduced chiSquared to enter ST/MCMC.'),
+'cMaxMCMC':(3.0,'Max reduced chiSquared to enter ST/MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 20,
@@ -82,9 +82,12 @@ advancedDict = {
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(3000000,"Number of Annealing samples"),
+'nSAsamp' :(500000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (100.0,"SA starting temperature."),
+'strtTemp' : (500.0,"SA starting temperature."),
+# Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
+# After first trial of SA and ST, take ST output and use here.
+'strtSig' : (0.25,"Starting percent param range for SA"),
 # Number of temperature steps over Simulated Annealing [int].  
 # Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/50)!
 'nTmpStps'  : (1000,"Number of temperature steps during SA."),
@@ -112,7 +115,7 @@ advancedDict = {
 # Special Settings for the models ###
 #####################################
 # fit to the primary's RV orbit [bool]
-'fitPrime' : (False,"Fit primary's orbit?"),
+'fitPrime' : (True,"Fit primary's orbit?"),
 # Are the RVs in the RVdata.dat for the Primary star? [bool]
 'primeRVs' : (True,"RVs measured from Primary?"),
 # Draw values for K directly, do NOT calculate it [bool]. Kills varying of Inclination.  Only possible in RV only mode.
@@ -122,7 +125,7 @@ advancedDict = {
 # take the time of center transit (inferior conjunction) into account? [bool]
 'TcEqualT' : (False,"Fix Tc=T?"),
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
-'omegaPrv' : (-180.0,"Custom fixed val added to RV omega in model"),
+'omegaPrv' : (0.0,"Custom fixed val added to RV omega in model"),
 ##################################################
 ## Special settings DI model:
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]

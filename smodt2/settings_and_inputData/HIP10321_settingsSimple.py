@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (40000000,"Number of MCMC or MC samples"),
+'nSamples' : (1000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -10,7 +10,7 @@ simpleSettingsDict={
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HIP10321-RV-omegaStraight-MCMC",
+'outRoot' : "SMODT2-HIP10321-RV-Primary-MCMC",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('RV',"Data Mode (RV,DI,3D)"),
@@ -32,8 +32,8 @@ simpleSettingsDict={
 'OmegaMIN' : 1.0,
 'OmegaMAX' : 180.0,
 # Minimum/Maximum allowed value for the Eccentricity [double]
-'eMIN' : 0.345,
-'eMAX' : 0.365,
+'eMIN' : 0.315,
+'eMAX' : 0.395,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
 'TMIN' : 2450000,
@@ -46,10 +46,10 @@ simpleSettingsDict={
 'incMAX' : 89.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 168,
-'omegaMAX' : 170.0,
+'omegaMAX' : 180.0,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 845,
-'KMAX' : 865,
+'KMAX' : 900,
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
 'vMINs' :[6100,300,6250],

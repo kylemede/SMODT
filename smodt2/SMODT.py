@@ -38,7 +38,7 @@ class singleProc(Process):
         
     def run(self):
         #$$$$$$$$$$$$$$$$$$$$$$$ TEMP $$$$$$$$$$$$$$$$$$$$$$$$$$
-        ##temp params that are good enough to start an MCMC run if that is all we want to test.
+        ##temp params that are good enough to start an MCMC run on the artificial data if that is all we want to test.
         paramsST = np.array([9.91460200e-01,   1.98628676e-01,   5.02754554e+00,
          5.91088681e+01,   4.08044156e-01,   2.45701883e+06,
          2.45701883e+06,   1.49596676e+01,   2.99163981e+01,
@@ -130,18 +130,6 @@ def smodt():
         if os.path.exists(allFname):
             bestFit = tools.findBestOrbit(allFname)
             
-    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    if False:
-        tic2=timeit.default_timer()
-        allFname = '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/mockdata-SMODT2format-RV.dat'#$$$$$$$$$$$$$$$$$
-        bestFit = np.array([1.07274714e+00,   1.77527538e-01,   4.96417753e+00,
-             6.87573708e+01,   4.09298027e-01,   2.45701635e+06,
-             2.45701635e+06,   1.49448020e+01,   3.51095143e+01,
-             1.10365596e+02,   6.53591266e+00,   1.97384721e+01,
-             1.16593874e+03,  -3.50058385e+00])
-    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ## orbit plots?
     if settingsDict['pltOrbit'] and os.path.exists(allFname):
         plotFnameBase = os.path.join(os.path.dirname(allFname),'orbitPlot'+settingsDict['symMode'][0])

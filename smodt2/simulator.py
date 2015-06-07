@@ -106,7 +106,7 @@ class Simulator(object):
                     if (self.dictVal('dataMode')!='RV'):
                         if(rangeMaxs[i]!=0):
                             paramInts.append(i)
-                    elif self.dictVal('Kdirect')==False:
+                    elif (self.dictVal('Kdirect')==False)and(i!=3):
                         if(rangeMaxs[i]!=0):
                             paramInts.append(i)
                 elif rangeMaxs[i]!=0:
@@ -129,8 +129,8 @@ class Simulator(object):
         for val in notInNuInts:
             paramIntsClean=paramIntsClean[np.where(paramIntsClean!=val)]
         nDIvars = np.sum(np.where(paramIntsClean<10,1,0))
-        self.log.debug('DIvars = '+repr(paramIntsClean[np.where(paramIntsClean<10)]))
-        self.log.debug('RVvars = '+repr(paramIntsClean[np.where(paramIntsClean!=3)]))
+        self.log.debug('DIvars cleaned = '+repr(paramIntsClean[np.where(paramIntsClean<10)]))
+        self.log.debug('RVvars cleaned = '+repr(paramIntsClean[np.where(paramIntsClean!=3)]))
         nRVvars = np.sum(np.where(paramIntsClean!=3,1,0))
         if nDIepochs==0:
             nVars = nRVvars
@@ -139,6 +139,7 @@ class Simulator(object):
         else:
             nVars = len(paramInts)
         nu = nDIepochs*2+nRVepochs-nVars
+        self.log.debug("vars = "+repr(paramInts))
         self.log.debug('[nEpochs, nDIepochs, nRVepochs] = ['+str(nEpochs)+', '+str(nDIepochs)+', '+str(nRVepochs)+']')
         self.log.debug('[nVars, nDIvars, nRVvars] = ['+str(nVars)+', '+str(nDIvars)+', '+str(nRVvars)+']')
         nuDI = 1
@@ -300,7 +301,7 @@ class Simulator(object):
         """
         if stage=='SA':
             if sample%(self.dictVal('nSAsamp')//self.dictVal('nTmpStps'))==0:
-                temp-=(self.dictVal('strtTemp')-0.1)*(1.0/self.dictVal('nTmpStps'))
+                temp-=(self.dictVal('strtTemp')-0.001)*(1.0/self.dictVal('nTmpStps'))
         return temp
     
     def sigTune(self,sample,sigs=[],stage=''):
@@ -354,7 +355,7 @@ class Simulator(object):
                 sumStr+="Final Sigmas = "+repr(sigmas)+'\n'
             sumStr+=self.acceptStr+self.shiftStr
         sumStr+='\n'+'='*70+'\n'
-        self.log.debug(sumStr)
+        self.log.info(sumStr)
     
     def resetTracked(self):
         """

@@ -51,14 +51,14 @@ advancedDict = {
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
 'chiMAX' : (100.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
-'chiMaxST':(7.0,'Max reduced chiSquared to enter ST.'),#2.6
+'chiMaxST':(3.0,'Max reduced chiSquared to enter ST.'),#2.6
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(4.0,'Max reduced chiSquared to enter MCMC.'),#2.22
+'cMaxMCMC':(2.22,'Max reduced chiSquared to enter MCMC.'),#2.22
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 30,
 #number of times to produce a summary log msg during a stage's progress [int]
-'nSumry'  :2,
+'nSumry'  :10,
 # make plot of posterior distributions? [bool]
 'pltDists' : True,
 # make plots of RV and DI/AM orbit fits [bool]
@@ -86,13 +86,13 @@ advancedDict = {
 # number of samples to draw for simulated annealing stage [int] 
 'nSAsamp' :(100000,"Number of Annealing samples"),#100000
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (1000.0,"SA starting temperature."),
+'strtTemp' : (500.0,"SA starting temperature."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
 'strtSig' : (0.25,"Starting percent param range for SA"),
 # Number of temperature steps over Simulated Annealing [int].  
 # Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/100)!
-'nTmpStps'  : (1000,"Number of temperature steps during SA."),
+'nTmpStps'  : (5000,"Number of temperature steps during SA."),
 # number of samples to draw for sigma tuning stage [int].
 'nSTsamp' :(70000,"Number of Tuning samples"),
 # number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]. 

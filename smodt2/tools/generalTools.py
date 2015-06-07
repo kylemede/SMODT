@@ -7,6 +7,8 @@ import glob
 import numpy as np
 import sys
 import pyfits
+import warnings
+warnings.simplefilter("error")
 
 log = smodtLogger.getLogger('main.genTools',lvl=100,addFH=False)
 
@@ -241,6 +243,7 @@ def timeStrMaker(deltaT):
             timeStr = str(hr)+" minutes and "+str(int(deltaT-m*60))+" seconds"
     else:
         timeStr = str(int(deltaT))+' seconds'
+    return timeStr
 
 def getParStrs(head,latex=True):
     """
@@ -577,9 +580,9 @@ def writeFits(baseFilename,data,settingsDict):
         f.close()
         if False:
             for key in head:
-                print key+' = '+repr(header[key])
-                print 'type(header[key] = '+repr(type(header[key]))
-        print '\n\n'+repr(head)
+                print key+' = '+repr((header[key],header.comments[key]))
+                #print 'type(header[key] = '+repr(type(header[key]))
+        print '\n\nEntire Header as a repr:\n'+repr(head)
     return outFname
     
 def loadFits(filename):
@@ -602,6 +605,7 @@ def combineFits(filenames,outFname):
     combine the data in multiple SMODT2 fits files together.
     Used primarily for after multi-process runs.
     """
+    nFiles = len(filenames)
     (head0,dataALL) = loadFits(filenames[0])
     for filename in filenames:
         (head,data) = loadFits(filename)
@@ -610,22 +614,26 @@ def combineFits(filenames,outFname):
     hdulist = pyfits.HDUList([hdu])
     header = hdulist[0].header
     for key in head0:
-        header[key]=head0[key]
+        if key=='nSamples':
+            ##load in total number of samples for this combined file
+            header['nSamples'] = (int(head0['nSamples'])*nFiles,head0.comments['nSamples'])
+        else:
+            header[key] = (head0[key],head0.comments[key])
     hdulist.writeto(outFname)
     hdulist.close()
     log.info("output file written to:below\n"+outFname)
     
 def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime):
     """
-    Make a file that summarizes the results.
+    Make a txt file that summarizes the results nicely.
     """
     summaryFname = os.path.join(settingsDict['finalFolder'],'RESULTS.txt')
     f = open(summaryFname,'w')
     (head,data) = loadFits(finalFits)
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
     f.write('\n'+'-'*7+'\nBasics:\n'+'-'*7)
-    f.write('\nPost-Processing took: '+str(postTime)+' seconds\n')
-    f.write('Total simulation took: '+str(allTime)+' seconds\n')
+    f.write('\nPost-Processing took: '+timeStrMaker(postTime)+'\n')
+    f.write('Total simulation took: '+timeStrMaker(allTime)+'\n')
     f.write('\nparamList:\n'+repr(paramList))
     f.write('\nparamStrs:\n'+repr(paramStrs))
     f.write('\nparamFileStrs:\n'+repr(paramFileStrs))

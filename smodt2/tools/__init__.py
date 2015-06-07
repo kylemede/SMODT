@@ -1,3 +1,6 @@
+import warnings
+warnings.simplefilter("error")
+
 from smodtLogger import getLogger
 from smodtLogger import setUpLogger
 from smodtLogger import logSystemInfo
@@ -16,6 +19,7 @@ from generalTools import gelmanRubinCalc
 from generalTools import cleanUp
 from generalTools import burnInCalc
 from generalTools import burnInStripper
+from generalTools import timeStrMaker
 
 from progressbar.progressbar import ProgressBar
  

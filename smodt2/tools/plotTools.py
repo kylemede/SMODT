@@ -11,6 +11,8 @@ import constants as const
 import generalTools as genTools
 import cppTools
 import smodtLogger
+import warnings
+warnings.simplefilter("error")
 
 log = smodtLogger.getLogger('main.plotTools',lvl=100,addFH=False)  
 

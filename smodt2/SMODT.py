@@ -8,6 +8,7 @@ import timeit
 import numpy as np
 from multiprocessing import Process
 
+
 """
     This is the 'main' of SMODT. 
     It will start things off, call the appropriate set of 
@@ -175,8 +176,8 @@ def smodt():
     ##clean up files (move to folders or delete them)
     tools.cleanUp(settingsDict,stageList,allFname)
     ## Final log messages and end
-    log.info("Post-processing took a total of "+str(int(postTime))+' seconds')
-    log.info("\n\nEVERYTHING took a total of "+str(int(allTime))+' seconds\n\n')
+    log.info("Post-processing took a total of "+tools.timeStrMaker(postTime))
+    log.info("\n\nEVERYTHING took a total of "+tools.timeStrMaker(allTime)+'\n\n')
     log.info("End of SMODT2.0 main")
     ##END MAIN 
 

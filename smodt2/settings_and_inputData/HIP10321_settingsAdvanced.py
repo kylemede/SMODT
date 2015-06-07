@@ -51,9 +51,9 @@ advancedDict = {
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
 'chiMAX' : (100.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
-'chiMaxST':(2.6,'Max reduced chiSquared to enter ST.'),#2.6
+'chiMaxST':(7.0,'Max reduced chiSquared to enter ST.'),#2.6
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(2.22,'Max reduced chiSquared to enter MCMC.'),#2.22
+'cMaxMCMC':(4.0,'Max reduced chiSquared to enter MCMC.'),#2.22
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 30,
@@ -121,7 +121,7 @@ advancedDict = {
 # Are the RVs in the RVdata.dat for the Primary star? [bool]
 'primeRVs' : (True,"RVs measured from Primary?"),
 # Draw values for K directly, do NOT calculate it [bool]. Kills varying of Inclination.  Only possible in RV only mode.
-'Kdirect'  : (True,'Vary K direct, do not calc it'),
+'Kdirect'  : (False,'Vary K direct, do not calc it'),
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 'TcStep' : (False,"Step in Tc not T?"),
 # take the time of center transit (inferior conjunction) into account? [bool]

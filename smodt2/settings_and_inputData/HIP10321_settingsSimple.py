@@ -5,17 +5,17 @@ simpleSettingsDict={
 'nSamples' : (5000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (100,"Number of chains"),
+'nChains' : (7,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HIP10321-RV-Secondary-Kdirect-MCMC-FINAL",
+'outRoot' : "SMODT2-HIP10321-RV-Secondary-KNOTdirect-MC",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('RV',"Data Mode (RV,DI,3D)"),
 # mode to run simulation in, choices {'MC','SA','MCMC'} [string]
-'symMode' : ('MCMC',"Simulator mode (MC,SA,MCMC)"),
+'symMode' : ('MC',"Simulator mode (MC,SA,MCMC)"),
 ###################################################
 # Ranges for acceptable random number inputs ######
 ###################################################

@@ -2,15 +2,15 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (100000,"Number of MCMC or MC samples"),
+'nSamples' : (1000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (50,"Number of chains"),
+'nChains' : (100,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HIP10321-RV-Secondary-KNOTdirect-MCMC",
+'outRoot' : "SMODT2-HIP10321-RV-Secondary-KNOTdirect-incOVER90-MCMC",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('RV',"Data Mode (RV,DI,3D)"),
@@ -20,11 +20,11 @@ simpleSettingsDict={
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.2,
-'mass1MAX' : 1.8,
+'mass1MIN' : 0.6,
+'mass1MAX' : 1.5,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.06,
-'mass2MAX' : 0.12,
+'mass2MIN' : 0.07,
+'mass2MAX' : 0.9,
 # Minimum/Maximum allowed value for the system distance from Earth [double][PC]
 'distMIN' : 26.4,
 'distMAX' : 27.2,
@@ -42,8 +42,8 @@ simpleSettingsDict={
 'PMIN' : 18,
 'PMAX' : 22,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 40.0,
-'incMAX' : 120.0,
+'incMIN' : 120.0,
+'incMAX' : 160.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 320,
 'omegaMAX' : 380.0,

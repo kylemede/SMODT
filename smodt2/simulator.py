@@ -225,7 +225,7 @@ class Simulator(object):
         if (numAccepted==0)and(stage=='SA'):
             ##Jump as starting position was in poor part of param space. for SA only.
             paramsOut = self.increment(pars,np.zeros(pars.shape),stage='MC')
-            self.log.debug("Chain #"+str(self.chainNum)+" Nothing accepted yet, so jumping to new starting position.")
+            #self.log.debug("Chain #"+str(self.chainNum)+" Nothing accepted yet, so jumping to new starting position.")
             inRange=True
         return (paramsOut,inRange)
     
@@ -263,16 +263,19 @@ class Simulator(object):
                 accept=True
         else:
             ## For SA after first sample, MCMC, and ST
-            likelihoodRatio = np.e**((self.paramsLast[11] - paramsOut[11])/(2.0*temp))
-            ###### put all prior funcs together in dict??
-            priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
-            priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
-            priorsRatio*= (self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
-            priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
-            priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
-            priorsRatio*= (self.dictVal('distPrior')(paramsOut[2])/self.dictVal('distPrior')(self.paramsLast[2])) 
-            if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
-                accept = True
+            try:
+                likelihoodRatio = np.e**((self.paramsLast[11] - paramsOut[11])/(2.0*temp))
+                ###### put all prior funcs together in dict??
+                priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
+                priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
+                priorsRatio*= (self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
+                priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
+                priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
+                priorsRatio*= (self.dictVal('distPrior')(paramsOut[2])/self.dictVal('distPrior')(self.paramsLast[2])) 
+                if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
+                    accept = True
+            except:
+                accept = False
         if accept:
             self.acceptCount+=1
             self.acceptBoolAry.append(1)
@@ -301,7 +304,7 @@ class Simulator(object):
         """
         if stage=='SA':
             if sample%(self.dictVal('nSAsamp')//self.dictVal('nTmpStps'))==0:
-                temp-=(self.dictVal('strtTemp')-0.001)*(1.0/self.dictVal('nTmpStps'))
+                temp-=(self.dictVal('strtTemp')-0.01)*(1.0/self.dictVal('nTmpStps'))
         return temp
     
     def sigTune(self,sample,sigs=[],stage=''):

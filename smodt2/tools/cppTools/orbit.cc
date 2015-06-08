@@ -139,17 +139,26 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		K = ((2.0*pi*((atot)/(1.0+(params[0]/params[1])))*sin(params[8]*(pi/180.0)))/(params[7]*secPerYear*pow((1.0-params[4]*params[4]),(1.0/2.0))));
 		params[12]=K;
 	}
+	//Get the model version of each omega and shift into [0,360]
 	omegaDI = params[9]+omegaOffsetDI;
 	omegaRV = params[9]+omegaOffsetRV;
+	if (omegaDI>360.0)
+		omegaDI-=360.0;
+	if (omegaDI<0.0)
+		omegaDI+=360;
+	if (omegaRV>360.0)
+		omegaRV-=360.0;
+	if (omegaRV<0)
+		omegaRV+=360.0;
 	//Calculate Tc <-> T if needed
 	if (params[5]!=params[6]){
 		//if T=Tc already, do nothing.
-		if ((params[4]==0)||(omegaRV==90.0)){
+		if ((params[4]==0)||(omegaRV==90.0)||(omegaRV==270.0)){
 			//Circular, so just set equal.
 			if (params[6]==0)
-				params[5]=params[6];
-			else
 				params[6]=params[5];
+			else
+				params[5]=params[6];
 		}
 		else{
 			ta = pi/2.0 - omegaRV*(pi/180.0);
@@ -172,20 +181,10 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//--------------------------
 		//Calculate RV
 		//--------------------------
-		if (dataRealAry[6+i*dataRealAry_ny]<1e6){
+		if (dataRealAry[6+i*dataRealAry_ny]<1e6)
 			dataModelAry[2+i*dataModelAry_ny]=params[12]*(cos(thetaRV+omegaRV*(pi/180.0))+params[4]*cos(omegaRV*(pi/180.0)))+params[13+int(dataRealAry[7+i*dataRealAry_ny])];
-			if (false){
-				std::cout<<"theta deg V2.0 = "<<(thetaRV*(180.0/pi))<<std::endl;
-				std::cout<<"cos(theta+omegaRV*(pi/180.0)) = "<<cos(thetaRV+omegaRV*(pi/180.0))<<std::endl;
-				std::cout<<"cos(omegaRV*(pi/180.0)) = "<< cos(omegaRV*(pi/180.0))<<std::endl;
-				std::cout<<"params[4]*cos(omegaRV*(pi/180.0)) = "<< params[4]*cos(omegaRV*(pi/180.0))<<std::endl;
-				std::cout<<"dataModelAry[2+i*dataModelAry_ny] = "<<dataModelAry[2+i*dataModelAry_ny] <<std::endl;
-			}
-		}
-		else{
-			//std::cout<<"RV real = "<< dataRealAry[5+i*dataRealAry_ny]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+		else
 			dataModelAry[2+i*dataModelAry_ny]=0.0;
-		}
 		if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"RV = "<<dataModelAry[2+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		}//$$$$$$$$$$$$$$$$$$$$$$$$$

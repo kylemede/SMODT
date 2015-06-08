@@ -49,11 +49,11 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (50.0,"Max reduced chiSquared during MC and SA"),
+'chiMAX' : (1000.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
-'chiMaxST':(2.6,'Max reduced chiSquared to enter ST.'),#2.6
+'chiMaxST':(3.5,'Max reduced chiSquared to enter ST.'),#2.6
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(2.22,'Max reduced chiSquared to enter MCMC.'),#2.22
+'cMaxMCMC':(2.26,'Max reduced chiSquared to enter MCMC.'),#2.22
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 30,
@@ -84,7 +84,7 @@ advancedDict = {
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(100000,"Number of Annealing samples"),#100000
+'nSAsamp' :(1000000,"Number of Annealing samples"),#100000
 # Simulated Annealing starting temperature [double]
 'strtTemp' : (500.0,"SA starting temperature."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]

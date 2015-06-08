@@ -49,16 +49,16 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (1000.0,"Max reduced chiSquared during MC and SA"),
+'chiMAX' : (500.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
-'chiMaxST':(3.5,'Max reduced chiSquared to enter ST.'),#2.6
+'chiMaxST':(2.6,'Max reduced chiSquared to enter ST.'),#2.6
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(2.26,'Max reduced chiSquared to enter MCMC.'),#2.22
+'cMaxMCMC':(2.22,'Max reduced chiSquared to enter MCMC.'),#2.22
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 30,
+'logLevel' : 10,
 #number of times to produce a summary log msg during a stage's progress [int]
-'nSumry'  :10,
+'nSumry'  :20,
 # make plot of posterior distributions? [bool]
 'pltDists' : True,
 # make plots of RV and DI/AM orbit fits [bool]
@@ -125,7 +125,7 @@ advancedDict = {
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 'TcStep' : (False,"Step in Tc not T?"),
 # take the time of center transit (inferior conjunction) into account? [bool]
-'TcEqualT' : (False,"Fix Tc=T?"),
+'TcEqualT' : (True,"Fix Tc=T?"),
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
 'omegaPrv' : (0.0,"Custom fixed val added to RV omega in model"),
 ##################################################

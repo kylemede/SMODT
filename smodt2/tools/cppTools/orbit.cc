@@ -44,7 +44,6 @@ void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
 		thetaPrime = acos((cos(E)-ecc)/(1.0-ecc*cos(E)));
 		if (E>pi)
 			thetaPrime = 2.0*pi-thetaPrime;
-
 		thetaRV = thetaPrime;
 		//std::cout<<"theta RV [deg] = "<<thetaRV*(180.0/pi)<<std::endl;
 	}
@@ -136,7 +135,8 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		atot =pow(((params[7]*params[7]*secPerYear*secPerYear*Grav*KGperMsun*(params[0]+params[1]))/(4.0*pi*pi)),(1.0/3.0));
 	params[10]=atot/MperAU;
 	if ((dataRealAry[6]<1e6)&&(params[12]==0)){
-		K = ((2.0*pi*((atot)/(1.0+(params[0]/params[1])))*sin(params[8]*(pi/180.0)))/(params[7]*secPerYear*pow((1.0-params[4]*params[4]),(1.0/2.0))));
+		//K = ((2.0*pi*((atot)/(1.0+(params[0]/params[1])))*sin(params[8]*(pi/180.0)))/(params[7]*secPerYear*pow((1.0-params[4]*params[4]),(1.0/2.0))));
+		K=(params[1]/params[0])* (sin(params[8]*(pi/180.0))/pow( (1.0-params[4]*params[4]) , (1.0/2.0) ))*pow((2.0*pi*Grav*KGperMsun*(params[0]+params[1]))/(params[7]*secPerYear),(1.0/3.0));
 		params[12]=K;
 	}
 	//Get the model version of each omega and shift into [0,360]
@@ -169,6 +169,8 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 				params[6] = params[5]+deltaT;
 			else
 				params[5] = params[6]-deltaT;
+			if (false)
+				std::cout<<"T = "<<params[5]<<", params[9] = "<<params[9]<<", ta = "<<ta*(180.0/pi)<<", halfE = "<< halfE*(180.0/pi)<<", mTTc = "<<mTTc*(180.0/pi)<<", deltaT = "<<deltaT<<", Tc = "<<params[6]<<std::endl;
 		}
 	}
 	//start loop over each epoch of data

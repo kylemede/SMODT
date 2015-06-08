@@ -132,7 +132,7 @@ def smodt():
     ## calc and strip burn-in?
     burnInStr = ''
     strippedAllFname = ''
-    if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
+    if (len(outFiles)>1)and(settingsDict['CalcBurn'][0] and(settingsDict['symMode'][0]=='MCMC')):
         (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
         if settingsDict['delBurn'][0]:
             strippedFnames = tools.burnInStripper(outFiles,burnInLengths)

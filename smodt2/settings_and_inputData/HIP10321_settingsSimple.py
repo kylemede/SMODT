@@ -10,7 +10,7 @@ simpleSettingsDict={
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HIP10321-RV-Secondary-KNOTdirect-incOVER90-MCMC",
+'outRoot' : "SMODT2-HIP10321-RV-Secondary-KNOTdirect-incOVER90-low-MCMC",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('RV',"Data Mode (RV,DI,3D)"),
@@ -42,8 +42,8 @@ simpleSettingsDict={
 'PMIN' : 18,
 'PMAX' : 22,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 120.0,
-'incMAX' : 160.0,
+'incMIN' : 90.0,
+'incMAX' : 128.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 320,
 'omegaMAX' : 380.0,

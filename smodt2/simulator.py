@@ -377,7 +377,7 @@ class Simulator(object):
         np.random.seed(self.seed)
     
     def startSummary(self,pars,sigs,stage):
-        startStr="Chain #"+str(self.chainNum)+' VALS AT START OF '+stage+' SIM:\n'
+        startStr=stage+" chain #"+str(self.chainNum)+' VALS AT START OF '+stage+' SIM:\n'
         startStr+= 'params = '+repr(pars)+'\n'
         startStr+= 'rangeMins = '+repr(self.rangeMins)+'\n'
         startStr+= 'rangeMaxs = '+repr(self.rangeMaxs)+'\n'
@@ -434,7 +434,7 @@ class Simulator(object):
         if self.dictVal('logLevel')<50:
             bar.render(100,stage+str(chainNum)+' complete!\n')
         toc=timeit.default_timer()
-        self.log.debug(stage+" it took: "+str(int(toc-tic))+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$
+        self.log.debug(stage+" took: "+str(int(toc-tic))+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$
         self.endSummary(len(acceptedParams),temp,sigmas,stage)
         outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',acceptedParams,self.settingsDict)
         if stage=='ST':

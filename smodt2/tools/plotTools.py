@@ -153,7 +153,7 @@ def addDIdataToPlot(subPlot,realData,asConversion):
         subPlot.plot([xCent,xCent],[btm,top],linewidth=3,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])
 
-def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevels=True):
+def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevels=True, forceRecalc = True):
     """
     This advanced plotting function will plot all the data in a 3x4 grid on a single figure.  The data will be plotted
     in histograms that will be normalized to a max of 1.0.  The 
@@ -161,21 +161,15 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
     68% bin shaded as dark grey and 95% as light grey and the rest will be white.
     
     """
-    quiet = True
-    verbose = False
     latex=True
-    plotFormat = 'eps'
-    forceRecalc = True
-    
-    (head,data) = genTools.loadFits(outputDataFilename)
-    
+    plotFormat = 'eps'   
     #plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     plt.rc('font',family='serif')
     if latex:
         plt.rc('text', usetex=True)
         plt.rcParams['text.latex.unicode']=True  
     
-    ## find number of RV datasets
+    (head,data) = genTools.loadFits(outputDataFilename)
     if head!=False:  
         log.debug(' Inside summaryPlotter')
          
@@ -183,7 +177,7 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
         s=s+ '\nInput plotfilename:\n'+plotFilename
         log.info(s)
         
-        # check if the passed in value for plotFilename includes format extension
+        ## check if the passed in value for plotFilename includes format extension
         if '.'+plotFormat not in plotFilename:
             plotFilename = plotFilename+"."+plotFormat
             log.debug('updating plotFilename to:\n'+plotFilename)
@@ -195,59 +189,55 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
         
         ## run through all the data files and parameters requested and make histogram files
         completeCLstr = '-'*23+'\nConfidence Levels are:\n'+'-'*75+'\n'
-        for i in range(0,len(paramList)):
-            if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[paramList[i]]+'.dat'))==False)or forceRecalc:
-                if verbose:
-                    print 'Initial Plotting for parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs2[paramList[i]]+", for file:\n"+outputDataFilename
-                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[paramList[i]])
-                (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True,fast=False)
-                completeCLstr+=paramStrs2[paramList[i]]+clStr+'\n'+'-'*75+'\n'
-                histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
-                if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[paramList[i]]+'.dat'))==False)or forceRecalc:
-                    np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[paramList[i]]+'.dat'),CLevels)
-                    if verbose:
-                        print 'confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+str(paramList[i])+'.dat')
-        
-        # Create empty figure to be filled up with plots
-        if len(paramList)>12:
+        for i in range(0,len(paramStrs2)):
+            if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
+                log.debug('Checking parameter has useful data '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
+                (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,i, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+                if bestDataVal!=0:
+                    completeCLstr+=paramStrs2[i]+clStr+'\n'+'-'*75+'\n'
+                    log.debug('Making hist file for parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
+                    histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i])
+                    histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
+                    if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
+                        np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'),CLevels)
+                        log.debug('confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+str(i)+'.dat'))
+                else:
+                    log.debug("Nope! no useful data for "+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", in file:\n"+outputDataFilename)
+        ## Create empty figure to be filled up with plots
+        if len(paramStrs2)>12:
             sumFig = plt.figure(figsize=(9,12))
         else:
             sumFig = plt.figure(figsize=(10,10)) 
                     
         ## make combined/stacked plot for each parameter in list
-        for i in range(0,len(paramList)):
-            log.debug('Starting to plot shaded hist for '+paramStrs2[paramList[i]])
-            if len(paramList)>12:
-                subPlot = sumFig.add_subplot(4,4,i+1)
+        for i in range(0,len(paramStrs2)):
+            histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i])
+            if os.path.exists(histDataBaseName+'.dat'):
+                log.debug('Starting to plot shaded hist for '+paramStrs2[i])
+                if len(paramStrs2)>12:
+                    subPlot = sumFig.add_subplot(4,4,i+1)
+                else:
+                    subPlot = sumFig.add_subplot(3,4,i+1)
+                log.debug('Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i])#+" for file:\n"+outputDataFilename
+                xLim=False
+                CLevels=False
+                if shadeConfLevels:
+                    CLevels=np.loadtxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))
+                showYlabel=False
+                if (i==0)or(i==4)or(i==8):
+                    showYlabel = True
+                subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[i],xLims=xLim,latex=latex,showYlabel=showYlabel)         
             else:
-                subPlot = sumFig.add_subplot(3,4,i+1)
-            
-            histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[paramList[i]])
-            if quiet==False:
-                print 'Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs2[paramList[i]]#+" for file:\n"+outputDataFilename
-            xLim=False
-            CLevels=False
-            if shadeConfLevels:
-                CLevels=np.loadtxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[paramList[i]]+'.dat'))
-            showYlabel=False
-            if (i==0)or(i==4)or(i==8):
-                showYlabel = True
-            subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[paramList[i]],xLims=xLim,latex=latex,showYlabel=showYlabel)         
-            
+                log.debug("Not plotting shaded hist for "+paramStrs2[i]+" as its hist file doesn't exist:\n"+histDataBaseName)
         ## Save file if requested.
-        if verbose:
-            if quiet==False:
-                print '\nStarting to save param hist figure:'
+        log.debug('\nStarting to save param hist figure:')
         if plotFilename!='':
             plt.savefig(plotFilename,format=plotFormat)
             s= 'Summary plot saved to: '+plotFilename
-            if quiet==False:
-                print s
             log.info(s)
         plt.close()
         if True:
-            if quiet==False:
-                print 'converting to PDF as well'
+            log.debug('converting to PDF as well')
             try:
                 os.system("epstopdf "+plotFilename)
             except:

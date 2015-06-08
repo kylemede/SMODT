@@ -665,7 +665,7 @@ def getParInts(head):
         parInts.append(int(i))  
     return parInts
         
-def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False,fast=True):
+def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False):
     """
     A function to find the 68.3 and 95.4% confidence levels in a given output data file's column.
     
@@ -680,7 +680,7 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
     if os.path.exists(filename):
         (dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReader(filename, colNum)
     
-        if len(dataAry>0):
+        if len(dataAry>0) or (dataValueStart!=dataValueMid!=dataValueEnd):
             #Convert data array to a sorted numpy array
             dataAry = np.sort(dataAry)
             size = dataAry.size

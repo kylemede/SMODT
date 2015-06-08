@@ -9,7 +9,7 @@ import constants
 #NOTE: key max = 8characters, value+comment max = 68 characters, comment Max=47 it seems in testing.
 #NOTE: only change the code and not the name of the functions or their inputs.
 def ePrior(e,P):
-    if (P*constants.daysPerYear<1000.0)and(simpleSettingsDict['eMAX']!=0):
+    if ((P*constants.daysPerYear)<1000.0)and(simpleSettingsDict['eMAX']!=0):
         return 2.0*e
     else:
         return 1.0
@@ -49,16 +49,16 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (100.0,"Max reduced chiSquared during MC and SA"),
+'chiMAX' : (50.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(2.6,'Max reduced chiSquared to enter ST.'),#2.6
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(2.21,'Max reduced chiSquared to enter MCMC.'),#2.22
+'cMaxMCMC':(2.22,'Max reduced chiSquared to enter MCMC.'),#2.22
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 30,
 #number of times to produce a summary log msg during a stage's progress [int]
-'nSumry'  :1,
+'nSumry'  :10,
 # make plot of posterior distributions? [bool]
 'pltDists' : True,
 # make plots of RV and DI/AM orbit fits [bool]

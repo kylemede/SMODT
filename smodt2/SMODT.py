@@ -48,6 +48,7 @@ class singleProc(Process):
         sigmasST = np.array([0.09,  0.05,  0.03,  0.01,  0.03,  0.05,  0.01,  0.05,  0.03,
         0.07,  0.01,  0.01,  0.01,  0.05])
         bestRedChiSqrSA=1.0
+        bestRedChiSqrST=1.0
         #$$$$$$$$$$$$$$$$$$$$$$$ TEMP $$$$$$$$$$$$$$$$$$$$$$$$$$
         
         ## run each requested stage

@@ -53,7 +53,7 @@ advancedDict = {
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(2.6,'Max reduced chiSquared to enter ST.'),#2.6
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(2.22,'Max reduced chiSquared to enter MCMC.'),#2.22
+'cMaxMCMC':(2.21,'Max reduced chiSquared to enter MCMC.'),#2.22
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 10,

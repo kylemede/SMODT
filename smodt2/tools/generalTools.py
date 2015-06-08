@@ -614,9 +614,9 @@ def combineFits(filenames,outFname):
     hdulist = pyfits.HDUList([hdu])
     header = hdulist[0].header
     for key in head0:
-        if key=='nSamples':
+        if key=='NSAMPLES':
             ##load in total number of samples for this combined file
-            header['nSamples'] = (int(head0['nSamples'])*nFiles,head0.comments['nSamples'])
+            header['NSAMPLES'] = (int(head0['NSAMPLES'])*nFiles,head0.comments['NSAMPLES'])
         else:
             header[key] = (head0[key],head0.comments[key])
     hdulist.writeto(outFname)
@@ -630,6 +630,7 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
     summaryFname = os.path.join(settingsDict['finalFolder'],'RESULTS.txt')
     f = open(summaryFname,'w')
     (head,data) = loadFits(finalFits)
+    totalSamps = head['NSAMPLES']
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
     f.write('\n'+'-'*7+'\nBasics:\n'+'-'*7)
     f.write('\nPost-Processing took: '+timeStrMaker(postTime)+'\n')
@@ -637,10 +638,12 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
     f.write('\nparamList:\n'+repr(paramList))
     f.write('\nparamStrs:\n'+repr(paramStrs))
     f.write('\nparamFileStrs:\n'+repr(paramFileStrs))
+    stgNsampStrDict = {"MC":"nSamples","SA":"nSAsamp","ST":"nSTsamp","MCMC":"nSamples"}
     numFilesStr = '\nTotal Files that finished each stage are:\n'
     for stage in stageList:
         fnames = glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits"))
-        numFilesStr+=stage+' = '+str(len(fnames))+'\n'
+        numFilesStr+=stage+' = '+str(len(fnames))+", each with "+str(settingsDict[stgNsampStrDict[stage]][0])+" samples\n"
+    numFilesStr+="\n"+"*"*65+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*65+'\n'
     f.write(numFilesStr)
     bestStr = '\n'+'-'*20+'\nBest fit values are:\n'+'-'*20+'\n'
     for i in range(len(bestFit)):

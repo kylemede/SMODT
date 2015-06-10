@@ -2,15 +2,15 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (5000000,"Number of MCMC or MC samples"),
+'nSamples' : (500000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (20,"Number of chains"),
+'nChains' : (2,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HIP10321-3D-KNOTdirect-TequalTc-incNear90-K2-MCMC",
+'outRoot' : "SMODT2-HIP10321-3D-KNOTdirect-TequalTc-incNear90-KmassCommon-MCMC",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('RV',"Data Mode (RV,DI,3D)"),
@@ -26,8 +26,8 @@ simpleSettingsDict={
 'mass2MIN' : 0.07,
 'mass2MAX' : 0.09,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 26.4,
-'paraMAX' : 27.2,
+'paraMIN' : 33.00,
+'paraMAX' : 40.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 1.0,
 'OmegaMAX' : 180.0,

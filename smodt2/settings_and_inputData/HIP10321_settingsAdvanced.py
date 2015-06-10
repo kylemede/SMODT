@@ -9,26 +9,35 @@ import constants
 #NOTE: key max = 8characters, value+comment max = 68 characters, comment Max=47 it seems in testing.
 #NOTE: only change the code and not the name of the functions or their inputs.
 def ePrior(e,P):
-    if ((P*constants.daysPerYear)<1000.0)and(simpleSettingsDict['eMAX']!=0):
-        return 2.0*e
+    if (e!=0)and(P!=0):
+        if ((P*constants.daysPerYear)<1000.0)and(simpleSettingsDict['eMAX']!=0):
+            return 2.0*e
+        else:
+            return 1.0
     else:
         return 1.0
 def pPrior(P):
-    if simpleSettingsDict['PMAX']!=simpleSettingsDict['PMIN']!=0:
-        return P
+    if P!=0:
+        if simpleSettingsDict['PMAX']!=simpleSettingsDict['PMIN']!=0:
+            return P
+        else:
+            return 1.0
     else:
         return 1.0
 def incPrior(inc):
-    if simpleSettingsDict['incMAX']!=simpleSettingsDict['incMIN']!=0:
-        if inc==0:
+    if inc!=0:
+        if simpleSettingsDict['incMAX']!=simpleSettingsDict['incMIN']!=0:
             return 1.0
         else:
             return np.sin(inc*(constants.pi/180.0))
     else:
         return 1.0
 def mass1Prior(mass):
-    if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
-        return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
+    if mass!=0:
+        if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
+            return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
+        else:
+            return 1.0
     else:
         return 1.0
 def mass2Prior(mass):
@@ -38,8 +47,11 @@ def mass2Prior(mass):
 #     else:
 #         return 1.0
 def paraPrior(parallax):
-    if simpleSettingsDict['paraMIN']!=simpleSettingsDict['paraMAX']!=0:
-        return gaussian(parallax, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
+    if parallax!=0:
+        if simpleSettingsDict['paraMIN']!=simpleSettingsDict['paraMAX']!=0:
+            return gaussian(parallax, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
+        else:
+            return 1.0
     else:
         return 1.0
 
@@ -49,11 +61,11 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (500.0,"Max reduced chiSquared during MC and SA"),
+'chiMAX' : (100.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(2.6,'Max reduced chiSquared to enter ST.'),#2.6
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(2.21,'Max reduced chiSquared to enter MCMC.'),#2.22
+'cMaxMCMC':(2.22,'Max reduced chiSquared to enter MCMC.'),#2.22
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 10,
@@ -84,9 +96,9 @@ advancedDict = {
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(1000000,"Number of Annealing samples"),#100000
+'nSAsamp' :(500000,"Number of Annealing samples"),#100000
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (500.0,"SA starting temperature."),
+'strtTemp' : (250.0,"SA starting temperature."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
 'strtSig' : (0.25,"Starting percent param range for SA"),

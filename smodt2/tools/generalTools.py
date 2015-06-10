@@ -647,7 +647,11 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
     f.write(numFilesStr)
     bestStr = '\n'+'-'*20+'\nBest fit values are:\n'+'-'*20+'\n'
     for i in range(len(bestFit)):
-        bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
+        if i==2:
+            bestStr+=paramStrs[i]+" = "+str(bestFit[i])+", OR  "+str(1.0/bestFit[i])+'[PC]\n'
+        else:
+            bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
+            
     bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[11]/float(head['nu']))+'\n'+'*'*45
     f.write(bestStr)
     f.write('\n'+grStr)

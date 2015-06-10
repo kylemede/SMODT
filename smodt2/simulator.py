@@ -102,11 +102,11 @@ class Simulator(object):
                     elif self.dictVal('Kdirect'):
                         if (rangeMaxs[12]!=0)and(i==12):
                             paramInts.append(12)                                           
-                elif (i==3)or(i==0)or(i==1):
+                elif (i==2)or(i==3)or(i==0)or(i==1):
                     if (self.dictVal('dataMode')!='RV'):
                         if(rangeMaxs[i]!=0):
                             paramInts.append(i)
-                    elif (self.dictVal('Kdirect')==False)and(i!=3):
+                    elif (self.dictVal('Kdirect')==False)and((i!=3)and(i!=2)):
                         if(rangeMaxs[i]!=0):
                             paramInts.append(i)
                 elif rangeMaxs[i]!=0:
@@ -256,6 +256,7 @@ class Simulator(object):
             self.paramsBest = paramsOut
             if self.latestSumStr=='':
                 self.latestSumStr=stage+" chain #"+str(self.chainNum)+' Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))
+        
         ## check if this step is accepted
         accept = False
         if stage=='MC':
@@ -264,14 +265,25 @@ class Simulator(object):
         else:
             ## For SA after first sample, MCMC, and ST
             try:
+                #print 'paramsOut[11] = '+str(paramsOut[11])
+                #print 'self.paramsLast[11] = '+str(self.paramsLast[11])
+                #print 'temp = '+str(temp)
                 likelihoodRatio = np.e**((self.paramsLast[11] - paramsOut[11])/(2.0*temp))
+                #print "likelihoodRatio = "+repr(likelihoodRatio)
                 ###### put all prior funcs together in dict??
                 priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
+                #print "(self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7])) = "+repr((self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7])))
                 priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
+                #print "(self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7])) = "+repr((self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7])))
                 priorsRatio*= (self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
+                #print "(self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8])) = "+repr((self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8])))
                 priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
+                #print "(self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0])) = "+repr((self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0])))
                 priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
-                priorsRatio*= (self.dictVal('distPrior')(paramsOut[2])/self.dictVal('distPrior')(self.paramsLast[2])) 
+                #print "(self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1])) = "+repr((self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1])))
+                priorsRatio*= (self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) 
+                #print "(self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2]))  = "+repr((self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])))              
+                #print "priorsRatio = "+str(priorsRatio)
                 if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
                     accept = True
             except:
@@ -403,6 +415,7 @@ class Simulator(object):
             ## get starting params and sigmas as these two stages start at a random point
             sigmas = copy.deepcopy(self.starterSigmas)
             proposedPars = self.increment(np.zeros((len(self.rangeMins))),sigmas,stage='MC')
+            proposedPars[11]=1e6
             if stage=='SA':
                 temp=self.dictVal('strtTemp')
         else:

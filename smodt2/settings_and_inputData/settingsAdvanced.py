@@ -9,26 +9,35 @@ import constants
 #NOTE: key max = 8characters, value+comment max = 68 characters, comment Max=47 it seems in testing.
 #NOTE: only change the code and not the name of the functions or their inputs.
 def ePrior(e,P):
-    if (P*constants.daysPerYear<1000.0)and(simpleSettingsDict['eMAX']!=0):
-        return 2.0*e
+    if (e!=0)and(P!=0):
+        if ((P*constants.daysPerYear)<1000.0)and(simpleSettingsDict['eMAX']!=0):
+            return 2.0*e
+        else:
+            return 1.0
     else:
         return 1.0
 def pPrior(P):
-    if simpleSettingsDict['PMAX']!=simpleSettingsDict['PMIN']!=0:
-        return P
+    if P!=0:
+        if simpleSettingsDict['PMAX']!=simpleSettingsDict['PMIN']!=0:
+            return P
+        else:
+            return 1.0
     else:
         return 1.0
 def incPrior(inc):
-    if simpleSettingsDict['incMAX']!=simpleSettingsDict['incMIN']!=0:
-        if inc==0:
+    if inc!=0:
+        if simpleSettingsDict['incMAX']!=simpleSettingsDict['incMIN']!=0:
             return 1.0
         else:
             return np.sin(inc*(constants.pi/180.0))
     else:
         return 1.0
 def mass1Prior(mass):
-    if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
-        return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
+    if mass!=0:
+        if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
+            return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
+        else:
+            return 1.0
     else:
         return 1.0
 def mass2Prior(mass):
@@ -38,8 +47,11 @@ def mass2Prior(mass):
 #     else:
 #         return 1.0
 def paraPrior(parallax):
-    if simpleSettingsDict['paraMIN']!=simpleSettingsDict['paraMAX']!=0:
-        return gaussian(parallax, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
+    if parallax!=0:
+        if simpleSettingsDict['paraMIN']!=simpleSettingsDict['paraMAX']!=0:
+            return gaussian(parallax, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
+        else:
+            return 1.0
     else:
         return 1.0
 

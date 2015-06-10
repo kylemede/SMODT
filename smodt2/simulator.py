@@ -52,7 +52,7 @@ class Simulator(object):
         ##load up range min,max and sigma arrayS
         rangeMaxs = [self.dictVal('mass1MAX'),\
                self.dictVal('mass2MAX'),\
-               self.dictVal('distMAX'),\
+               self.dictVal('paraMAX'),\
                self.dictVal('OmegaMAX'),\
                self.dictVal('eMAX'),\
                self.dictVal('TMAX'),\
@@ -65,7 +65,7 @@ class Simulator(object):
                self.dictVal('KMAX')]
         rangeMins = [self.dictVal('mass1MIN'),\
                self.dictVal('mass2MIN'),\
-               self.dictVal('distMIN'),\
+               self.dictVal('paraMIN'),\
                self.dictVal('OmegaMIN'),\
                self.dictVal('eMIN'),\
                self.dictVal('TMIN'),\

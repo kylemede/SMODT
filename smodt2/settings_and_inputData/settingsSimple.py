@@ -25,9 +25,9 @@ simpleSettingsDict={
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.01,
 'mass2MAX' : 0.5,
-# Minimum/Maximum allowed value for the system distance from Earth [double][PC]
-'distMIN' : 2.0,
-'distMAX' : 8.0,
+# Minimum/Maximum allowed value for the Parallax [double][mas]
+'paraMIN' : 0.1,
+'paraMAX' : 0.3,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 20.0,
 'OmegaMAX' : 110.0,

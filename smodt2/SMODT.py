@@ -39,14 +39,6 @@ class singleProc(Process):
         
     def run(self):
         #$$$$$$$$$$$$$$$$$$$$$$$ TEMP $$$$$$$$$$$$$$$$$$$$$$$$$$
-        ##temp params that are good enough to start an MCMC run on the artificial data if that is all we want to test.
-        paramsST = np.array([9.91460200e-01,   1.98628676e-01,   5.02754554e+00,
-         5.91088681e+01,   4.08044156e-01,   2.45701883e+06,
-         2.45701883e+06,   1.49596676e+01,   2.99163981e+01,
-         1.11421670e+02,   6.43357074e+00,   6.70551229e+01,
-         1.16794139e+03,   5.20187725e+00])
-        sigmasST = np.array([0.09,  0.05,  0.03,  0.01,  0.03,  0.05,  0.01,  0.05,  0.03,
-        0.07,  0.01,  0.01,  0.01,  0.05])
         bestRedChiSqrSA=1.0
         bestRedChiSqrST=1.0
         #$$$$$$$$$$$$$$$$$$$$$$$ TEMP $$$$$$$$$$$$$$$$$$$$$$$$$$

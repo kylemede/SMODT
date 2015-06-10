@@ -37,9 +37,9 @@ def mass2Prior(mass):
 #         return gaussian(mass, advancedDict['mass2Est'][0], advancedDict['mass2Err'][0])
 #     else:
 #         return 1.0
-def distPrior(dist):
-    if simpleSettingsDict['distMIN']!=simpleSettingsDict['distMAX']!=0:
-        return gaussian(dist, advancedDict['distEst'][0], advancedDict['distErr'][0])
+def paraPrior(parallax):
+    if simpleSettingsDict['paraMIN']!=simpleSettingsDict['paraMAX']!=0:
+        return gaussian(parallax, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
     else:
         return 1.0
 
@@ -141,9 +141,9 @@ advancedDict = {
 #best estimate of secondary's mass, and error [double][Msun]
 'mass2Est' : (0.2,"Secondary's estimated mass"),
 'mass2Err' : (0.1,"Secondary's estimated mass error"),
-#best estimate of system's distance from Earth, and error [double][PC]
-'distEst' : (5.0,"Estimated System Distance"),
-'distErr' : (0.1,"Estimated System Distance error"),
+#best estimate of parallax, and error [double][mas]
+'paraEst' : (0.2,"Estimated parallax"),
+'paraErr' : (0.003,"Estimated parallax error"),
 ##################################
 # Push prior functions into dict #
 ##################################

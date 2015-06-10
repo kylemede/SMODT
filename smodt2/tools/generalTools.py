@@ -648,7 +648,11 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
     bestStr = '\n'+'-'*20+'\nBest fit values are:\n'+'-'*20+'\n'
     for i in range(len(bestFit)):
         if i==2:
-            bestStr+=paramStrs[i]+" = "+str(bestFit[i])+", OR  "+str(1.0/bestFit[i])+'[PC]\n'
+            bestStr+=paramStrs[2]+" = "+str(bestFit[2])
+            if (bestFit[2]!=0):
+                bestStr+=", OR  "+str(1.0/bestFit[2])+'[PC]\n'
+            else:
+                bestStr+='\n'
         else:
             bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
             

@@ -27,9 +27,9 @@ def pPrior(P):
 def incPrior(inc):
     if inc!=0:
         if simpleSettingsDict['incMAX']!=simpleSettingsDict['incMIN']!=0:
-            return 1.0
-        else:
             return np.sin(inc*(constants.pi/180.0))
+        else:
+            return 1.0
     else:
         return 1.0
 def mass1Prior(mass):
@@ -164,7 +164,7 @@ advancedDict = {
 'incPrior' :incPrior,
 'mass1Prior' :mass1Prior,
 'mass2Prior' :mass2Prior,
-'distPrior' :distPrior,
+'paraPrior' :paraPrior,
 }
 
 

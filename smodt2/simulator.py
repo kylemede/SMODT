@@ -265,25 +265,14 @@ class Simulator(object):
         else:
             ## For SA after first sample, MCMC, and ST
             try:
-                #print 'paramsOut[11] = '+str(paramsOut[11])
-                #print 'self.paramsLast[11] = '+str(self.paramsLast[11])
-                #print 'temp = '+str(temp)
                 likelihoodRatio = np.e**((self.paramsLast[11] - paramsOut[11])/(2.0*temp))
-                #print "likelihoodRatio = "+repr(likelihoodRatio)
                 ###### put all prior funcs together in dict??
                 priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
-                #print "(self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7])) = "+repr((self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7])))
                 priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
-                #print "(self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7])) = "+repr((self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7])))
                 priorsRatio*= (self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
-                #print "(self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8])) = "+repr((self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8])))
                 priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
-                #print "(self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0])) = "+repr((self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0])))
                 priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
-                #print "(self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1])) = "+repr((self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1])))
                 priorsRatio*= (self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) 
-                #print "(self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2]))  = "+repr((self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])))              
-                #print "priorsRatio = "+str(priorsRatio)
                 if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
                     accept = True
             except:
@@ -295,15 +284,12 @@ class Simulator(object):
             self.latestSumStr = stage+" chain #"+str(self.chainNum)+' Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
         else:
             self.acceptBoolAry.append(0)
-        if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
-            ##log a summary
-            sumStr = "below\n"+stage+" chain #"+str(self.chainNum)+", # Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
-            sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
-            self.log.debug(sumStr)
-        if False:
-            print 'priorsRatio = '+str(priorsRatio)
-            print 'inc priorsRatio = '+str(self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
-            print 'likelihoodRatio = '+str(likelihoodRatio)
+        ##log a status summary?
+        if self.dictVal('nSumry')>0:
+            if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
+                sumStr = "below\n"+stage+" chain #"+str(self.chainNum)+", # Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
+                sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
+                self.log.debug(sumStr)
         return (paramsOut,accept)
     
     def tempDrop(self,sample,temp,stage=''):
@@ -357,7 +343,7 @@ class Simulator(object):
         """
         Make a final summary of important statistics for the chain.
         """
-        sumStr = "END OF "+stage+" CHAIN #"+str(self.chainNum)+" SUMMARY below\nFinalTemp = "
+        sumStr = '\n'+"="*70+"END OF "+stage+" CHAIN #"+str(self.chainNum)+" SUMMARY:\nFinalTemp = "
         sumStr+= str(temp)+"\nTotal number of steps accepted = "+str(self.acceptCount)+"\n"
         sumStr+= "Average acceptance rate = "
         sumStr+=str(float(self.acceptCount)/float(self.dictVal(self.stgNsampDict[stage])))+"\n"

@@ -52,10 +52,11 @@ class singleProc(Process):
             (paramsSA,sigmasSA,bestRedChiSqrSA) = self.Sim.simulatorFunc('SA',self.chainNum)
         if bestRedChiSqrSA<self.settingsDict['chiMaxST'][0]:
             if 'ST' in self.stageList:
+                self.log.warning('chain #'+str(self.chainNum)+" made it to the ST stage, with redChiSquare = "+str(bestRedChiSqrSA)+" :-)")
                 (paramsST,sigmasST,bestRedChiSqrST) = self.Sim.simulatorFunc('ST',self.chainNum,paramsSA,sigmasSA)
             if bestRedChiSqrST<self.settingsDict['cMaxMCMC'][0]:
                 if 'MCMC' in self.stageList:
-                    self.log.warning('chain #'+str(self.chainNum)+" made it to the MCMC stage :-)")
+                    self.log.warning('chain #'+str(self.chainNum)+" made it to the MCMC stage, with redChiSquare = "+str(bestRedChiSqrST)+" :-D")
                     outMCMCFname = self.Sim.simulatorFunc('MCMC',self.chainNum,paramsST,sigmasST)
                     self.log.info('chain #'+str(self.chainNum)+' MCMC OUTFILE :\n'+outMCMCFname)
             else:

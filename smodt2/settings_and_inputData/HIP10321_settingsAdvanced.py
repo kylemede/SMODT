@@ -96,9 +96,9 @@ advancedDict = {
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(500000,"Number of Annealing samples"),#100000
+'nSAsamp' :(300000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (100.0,"SA starting temperature."),
+'strtTemp' : (500.0,"SA starting temperature."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
 'strtSig' : (0.25,"Starting percent param range for SA"),

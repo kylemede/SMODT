@@ -641,21 +641,28 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
     f.write('\nparamList:\n'+repr(paramList))
     f.write('\nparamStrs:\n'+repr(paramStrs))
     f.write('\nparamFileStrs:\n'+repr(paramFileStrs))
+    
     try:
-        ## make more advanced summary strings
+        ## try to make and write the more advanced summary strings to the file
+        nusStr = "\nnu values were: [total,DI,RV] = ["+str(head['NU'])+", "+str(head['NUDI'])+", "+str(head['NURV'])+"]\n"
+        f.write(nusStr)
         stgNsampStrDict = {"MC":"nSamples","SA":"nSAsamp","ST":"nSTsamp","MCMC":"nSamples"}
-        numFilesStr = '\nTotal Files that finished each stage are:\n'
+        numFilesStr = '\n\nTotal Files that finished each stage are:\n'
         chiSquaredsStr = '\nBest Reduced Chi Squareds for each stage are:\n'
         for stage in stageList:
             fnames = glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits"))
             numFilesStr+=stage+' = '+str(len(fnames))+", each with "+str(settingsDict[stgNsampStrDict[stage]][0])+" samples\n"
             if len(fnames)>0:
+                #print stage+' len(fnames) = '+str(len(fnames))
                 chiSquaredsStr+=stage+" = ["
                 for fname in fnames: 
-                    bestFit = findBestOrbit(fname)
-                    chiSquaredsStr+=str(bestFit[11]/float(head['nu']))+', '
-                chiSquaredsStr+=']\n'
+                    bestFit2 = findBestOrbit(fname)
+                    chiSquaredsStr+=str(bestFit2[11]/float(head['NU']))+', '
+                    #print 'best chisquared for the file was = '+str(bestFit2[11]/float(head['nu']))
+                chiSquaredsStr = chiSquaredsStr[:-2]+']\n'
         numFilesStr+="\n"+"*"*65+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*65+'\n'
+        f.write(numFilesStr)
+        f.write(chiSquaredsStr)
         bestStr = '\n'+'-'*20+'\nBest fit values are:\n'+'-'*20+'\n'
         for i in range(len(bestFit)):
             if i==2:
@@ -667,9 +674,6 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
             else:
                 bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
         bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[11]/float(head['nu']))+'\n'+'*'*45
-        ##write all advanced summary strings to file
-        f.write(numFilesStr)
-        f.write(chiSquaredsStr)
         f.write(bestStr)
     except:
         log.critical("A problem occured while trying to produce advanced summary strings.")
@@ -687,12 +691,12 @@ def copyToDB(settingsDict):
     fnamesALL = []
     for extension in ['pdf','txt','log']:
         fnames = glob.glob(os.path.join(settingsDict['finalFolder'],"*."+extension))
-        print 'found files to copy to DB:\n'+repr(fnames)
+        log.debug('found files to copy to DB:\n'+repr(fnames))
         for name in fnames:
             fnamesALL.append(name)
     dbDir = os.path.join(settingsDict['dbFolder'],settingsDict['outRoot'])
     os.mkdir(dbDir)
-    print 'DB dir is:\n'+repr(dbDir)
+    log.debug('DB dir is:\n'+repr(dbDir))
     for f in fnamesALL:
         try:
             log.debug('trying to copy file:\n'+repr(os.path.basename(f)))

@@ -63,9 +63,9 @@ advancedDict = {
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
 'chiMAX' : (100.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed best reduced chiSquared out of SA before entering ST [double]
-'chiMaxST':(2.5,'Max reduced chiSquared to enter ST.'),
+'chiMaxST':(2.25,'Max reduced chiSquared to enter ST.'),
 # maximum allowed best reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(2.209,'Max reduced chiSquared to enter MCMC.'),
+'cMaxMCMC':(2.207,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 30,
@@ -83,7 +83,7 @@ advancedDict = {
 'remake' :False,
 ###$$$$$$$$$$$$$$$$$$$$$$ Keep in final version? $$$$$$$$$$$$$$$$$$$$$$$$$$
 # Copy output non-data files to a Dropbox folder? [bool]  $$$$$ still not coded up $$$
-'CopyToDB' :True,
+'CopyToDB' :False,
 'dbFolder' : '/run/media/kmede/HOME/Dropbox/SMODT-outputCopies/',
 ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ############################
@@ -96,9 +96,9 @@ advancedDict = {
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(300000,"Number of Annealing samples"),
+'nSAsamp' :(1000000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (500.0,"SA starting temperature."),
+'strtTemp' : (250.0,"SA starting temperature."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
 'strtSig' : (0.25,"Starting percent param range for SA"),
@@ -106,10 +106,10 @@ advancedDict = {
 # Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/100)!
 'nTmpStps'  : (5000,"Number of temperature steps during SA."),
 # number of samples to draw for sigma tuning stage [int].
-'nSTsamp' :(70000,"Number of Tuning samples"),
+'nSTsamp' :(100000,"Number of Tuning samples"),
 # number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]. 
 # Allowed vals [1,nSTsamp) Ideal is int(nSTsamp/2000)!
-'nSigStps': (35,"Times to calc acceptance and tune sigmas."),
+'nSigStps': (50,"Times to calc acceptance and tune sigmas."),
 # Maximum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
 'sigMax' :(1.0,'Maximum ratio of params range,for step size.'),
 # Minimum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]

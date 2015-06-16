@@ -224,7 +224,7 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                 if shadeConfLevels:
                     CLevels=np.loadtxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))
                 showYlabel=False
-                if (i==0)or(i==4)or(i==8):
+                if i in [0,4,8,12]:
                     showYlabel = True
                 subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[i],xLims=xLim,latex=latex,showYlabel=showYlabel)         
             else:
@@ -517,7 +517,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             ##clean up boarders, axis ticks and such 
             residualsPlot.tick_params(axis='y',which='major',width=1,length=3,pad=8,direction='in',labelsize=15)
             residualsPlot.tick_params(axis='x',which='major',width=1,length=3,pad=8,direction='in',labelsize=20)
-            residualsPlot.locator_params(axis='y',nbins=5) #fix number of y-axis label points
+            residualsPlot.locator_params(axis='y',nbins=6) #fix number of y-axis label points
             residualsPlot.spines['right'].set_linewidth(1.0)
             residualsPlot.spines['bottom'].set_linewidth(1.0)
             residualsPlot.spines['top'].set_linewidth(1.0)

@@ -480,9 +480,9 @@ def startup(argv):
     tempRoot = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/'###$$$$ this will be handled with setup.py??? How to know where SMODT is on disk??
     settingsDict = loadSettingsDict(tempRoot+'settings_and_inputData/'+prepend)
     settingsDict['smodtdir']=tempRoot
+    #####################################################################################
     settingsDict['settingsDir']=os.path.join(settingsDict['smodtdir'],'settings_and_inputData/')
     settingsDict['prepend']=prepend
-    #####################################################################################
     
     ## Make a directory (folder) to place all the files from this simulation run
     settingsDict['finalFolder'] = os.path.join(settingsDict['outDir'],settingsDict['outRoot'])
@@ -647,8 +647,8 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
         nusStr = "\nnu values were: [total,DI,RV] = ["+str(head['NU'])+", "+str(head['NUDI'])+", "+str(head['NURV'])+"]\n"
         f.write(nusStr)
         stgNsampStrDict = {"MC":"nSamples","SA":"nSAsamp","ST":"nSTsamp","MCMC":"nSamples"}
-        numFilesStr = '\nTotal Files that finished each stage are:\n'
-        chiSquaredsStr = '\nBest Reduced Chi Squareds for each stage are:\n'
+        numFilesStr = '\nTotal # of files that finished each stage were:\n'
+        chiSquaredsStr = '\nBest Reduced Chi Squareds for each stage were:\n'
         for stage in stageList:
             fnames = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits")))
             numFilesStr+=stage+' = '+str(len(fnames))+", each with "+str(settingsDict[stgNsampStrDict[stage]][0])+" samples\n"
@@ -661,7 +661,7 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
         numFilesStr+="\n"+"*"*65+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*65+'\n'
         f.write(numFilesStr)
         f.write(chiSquaredsStr)
-        bestStr = '\n'+'-'*20+'\nBest fit values are:\n'+'-'*20+'\n'
+        bestStr = '\n'+'-'*20+'\nBest fit values were:\n'+'-'*20+'\n'
         for i in range(len(bestFit)):
             if i==2:
                 bestStr+=paramStrs[2]+" = "+str(bestFit[2])

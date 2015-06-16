@@ -2,15 +2,15 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (3000000,"Number of MCMC or MC samples"),
+'nSamples' : (500000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (15,"Number of chains"),
+'nChains' : (20,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HIP10321-3D-KNOTdirect-TequalTc-incAlmostALL-Kmasses-MCMC",
+'outRoot' : "SMODT2-HIP10321-3D-KNOTdirect-TequalTc-incALL-Kmasses-MCMC-bestAtBest",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('RV',"Data Mode (RV,DI,3D)"),
@@ -20,11 +20,11 @@ simpleSettingsDict={
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.50,
-'mass1MAX' : 1.35,
+'mass1MIN' : 0.10,
+'mass1MAX' : 2.0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.06,
-'mass2MAX' : 0.12,
+'mass2MIN' : 0.04,
+'mass2MAX' : 0.25,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 33.00,
 'paraMAX' : 40.00,
@@ -42,8 +42,8 @@ simpleSettingsDict={
 'PMIN' : 19,
 'PMAX' : 21.5,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 45.0,
-'incMAX' : 150.0,
+'incMIN' : 1.0,
+'incMAX' : 180.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 345.0,
 'omegaMAX' : 355.0,

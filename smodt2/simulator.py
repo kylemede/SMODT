@@ -414,7 +414,7 @@ class Simulator(object):
             sigmas = copy.deepcopy(startSigmas)
         latestPars = copy.deepcopy(proposedPars)
         self.paramsLast = proposedPars
-        self.startSummary(proposedPars,sigmas,stage)
+        #self.startSummary(proposedPars,sigmas,stage)
         ##loop through each sample 
         ##Follows these steps: in Range?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? DONE ->write output data
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
@@ -442,7 +442,8 @@ class Simulator(object):
         self.endSummary(len(acceptedParams),temp,sigmas,stage)
         outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',acceptedParams,self.settingsDict)
         if stage=='ST':
-            return (latestPars,sigmas,self.bestRedChiSqr)
+            #return (latestPars,sigmas,self.bestRedChiSqr)
+            return (self.paramsBest,sigmas,self.bestRedChiSqr)
         elif stage=='SA':
             #start ST at the best location with tight sigmas, and it will tune to ideal sigmas
             return (self.paramsBest,np.ones(np.array(sigmas).shape)*0.01,self.bestRedChiSqr)

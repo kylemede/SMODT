@@ -155,7 +155,7 @@ class Simulator(object):
         self.settingsDict['n3Depoch'] = (nEpochs,"Number of 3D epochs")
         self.settingsDict['nu'] = (nu,"Total nu")
         self.settingsDict['nuDI'] = (nuDI,"nu for DI")
-        self.settingsDict['nuRV'] = (nuDI,"nu for RV")
+        self.settingsDict['nuRV'] = (nuRV,"nu for RV")
         paramIntsStr = repr(paramInts).replace(' ','')
         self.settingsDict['parInts'] = (paramIntsStr,"Varried params")
         self.settingsDict['chainNum'] = (self.chainNum,"chain number")
@@ -253,6 +253,7 @@ class Simulator(object):
         if (paramsOut[11]/self.nu)<self.bestRedChiSqr:
             self.bestRedChiSqr=(paramsOut[11]/self.nu)
             self.bestSumStr = stage+" chain #"+str(self.chainNum)+' BEST reduced chiSquareds so far: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
+            #self.bestSumStr+='\nbest total non-reduced chiSquared/nu = '+str(paramsOut[11])+'/'+str(self.nu)
             self.paramsBest = paramsOut
             if self.latestSumStr=='':
                 self.latestSumStr=stage+" chain #"+str(self.chainNum)+' Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))
@@ -336,14 +337,17 @@ class Simulator(object):
                         self.shiftStr+=str(sigmasOut[i])+"\n"
                 self.acceptBoolAry = []
                 self.parIntVaryAry = []
-                self.log.debug(self.acceptStr+self.shiftStr)
+                ##log a status summary?
+                if self.dictVal('nSumry')>0:
+                    if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
+                        self.log.debug(self.acceptStr+self.shiftStr)
         return sigmasOut
     
     def endSummary(self,totSaved,temp,sigmas,stage=''):
         """
         Make a final summary of important statistics for the chain.
         """
-        sumStr = '\n'+"="*70+"END OF "+stage+" CHAIN #"+str(self.chainNum)+" SUMMARY:\nFinalTemp = "
+        sumStr = '\n'+"="*70+"\nEND OF "+stage+" CHAIN #"+str(self.chainNum)+" SUMMARY:\nFinalTemp = "
         sumStr+= str(temp)+"\nTotal number of steps accepted = "+str(self.acceptCount)+"\n"
         sumStr+= "Average acceptance rate = "
         sumStr+=str(float(self.acceptCount)/float(self.dictVal(self.stgNsampDict[stage])))+"\n"
@@ -429,9 +433,9 @@ class Simulator(object):
             proposedPars = self.increment(latestPars,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
             sigmas = self.sigTune(sample,sigmas,stage)
-            if (self.dictVal('logLevel')<50)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):
+            if (self.dictVal('logLevel')<40)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):
                 bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), stage+str(chainNum)+' complete so far.')
-        if self.dictVal('logLevel')<50:
+        if self.dictVal('logLevel')<40:
             bar.render(100,stage+str(chainNum)+' complete!\n')
         toc=timeit.default_timer()
         self.log.debug(stage+" took: "+str(int(toc-tic))+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$

@@ -647,18 +647,16 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
         nusStr = "\nnu values were: [total,DI,RV] = ["+str(head['NU'])+", "+str(head['NUDI'])+", "+str(head['NURV'])+"]\n"
         f.write(nusStr)
         stgNsampStrDict = {"MC":"nSamples","SA":"nSAsamp","ST":"nSTsamp","MCMC":"nSamples"}
-        numFilesStr = '\n\nTotal Files that finished each stage are:\n'
+        numFilesStr = '\nTotal Files that finished each stage are:\n'
         chiSquaredsStr = '\nBest Reduced Chi Squareds for each stage are:\n'
         for stage in stageList:
-            fnames = glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits"))
+            fnames = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits")))
             numFilesStr+=stage+' = '+str(len(fnames))+", each with "+str(settingsDict[stgNsampStrDict[stage]][0])+" samples\n"
             if len(fnames)>0:
-                #print stage+' len(fnames) = '+str(len(fnames))
                 chiSquaredsStr+=stage+" = ["
                 for fname in fnames: 
                     bestFit2 = findBestOrbit(fname)
                     chiSquaredsStr+=str(bestFit2[11]/float(head['NU']))+', '
-                    #print 'best chisquared for the file was = '+str(bestFit2[11]/float(head['nu']))
                 chiSquaredsStr = chiSquaredsStr[:-2]+']\n'
         numFilesStr+="\n"+"*"*65+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*65+'\n'
         f.write(numFilesStr)

@@ -168,6 +168,8 @@ def smodt():
         
     ##clean up files (move to folders or delete them)
     tools.cleanUp(settingsDict,stageList,allFname)
+    if settingsDict['CopyToDB']:
+        tools.copyToDB(settingsDict)
     ## Final log messages and end
     log.info("Post-processing took a total of "+tools.timeStrMaker(postTime))
     log.info("\n\nEVERYTHING took a total of "+tools.timeStrMaker(allTime)+'\n\n')

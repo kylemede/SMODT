@@ -497,6 +497,9 @@ def startup(argv):
         if (('y' in YN) or ('Y' in YN)):
             shutil.rmtree(settingsDict['finalFolder'])
             os.mkdir(settingsDict['finalFolder'])
+            dbDir = os.path.join(settingsDict['dbFolder'],settingsDict['outRoot'])
+            if os.path.exists(dbDir):
+                shutil.rmtree(dbDir)
         else: #elif (('n' in YN) or ('N' in YN)):
             sys.exit()
         if settingsDict['logLevel']<50:
@@ -665,6 +668,27 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
     f.close()
     log.info("Summary file written to:\n"+summaryFname)  
 
+def copyToDB(settingsDict):
+    """
+    Copy vital results files to Dropbox.
+    """
+    fnamesALL = []
+    for extension in ['pdf','txt','log']:
+        fnames = glob.glob(os.path.join(settingsDict['finalFolder'],"*."+extension))
+        print 'found files to copy to DB:\n'+repr(fnames)
+        for name in fnames:
+            fnamesALL.append(name)
+    dbDir = os.path.join(settingsDict['dbFolder'],settingsDict['outRoot'])
+    os.mkdir(dbDir)
+    print 'DB dir is:\n'+repr(dbDir)
+    for f in fnamesALL:
+        try:
+            log.debug('trying to copy file:\n'+repr(os.path.basename(f)))
+            shutil.copy(f,os.path.join(dbDir,os.path.basename(f)))
+        except:
+            log.error('failed to move file:\n'+f+'\nintto DB folder:\n'+dbDir)
+    log.info("vital results files copied to DB folder:\n"+dbDir)
+    
 def getParInts(head):
     """
     convert string version of paramInts into a list again.

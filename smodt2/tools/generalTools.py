@@ -641,26 +641,38 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
     f.write('\nparamList:\n'+repr(paramList))
     f.write('\nparamStrs:\n'+repr(paramStrs))
     f.write('\nparamFileStrs:\n'+repr(paramFileStrs))
-    stgNsampStrDict = {"MC":"nSamples","SA":"nSAsamp","ST":"nSTsamp","MCMC":"nSamples"}
-    numFilesStr = '\nTotal Files that finished each stage are:\n'
-    for stage in stageList:
-        fnames = glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits"))
-        numFilesStr+=stage+' = '+str(len(fnames))+", each with "+str(settingsDict[stgNsampStrDict[stage]][0])+" samples\n"
-    numFilesStr+="\n"+"*"*65+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*65+'\n'
-    f.write(numFilesStr)
-    bestStr = '\n'+'-'*20+'\nBest fit values are:\n'+'-'*20+'\n'
-    for i in range(len(bestFit)):
-        if i==2:
-            bestStr+=paramStrs[2]+" = "+str(bestFit[2])
-            if (bestFit[2]!=0):
-                bestStr+=", OR  "+str(1.0/bestFit[2])+'[PC]\n'
+    try:
+        ## make more advanced summary strings
+        stgNsampStrDict = {"MC":"nSamples","SA":"nSAsamp","ST":"nSTsamp","MCMC":"nSamples"}
+        numFilesStr = '\nTotal Files that finished each stage are:\n'
+        chiSquaredsStr = '\nBest Reduced Chi Squareds for each stage are:\n'
+        for stage in stageList:
+            fnames = glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits"))
+            numFilesStr+=stage+' = '+str(len(fnames))+", each with "+str(settingsDict[stgNsampStrDict[stage]][0])+" samples\n"
+            if len(fnames)>0:
+                chiSquaredsStr+=stage+" = ["
+                for fname in fnames: 
+                    bestFit = findBestOrbit(fname)
+                    chiSquaredsStr+=str(bestFit[11]/float(head['nu']))+', '
+                chiSquaredsStr+=']\n'
+        numFilesStr+="\n"+"*"*65+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*65+'\n'
+        bestStr = '\n'+'-'*20+'\nBest fit values are:\n'+'-'*20+'\n'
+        for i in range(len(bestFit)):
+            if i==2:
+                bestStr+=paramStrs[2]+" = "+str(bestFit[2])
+                if (bestFit[2]!=0):
+                    bestStr+=", OR  "+str(1.0/bestFit[2])+'[PC]\n'
+                else:
+                    bestStr+='\n'
             else:
-                bestStr+='\n'
-        else:
-            bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
-            
-    bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[11]/float(head['nu']))+'\n'+'*'*45
-    f.write(bestStr)
+                bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
+        bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[11]/float(head['nu']))+'\n'+'*'*45
+        ##write all advanced summary strings to file
+        f.write(numFilesStr)
+        f.write(chiSquaredsStr)
+        f.write(bestStr)
+    except:
+        log.critical("A problem occured while trying to produce advanced summary strings.")
     f.write('\n'+grStr)
     f.write('\n'+effPtsStr)
     f.write('\n'+clStr)

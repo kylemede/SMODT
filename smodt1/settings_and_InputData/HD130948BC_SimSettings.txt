@@ -10,8 +10,9 @@ chiSquaredMax =500.0
 numSamples =1000000
 # The number of times to print status updates to the screen/terminal during the run [int]
 numSamplePrints =10
-# Run multiple parallel simulations at the same time?, it will run on numCores-1, else only 1 [bool]
-useMultiProcessing =true
+# Number of simulation chains to run in parallel, [1,100] [int].  
+# NOTE: greater than numCores-1 causes system to slow down!
+numChains =7
 # set to 'true' to ONLY PRINT the ABSOLUTE MINIMUM of messages about progress to the screen [bool]
 SILENT = false
 # set to 'false' to receive extra prints from the main simulations progress for testing [bool]

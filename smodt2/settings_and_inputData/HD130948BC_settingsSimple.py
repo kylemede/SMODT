@@ -2,29 +2,29 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (300000,"Number of MCMC or MC samples"),
+'nSamples' : (1000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (1,"Number of chains"),
+'nChains' : (3,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HD130948BC-DI-SA-startAtBest-flatM1",
+'outRoot' : "SMODT2-HD130948BC-DI-MCMC-startAtBest-flatM1-fixedDIdata",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('DI',"Data Mode (RV,DI,3D)"),
 # mode to run simulation in, choices {'MC','SA','MCMC'} [string]
-'symMode' : ('SA',"Simulator mode (MC,SA,MCMC)"),
+'symMode' : ('MCMC',"Simulator mode (MC,SA,MCMC)"),
 ###################################################
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.04,
-'mass1MAX' : 0.06,
+'mass1MIN' : 0.01,
+'mass1MAX' : 0.1,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.04,
-'mass2MAX' : 0.06,
+'mass2MIN' : 0.01,
+'mass2MAX' : 0.1,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 50.00,
 'paraMAX' : 60.00,
@@ -32,17 +32,17 @@ simpleSettingsDict={
 'OmegaMIN' : 180.0,
 'OmegaMAX' : 360.0,
 # Minimum/Maximum allowed value for the Eccentricity, allowed range [0,0.98]. [double]
-'eMIN' : 0.12,
+'eMIN' : 0.01,
 'eMAX' : 0.25,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2454500,
-'TMAX' : 2454700,
+'TMIN' : 2454200,
+'TMAX' : 2454900,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 9,
-'PMAX' : 10.6,
+'PMAX' : 11.6,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 93.0,
+'incMIN' : 85.0,
 'incMAX' : 100.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 180.0,

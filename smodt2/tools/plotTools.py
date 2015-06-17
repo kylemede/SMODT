@@ -145,7 +145,7 @@ def addDIdataToPlot(subPlot,realData,asConversion):
     for i in range(0,diData.shape[0]):
         xCent = diData[i,1]*asConversion
         yCent = diData[i,3]*asConversion
-        print 'data [x,y] = ['+str(xCent/asConversion)+', '+str(yCent/asConversion)+']'#$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        #print 'data [x,y] = ['+str(xCent/asConversion)+', '+str(yCent/asConversion)+']'#$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         left = xCent-diData[i,2]*asConversion
         right = xCent+diData[i,2]*asConversion
         top = yCent+diData[i,4]*asConversion
@@ -345,8 +345,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             paramsDI.append(par)
         paramsDI=np.array(paramsDI,dtype=np.dtype('d'),order='C')
         Orbit.calculate(fitDataDI,paramsDI)
-        print 'paramsDI = \n'+repr(paramsDI)
-        print 'fitDataDI = \n'+repr(fitDataDI)
+        #print 'paramsDI = \n'+repr(paramsDI)
+        #print 'fitDataDI = \n'+repr(fitDataDI)
         if False:
             ## Get 1/4 locations (useful for drawing semi-major axis, and finding loc of COM)
             fakeRealDataQuarter = np.ones((4,8),dtype=np.dtype('d'))
@@ -370,18 +370,18 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         ## Draw orbit fit
         main.plot(fitDataDI[:,0]*asConversion,fitDataDI[:,1]*asConversion,linewidth=2.5,color='Blue') 
         ## Draw larger star for primary star's location
-        starPolygon = star((asConversion/1000.0)*12.0*orbParams[10],0,0,color='yellow',N=6,thin=0.5)
+        starPolygon = star(2*paramsDI[10],0,0,color='yellow',N=6,thin=0.5)
         main.add_patch(starPolygon)
         ## Add DI data to plot
         (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realData,asConversion)
-        print '[xmin,xmax,ymin,ymax] = '+repr([xmin,xmax,ymin,ymax])
+        #print '[xmin,xmax,ymin,ymax] = '+repr([xmin,xmax,ymin,ymax])
         ## set limits and other basics of plot looks
         xLims = (np.min([xmin,np.max(fitDataDI[:,0]*asConversion)]),np.max([xmax,np.max(fitDataDI[:,0]*asConversion)]))
         yLims = (np.min([ymin,np.max(fitDataDI[:,1]*asConversion)]),np.max([ymax,np.max(fitDataDI[:,1]*asConversion)]))
         xLims = (xLims[0]-(xLims[1]-xLims[0])*0.05,xLims[1]+(xLims[1]-xLims[0])*0.05)
         yLims = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)
-        print 'xLims = '+repr(xLims)
-        print 'yLims = '+repr(yLims)
+        #print 'xLims = '+repr(xLims)
+        #print 'yLims = '+repr(yLims)
         ## FLIP X-AXIS to match backawards Right Ascension definition
         a = main.axis()
         main.axis([a[1],a[0],a[2],a[3]])

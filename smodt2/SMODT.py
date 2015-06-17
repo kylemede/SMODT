@@ -144,6 +144,7 @@ def smodt():
     if settingsDict['pltOrbit'] and os.path.exists(allFname):
         plotFnameBase = os.path.join(os.path.dirname(allFname),'orbitPlot'+settingsDict['symMode'][0])
         tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps')
+    
     ## plot posteriors?
     clStr = ''
     if settingsDict['pltDists'] and os.path.exists(allFname):
@@ -156,7 +157,6 @@ def smodt():
     effPtsStr = ''
     if ((len(outFiles)>1)and(settingsDict['symMode'][0]=='MCMC'))and (settingsDict['calcCL'] and os.path.exists(allFname)):
         effPtsStr = tools.mcmcEffPtsCalc(allFname)
-        
     ##calc R?
     grStr = ''
     if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
@@ -173,6 +173,7 @@ def smodt():
     tools.cleanUp(settingsDict,stageList,allFname)
     if settingsDict['CopyToDB']:
         tools.copyToDB(settingsDict)
+        
     ## Final log messages and end
     log.info("Post-processing took a total of "+tools.timeStrMaker(postTime))
     log.info("\n\nEVERYTHING took a total of "+tools.timeStrMaker(allTime)+'\n\n')

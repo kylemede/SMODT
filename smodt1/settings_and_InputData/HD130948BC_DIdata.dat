@@ -1,6 +1,6 @@
 #HD 130948BC DI data from Dupuy email MINUS BAD POINT
 # ObsDate[JD]	PositionAngle[deg]    PositionAngleError[deg]  SeparationAngle["]   SeparationAngleError["]
-2451965		313.5	1		0.1309	0.002
+2451965		313.5	1.0		0.1309	0.002
 2453425.282	146.6	0.6		0.0568	0.0006
 2454127.085	132.8	0.4		0.1117	0.0008
 2454185.028	132.54	0.13	0.1091	0.0004

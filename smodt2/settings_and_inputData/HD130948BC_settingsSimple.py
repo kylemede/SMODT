@@ -2,10 +2,10 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (1000000,"Number of MCMC or MC samples"),
+'nSamples' : (5000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (3,"Number of chains"),
+'nChains' : (9,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
@@ -26,27 +26,27 @@ simpleSettingsDict={
 'mass2MIN' : 0.01,
 'mass2MAX' : 0.1,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 50.00,
-'paraMAX' : 60.00,
+'paraMIN' : 52.00,
+'paraMAX' : 58.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-'OmegaMIN' : 180.0,
-'OmegaMAX' : 360.0,
+'OmegaMIN' : 300.0,
+'OmegaMAX' : 340.0,
 # Minimum/Maximum allowed value for the Eccentricity, allowed range [0,0.98]. [double]
-'eMIN' : 0.01,
-'eMAX' : 0.25,
+'eMIN' : 0.012,
+'eMAX' : 0.21,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2454200,
-'TMAX' : 2454900,
+'TMIN' : 2454400,
+'TMAX' : 2454800,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 9,
 'PMAX' : 11.6,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 85.0,
-'incMAX' : 100.0,
+'incMIN' : 93.0,
+'incMAX' : 98.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : 180.0,
-'omegaMAX' : 360.0,
+'omegaMIN' : 220.0,
+'omegaMAX' : 270.0,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,

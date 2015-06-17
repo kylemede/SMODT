@@ -643,30 +643,36 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
         stgNsampStrDict = {"MC":"nSamples","SA":"nSAsamp","ST":"nSTsamp","MCMC":"nSamples"}
         numFilesStr = '\nTotal # of files that finished each stage were:\n'
         chiSquaredsStr = '\nBest Reduced Chi Squareds for each stage were:\n'
+        print 'ln646'  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         for stage in stageList:
             fnames = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits")))
             numFilesStr+=stage+' = '+str(len(fnames))+", each with "+str(settingsDict[stgNsampStrDict[stage]][0])+" samples\n"
             if len(fnames)>0:
+                print 'len(fnames) = '+repr(len(fnames))#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 chiSquaredsStr+=stage+" = ["
                 for fname in fnames: 
                     bestFit2 = findBestOrbit(fname)
                     chiSquaredsStr+=str(bestFit2[11]/float(head['NU']))+', '
                 chiSquaredsStr = chiSquaredsStr[:-2]+']\n'
+        print 'ln657'#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         numFilesStr+="\n"+"*"*65+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*65+'\n'
         f.write(numFilesStr)
         f.write(chiSquaredsStr)
         bestStr = '\n'+'-'*20+'\nBest fit values were:\n'+'-'*20+'\n'
+        print 'ln662'#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         for i in range(len(bestFit)):
             if i==2:
                 bestStr+=paramStrs[2]+" = "+str(bestFit[2])
                 if (bestFit[2]!=0):
                     bestStr+=", OR  "+str(1.0/(bestFit[2]/1000.0))+'[PC]\n'
+                    print 'bestStr '+bestStr#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 else:
                     bestStr+='\n'
             else:
                 bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
         bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[11]/float(head['nu']))+'\n'+'*'*45
         f.write(bestStr)
+        print 'ln675'#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     except:
         log.critical("A problem occured while trying to produce advanced summary strings.")
     f.write('\n'+grStr)

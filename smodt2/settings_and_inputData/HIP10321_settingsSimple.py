@@ -2,34 +2,34 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (1000000,"Number of MCMC or MC samples"),
+'nSamples' : (5000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (3,"Number of chains"),
+'nChains' : (20,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HIP10321-3D-incALL-SA-startAtBest-flatM1-veryOpenM2s",
+'outRoot' : "SMODT2-HIP10321-3D-incHigh-MCMC-startAtBest-flatM1-veryOpenM2s",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
 # mode to run simulation in, choices {'MC','SA','MCMC'} [string]
-'symMode' : ('SA',"Simulator mode (MC,SA,MCMC)"),
+'symMode' : ('MCMC',"Simulator mode (MC,SA,MCMC)"),
 ###################################################
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.10,
-'mass1MAX' : 2.5,
+'mass1MIN' : 0.1,
+'mass1MAX' : 2.0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.04,
-'mass2MAX' : 0.34,
+'mass2MAX' : 0.26,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 33.00,
 'paraMAX' : 40.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-'OmegaMIN' : 1.0,
+'OmegaMIN' : 180.0,
 'OmegaMAX' : 360.0,
 # Minimum/Maximum allowed value for the Eccentricity, allowed range [0,0.98]. [double]
 'eMIN' : 0.2,
@@ -42,7 +42,7 @@ simpleSettingsDict={
 'PMIN' : 19,
 'PMAX' : 23.5,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 1.0,
+'incMIN' : 90.0,
 'incMAX' : 180.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 345.0,

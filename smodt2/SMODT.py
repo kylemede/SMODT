@@ -51,21 +51,22 @@ class singleProc(Process):
             self.log.info('chain #'+str(self.chainNum)+' MC OUTFILE :\n'+outMCFname)
         if 'SA' in self.stageList:
             (paramsSA,sigmasSA,bestRedChiSqrSA) = self.Sim.simulatorFunc('SA',self.chainNum)
-        if bestRedChiSqrSA<self.settingsDict['chiMaxST'][0]:
-            if 'ST' in self.stageList:
-                self.log.warning('chain #'+str(self.chainNum)+" made it to the ST stage, with bestRedChiSqrSA = "+str(bestRedChiSqrSA)+" :-)\n")
-                (paramsST,sigmasST,bestRedChiSqrST) = self.Sim.simulatorFunc('ST',self.chainNum,paramsSA,sigmasSA)
-            if bestRedChiSqrST<self.settingsDict['cMaxMCMC'][0]:
-                if 'MCMC' in self.stageList:
-                    self.log.warning('chain #'+str(self.chainNum)+" made it to the MCMC stage, with bestRedChiSqrST = "+str(bestRedChiSqrST)+" :-D\n")
-                    outMCMCFname = self.Sim.simulatorFunc('MCMC',self.chainNum,paramsST,sigmasST)
-                    self.log.info('chain #'+str(self.chainNum)+' MCMC OUTFILE :\n'+outMCMCFname)
+        if 'ST' in self.stageList:
+            if bestRedChiSqrSA<self.settingsDict['chiMaxST'][0]:
+                if 'ST' in self.stageList:
+                    self.log.warning('chain #'+str(self.chainNum)+" made it to the ST stage, with bestRedChiSqrSA = "+str(bestRedChiSqrSA)+" :-)\n")
+                    (paramsST,sigmasST,bestRedChiSqrST) = self.Sim.simulatorFunc('ST',self.chainNum,paramsSA,sigmasSA)
+                if bestRedChiSqrST<self.settingsDict['cMaxMCMC'][0]:
+                    if 'MCMC' in self.stageList:
+                        self.log.warning('chain #'+str(self.chainNum)+" made it to the MCMC stage, with bestRedChiSqrST = "+str(bestRedChiSqrST)+" :-D\n")
+                        outMCMCFname = self.Sim.simulatorFunc('MCMC',self.chainNum,paramsST,sigmasST)
+                        self.log.info('chain #'+str(self.chainNum)+' MCMC OUTFILE :\n'+outMCMCFname)
+                else:
+                    self.log.info("NO ST SOLUTION WITH A REDUCED CHISQUARED < "+str(self.settingsDict['cMaxMCMC'][0])+\
+                                      " WAS FOUND FOR CHAIN #"+str(self.chainNum)+'\n')  
             else:
-                self.log.info("NO ST SOLUTION WITH A REDUCED CHISQUARED < "+str(self.settingsDict['cMaxMCMC'][0])+\
+                self.log.info("NO SA SOLUTION WITH A REDUCED CHISQUARED < "+str(self.settingsDict['chiMaxST'][0])+\
                                   " WAS FOUND FOR CHAIN #"+str(self.chainNum)+'\n')  
-        else:
-            self.log.info("NO SA SOLUTION WITH A REDUCED CHISQUARED < "+str(self.settingsDict['chiMaxST'][0])+\
-                              " WAS FOUND FOR CHAIN #"+str(self.chainNum)+'\n')  
                
 def smodt():
     """

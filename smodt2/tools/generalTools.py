@@ -237,10 +237,11 @@ def timeStrMaker(deltaT):
     if deltaT>60:
         if deltaT>(60*60):
             hr = int(deltaT//(60*60))
-            timeStr = str(hr)+" hours and "+str(int(deltaT-hr*60))+" minutes"
+            min = int((deltaT-hr*60)/60.0)
+            timeStr = str(hr)+" hours and "+str(min)+" minutes"
         else:
-            m = int(deltaT//(60))
-            timeStr = str(m)+" minutes and "+str(int(deltaT-m*60))+" seconds"
+            min = int(deltaT//(60))
+            timeStr = str(min)+" minutes and "+str(int(deltaT-m*60))+" seconds"
     else:
         timeStr = str(int(deltaT))+' seconds'
     return timeStr

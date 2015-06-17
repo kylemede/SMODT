@@ -20,11 +20,11 @@ simpleSettingsDict={
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.03,
-'mass1MAX' : 0.07,
+'mass1MIN' : 0.04,
+'mass1MAX' : 0.06,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.03,
-'mass2MAX' : 0.07,
+'mass2MIN' : 0.04,
+'mass2MAX' : 0.06,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 50.00,
 'paraMAX' : 60.00,

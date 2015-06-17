@@ -10,7 +10,7 @@ simpleSettingsDict={
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HIP10321-RV-incALL-MCMC-startAtBest-flatM1",
+'outRoot' : "SMODT2-HIP10321-RV-incALL-MCMC-startAtBest-flatM1-highM2s",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('RV',"Data Mode (RV,DI,3D)"),
@@ -21,10 +21,10 @@ simpleSettingsDict={
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
 'mass1MIN' : 0.10,
-'mass1MAX' : 2.0,
+'mass1MAX' : 2.5,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.02,
-'mass2MAX' : 0.25,
+'mass2MIN' : 0.15,
+'mass2MAX' : 0.3,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 33.00,
 'paraMAX' : 40.00,

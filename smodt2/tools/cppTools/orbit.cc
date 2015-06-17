@@ -197,10 +197,10 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		//--------------------------
 		if ((dataRealAry[2+i*dataRealAry_ny]<1e6)&&(dataRealAry[4+i*dataRealAry_ny]<1e6)){
 			// calculate all the Thiele-Innes constants in ["]
-			A = ((atot/MperAU)*params[2])*(cos(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))-sin(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
-			B = ((atot/MperAU)*params[2])*(sin(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))+cos(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
-			F = ((atot/MperAU)*params[2])*(-cos(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))-sin(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
-			G = ((atot/MperAU)*params[2])*(-sin(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))+cos(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
+			A = ((atot/MperAU)*(params[2]/1000.0))*(cos(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))-sin(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
+			B = ((atot/MperAU)*(params[2]/1000.0))*(sin(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))+cos(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
+			F = ((atot/MperAU)*(params[2]/1000.0))*(-cos(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))-sin(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
+			G = ((atot/MperAU)*(params[2]/1000.0))*(-sin(params[3]*(pi/180.0))*sin(omegaDI*(pi/180.0))+cos(params[3]*(pi/180.0))*cos(omegaDI*(pi/180.0))*cos(params[8]*(pi/180.0)));
 			// The coordinates of the unit orbital ellipse in the true plane (Binnendijk)
 			X = cos(EDI)-params[4];
 			Y = sqrt(1.0-params[4]*params[4])*sin(EDI);

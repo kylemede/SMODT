@@ -460,7 +460,7 @@ def loadSettingsDict(filenameRoot):
     
     return settingsDict
     
-def startup(argv):
+def startup(argv,rootDir):
     """
     -Figure out important directories
     -copy settings files to temp directory to combine them into the master settings dict
@@ -468,6 +468,8 @@ def startup(argv):
     -make output folder
     -remake the SWIG tools?
     -copy all SMODT2.0 code into output dir for emergencies.    
+    
+    NOTE: have rootDir handled with setup.py??
     """    
     ## Pull in settings filename prepend from command line args, if provided
     prepend = ''
@@ -476,14 +478,11 @@ def startup(argv):
             prepend = argv[1]
         except:
             print '\nWarning: the settings file prepended feature is not working correctly !!\n'    
-    ######################### FIND MORE ELEGANT WAY TO DO THIS!!!!############################
-    tempRoot = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/'###$$$$ this will be handled with setup.py??? How to know where SMODT is on disk??
-    settingsDict = loadSettingsDict(tempRoot+'settings_and_inputData/'+prepend)
-    settingsDict['smodtdir']=tempRoot
-    #####################################################################################
+    ## Load up the required specific directory paths in dict
+    settingsDict = loadSettingsDict(rootDir+'settings_and_inputData/'+prepend)
+    settingsDict['smodtdir']=rootDir
     settingsDict['settingsDir']=os.path.join(settingsDict['smodtdir'],'settings_and_inputData/')
     settingsDict['prepend']=prepend
-    
     ## Make a directory (folder) to place all the files from this simulation run
     settingsDict['finalFolder'] = os.path.join(settingsDict['outDir'],settingsDict['outRoot'])
     if os.path.exists(settingsDict['finalFolder']):
@@ -518,7 +517,6 @@ def startup(argv):
         os.system('make')
         os.chdir(cwd)
         log.debug("-"*45+" Done re-making CPP/SWIG tools "+45*"-")
-        #print 'moved back to:\n'+cwd
         
     ## copy all of current code to output directory
     codeCopyDir = os.path.join(settingsDict['finalFolder'],'codeUsed')

@@ -2,6 +2,7 @@
 #import numpy as np
 import tools
 import simulator
+from smodt2path import rootDir
 import sys
 import os
 import timeit
@@ -71,7 +72,7 @@ def smodt():
     'main'
     """
     ## Call startup to get dict and load up final directories into it.
-    settingsDict = tools.startup(sys.argv)
+    settingsDict = tools.startup(sys.argv,rootDir)
     log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=settingsDict['logLevel'])
     log.debug("Prepend string passed in was '"+settingsDict['prepend']+"'")
     Sim = simulator.Simulator(settingsDict)

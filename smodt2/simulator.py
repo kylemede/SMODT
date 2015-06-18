@@ -45,7 +45,10 @@ class Simulator(object):
         need code to load them up.
         """
         ##check there are matching number of RV datasets and provided min/max vals for offsets
-        if np.max(self.realData[:,-1])!=(len(self.dictVal('vMINs'))-1):
+        numVmins=len(self.dictVal('vMINs'))
+        if numVmins==0:
+            numVmins=1
+        if np.max(self.realData[:,-1])!=(numVmins-1):
             self.log.error("THE NUMBER OF vMINs DOES NOT MATCH THE NUMBER OF RV DATASETS!!!\n"+\
                            "please check the vMINs/vMAXs arrays in the simple settings file\n"+\
                            "to make sure they have matching lengths to the number of RV datasets.")

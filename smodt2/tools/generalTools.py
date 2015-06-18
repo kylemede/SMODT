@@ -28,7 +28,7 @@ def corrLengthCalcVar(paramIN):
     :param paramIN:     parameter array after burn in data stripped
     :type paramIN:      array (list) of doubles
     """
-    verbose = True
+    verbose = False
     if verbose:
         print "Entered corrLengthCalcVar"
     try:
@@ -127,8 +127,9 @@ def burnInCalc(mcmcFnames,combinedFname):
             (head,data) = loadFits(filename)
             chiSqsChain = data[:,11]
             #medianChain = np.median(chiSquaredsChain)
-            for i in range(0,len(chiSqsChain)):
+            for i in range(1,len(chiSqsChain)):
                 if chiSqsChain[i]<medainALL:
+                    print 'chiSqsChain[i] = '+str(chiSqsChain[i])
                     burnInLength = i+1
                     break
             burnInLengths.append(burnInLength)
@@ -157,11 +158,11 @@ def burnInStripper(mcmcFnames,burnInLengths):
             for key in head:
                 newHead[key]=(head[key],head.comments[key])
             n = os.path.splitext(os.path.basename(filename))
-            newFname = os.path.join(settingsDict['finalFolder'],n[0]+'_BIstripped.fits')
+            newFname = os.path.join(os.path.dirname(mcmcFnames[0]),n[0]+'_BIstripped.fits')
             hdulist.writeto(newFname)
             log.info("output file written to:below\n"+newFname)
             hdulist.close()
-            newFname.append(newFname)
+            newFnames.append(newFname)
             log.debug("burn-in stripped file written to:\n"+newFname)
     return newFnames
 

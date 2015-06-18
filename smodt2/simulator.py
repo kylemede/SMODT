@@ -463,8 +463,8 @@ class Simulator(object):
         self.endSummary(len(acceptedParams),temp,sigmas,stage)
         outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',acceptedParams,self.settingsDict)
         if stage=='ST':
-            #return (latestPars,sigmas,self.bestRedChiSqr)
-            return (self.paramsBest,sigmas,self.bestRedChiSqr)
+            return (latestPars,sigmas,self.bestRedChiSqr)
+            #return (self.paramsBest,sigmas,self.bestRedChiSqr)
         elif stage=='SA':
             #start ST at the best location with tight sigmas, and it will tune to ideal sigmas
             return (self.paramsBest,np.ones(np.array(sigmas).shape)*0.01,self.bestRedChiSqr)

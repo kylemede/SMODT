@@ -66,10 +66,10 @@ advancedDict = {
 # maximum allowed best reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(2.0,'Max reduced chiSquared to enter ST.'),
 # maximum allowed best reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(2,'Max reduced chiSquared to enter MCMC.'),
+'cMaxMCMC':(2.0,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 10,
+'logLevel' : 30,
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :20,
 # make plot of posterior distributions? [bool]
@@ -93,7 +93,7 @@ advancedDict = {
 # Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
 'CalcBurn' :True,
 # remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by ST though...)? [bool]
-'delBurn' : (False,"Remove Burn-in?"),
+'delBurn' : (True,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :True,
 # number of samples to draw for simulated annealing stage [int] 
@@ -123,7 +123,7 @@ advancedDict = {
 # Make plots of Simulated Annealing progress plots? [bool]$$$$$ still not coded up $$$
 'pltSAprog' :False,
 # Calculate the Gelman-Rubin statistic? [bool]
-'CalcGR' :False,
+'CalcGR' :True,
 # How many times do you want the Gelman-Rubin statistic calculated [int]  $$$$$ still not coded up $$$
 'nGRcalc' :10,
 #####################################

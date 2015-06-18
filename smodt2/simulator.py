@@ -52,6 +52,11 @@ class Simulator(object):
             self.log.error("THE NUMBER OF vMINs DOES NOT MATCH THE NUMBER OF RV DATASETS!!!\n"+\
                            "please check the vMINs/vMAXs arrays in the simple settings file\n"+\
                            "to make sure they have matching lengths to the number of RV datasets.")
+        
+        if (self.dictVal('TMAX')==-1)and(self.dictVal('TMIN')==-1):
+            ## set T range to [earliest Epoch-max period,earliest epoch]
+            self.settingsDict['TMAX']=np.min(self.realData[:,0])
+            self.settingsDict['TMIN']=np.min(self.realData[:,0])-self.dictVal('PMAX')*const.daysPerYear
         ##load up range min,max and sigma arrayS
         rangeMaxs = [self.dictVal('mass1MAX'),\
                self.dictVal('mass2MAX'),\

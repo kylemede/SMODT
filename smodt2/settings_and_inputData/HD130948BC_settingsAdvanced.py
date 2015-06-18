@@ -79,7 +79,7 @@ advancedDict = {
 # Delete chain files after simulation is complete? [bool]
 'delChains' :True,
 # Delete combined data files after simulation is complete? [bool]
-'delCombined' :False,
+'delCombined' :True,
 # run 'make' on C++/SWIG code to make sure it is up-to-date [bool]
 'remake' :False,
 ###$$$$$$$$$$$$$$$$$$$$$$ Keep in final version? $$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -91,11 +91,11 @@ advancedDict = {
 # Settings for MCMC mode ###
 ############################
 # Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
-'CalcBurn' :False,
+'CalcBurn' :True,
 # remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by ST though...)? [bool]
 'delBurn' : (False,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
-'calcCL' :False,
+'calcCL' :True,
 # number of samples to draw for simulated annealing stage [int] 
 'nSAsamp' :(1000000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]

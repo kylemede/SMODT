@@ -2,15 +2,15 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (10000000,"Number of MCMC or MC samples"),
+'nSamples' : (100000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (10,"Number of chains"),
+'nChains' : (7,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HD130948BC-DI-MCMC-startAtBest-fixedDIdata",
+'outRoot' : "SMODT2-HD130948BC-DI-MCMC-startAtBest-fixedDIdata-TEST",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('DI',"Data Mode (RV,DI,3D)"),
@@ -20,7 +20,8 @@ simpleSettingsDict={
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.05,
+# NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
+'mass1MIN' : 0.095,
 'mass1MAX' : 0.12,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0,

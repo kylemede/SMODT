@@ -61,7 +61,8 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     xs=[]
     maxN = np.max(histData[:,1])
     minSub = 0
-    if np.max(histData[:,0])>100000:
+    valRange = np.max(histData[:,0])-np.min(histData[:,0])
+    if (np.max(histData[:,0])>100000) or (valRange<(np.min(histData[:,0])/100.0)):
         #must be the To or Tc, so subtract int(min) and add to x-axis label
         #doing this as it doesn't go well allowing matplotlib to do it itself formatting wise
         minSub = int(np.min(histData[:,0]))
@@ -187,6 +188,12 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                 
         (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex)
         (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False)
+        
+        ## modify x labels to account for DI only situations where M1=Mtotal
+        if np.var(data[:,1])==0:
+            paramStrs2[0] = 'M total [Msun]'
+            paramStrs[0] = '$M_{total}$ [$M_{sun}$]'
+            paramFileStrs[0] = 'Mtotal'
         
         ## run through all the data files and parameters requested and make histogram files
         completeCLstr = '-'*23+'\nConfidence Levels are:\n'+'-'*75+'\n'
@@ -329,7 +336,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
     ################
     if settingsDict['dataMode'][0]!='RV':
         ##Make model data for 100~1000 points for plotting fit
-        nPts = 50
+        nPts = 500
         fakeRealData = np.zeros((nPts,8),dtype=np.dtype('d'),order='C')
         fakeRealData[:,1:4]=1.0
         for i in range(0,nPts-1):
@@ -392,7 +399,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         main.spines['bottom'].set_linewidth(1.0)
         main.spines['top'].set_linewidth(1.0)
         main.spines['left'].set_linewidth(1.0)
-        main.set_position([0.19,0.15,0.79,0.83])
+        main.set_position([0.17,0.21,0.77,0.75])
         main.set_xlabel('RA '+unitStr, fontsize=25)
         main.set_ylabel('Dec '+unitStr, fontsize=25)
         ## save fig to file and maybe convert to pdf if format=='eps'

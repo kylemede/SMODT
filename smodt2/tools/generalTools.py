@@ -237,7 +237,7 @@ def timeStrMaker(deltaT):
     if deltaT>60:
         if deltaT>(60*60):
             hr = int(deltaT//(60*60))
-            min = int((deltaT-hr*60)/60.0)
+            min = int((deltaT-hr*60*60)/60.0)
             timeStr = str(hr)+" hours and "+str(min)+" minutes"
         else:
             min = int(deltaT//(60))
@@ -665,7 +665,7 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
                 bestStr+=paramStrs[2]+" = "+str(bestFit[2])
                 if (bestFit[2]!=0):
                     bestStr+=", OR  "+str(1.0/(bestFit[2]/1000.0))+'[PC]\n'
-                    print 'bestStr '+bestStr#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                    #print 'bestStr '+bestStr#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 else:
                     bestStr+='\n'
             else:

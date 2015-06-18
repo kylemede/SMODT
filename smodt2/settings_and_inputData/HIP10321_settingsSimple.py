@@ -2,15 +2,15 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (5000000,"Number of MCMC or MC samples"),
+'nSamples' : (10000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (20,"Number of chains"),
+'nChains' : (8,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HIP10321-3D-incHigh-MCMC-startAtBest-flatM1-veryOpenM2s",
+'outRoot' : "SMODT2-HIP10321-3D-retro-MCMC-startAtBest",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -20,11 +20,11 @@ simpleSettingsDict={
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.1,
+'mass1MIN' : 0.5,
 'mass1MAX' : 2.0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.04,
-'mass2MAX' : 0.26,
+'mass2MIN' : 0.12,
+'mass2MAX' : 0.35,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 33.00,
 'paraMAX' : 40.00,
@@ -42,8 +42,8 @@ simpleSettingsDict={
 'PMIN' : 19,
 'PMAX' : 23.5,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 90.0,
-'incMAX' : 180.0,
+'incMIN' : 130.0,
+'incMAX' : 170.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 345.0,
 'omegaMAX' : 370.0,

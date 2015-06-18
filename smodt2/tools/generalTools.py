@@ -365,15 +365,13 @@ def loadRealData(filenameRoot,dataMode='3D'):
     rvEpochs = []
     if dataMode!='RV':
         diFilename = filenameRoot+'DIdata.dat'
-        if True:
-            print 'using diFilename = '+diFilename        
+        #print 'using diFilename = '+diFilename        
         if os.path.exists(diFilename):
             diData = loadDIdata(diFilename)
             diEpochs = diData[:,0]
     if dataMode!='DI':
         rvFilename = filenameRoot+'RVdata.dat'
-        if False:
-            print 'using rvFilename = '+rvFilename
+        #print 'using rvFilename = '+rvFilename
         if os.path.exists(rvFilename):
             rvData = loadRVdata(rvFilename)
             rvEpochs = rvData[:,0]
@@ -456,7 +454,7 @@ def loadSettingsDict(filenameRoot):
     
     return settingsDict
     
-def startup(argv,rootDir):
+def startup(argv,rootDir,rePlot=False):
     """
     -Figure out important directories
     -copy settings files to temp directory to combine them into the master settings dict
@@ -481,44 +479,45 @@ def startup(argv,rootDir):
     settingsDict['prepend']=prepend
     ## Make a directory (folder) to place all the files from this simulation run
     settingsDict['finalFolder'] = os.path.join(settingsDict['outDir'],settingsDict['outRoot'])
-    if os.path.exists(settingsDict['finalFolder']):
-        if settingsDict['logLevel']<50: ## Handle this with a 'clob' bool in dict??? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            print '\n'+'$'*50
-            print 'WARNING!! the folder:\n"'+settingsDict['finalFolder']+'"\nALREADY EXISTS!'
-            print 'You can overwrite the data in it, or exit this simulation.'
-            YN = raw_input('OVERWRITE current folder (y/n):')
+    ##if not doing a re-post analysis with rePlot.py
+    if rePlot==False:
+        if os.path.exists(settingsDict['finalFolder']):
+            if settingsDict['logLevel']<50: ## Handle this with a 'clob' bool in dict??? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                print '\n'+'$'*50
+                print 'WARNING!! the folder:\n"'+settingsDict['finalFolder']+'"\nALREADY EXISTS!'
+                print 'You can overwrite the data in it, or exit this simulation.'
+                YN = raw_input('OVERWRITE current folder (y/n):')
+            else:
+                YN = 'y'
+            if (('y' in YN) or ('Y' in YN)):
+                shutil.rmtree(settingsDict['finalFolder'])
+                os.mkdir(settingsDict['finalFolder'])
+                dbDir = os.path.join(settingsDict['dbFolder'],settingsDict['outRoot'])
+                if os.path.exists(dbDir):
+                    shutil.rmtree(dbDir)
+            else: #elif (('n' in YN) or ('N' in YN)):
+                sys.exit()
+            if settingsDict['logLevel']<50:
+                print '$'*50+'\n'
         else:
-            YN = 'y'
-        if (('y' in YN) or ('Y' in YN)):
-            shutil.rmtree(settingsDict['finalFolder'])
             os.mkdir(settingsDict['finalFolder'])
-            dbDir = os.path.join(settingsDict['dbFolder'],settingsDict['outRoot'])
-            if os.path.exists(dbDir):
-                shutil.rmtree(dbDir)
-        else: #elif (('n' in YN) or ('N' in YN)):
-            sys.exit()
-        if settingsDict['logLevel']<50:
-            print '$'*50+'\n'
-    else:
-        os.mkdir(settingsDict['finalFolder'])
-    if False:
-        for key in settingsDict:
-           print key+' = '+repr(settingsDict[key])
-    ## run make for swig if requested
-    if settingsDict['remake']:
-        cwd = os.getcwd()
-        log.debug("-"*45+" Starting to remake CPP/SWIG tools "+45*"-")
-        os.chdir(os.path.join(settingsDict['smodtdir'],'tools/cppTools/'))
-        os.system('make clean')
-        os.system('make')
-        os.chdir(cwd)
-        log.debug("-"*45+" Done re-making CPP/SWIG tools "+45*"-")
-        
-    ## copy all of current code to output directory
-    codeCopyDir = os.path.join(settingsDict['finalFolder'],'codeUsed')
-    os.mkdir(codeCopyDir)
-    log.debug('Copying all files in the RESULTS folder over to DropBox folder:\n '+codeCopyDir)
-    copytree(settingsDict['smodtdir'], codeCopyDir)
+        if False:
+            for key in settingsDict:
+               print key+' = '+repr(settingsDict[key])
+        ## run make for swig if requested
+        if settingsDict['remake']:
+            cwd = os.getcwd()
+            log.debug("-"*45+" Starting to remake CPP/SWIG tools "+45*"-")
+            os.chdir(os.path.join(settingsDict['smodtdir'],'tools/cppTools/'))
+            os.system('make clean')
+            os.system('make')
+            os.chdir(cwd)
+            log.debug("-"*45+" Done re-making CPP/SWIG tools "+45*"-")
+        ## copy all of current code to output directory
+        codeCopyDir = os.path.join(settingsDict['finalFolder'],'codeUsed')
+        os.mkdir(codeCopyDir)
+        log.debug('Copying all files in the RESULTS folder over to DropBox folder:\n '+codeCopyDir)
+        copytree(settingsDict['smodtdir'], codeCopyDir)
         
     return settingsDict
         

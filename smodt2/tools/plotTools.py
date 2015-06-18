@@ -220,6 +220,8 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
         ## make combined/stacked plot for each parameter in list
         for i in range(0,len(paramStrs2)):
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i])
+            if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'/histData/hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
+                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'/histData/hist-'+stage+"-"+paramFileStrs[i])
             if os.path.exists(histDataBaseName+'.dat'):
                 log.debug('Starting to plot shaded hist for '+paramStrs2[i])
                 if len(paramStrs2)>12:
@@ -230,7 +232,10 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                 xLim=False
                 CLevels=False
                 if shadeConfLevels:
-                    CLevels=np.loadtxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))
+                    clFile = os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
+                    if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'/histData/confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')):
+                        clFile = os.path.join(os.path.dirname(outputDataFilename),'/histData/confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
+                    CLevels=np.loadtxt(clFile)
                 showYlabel=False
                 if i in [0,4,8,12]:
                     showYlabel = True

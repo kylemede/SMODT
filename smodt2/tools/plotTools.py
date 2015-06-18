@@ -123,9 +123,10 @@ def addRVdataToPlot(subPlot,epochsORphases,RVs,RVerrs,alf=1.0,color='blue',plotE
     shown as the height of the markers. 
     """
     for i in range(0,RVs.shape[0]):
-        if RVerrs[i]<1e6:
+        if RVerrs[i]<1e3:
             xs = [epochsORphases[i],epochsORphases[i]]
             ys = [RVs[i]-RVerrs[i],RVs[i]+RVerrs[i]]
+            #print str(RVerrs[i])+", -> ["+str(epochsORphases[i])+", "+str(RVs[i])+']'
             if plotErrorBars:
                 subPlot.plot(xs,ys,c=color,linewidth=2,alpha=alf)
             subPlot.plot(epochsORphases[i],RVs[i],c='k',marker='.',markersize=6)
@@ -343,11 +344,12 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         ##Make model data for 100~1000 points for plotting fit
         nPts = 500
         fakeRealData = np.zeros((nPts,8),dtype=np.dtype('d'),order='C')
-        fakeRealData[:,1:4]=1.0
+        fakeRealData[:,1:5]=1.0
+        fakeRealData[:,6]=1e6
         for i in range(0,nPts-1):
             fakeRealData[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/float(nPts)))
         fakeRealData[nPts-1,0]  = fakeRealData[0,0]+const.daysPerYear*orbParams[7]
-        #print 'fakeRealData[:,0] = '+repr(fakeRealData[:,0])
+        #print 'fakeRealData= '+repr(fakeRealData)
         Orbit.loadRealData(fakeRealData)
         fitDataDI = np.ones((nPts,3),dtype=np.dtype('d'),order='C')
         orbParamsDI = copy.deepcopy(orbParams)
@@ -388,38 +390,59 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realData,asConversion)
         #print '[xmin,xmax,ymin,ymax] = '+repr([xmin,xmax,ymin,ymax])
         ## set limits and other basics of plot looks
-        xLims = (np.min([xmin,np.max(fitDataDI[:,0]*asConversion)]),np.max([xmax,np.max(fitDataDI[:,0]*asConversion)]))
-        yLims = (np.min([ymin,np.max(fitDataDI[:,1]*asConversion)]),np.max([ymax,np.max(fitDataDI[:,1]*asConversion)]))
-        xLims = (xLims[0]-(xLims[1]-xLims[0])*0.05,xLims[1]+(xLims[1]-xLims[0])*0.05)
-        yLims = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)
-        #print 'xLims = '+repr(xLims)
-        #print 'yLims = '+repr(yLims)
+        xLims = (np.min([xmin,np.min(fitDataDI[:,0]*asConversion)]),np.max([xmax,np.max(fitDataDI[:,0]*asConversion)]))
+        yLims = (np.min([ymin,np.min(fitDataDI[:,1]*asConversion)]),np.max([ymax,np.max(fitDataDI[:,1]*asConversion)]))
+        xLimsFull = (xLims[0]-(xLims[1]-xLims[0])*0.05,xLims[1]+(xLims[1]-xLims[0])*0.05)
+        yLimsFull = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)
+        xLims = (xmin,xmax)
+        yLims = (ymin,ymax)
+        xLimsCrop = (xLims[0]-(xLims[1]-xLims[0])*0.05,xLims[1]+(xLims[1]-xLims[0])*0.05)
+        yLimsCrop = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)
+        #print 'fit xs = '+repr(fitDataDI[:,0]*asConversion)
+        #print 'fit ys = '+repr(fitDataDI[:,0]*asConversion)
+        #print 'xLimsFull = '+repr(xLimsFull)
+        #print 'yLimsFull = '+repr(yLimsFull)
+        #print 'xLimsCrop = '+repr(xLimsCrop)
+        #print 'yLimsCrop = '+repr(yLimsCrop)
         ## FLIP X-AXIS to match backawards Right Ascension definition
         a = main.axis()
         main.axis([a[1],a[0],a[2],a[3]])
-        main.axes.set_xlim((xLims[1],xLims[0]))
-        main.axes.set_ylim(yLims)
+        main.axes.set_xlim((xLimsFull[1],xLimsFull[0]))
+        main.axes.set_ylim(yLimsFull)
         main.tick_params(axis='both',which='major',width=1,length=3,pad=10,direction='in',labelsize=25)
         main.spines['right'].set_linewidth(1.0)
         main.spines['bottom'].set_linewidth(1.0)
         main.spines['top'].set_linewidth(1.0)
         main.spines['left'].set_linewidth(1.0)
-        main.set_position([0.17,0.21,0.77,0.75])
-        main.set_xlabel('RA '+unitStr, fontsize=25)
-        main.set_ylabel('Dec '+unitStr, fontsize=25)
+        main.set_position([0.15,0.115,0.80,0.84])
+        xLabel = 'RA '+unitStr
+        yLabel = 'Dec '+unitStr
+        if latex:
+            xLabel = '$RA$ '+unitStr
+            yLabel = '$Dec$ '+unitStr
+        main.set_xlabel(xLabel, fontsize=25)
+        main.set_ylabel(yLabel, fontsize=25)
         ## save fig to file and maybe convert to pdf if format=='eps'
         orientStr = 'landscape'
         if format=='eps':
             orientStr = 'portrait'
-        plotFilename = plotFnameBase+'-DI.'+format
-        if plotFilename!='':
-            plt.savefig(plotFilename, dpi=300, orientation=orientStr)
-            log.info("DI orbit plot saved to:\n"+plotFilename)
+        plotFilenameFull = plotFnameBase+'-DI.'+format
+        if plotFilenameFull!='':
+            plt.savefig(plotFilenameFull, dpi=300, orientation=orientStr)
+            log.info("DI orbit plot (Full) saved to:\n"+plotFilenameFull)
+        ##crop to limits of data and save
+        main.axes.set_xlim((xLimsCrop[1],xLimsCrop[0]))
+        main.axes.set_ylim(yLimsCrop)
+        plotFilenameCrop = plotFnameBase+'-DI-cropped.'+format
+        if plotFilenameCrop!='':
+            plt.savefig(plotFilenameCrop, dpi=300, orientation=orientStr)
+            log.info("DI orbit plot (cropped) saved to:\n"+plotFilenameCrop)
         plt.close()
         if (format=='eps')and True:
             log.debug('converting to PDF as well')
             try:
-                os.system("epstopdf "+plotFilename)
+                os.system("epstopdf "+plotFilenameFull)
+                os.system("epstopdf "+plotFilenameCrop)
             except:
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")
         ## log params used in DI plot
@@ -431,6 +454,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
     ################
     if settingsDict['dataMode'][0]!='DI':        
         realDataRV = copy.deepcopy(realData)
+        realDataRV = realDataRV[np.where(realDataRV[:,6]<1e6)[0],:]
         ##Ensuring that params are in required format for SWIG
         orbParamsRV = copy.deepcopy(orbParams)
         paramsRV = []
@@ -467,11 +491,13 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         else:
             log.debug("There was a matching number of RV offsets in realData and params, = "+str(numOffsets))
             #for i in range(0,realDataRV.shape[0]):
-            #    print 'before offset subtract realData = '+str(realDataRV[i,0])+', '+str(realDataRV[i,5])+", "+str(realDataRV[i,6])+", "+str(realDataRV[i,7])
+            #    if realDataRV[i,6]<1000000.0:
+            #        print 'before offset subtract realData = '+str(realDataRV[i,0])+', '+str(realDataRV[i,5])+", "+str(realDataRV[i,6])+", "+str(realDataRV[i,7])
             zeroedRealDataRV = copy.deepcopy(realDataRV)
             for i in range(0,zeroedRealDataRV.shape[0]):
                 rvBefore = zeroedRealDataRV[i,5]
                 zeroedRealDataRV[i,5]-=paramsRV[13+int(zeroedRealDataRV[i,7])]
+                #print str(rvBefore)+' - '+str(paramsRV[13+int(zeroedRealDataRV[i,7])])+" = "+str(zeroedRealDataRV[i,5])
             
             ##convert epochs to phases for plotting
             phasesReal = epochsToPhases(copy.deepcopy(realDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=True)
@@ -486,19 +512,19 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             ## start making figure for residual and fit plots
             figRV = plt.figure(3,figsize=(10,5))
             residualsPlot = figRV.add_subplot(212)
-            residualsPlot.set_position([0.13,0.15,0.83,0.23])
+            residualsPlot.set_position([0.13,0.15,0.84,0.23])
             fitPlot = figRV.add_subplot(211)
-            fitPlot.set_position([0.13,0.38,0.83,0.55])
-            residualsPlot.axes.set_xlabel("Orbital Phase",fontsize=20)
+            fitPlot.set_position([0.13,0.38,0.84,0.57])
+            xLabel = "Orbital Phase"
+            fitYlabel = 'RV '
             residYlabel = 'O-C '
             if latex:
                 residYlabel = '$O-C$ '
-            residualsPlot.axes.set_ylabel(residYlabel,fontsize=20)
-            
-            fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
-            fitYlabel = 'RV '
-            if latex:
                 fitYlabel = '$RV$ '
+                xLabel = "$Orbital$ $Phase$"
+            residualsPlot.axes.set_xlabel(xLabel,fontsize=20)
+            residualsPlot.axes.set_ylabel(residYlabel,fontsize=20)
+            fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
             fitPlot.axes.set_ylabel(fitYlabel+unitStr,fontsize=20)
             
             ## real-model=residual, then plot it

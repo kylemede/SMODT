@@ -28,15 +28,17 @@ def corrLengthCalcVar(paramIN):
     :param paramIN:     parameter array after burn in data stripped
     :type paramIN:      array (list) of doubles
     """
-    verbose = False
+    verbose = True
     if verbose:
         print "Entered corrLengthCalcVar"
     try:
         varALL = np.var(paramIN)
+        if verbose:
+            print 'varALL = '+str(varALL)
     except:
         useless=0
     halfVarALL = varALL/2.0
-    CorrLength  = meanCorrLength = len(paramIN)
+    CorrLength = meanCorrLength = len(paramIN)
     varCur=0
     
     if paramIN[0]==paramIN[-1]:
@@ -48,18 +50,22 @@ def corrLengthCalcVar(paramIN):
         corrLengths = []
         notFinished=True
         while notFinished:
-            for i in range(startLoc,len(paramIN)+1):
+            for i in range(startLoc+1,len(paramIN)+1):
                 if i>=len(paramIN):
                     #hit the end, so stop
                     notFinished=False
                     break
                 try:
                     varCur = np.var(paramIN[startLoc:i])
+                    if verbose:
+                        print 'varCur = '+str(varCur)
                 except:
                     useless=1
                 if varCur>halfVarALL:
                     CorrLength = i-startLoc
                     corrLengths.append(CorrLength)
+                    if verbose:
+                        print 'CorrLength = '+str(CorrLength)
                     startLoc = i
                     break
         if (startLoc==0)and(CorrLength == len(paramIN)):
@@ -87,7 +93,8 @@ def mcmcEffPtsCalc(outputDataFilename):
         currParamStr = str(paramList[i])+', '+paramStrs[paramList[i]]+", "+str(meanCorrLength)
         currParamStr+=    ' -> '+str(numSteps)+'/'+str(meanCorrLength)+' = '+str(numSteps/meanCorrLength)+'\n'
         completeStr+=currParamStr
-    log.info(completeStr)
+        log.debug(currParamStr)
+    log.debug(completeStr)
     return completeStr
 
 def burnInCalc(mcmcFnames,combinedFname):
@@ -125,7 +132,7 @@ def burnInCalc(mcmcFnames,combinedFname):
                     burnInLength = i+1
                     break
             burnInLengths.append(burnInLength)
-            s2 = "\nfor chain #"+str(head['chainNum'][0])
+            s2 = "\nfor chain #"+str(head['chainNum'])
             s2 += "\nTotal number of points in the chain = "+str(len(chiSqsChain))+"\n"
             s2 += "Burn-in length = "+str(burnInLength)+"\n"
             s+=s2

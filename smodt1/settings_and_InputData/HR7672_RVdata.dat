@@ -1,4 +1,4 @@
-#HR7672 RV data from Crepp 2012 Table 5	
+#HR7672 RV data from Crepp 2012 
 #JD	RV [m/s]	delta_RV [m/s]	Jitter
 2447047.7194	270.7100	0.8100	24
 2447373.8210	232.8800	0.3800	

@@ -129,7 +129,7 @@ def burnInCalc(mcmcFnames,combinedFname):
             #medianChain = np.median(chiSquaredsChain)
             for i in range(1,len(chiSqsChain)):
                 if chiSqsChain[i]<medainALL:
-                    print 'chiSqsChain[i] = '+str(chiSqsChain[i])
+                    #print 'chiSqsChain[i] = '+str(chiSqsChain[i])
                     burnInLength = i+1
                     break
             burnInLengths.append(burnInLength)
@@ -653,6 +653,8 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
         print 'ln646'  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         for stage in stageList:
             fnames = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits")))
+            if (stage=="MCMC")and settingsDict["delBurn"][0]:
+                fnames = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*BIstripped.fits")))
             numFilesStr+=stage+' = '+str(len(fnames))+", each with "+str(settingsDict[stgNsampStrDict[stage]][0])+" samples\n"
             if len(fnames)>0:
                 print 'len(fnames) = '+repr(len(fnames))#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

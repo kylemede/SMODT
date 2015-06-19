@@ -2,15 +2,15 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (3000000,"Number of MCMC or MC samples"),
+'nSamples' : (10000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (7,"Number of chains"),
+'nChains' : (12,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HR7672-3D-MCMC-TEST2",
+'outRoot' : "SMODT2-HR7672-3D-MCMC-TEST3",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -25,29 +25,29 @@ simpleSettingsDict={
 'mass1MAX' : 1.6,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.055,
-'mass2MAX' : 0.09,
+'mass2MAX' : 0.08,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 50.00,
-'paraMAX' : 62.00,
+'paraMIN' : 54.00,
+'paraMAX' : 59.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-'OmegaMIN' : 140.0,
-'OmegaMAX' : 170.0,
+'OmegaMIN' : 145.0,
+'OmegaMAX' : 160.0,
 # Minimum/Maximum allowed value for the Eccentricity, allowed range [0,0.98]. [double]
-'eMIN' : 0.3,
-'eMAX' : 0.7,
+'eMIN' : 0.4,
+'eMAX' : 0.56,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
 'TMIN' : 2456400,
-'TMAX' : 2457900,
+'TMAX' : 2457700,
 # Minimum/Maximum allowed value for the Period [double][yrs]
-'PMIN' : 50,
-'PMAX' :80,
+'PMIN' : 55,
+'PMAX' :90,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 80.0,
-'incMAX' : 110.0,
+'incMIN' : 90.0,
+'incMAX' : 105.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : 230.0,
-'omegaMAX' : 300.0,
+'omegaMIN' : 240.0,
+'omegaMAX' : 290.0,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,

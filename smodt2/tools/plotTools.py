@@ -357,6 +357,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
     # Make DI plot #
     ################
     if settingsDict['dataMode'][0]!='RV':
+        realDataDI = copy.deepcopy(realData)
+        realDataDI = realDataDI[np.where(realDataDI[:,2]<1e6)[0],:]
         ##Make model data for 100~1000 points for plotting fit
         nPts = 500
         fakeRealData = np.zeros((nPts,8),dtype=np.dtype('d'),order='C')
@@ -388,13 +390,28 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             #find loc of COM for possible use
             xCOM = (fakeRealDataQuarter[3,0]+fakeRealDataQuarter[0,0])/2.0
             yCOM = (fakeRealDataQuarter[3,1]+fakeRealDataQuarter[0,1])/2.0
+        if True:
+            ## get start/end for line of nodes 
+            lonData = np.ones((2,8),dtype=np.dtype('d'))
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+        ##load resulting data to file for re-plotting by others
+        #real [x,xerr,y,yerr]
+        outDIdataReal = realDataDI[:,1:5]
+        #fit [x,y]
+        outDIdataFit = []
+        for i in range(0,len(fitDataDI[:,0])):
+            outDIdataFit.append([fitDataDI[i,0],fitDataDI[i,1]])
+        fnameBase = os.path.join(os.path.dirname(plotFnameBase),'DIplotData')
+        np.savetxt(fnameBase+'-real.dat',outDIdataReal)
+        np.savetxt(fnameBase+'-fit.dat',outDIdataFit)
 
         diFig = plt.figure(2,figsize=(10,9))
         main = diFig.add_subplot(111)
         #determine if to plot [mas] or ["]
         asConversion=1.0
         unitStr = '"'
-        if abs(np.min([np.min(realData[:,1]),np.min(realData[:,3])]))<1.5:
+        if abs(np.min([np.min(realDataDI[:,1]),np.min(realDataDI[:,3])]))<1.5:
             asConversion = 1000.0
             unitStr = '[mas]'
         ## Draw orbit fit
@@ -403,7 +420,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         starPolygon = star(2*paramsDI[10],0,0,color='yellow',N=6,thin=0.5)
         main.add_patch(starPolygon)
         ## Add DI data to plot
-        (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realData,asConversion)
+        (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realDataDI,asConversion)
         #print '[xmin,xmax,ymin,ymax] = '+repr([xmin,xmax,ymin,ymax])
         ## set limits and other basics of plot looks
         xLims = (np.min([xmin,np.min(fitDataDI[:,0]*asConversion)]),np.max([xmax,np.max(fitDataDI[:,0]*asConversion)]))
@@ -484,7 +501,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             paramsRV.append(par)
         paramsRV=np.array(paramsRV,dtype=np.dtype('d'),order='C')
         ##Make model data for 100~1000 points for plotting fit
-        nPts = 100
+        nPts = 500
         fakeRealData = np.zeros((nPts-1,8),dtype=np.dtype('d'),order='C')
         fakeRealData[:,5] = 1.0
         #set all RV offsets to zero
@@ -523,7 +540,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             
             ##convert epochs to phases for plotting
             phasesReal = epochsToPhases(copy.deepcopy(realDataRV[:,0]),paramsRV[6],paramsRV[7], halfOrbit=True)
-            phasesFit = epochsToPhases(copy.deepcopy(fakeRealData[:,0]),paramsRV[6],paramsRV[7], halfOrbit=True)
+            phasesFit = epochsToPhases(copy.deepcopy(fakeRealData[:,0]),paramsRV[6],paramsRV[7], halfOrbit=True)            
             
             ## determine if to plot [km/s] or [m/s]
             kmConversion = 1.0/1000.0
@@ -579,6 +596,21 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             fitPlot.axes.set_ylim(fitYlims)
             ##plot zero vel line
             residualsPlot.axhline(linewidth=2.0,c='Blue') #adds a x-axis origin line
+            
+            ##load resulting data to file for re-plotting by others
+            #real [phases,JD,offset subtracted RV, residual]
+            outRVdataReal = []
+            for i in range(0,len(phasesReal)):
+                outRVdataReal.append([phasesReal[i],realDataRV[i,0],zeroedRealDataRV[i,5],residualData[i,5]])
+            print repr(outRVdataReal)
+            #fit [phases,JD,RV]
+            outRVdataFit = []
+            for i in range(0,len(phasesFit)):
+                outRVdataFit.append([phasesFit[i],fakeRealData[i,0],fitDataRV[i,2]])
+            fnameBase = os.path.join(os.path.dirname(plotFnameBase),'RVplotData')
+            np.savetxt(fnameBase+'-real.dat',outRVdataReal)
+            np.savetxt(fnameBase+'-fit.dat',outRVdataFit)
+            
             
             ##clean up boarders, axis ticks and such 
             plt.minorticks_on()

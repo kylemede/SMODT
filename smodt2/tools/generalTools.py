@@ -114,8 +114,8 @@ def burnInCalc(mcmcFnames,combinedFname):
     chiSquaredsALL = np.array([])
     burnInLengths = []
     # calculate median of combined data ary
-    (head,data) = loadFits(combinedFname)
-    chiSqsALL = data[:,11]
+    (head0,data0) = loadFits(combinedFname)
+    chiSqsALL = data0[:,11]
     if type(chiSqsALL)!=np.ndarray:
         chiSqsALL = np.array(chiSqsALL)
     medainALL = np.median(chiSqsALL,axis=0)         

@@ -398,6 +398,7 @@ class Simulator(object):
         temp = np.random.uniform(1,1e6)
         self.seed = int((timeit.default_timer()/(self.chainNum+1))/temp)
         self.log.debug("Chain# "+str(self.chainNum)+" has random number seed = "+str(self.seed))
+        self.settingsDict['chainNum'] = (self.chainNum,"chain number")
         np.random.seed(self.seed)
     
     def startSummary(self,pars,sigs,stage):

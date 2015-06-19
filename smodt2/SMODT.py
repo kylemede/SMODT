@@ -131,12 +131,14 @@ def smodt():
         (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
         if settingsDict['delBurn'][0]:
             strippedFnames = tools.burnInStripper(outFiles,burnInLengths)
+            outFiles = strippedFnames
             ## combine stripped files to make final file?
             if len(strippedFnames)>0:
                 strippedAllFname = os.path.join(os.path.dirname(strippedFnames[0]),"combined-BIstripped-MCMCdata.fits")
                 tools.combineFits(strippedFnames,strippedAllFname)
                 ## replace final combined filename with new stripped version
                 allFname = strippedAllFname
+                
     
     ## find best fit
     if os.path.exists(allFname):

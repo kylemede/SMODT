@@ -7,6 +7,7 @@ import glob
 import shutil
 plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
+MultLoc = pylab.matplotlib.ticker.MultipleLocator
 import constants as const
 import generalTools as genTools
 import cppTools
@@ -97,7 +98,7 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
         plot.axes.set_xlim(xLims)
     plot.locator_params(axis='x',nbins=4) # maximum number of x labels
     plot.locator_params(axis='y',nbins=5) # maximum number of y labels
-    plot.tick_params(axis='both',which='major',width=1,length=2,pad=4,direction='in',labelsize=10)
+    plot.tick_params(axis='both',which='major',width=0.5,length=0,pad=3,direction='in',labelsize=10)
     plot.spines['right'].set_linewidth(0.7)
     plot.spines['bottom'].set_linewidth(0.7)
     plot.spines['top'].set_linewidth(0.7)
@@ -166,11 +167,16 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
     """
     latex=True
     plotFormat = 'eps'   
-    #plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-    plt.rc('font',family='serif')
+    plt.rcParams['ps.useafm']= True
+    plt.rcParams['pdf.use14corefonts'] = True
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
         plt.rc('text', usetex=True)
-        plt.rcParams['text.latex.unicode']=True  
+        #plt.rcParams['text.latex.unicode']=True 
+        #plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
+        #plt.rcParams['text.latex.preamble'] = '\usepackage{sfmath}' 
+    
+    histFolder = os.path.join(os.path.dirname(outputDataFilename),"histData")
     
     (head,data) = genTools.loadFits(outputDataFilename)
     if head!=False:  
@@ -197,35 +203,40 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
             paramFileStrs[0] = 'Mtotal'
         
         ## run through all the data files and parameters requested and make histogram files
-        completeCLstr = '-'*23+'\nConfidence Levels are:\n'+'-'*75+'\n'
+        completeCLstr = '-'*22+'\nConfidence Levels are:\n'+'-'*75+'\n'
         for i in range(0,len(paramStrs2)):
-            if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
-                log.debug('Checking parameter has useful data '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
-                (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,i, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-                if bestDataVal!=0:
-                    completeCLstr+=paramStrs2[i]+clStr+'\n'+'-'*75+'\n'
-                    log.debug('Making hist file for parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
-                    histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i])
-                    histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
-                    if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
-                        np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'),CLevels)
-                        log.debug('confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+str(i)+'.dat'))
-                else:
-                    log.debug("Nope! no useful data for "+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", in file:\n"+outputDataFilename)
+            if (os.path.exists(histFolder)==False) or forceRecalc:
+                if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i]+'.dat'))==False):
+                    log.debug('Checking parameter has useful data '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
+                    (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,i, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+                    if bestDataVal!=0:
+                        completeCLstr+=paramStrs2[i]+clStr+'\n'+'-'*75+'\n'
+                        log.debug('Making hist file for parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
+                        histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i])
+                        histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
+                        if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
+                            np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'),CLevels)
+                            log.debug('confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+str(i)+'.dat'))
+                    else:
+                        log.debug("Nope! no useful data for "+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", in file:\n"+outputDataFilename)
         ## Create empty figure to be filled up with plots
-        if len(paramStrs2)>12:
+        if len(paramStrs2)>16:
+            sumFig = plt.figure(figsize=(9,14))
+        elif len(paramStrs2)>12:
             sumFig = plt.figure(figsize=(9,12))
         else:
-            sumFig = plt.figure(figsize=(10,10)) 
+            sumFig = plt.figure(figsize=(9,10)) 
                     
         ## make combined/stacked plot for each parameter in list
         for i in range(0,len(paramStrs2)):
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i])
-            if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'/histData/hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
-                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'/histData/hist-'+stage+"-"+paramFileStrs[i])
+            if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'histData/hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
+                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'histData/hist-'+stage+"-"+paramFileStrs[i])
             if os.path.exists(histDataBaseName+'.dat'):
                 log.debug('Starting to plot shaded hist for '+paramStrs2[i])
-                if len(paramStrs2)>12:
+                if len(paramStrs2)>16:
+                    subPlot = sumFig.add_subplot(5,4,i+1)
+                elif len(paramStrs2)>12:
                     subPlot = sumFig.add_subplot(4,4,i+1)
                 else:
                     subPlot = sumFig.add_subplot(3,4,i+1)
@@ -234,8 +245,8 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                 CLevels=False
                 if shadeConfLevels:
                     clFile = os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
-                    if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'/histData/confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')):
-                        clFile = os.path.join(os.path.dirname(outputDataFilename),'/histData/confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
+                    if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'histData/confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')):
+                        clFile = os.path.join(os.path.dirname(outputDataFilename),'histData/confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
                     CLevels=np.loadtxt(clFile)
                 showYlabel=False
                 if i in [0,4,8,12]:
@@ -257,20 +268,20 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
             except:
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")
         
-        ## Get hist and conflevel files to move to their own subfolder        
-        histFiles = []
-        hF = glob.glob(os.path.join(os.path.dirname(outputDataFilename),"hist*.dat"))
-        cF = glob.glob(os.path.join(os.path.dirname(outputDataFilename),"confLevels*.dat"))
-        for i in range(0,len(hF)):
-            histFiles.append(hF[i])
-            histFiles.append(cF[i])
-        histFolder = os.path.join(os.path.dirname(outputDataFilename),"histData")
-        os.mkdir(histFolder)
-        for f in histFiles:
-            try:
-                shutil.move(f,os.path.join(histFolder,os.path.basename(f)))
-            except:
-                log.error('failed to move file:\n'+f+'\nintto hist folder:\n'+histFolder)
+        ## Get hist and conflevel files to move to their own subfolder  
+        if os.path.exists(histFolder)==False:      
+            histFiles = []
+            hF = glob.glob(os.path.join(os.path.dirname(outputDataFilename),"hist*.dat"))
+            cF = glob.glob(os.path.join(os.path.dirname(outputDataFilename),"confLevels*.dat"))
+            for i in range(0,len(hF)):
+                histFiles.append(hF[i])
+                histFiles.append(cF[i])
+            os.mkdir(histFolder)
+            for f in histFiles:
+                try:
+                    shutil.move(f,os.path.join(histFolder,os.path.basename(f)))
+                except:
+                    log.error('failed to move file:\n'+f+'\nintto hist folder:\n'+histFolder)
         
         return completeCLstr
             
@@ -320,16 +331,21 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
     to make the filenames for each type of plot.
     """
     latex=True
-    log.debug("Starting to make orbit plots")
-    colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
-    #plt.rc('font',**{'family':'serif','serif':['Helvetica']})
+    plt.rcParams['ps.useafm']= True
+    plt.rcParams['pdf.use14corefonts'] = True
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
         plt.rc('text', usetex=True)
-        plt.rcParams['text.latex.unicode']=True  
+        #plt.rcParams['text.latex.unicode']=True 
+        #plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
+        #plt.rcParams['text.latex.preamble'] = '\usepackage{sfmath}' 
     else:
         plt.rc('font',family='serif')
         plt.rc('text', usetex=False)
-    
+        
+    log.debug("Starting to make orbit plots")
+    colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
+
     ##get the real data
     realData = genTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
     ## Make Orbit cpp obj
@@ -409,7 +425,13 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         main.axis([a[1],a[0],a[2],a[3]])
         main.axes.set_xlim((xLimsFull[1],xLimsFull[0]))
         main.axes.set_ylim(yLimsFull)
-        main.tick_params(axis='both',which='major',width=1,length=3,pad=10,direction='in',labelsize=25)
+        plt.minorticks_on()
+#         main.yaxis.set_major_locator(MultLoc(1))
+#         main.yaxis.set_minor_locator(MultLoc(0.5))
+#         main.xaxis.set_major_locator(MultLoc(0.5))
+#         main.xaxis.set_minor_locator(MultLoc(0.25))
+        main.tick_params(axis='both',which='major',width=1,length=5,pad=10,direction='in',labelsize=25)
+        main.tick_params(axis='both',which='minor',width=1,length=2,pad=10,direction='in')
         main.spines['right'].set_linewidth(1.0)
         main.spines['bottom'].set_linewidth(1.0)
         main.spines['top'].set_linewidth(1.0)
@@ -559,21 +581,28 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             residualsPlot.axhline(linewidth=2.0,c='Blue') #adds a x-axis origin line
             
             ##clean up boarders, axis ticks and such 
-            residualsPlot.tick_params(axis='y',which='major',width=1,length=3,pad=8,direction='in',labelsize=15)
-            residualsPlot.tick_params(axis='x',which='major',width=1,length=3,pad=8,direction='in',labelsize=20)
-            residualsPlot.locator_params(axis='y',nbins=6) #fix number of y-axis label points
-            residualsPlot.spines['right'].set_linewidth(1.0)
-            residualsPlot.spines['bottom'].set_linewidth(1.0)
-            residualsPlot.spines['top'].set_linewidth(1.0)
-            residualsPlot.spines['left'].set_linewidth(1.0)
-            fitPlot.tick_params(axis='both',which='major',width=1,length=3,pad=8,direction='in',labelsize=20)
+            plt.minorticks_on()
+            fitPlot.tick_params(axis='both',which='major',width=1,length=5,pad=8,direction='in',labelsize=20)
+            fitPlot.tick_params(axis='both',which='minor',width=1,length=2,pad=8,direction='in')
             fitPlot.spines['right'].set_linewidth(1.0)
             fitPlot.spines['bottom'].set_linewidth(1.0)
             fitPlot.spines['top'].set_linewidth(1.0)
             fitPlot.spines['left'].set_linewidth(1.0)
             fitPlot.locator_params(axis='y',nbins=6) #fix number of y-axis label points
+            plt.minorticks_on()
             #plot.axhline(linewidth=2.0) #adds a x-axis origin line
             #plot.axvline(linewidth=2.0) #adds a y-axis origin line
+            plt.minorticks_on()
+            residualsPlot.tick_params(axis='y',which='major',width=1,length=5,pad=8,direction='in',labelsize=15)
+            residualsPlot.tick_params(axis='x',which='major',width=1,length=5,pad=8,direction='in',labelsize=20)
+            residualsPlot.tick_params(axis='y',which='minor',width=2,length=4,pad=8,direction='in')
+            residualsPlot.tick_params(axis='x',which='minor',width=2,bottom='on',length=4,pad=8,direction='in')
+            residualsPlot.locator_params(axis='y',nbins=6) #fix number of y-axis label points
+            plt.minorticks_on()
+            residualsPlot.spines['right'].set_linewidth(1.0)
+            residualsPlot.spines['bottom'].set_linewidth(1.0)
+            residualsPlot.spines['top'].set_linewidth(1.0)
+            residualsPlot.spines['left'].set_linewidth(1.0)
     
             ## save fig to file and maybe convert to pdf if format=='eps'
             orientStr = 'landscape'
@@ -593,12 +622,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
                 ## log params used in RV plot
             log.info('\n'+"*"*50+"\nOrbital Elements used in RV plot:\n"+repr(orbParamsRV))
             log.info("\n with an omega value = "+str(orbParamsRV[9]+settingsDict["omegaFrv"][0])+'\n'+"*"*50+'\n')
-    
 
 
 
-
-
-
-
-
+#END OF FILE

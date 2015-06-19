@@ -262,7 +262,7 @@ def getParStrs(head,latex=True):
     paramFileStrs = ['M1','M2','parallax','Omega','e','To', 'Tc','P','i','omega','a_total','chiSquared','K']
     paramStrs = ['M1 [Msun]','M2 [Msun]','Parallax [mas]','Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]','chiSquared','K [m/s]']
     if latex:
-        paramStrs = ['$M_1$ [$M_{sun}$]','$M_2$ [$M_{sun}$]','$Parallax$ [mas]','$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]','chiSquared','$K$ [m/s]']
+        paramStrs = ['$M_1$ [$M_{sun}$]','$M_2$ [$M_{sun}$]','$Parallax$ [mas]','$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]','$\chi^2$','$K$ [m/s]']
 
     if head["nRVdsets"]>0:
         for dataset in range(1,head["nRVdsets"]+1):
@@ -459,7 +459,14 @@ def loadSettingsDict(filenameRoot):
     settingsDict['omegaFdi'] = (omegaFdi,"Total fixed val added to DI omega in model")
     settingsDict['omegaFrv'] = (omegaFrv,"Total fixed val added to RV omega in model")
     log.debug("Setting fixed omega offsets to:\nomegaFdi = "+str(omegaFdi)+"\nomegaFrv = "+str(omegaFrv))
-    
+    ##In DI mode can only find Mtotal, thus push all mass into M1 and kill M2
+    if settingsDict['dataMode'][0]=='DI':
+        settingsDict['mass1MIN']=settingsDict['mass1MIN']+settingsDict['mass2MIN']
+        settingsDict['mass1MAX']=settingsDict['mass1MAX']+settingsDict['mass2MAX']
+        settingsDict['mass2MIN']=0
+        settingsDict['mass2MAX']=0
+        log.debug("DI dataMode, so pushed all mass range vals into M1 and set ones for M2 to zero")
+        
     return settingsDict
     
 def startup(argv,rootDir,rePlot=False):
@@ -642,7 +649,6 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
     f.write('\nparamList:\n'+repr(paramList))
     f.write('\nparamStrs:\n'+repr(paramStrs))
     f.write('\nparamFileStrs:\n'+repr(paramFileStrs))
-    
     try:
         ## try to make and write the more advanced summary strings to the file
         nusStr = "\nnu values were: [total,DI,RV] = ["+str(head['NU'])+", "+str(head['NUDI'])+", "+str(head['NURV'])+"]\n"
@@ -650,25 +656,25 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
         stgNsampStrDict = {"MC":"nSamples","SA":"nSAsamp","ST":"nSTsamp","MCMC":"nSamples"}
         numFilesStr = '\nTotal # of files that finished each stage were:\n'
         chiSquaredsStr = '\nBest Reduced Chi Squareds for each stage were:\n'
-        print 'ln646'  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        log.debug('ln653')  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         for stage in stageList:
             fnames = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits")))
             if (stage=="MCMC")and settingsDict["delBurn"][0]:
                 fnames = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*BIstripped.fits")))
             numFilesStr+=stage+' = '+str(len(fnames))+", each with "+str(settingsDict[stgNsampStrDict[stage]][0])+" samples\n"
             if len(fnames)>0:
-                print 'len(fnames) = '+repr(len(fnames))#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                log.debug('len(fnames) = '+repr(len(fnames)))#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 chiSquaredsStr+=stage+" = ["
                 for fname in fnames: 
                     bestFit2 = findBestOrbit(fname)
                     chiSquaredsStr+=str(bestFit2[11]/float(head['NU']))+', '
                 chiSquaredsStr = chiSquaredsStr[:-2]+']\n'
-        print 'ln657'#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        log.debug('ln666')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         numFilesStr+="\n"+"*"*65+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*65+'\n'
         f.write(numFilesStr)
         f.write(chiSquaredsStr)
-        bestStr = '\n'+'-'*20+'\nBest fit values were:\n'+'-'*20+'\n'
-        print 'ln662'#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        bestStr = '\n'+'-'*21+'\nBest fit values were:\n'+'-'*21+'\n'
+        log.debug('ln671')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         for i in range(len(bestFit)):
             if i==2:
                 bestStr+=paramStrs[2]+" = "+str(bestFit[2])
@@ -681,7 +687,7 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
                 bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
         bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[11]/float(head['nu']))+'\n'+'*'*45
         f.write(bestStr)
-        print 'ln675'#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        log.debug('ln684')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     except:
         log.critical("A problem occured while trying to produce advanced summary strings.")
     f.write('\n'+grStr)
@@ -866,7 +872,8 @@ def dataReader(filename, colNum=0):
 def findBestOrbit(filename):        
     """
     Find the orbital elements for the best fit in a SMODT format fits file.
-    """                  
+    """             
+    log.debug("trying to find best orbit in file:\n"+filename)     
     (head,data) = loadFits(filename)
     chiBest = np.min(data[:,11])
     loc = np.where(data[:,11]==chiBest)

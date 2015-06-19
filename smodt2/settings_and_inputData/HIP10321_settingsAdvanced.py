@@ -62,16 +62,16 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (1000.0,"Max reduced chiSquared during MC and SA"),
+'chiMAX' : (500.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed best reduced chiSquared out of SA before entering ST [double]
-'chiMaxST':(2.0,'Max reduced chiSquared to enter ST.'),
+'chiMaxST':(2.9,'Max reduced chiSquared to enter ST.'),
 # maximum allowed best reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(1.0,'Max reduced chiSquared to enter MCMC.'),
+'cMaxMCMC':(2.5,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 10,
+'logLevel' : 30,
 #number of times to produce a summary log msg during a stage's progress [int]
-'nSumry'  :20,
+'nSumry'  :0,
 # make plot of posterior distributions? [bool]
 'pltDists' : True,
 # make plots of RV and DI/AM orbit fits [bool]
@@ -91,15 +91,15 @@ advancedDict = {
 # Settings for MCMC mode ###
 ############################
 # Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
-'CalcBurn' :False,
+'CalcBurn' :True,
 # remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by ST though...)? [bool]
-'delBurn' : (False,"Remove Burn-in?"),
+'delBurn' : (True,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
-'calcCL' :False,
+'calcCL' :True,
 # number of samples to draw for simulated annealing stage [int] 
 'nSAsamp' :(1000000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (500.0,"SA starting temperature."),
+'strtTemp' : (250.0,"SA starting temperature."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
 'strtSig' : (0.25,"Starting percent param range for SA"),
@@ -123,7 +123,7 @@ advancedDict = {
 # Make plots of Simulated Annealing progress plots? [bool]$$$$$ still not coded up $$$
 'pltSAprog' :False,
 # Calculate the Gelman-Rubin statistic? [bool]
-'CalcGR' :False,
+'CalcGR' :True,
 # How many times do you want the Gelman-Rubin statistic calculated [int]  $$$$$ still not coded up $$$
 'nGRcalc' :10,
 #####################################

@@ -425,21 +425,21 @@ def loadSettingsDict(filenameRoot):
     """
     ## A BIT HACKY FOR NOW, NEED TO FIND A CLEANER WAY TO DO THIS!?!?! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     cwd = os.getcwd()
-    smodtHeadDir = filenameRoot.split("SMODT")[0]
+    smodtHeadDir = filenameRoot.split("smodt2")[0]
     try:
-        os.remove(os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsSimple.py'))
-        os.remove(os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsAdvanced.py'))
-        os.remove(os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/constants.py'))
+        os.remove(os.path.join(smodtHeadDir,'smodt2/tools/temp/settingsSimple.py'))
+        os.remove(os.path.join(smodtHeadDir,'smodt2/tools/temp/settingsAdvanced.py'))
+        os.remove(os.path.join(smodtHeadDir,'smodt2/tools/temp/constants.py'))
     except:
         temp=True
-    shutil.copy(filenameRoot+'settingsSimple.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsSimple.py'))
-    shutil.copy(filenameRoot+'settingsAdvanced.py',os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsAdvanced.py'))
-    shutil.copy(os.path.join(smodtHeadDir,'SMODT/smodt2/tools/constants.py'),os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/constants.py'))
+    shutil.copy(filenameRoot+'settingsSimple.py',os.path.join(smodtHeadDir,'smodt2/tools/temp/settingsSimple.py'))
+    shutil.copy(filenameRoot+'settingsAdvanced.py',os.path.join(smodtHeadDir,'smodt2/tools/temp/settingsAdvanced.py'))
+    shutil.copy(os.path.join(smodtHeadDir,'smodt2/tools/constants.py'),os.path.join(smodtHeadDir,'smodt2/tools/temp/constants.py'))
     if False:
-        print 'Copied simple to:\n'+os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsSimple.py')
-        print 'Copied advanced to:\n'+os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/settingsAdvanced.py')
-        print 'Copied constants to:\n'+os.path.join(smodtHeadDir,'SMODT/smodt2/tools/temp/constants.py')
-    os.chdir(os.path.join(smodtHeadDir,'SMODT'))
+        print 'Copied simple to:\n'+os.path.join(smodtHeadDir,'smodt2/tools/temp/settingsSimple.py')
+        print 'Copied advanced to:\n'+os.path.join(smodtHeadDir,'smodt2/tools/temp/settingsAdvanced.py')
+        print 'Copied constants to:\n'+os.path.join(smodtHeadDir,'smodt2/tools/temp/constants.py')
+    os.chdir(os.path.join(smodtHeadDir,'smodt2'))
     from tools.temp.settingsAdvanced import settingsDict
     os.chdir(cwd)
     

@@ -134,7 +134,7 @@ class Simulator(object):
         ##Take mass1, dist, inc and period from those include in nu calcs
         ##as they have clear priors.
         paramIntsClean = copy.deepcopy(paramInts)
-        notInNuInts = [0,2,7,8]      
+        notInNuInts = [2,7,8]      
         for val in notInNuInts:
             paramIntsClean=paramIntsClean[np.where(paramIntsClean!=val)]
         nDIvars = np.sum(np.where(paramIntsClean<10,1,0))

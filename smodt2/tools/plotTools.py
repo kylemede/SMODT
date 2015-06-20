@@ -176,7 +176,7 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
         #plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
         #plt.rcParams['text.latex.preamble'] = '\usepackage{sfmath}' 
     
-    histFolder = os.path.join(os.path.dirname(outputDataFilename),"histData")
+    plotDataDir = os.path.join(os.path.dirname(outputDataFilename),"plotData")
     
     (head,data) = genTools.loadFits(outputDataFilename)
     if head!=False:  
@@ -205,7 +205,7 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
         ## run through all the data files and parameters requested and make histogram files
         completeCLstr = '-'*22+'\nConfidence Levels are:\n'+'-'*75+'\n'
         for i in range(0,len(paramStrs2)):
-            if (os.path.exists(histFolder)==False) or forceRecalc:
+            if (os.path.exists(plotDataDir)==False) or forceRecalc:
                 if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i]+'.dat'))==False):
                     log.debug('Checking parameter has useful data '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
                     (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,i, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
@@ -230,8 +230,8 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
         ## make combined/stacked plot for each parameter in list
         for i in range(0,len(paramStrs2)):
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i])
-            if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'histData/hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
-                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'histData/hist-'+stage+"-"+paramFileStrs[i])
+            if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'plotData/hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
+                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'plotData/hist-'+stage+"-"+paramFileStrs[i])
             if os.path.exists(histDataBaseName+'.dat'):
                 log.debug('Starting to plot shaded hist for '+paramStrs2[i])
                 if len(paramStrs2)>16:
@@ -245,8 +245,8 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                 CLevels=False
                 if shadeConfLevels:
                     clFile = os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
-                    if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'histData/confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')):
-                        clFile = os.path.join(os.path.dirname(outputDataFilename),'histData/confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
+                    if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'plotData/confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')):
+                        clFile = os.path.join(os.path.dirname(outputDataFilename),'plotData/confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
                     CLevels=np.loadtxt(clFile)
                 showYlabel=False
                 if i in [0,4,8,12]:
@@ -269,19 +269,19 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")
         
         ## Get hist and conflevel files to move to their own subfolder  
-        if os.path.exists(histFolder)==False:      
+        if os.path.exists(plotDataDir)==False:      
             histFiles = []
             hF = glob.glob(os.path.join(os.path.dirname(outputDataFilename),"hist*.dat"))
             cF = glob.glob(os.path.join(os.path.dirname(outputDataFilename),"confLevels*.dat"))
             for i in range(0,len(hF)):
                 histFiles.append(hF[i])
                 histFiles.append(cF[i])
-            os.mkdir(histFolder)
+            os.mkdir(plotDataDir)
             for f in histFiles:
                 try:
-                    shutil.move(f,os.path.join(histFolder,os.path.basename(f)))
+                    shutil.move(f,os.path.join(plotDataDir,os.path.basename(f)))
                 except:
-                    log.error('failed to move file:\n'+f+'\nintto hist folder:\n'+histFolder)
+                    log.error('failed to move file:\n'+f+'\nintto plot data folder:\n'+plotDataDir)
         
         return completeCLstr
             
@@ -342,10 +342,12 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
     else:
         plt.rc('font',family='serif')
         plt.rc('text', usetex=False)
-        
     log.debug("Starting to make orbit plots")
     colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
 
+    plotDataDir = os.path.join(os.path.dirname(plotFnameBase),"plotData")
+    if os.path.exists(plotDataDir)==False:      
+        os.mkdir(plotDataDir)
     ##get the real data
     realData = genTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
     ## Make Orbit cpp obj
@@ -402,7 +404,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         outDIdataFit = []
         for i in range(0,len(fitDataDI[:,0])):
             outDIdataFit.append([fitDataDI[i,0],fitDataDI[i,1]])
-        fnameBase = os.path.join(os.path.dirname(plotFnameBase),'DIplotData')
+        fnameBase = os.path.join(os.path.dirname(plotDataDir),'DIplotData')
         np.savetxt(fnameBase+'-real.dat',outDIdataReal)
         np.savetxt(fnameBase+'-fit.dat',outDIdataFit)
 
@@ -602,12 +604,12 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             outRVdataReal = []
             for i in range(0,len(phasesReal)):
                 outRVdataReal.append([phasesReal[i],realDataRV[i,0],zeroedRealDataRV[i,5],residualData[i,5]])
-            print repr(outRVdataReal)
+            #print repr(outRVdataReal)
             #fit [phases,JD,RV]
             outRVdataFit = []
             for i in range(0,len(phasesFit)):
                 outRVdataFit.append([phasesFit[i],fakeRealData[i,0],fitDataRV[i,2]])
-            fnameBase = os.path.join(os.path.dirname(plotFnameBase),'RVplotData')
+            fnameBase = os.path.join(os.path.dirname(plotDataDir),'RVplotData')
             np.savetxt(fnameBase+'-real.dat',outRVdataReal)
             np.savetxt(fnameBase+'-fit.dat',outRVdataFit)
             
@@ -654,7 +656,6 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
                 ## log params used in RV plot
             log.info('\n'+"*"*50+"\nOrbital Elements used in RV plot:\n"+repr(orbParamsRV))
             log.info("\n with an omega value = "+str(orbParamsRV[9]+settingsDict["omegaFrv"][0])+'\n'+"*"*50+'\n')
-
 
 
 #END OF FILE

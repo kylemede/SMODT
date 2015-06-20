@@ -176,7 +176,12 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
         #plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
         #plt.rcParams['text.latex.preamble'] = '\usepackage{sfmath}' 
     
+    ## check if plot data dir exists, else make it
     plotDataDir = os.path.join(os.path.dirname(outputDataFilename),"plotData")
+    print 'plotDataDir = '+plotDataDir
+    if os.path.exists(plotDataDir)==False:      
+        os.mkdir(plotDataDir)
+    plotDataDir+='/'
     
     (head,data) = genTools.loadFits(outputDataFilename)
     if head!=False:  
@@ -205,20 +210,20 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
         ## run through all the data files and parameters requested and make histogram files
         completeCLstr = '-'*22+'\nConfidence Levels are:\n'+'-'*75+'\n'
         for i in range(0,len(paramStrs2)):
-            if (os.path.exists(plotDataDir)==False) or forceRecalc:
-                if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i]+'.dat'))==False):
-                    log.debug('Checking parameter has useful data '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
-                    (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,i, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
-                    if bestDataVal!=0:
-                        completeCLstr+=paramStrs2[i]+clStr+'\n'+'-'*75+'\n'
-                        log.debug('Making hist file for parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
-                        histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i])
-                        histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
-                        if (os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
-                            np.savetxt(os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'),CLevels)
-                            log.debug('confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+str(i)+'.dat'))
-                    else:
-                        log.debug("Nope! no useful data for "+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", in file:\n"+outputDataFilename)
+            if (os.path.exists(os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
+                log.debug('Checking parameter has useful data '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
+                (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,i, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+                if bestDataVal!=0:
+                    completeCLstr+=paramStrs2[i]+clStr+'\n'+'-'*75+'\n'
+                    log.debug('Making hist file for parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
+                    histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i])
+                    print 'histDataBaseName = '+histDataBaseName
+                    histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
+                    if (os.path.exists(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
+                        np.savetxt(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'),CLevels)
+                        log.debug('confidence levels data stored to:\n'+os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+str(i)+'.dat'))
+                else:
+                    log.debug("Nope! no useful data for "+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", in file:\n"+outputDataFilename)
         ## Create empty figure to be filled up with plots
         if len(paramStrs2)>16:
             sumFig = plt.figure(figsize=(9,14))
@@ -230,8 +235,8 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
         ## make combined/stacked plot for each parameter in list
         for i in range(0,len(paramStrs2)):
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i])
-            if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'plotData/hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
-                histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'plotData/hist-'+stage+"-"+paramFileStrs[i])
+            if os.path.exists(os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
+                histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i])
             if os.path.exists(histDataBaseName+'.dat'):
                 log.debug('Starting to plot shaded hist for '+paramStrs2[i])
                 if len(paramStrs2)>16:
@@ -245,8 +250,8 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                 CLevels=False
                 if shadeConfLevels:
                     clFile = os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
-                    if os.path.exists(os.path.join(os.path.dirname(outputDataFilename),'plotData/confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')):
-                        clFile = os.path.join(os.path.dirname(outputDataFilename),'plotData/confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
+                    if os.path.exists(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')):
+                        clFile = os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
                     CLevels=np.loadtxt(clFile)
                 showYlabel=False
                 if i in [0,4,8,12]:
@@ -267,21 +272,6 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                 os.system("epstopdf "+plotFilename)
             except:
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")
-        
-        ## Get hist and conflevel files to move to their own subfolder  
-        if os.path.exists(plotDataDir)==False:      
-            histFiles = []
-            hF = glob.glob(os.path.join(os.path.dirname(outputDataFilename),"hist*.dat"))
-            cF = glob.glob(os.path.join(os.path.dirname(outputDataFilename),"confLevels*.dat"))
-            for i in range(0,len(hF)):
-                histFiles.append(hF[i])
-                histFiles.append(cF[i])
-            os.mkdir(plotDataDir)
-            for f in histFiles:
-                try:
-                    shutil.move(f,os.path.join(plotDataDir,os.path.basename(f)))
-                except:
-                    log.error('failed to move file:\n'+f+'\nintto plot data folder:\n'+plotDataDir)
         
         return completeCLstr
             
@@ -345,9 +335,11 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
     log.debug("Starting to make orbit plots")
     colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
 
+    ## check if plot data dir exists, else make it
     plotDataDir = os.path.join(os.path.dirname(plotFnameBase),"plotData")
     if os.path.exists(plotDataDir)==False:      
         os.mkdir(plotDataDir)
+    plotDataDir+='/'
     ##get the real data
     realData = genTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
     ## Make Orbit cpp obj
@@ -379,24 +371,29 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             paramsDI.append(par)
         paramsDI=np.array(paramsDI,dtype=np.dtype('d'),order='C')
         Orbit.calculate(fitDataDI,paramsDI)
-        #print 'paramsDI = \n'+repr(paramsDI)
-        #print 'fitDataDI = \n'+repr(fitDataDI)
-        if False:
-            ## Get 1/4 locations (useful for drawing semi-major axis, and finding loc of COM)
-            fakeRealDataQuarter = np.ones((4,8),dtype=np.dtype('d'))
-            for i in range(0,4):
-                fakeRealDataQuarter[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/4.0))
-            Orbit.loadRealData(fakeRealDataQuarter)
-            fitDataQuarter = np.zeros((4,3),dtype=np.dtype('d'))
-            Orbit.calculate(fitDataQuarter,orbParams)
-            #find loc of COM for possible use
-            xCOM = (fakeRealDataQuarter[3,0]+fakeRealDataQuarter[0,0])/2.0
-            yCOM = (fakeRealDataQuarter[3,1]+fakeRealDataQuarter[0,1])/2.0
-        if True:
-            ## get start/end for line of nodes 
-            lonData = np.ones((2,8),dtype=np.dtype('d'))
-            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
+        ## Get locations of start/end for semi-major axis or COM, and AN/DN for line-of-nodes
+        ## Get 1/4 locations (useful for drawing semi-major axis, and finding loc of COM)
+        fakeRealDataQuarter = np.ones((4,8),dtype=np.dtype('d'))
+        for i in range(0,4):
+            fakeRealDataQuarter[i,0] = orbParamsDI[5]+(const.daysPerYear*orbParamsDI[7]*(i/4.0))
+        Orbit.loadRealData(fakeRealDataQuarter)
+        fitDataQuarter = np.zeros((4,3),dtype=np.dtype('d'))
+        Orbit.calculate(fitDataQuarter,orbParamsDI)
+        ## make semi-major locs
+        semiMajorLocs = np.array([[fitDataQuarter[0,0],fitDataQuarter[0,1]],[fitDataQuarter[2,0],fitDataQuarter[2,1]]])
+        ## find loc of COM for possible use
+        xCOM = (fakeRealDataQuarter[3,0]+fakeRealDataQuarter[0,0])/2.0
+        yCOM = (fakeRealDataQuarter[3,1]+fakeRealDataQuarter[0,1])/2.0
+        ## Find Ascending and Descending Node locations
+        nodeEpochs = nodeEpochsCalc(orbParamsDI) 
+        #print 'nodeEpochs = '+repr(nodeEpochs)
+        lonData = np.ones((2,8),dtype=np.dtype('d'))
+        lonData[:,0]=nodeEpochs
+        Orbit.loadRealData(lonData)
+        tmpData = np.ones((2,3),dtype=np.dtype('d'))
+        Orbit.calculate(tmpData,orbParamsDI)
+        lonXYs = tmpData[:,:2]#[[tmpData[0,0],tmpData[0,1]]]
+        
         ##load resulting data to file for re-plotting by others
         #real [x,xerr,y,yerr]
         outDIdataReal = realDataDI[:,1:5]
@@ -418,12 +415,16 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             unitStr = '[mas]'
         ## Draw orbit fit
         main.plot(fitDataDI[:,0]*asConversion,fitDataDI[:,1]*asConversion,linewidth=2.5,color='Blue') 
+        ## Draw line-of-nodes
+        main.plot(lonXYs[:,0]*asConversion,lonXYs[:,1]*asConversion,'-.',linewidth=1.0,color='Green')
+        #print 'lonXYs*asConversion = '+repr(lonXYs*asConversion)
+        ## Draw Semi-Major axis
+        main.plot(semiMajorLocs[:,0]*asConversion,semiMajorLocs[:,1]*asConversion,'-',linewidth=1.0,color='Green')
         ## Draw larger star for primary star's location
         starPolygon = star(2*paramsDI[10],0,0,color='yellow',N=6,thin=0.5)
         main.add_patch(starPolygon)
         ## Add DI data to plot
         (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realDataDI,asConversion)
-        #print '[xmin,xmax,ymin,ymax] = '+repr([xmin,xmax,ymin,ymax])
         ## set limits and other basics of plot looks
         xLims = (np.min([xmin,np.min(fitDataDI[:,0]*asConversion)]),np.max([xmax,np.max(fitDataDI[:,0]*asConversion)]))
         yLims = (np.min([ymin,np.min(fitDataDI[:,1]*asConversion)]),np.max([ymax,np.max(fitDataDI[:,1]*asConversion)]))
@@ -433,22 +434,12 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         yLims = (ymin,ymax)
         xLimsCrop = (xLims[0]-(xLims[1]-xLims[0])*0.05,xLims[1]+(xLims[1]-xLims[0])*0.05)
         yLimsCrop = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)
-        #print 'fit xs = '+repr(fitDataDI[:,0]*asConversion)
-        #print 'fit ys = '+repr(fitDataDI[:,0]*asConversion)
-        #print 'xLimsFull = '+repr(xLimsFull)
-        #print 'yLimsFull = '+repr(yLimsFull)
-        #print 'xLimsCrop = '+repr(xLimsCrop)
-        #print 'yLimsCrop = '+repr(yLimsCrop)
         ## FLIP X-AXIS to match backawards Right Ascension definition
         a = main.axis()
         main.axis([a[1],a[0],a[2],a[3]])
         main.axes.set_xlim((xLimsFull[1],xLimsFull[0]))
         main.axes.set_ylim(yLimsFull)
         plt.minorticks_on()
-#         main.yaxis.set_major_locator(MultLoc(1))
-#         main.yaxis.set_minor_locator(MultLoc(0.5))
-#         main.xaxis.set_major_locator(MultLoc(0.5))
-#         main.xaxis.set_minor_locator(MultLoc(0.25))
         main.tick_params(axis='both',which='major',width=1,length=5,pad=10,direction='in',labelsize=25)
         main.tick_params(axis='both',which='minor',width=1,length=2,pad=10,direction='in')
         main.spines['right'].set_linewidth(1.0)
@@ -613,7 +604,6 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             np.savetxt(fnameBase+'-real.dat',outRVdataReal)
             np.savetxt(fnameBase+'-fit.dat',outRVdataFit)
             
-            
             ##clean up boarders, axis ticks and such 
             plt.minorticks_on()
             fitPlot.tick_params(axis='both',which='major',width=1,length=5,pad=8,direction='in',labelsize=20)
@@ -657,5 +647,43 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             log.info('\n'+"*"*50+"\nOrbital Elements used in RV plot:\n"+repr(orbParamsRV))
             log.info("\n with an omega value = "+str(orbParamsRV[9]+settingsDict["omegaFrv"][0])+'\n'+"*"*50+'\n')
 
+def nodeEpochsCalc(orbParamsDI):
+    """
+    Calculate the epochs for the Ascending and Descending nodes, might be in different orbital 
+    periods and AN/DN might be the wrong order, but should work for plotting... I hope...
+    """
+    taAtNodes = [-1.0*orbParamsDI[9],180.0-1.0*orbParamsDI[9]]
+    nodeEpochs = []
+    for ta in taAtNodes:
+        if ta<0.0:
+            ta =ta+360.0
+        elif ta>360:
+            ta =ta-360.0
+        TA_s_rad = ta*(const.pi/180.0)
+        top = np.sqrt(1.0-orbParamsDI[4])*np.sin(TA_s_rad/2.0)   
+        btm = np.sqrt(1.0+orbParamsDI[4])*np.cos(TA_s_rad/2.0) 
+        ATAN_rad = np.arctan2(top, btm)
+        #NOTE: both math.atan2 and np.arctan2 tried with same results, both produce negatives rather than continuous 0-360 
+        #thus, must correct for negative outputs
+        if ATAN_rad<0:
+            ATAN_rad = ATAN_rad+(2.0*const.pi)
+        M_s_rad = ATAN_rad*2.0-orbParamsDI[4]*np.sin(ATAN_rad*2.0)
+        delta_t = (M_s_rad*orbParamsDI[7]*const.daysPerYear)/(2.0*const.pi)
+        nodeEpochs.append(orbParamsDI[5]+delta_t)
+    return nodeEpochs
+    
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 #END OF FILE

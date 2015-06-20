@@ -139,7 +139,6 @@ def smodt():
                 ## replace final combined filename with new stripped version
                 allFname = strippedAllFname
                 
-    
     ## find best fit
     if os.path.exists(allFname):
         bestFit = tools.findBestOrbit(allFname)
@@ -155,6 +154,11 @@ def smodt():
         plotFilename = os.path.join(os.path.dirname(allFname),'summaryPlot'+settingsDict['symMode'][0])
         clStr = tools.summaryPlotter(allFname, plotFilename,stage=settingsDict['symMode'][0], shadeConfLevels=True)
     
+    ## following post-processing stages can take a long time, so write the current
+    ## summary information to the summary file and add the rest later
+    if os.path.exists(allFname):
+        tools.summaryFilePart1(settingsDict,stageList,allFname,clStr,burnInStr,bestFit)
+    
     ## progress plots?  INCLUDE?? maybe kill this one.
     
     ## calc correlation length & number effective points?
@@ -166,12 +170,12 @@ def smodt():
     if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
         (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
         
-    ## make summary file
+    ## Finish summary file
     toc=timeit.default_timer()
     postTime = toc-tic2
     allTime = toc-tic
     if os.path.exists(allFname):
-        tools.summaryFile(settingsDict,stageList,allFname,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime)
+        tools.summaryFilePart2(settingsDict,grStr,effPtsStr,allTime,postTime)
         
     ##clean up files (move to folders or delete them)
     tools.cleanUp(settingsDict,stageList,allFname)

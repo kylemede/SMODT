@@ -639,7 +639,7 @@ def combineFits(filenames,outFname):
     hdulist.close()
     log.info("output file written to:below\n"+outFname)
     
-def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr,bestFit,allTime,postTime):
+def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit):
     """
     Make a txt file that summarizes the results nicely.
     """
@@ -649,8 +649,6 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
     totalSamps = head['NSAMPLES']
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
     f.write('\n'+'-'*7+'\nBasics:\n'+'-'*7)
-    f.write('\nPost-Processing took: '+timeStrMaker(postTime)+'\n')
-    f.write('Total simulation took: '+timeStrMaker(allTime)+'\n')
     f.write('\nparamList:\n'+repr(paramList))
     f.write('\nparamStrs:\n'+repr(paramStrs))
     f.write('\nparamFileStrs:\n'+repr(paramFileStrs))
@@ -695,13 +693,26 @@ def summaryFile(settingsDict,stageList,finalFits,grStr,effPtsStr,clStr,burnInStr
         log.debug('ln684')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     except:
         log.critical("A problem occured while trying to produce advanced summary strings.")
-    f.write('\n'+grStr)
-    f.write('\n'+effPtsStr)
     f.write('\n'+clStr)
     f.write('\n'+burnInStr)
     f.close()
     log.info("Summary file written to:\n"+summaryFname)  
 
+def summaryFilePart2(settingsDict,grStr,effPtsStr,allTime,postTime):
+    """
+    Finish writting the important summary information for the post-processing 
+    steps that can take along time.
+    """
+    summaryFname = os.path.join(settingsDict['finalFolder'],'RESULTS.txt')
+    f = open(summaryFname,'a')
+    f.write('\n\nPost-Processing took: '+timeStrMaker(postTime)+'\n')
+    f.write('Total simulation took: '+timeStrMaker(allTime)+'\n')
+    f.write('\n'+grStr)
+    f.write('\n'+effPtsStr)
+    f.close()
+    log.info("Summary file written to:\n"+summaryFname)
+    
+    
 def copyToDB(settingsDict):
     """
     Copy vital results files to Dropbox.

@@ -556,7 +556,7 @@ def cleanUp(settingsDict,stageList,allFname):
         if settingsDict['delBurn'][0]:
             ##the burn-in was stripped in the final file, so kill the non-stripped version if it exists
             nm = os.path.join(os.path.dirname(allFname),'combined*data.fits')
-            if os.path.exits(nm):
+            if os.path.exists(nm):
                 delFiles.append(nm)
                 
     ##try to delete files

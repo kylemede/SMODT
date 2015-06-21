@@ -356,7 +356,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
     # Make DI plot #
     ################
     if settingsDict['dataMode'][0]!='RV':
-        ParamsDI = copy.deepcopy(params)
+        paramsDI = copy.deepcopy(params)
         realDataDI = copy.deepcopy(realData)
         realDataDI = realDataDI[np.where(realDataDI[:,2]<1e6)[0],:]
         ##Make model data for 100~1000 points for plotting fit
@@ -365,33 +365,34 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         fakeRealData[:,1:5]=1.0
         fakeRealData[:,6]=1e6
         for i in range(0,nPts-1):
-            fakeRealData[i,0] = ParamsDI[5]+(const.daysPerYear*ParamsDI[7]*(i/float(nPts)))
-        fakeRealData[nPts-1,0]  = fakeRealData[0,0]+const.daysPerYear*ParamsDI[7]
+            fakeRealData[i,0] = paramsDI[5]+(const.daysPerYear*paramsDI[7]*(i/float(nPts)))
+        fakeRealData[nPts-1,0]  = fakeRealData[0,0]+const.daysPerYear*paramsDI[7]
         #print 'fakeRealData= '+repr(fakeRealData)
         Orbit.loadRealData(fakeRealData)
         fitDataDI = np.ones((nPts,3),dtype=np.dtype('d'),order='C')
-        Orbit.calculate(fitDataDI,ParamsDI)
+        Orbit.calculate(fitDataDI,paramsDI)
         ## Get locations of start/end for semi-major axis or COM, and AN/DN for line-of-nodes
         ## Get 1/4 locations (useful for drawing semi-major axis, and finding loc of COM)
         fakeRealDataQuarter = np.ones((4,8),dtype=np.dtype('d'))
         for i in range(0,4):
-            fakeRealDataQuarter[i,0] = ParamsDI[5]+(const.daysPerYear*ParamsDI[7]*(i/4.0))
+            fakeRealDataQuarter[i,0] = paramsDI[5]+(const.daysPerYear*paramsDI[7]*(i/4.0))
         Orbit.loadRealData(fakeRealDataQuarter)
         fitDataQuarter = np.zeros((4,3),dtype=np.dtype('d'))
-        Orbit.calculate(fitDataQuarter,ParamsDI)
+        Orbit.calculate(fitDataQuarter,paramsDI)
         ## make semi-major locs
         semiMajorLocs = np.array([[fitDataQuarter[0,0],fitDataQuarter[0,1]],[fitDataQuarter[2,0],fitDataQuarter[2,1]]])
         ## find loc of COM for possible use
         xCOM = (fakeRealDataQuarter[3,0]+fakeRealDataQuarter[0,0])/2.0
         yCOM = (fakeRealDataQuarter[3,1]+fakeRealDataQuarter[0,1])/2.0
         ## Find Ascending and Descending Node locations
-        nodeEpochs = nodeEpochsCalc(ParamsDI,settingsDict["omegaFdi"][0]) 
-        #print 'nodeEpochs = '+repr(nodeEpochs)
+        nodeEpochs = nodeEpochsCalc(paramsDI,settingsDict["omegaFdi"][0]) 
+        print 'period/2 = '+repr(const.daysPerYear*paramsDI[7]*(1.0/2.0))
+        print 'nodeEpochs = '+repr(nodeEpochs)
         lonData = np.ones((2,8),dtype=np.dtype('d'))
         lonData[:,0]=nodeEpochs
         Orbit.loadRealData(lonData)
         tmpData = np.ones((2,3),dtype=np.dtype('d'))
-        Orbit.calculate(tmpData,ParamsDI)
+        Orbit.calculate(tmpData,paramsDI)
         lonXYs = tmpData[:,:2]#[[tmpData[0,0],tmpData[0,1]]]
         
         ##load resulting data to file for re-plotting by others
@@ -478,8 +479,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             except:
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")
         ## log params used in DI plot
-        log.info('\n'+"*"*50+"\nOrbital Elements used in DI plot:\n"+repr(ParamsDI))
-        log.info("\n with an omega value = "+str(ParamsDI[9]+settingsDict["omegaFdi"][0])+'\n'+"*"*50+'\n')
+        log.info('\n'+"*"*50+"\nOrbital Elements used in DI plot:\n"+repr(paramsDI))
+        log.info("\n with an omega value = "+str(paramsDI[9]+settingsDict["omegaFdi"][0])+'\n'+"*"*50+'\n')
 
     ################
     # Make RV plot #

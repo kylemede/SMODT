@@ -346,11 +346,17 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
     Orbit = cppTools.Orbit()
     Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0])
     Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
+    ## ensure orbParams are in required format for Orbit
+    params = []
+    for par in orbParams:
+        params.append(par)
+    params=np.array(params,dtype=np.dtype('d'),order='C')
     
     ################
     # Make DI plot #
     ################
     if settingsDict['dataMode'][0]!='RV':
+        ParamsDI = copy.deepcopy(params)
         realDataDI = copy.deepcopy(realData)
         realDataDI = realDataDI[np.where(realDataDI[:,2]<1e6)[0],:]
         ##Make model data for 100~1000 points for plotting fit
@@ -359,39 +365,33 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         fakeRealData[:,1:5]=1.0
         fakeRealData[:,6]=1e6
         for i in range(0,nPts-1):
-            fakeRealData[i,0] = orbParams[5]+(const.daysPerYear*orbParams[7]*(i/float(nPts)))
-        fakeRealData[nPts-1,0]  = fakeRealData[0,0]+const.daysPerYear*orbParams[7]
+            fakeRealData[i,0] = ParamsDI[5]+(const.daysPerYear*ParamsDI[7]*(i/float(nPts)))
+        fakeRealData[nPts-1,0]  = fakeRealData[0,0]+const.daysPerYear*ParamsDI[7]
         #print 'fakeRealData= '+repr(fakeRealData)
         Orbit.loadRealData(fakeRealData)
         fitDataDI = np.ones((nPts,3),dtype=np.dtype('d'),order='C')
-        orbParamsDI = copy.deepcopy(orbParams)
-        #Ensuring that params are in required format for SWIG
-        paramsDI = []
-        for par in orbParamsDI:
-            paramsDI.append(par)
-        paramsDI=np.array(paramsDI,dtype=np.dtype('d'),order='C')
-        Orbit.calculate(fitDataDI,paramsDI)
+        Orbit.calculate(fitDataDI,ParamsDI)
         ## Get locations of start/end for semi-major axis or COM, and AN/DN for line-of-nodes
         ## Get 1/4 locations (useful for drawing semi-major axis, and finding loc of COM)
         fakeRealDataQuarter = np.ones((4,8),dtype=np.dtype('d'))
         for i in range(0,4):
-            fakeRealDataQuarter[i,0] = orbParamsDI[5]+(const.daysPerYear*orbParamsDI[7]*(i/4.0))
+            fakeRealDataQuarter[i,0] = ParamsDI[5]+(const.daysPerYear*ParamsDI[7]*(i/4.0))
         Orbit.loadRealData(fakeRealDataQuarter)
         fitDataQuarter = np.zeros((4,3),dtype=np.dtype('d'))
-        Orbit.calculate(fitDataQuarter,orbParamsDI)
+        Orbit.calculate(fitDataQuarter,ParamsDI)
         ## make semi-major locs
         semiMajorLocs = np.array([[fitDataQuarter[0,0],fitDataQuarter[0,1]],[fitDataQuarter[2,0],fitDataQuarter[2,1]]])
         ## find loc of COM for possible use
         xCOM = (fakeRealDataQuarter[3,0]+fakeRealDataQuarter[0,0])/2.0
         yCOM = (fakeRealDataQuarter[3,1]+fakeRealDataQuarter[0,1])/2.0
         ## Find Ascending and Descending Node locations
-        nodeEpochs = nodeEpochsCalc(orbParamsDI) 
+        nodeEpochs = nodeEpochsCalc(ParamsDI,settingsDict["omegaFdi"][0]) 
         #print 'nodeEpochs = '+repr(nodeEpochs)
         lonData = np.ones((2,8),dtype=np.dtype('d'))
         lonData[:,0]=nodeEpochs
         Orbit.loadRealData(lonData)
         tmpData = np.ones((2,3),dtype=np.dtype('d'))
-        Orbit.calculate(tmpData,orbParamsDI)
+        Orbit.calculate(tmpData,ParamsDI)
         lonXYs = tmpData[:,:2]#[[tmpData[0,0],tmpData[0,1]]]
         
         ##load resulting data to file for re-plotting by others
@@ -478,8 +478,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             except:
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")
         ## log params used in DI plot
-        log.info('\n'+"*"*50+"\nOrbital Elements used in DI plot:\n"+repr(orbParamsDI))
-        log.info("\n with an omega value = "+str(orbParamsDI[9]+settingsDict["omegaFdi"][0])+'\n'+"*"*50+'\n')
+        log.info('\n'+"*"*50+"\nOrbital Elements used in DI plot:\n"+repr(ParamsDI))
+        log.info("\n with an omega value = "+str(ParamsDI[9]+settingsDict["omegaFdi"][0])+'\n'+"*"*50+'\n')
 
     ################
     # Make RV plot #
@@ -488,11 +488,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         realDataRV = copy.deepcopy(realData)
         realDataRV = realDataRV[np.where(realDataRV[:,6]<1e6)[0],:]
         ##Ensuring that params are in required format for SWIG
-        orbParamsRV = copy.deepcopy(orbParams)
-        paramsRV = []
-        for par in orbParamsRV:
-            paramsRV.append(par)
-        paramsRV=np.array(paramsRV,dtype=np.dtype('d'),order='C')
+        paramsRV = copy.deepcopy(params)
         ##Make model data for 100~1000 points for plotting fit
         nPts = 500
         fakeRealData = np.zeros((nPts-1,8),dtype=np.dtype('d'),order='C')
@@ -502,9 +498,9 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         fakeOrbParams = copy.deepcopy(paramsRV)
         fakeOrbParams[13:]=0.0
         #print 'fakeOrbParams = '+repr(fakeOrbParams)
-        fakeRealData[:,0] = orbParams[6]-(const.daysPerYear*orbParams[7]/2.0)
+        fakeRealData[:,0] = paramsRV[6]-(const.daysPerYear*paramsRV[7]/2.0)
         for i in range(0,nPts-1):
-            fakeRealData[i,0] += const.daysPerYear*orbParams[7]*((i+1)/float(nPts))
+            fakeRealData[i,0] += const.daysPerYear*paramsRV[7]*((i+1)/float(nPts))
         Orbit.loadRealData(fakeRealData)
         fitDataRV = np.ones((nPts-1,3),dtype=np.dtype('d'),order='C')
         Orbit.calculate(fitDataRV,fakeOrbParams)
@@ -644,15 +640,15 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
                 except:
                     log.warning("Seems epstopdf failed.  Check if it is installed properly.")
                 ## log params used in RV plot
-            log.info('\n'+"*"*50+"\nOrbital Elements used in RV plot:\n"+repr(orbParamsRV))
-            log.info("\n with an omega value = "+str(orbParamsRV[9]+settingsDict["omegaFrv"][0])+'\n'+"*"*50+'\n')
+            log.info('\n'+"*"*50+"\nOrbital Elements used in RV plot:\n"+repr(paramsRV))
+            log.info("\n with an omega value = "+str(paramsRV[9]+settingsDict["omegaFrv"][0])+'\n'+"*"*50+'\n')
 
-def nodeEpochsCalc(orbParamsDI):
+def nodeEpochsCalc(paramsDI,omegaDIoffset):
     """
     Calculate the epochs for the Ascending and Descending nodes, might be in different orbital 
     periods and AN/DN might be the wrong order, but should work for plotting... I hope...
     """
-    taAtNodes = [-1.0*orbParamsDI[9],180.0-1.0*orbParamsDI[9]]
+    taAtNodes = [-1.0*paramsDI[9]+omegaDIoffset,180.0-1.0*paramsDI[9]+omegaDIoffset]
     nodeEpochs = []
     for ta in taAtNodes:
         if ta<0.0:
@@ -660,16 +656,16 @@ def nodeEpochsCalc(orbParamsDI):
         elif ta>360:
             ta =ta-360.0
         TA_s_rad = ta*(const.pi/180.0)
-        top = np.sqrt(1.0-orbParamsDI[4])*np.sin(TA_s_rad/2.0)   
-        btm = np.sqrt(1.0+orbParamsDI[4])*np.cos(TA_s_rad/2.0) 
+        top = np.sqrt(1.0-paramsDI[4])*np.sin(TA_s_rad/2.0)   
+        btm = np.sqrt(1.0+paramsDI[4])*np.cos(TA_s_rad/2.0) 
         ATAN_rad = np.arctan2(top, btm)
         #NOTE: both math.atan2 and np.arctan2 tried with same results, both produce negatives rather than continuous 0-360 
         #thus, must correct for negative outputs
         if ATAN_rad<0:
             ATAN_rad = ATAN_rad+(2.0*const.pi)
-        M_s_rad = ATAN_rad*2.0-orbParamsDI[4]*np.sin(ATAN_rad*2.0)
-        delta_t = (M_s_rad*orbParamsDI[7]*const.daysPerYear)/(2.0*const.pi)
-        nodeEpochs.append(orbParamsDI[5]+delta_t)
+        M_s_rad = ATAN_rad*2.0-paramsDI[4]*np.sin(ATAN_rad*2.0)
+        delta_t = (M_s_rad*paramsDI[7]*const.daysPerYear)/(2.0*const.pi)
+        nodeEpochs.append(paramsDI[5]+delta_t)
     return nodeEpochs
     
 

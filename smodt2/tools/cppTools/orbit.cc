@@ -176,7 +176,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		}
 	}
 	//start loop over each epoch of data
-	for (int i=0;i<dataModelAry_nx; i++){
+	for (i=0;i<dataModelAry_nx; i++){
 		if (verbose)//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"\nepoch "<<dataRealAry[0+i*dataRealAry_ny]<<":"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		//Calculate true anomaly for RV and eccentric anomaly for DI
@@ -222,9 +222,9 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	}
 	if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$
 		std::cout<<"\nModel data (after calculating all model epochs) inside Orbit c++ code:"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
-		for (int i=0; i<dataModelAry_nx; i++){//$$$$$$$$$$$$$$$$$$$$$$$$$
+		for (i=0; i<dataModelAry_nx; i++){//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"[";//$$$$$$$$$$$$$$$$$$$$$$$$$
-			for (int j=0;j<dataModelAry_ny;j++){//$$$$$$$$$$$$$$$$$$$$$$$$$
+			for (j=0;j<dataModelAry_ny;j++){//$$$$$$$$$$$$$$$$$$$$$$$$$
 				std::cout<<dataModelAry[j+i*dataModelAry_ny]<<", ";//$$$$$$$$$$$$$$$$$$$$$$$$$
 			}//$$$$$$$$$$$$$$$$$$$$$$$$$
 			std::cout<<"]"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$

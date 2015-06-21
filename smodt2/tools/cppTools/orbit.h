@@ -13,7 +13,7 @@ public:
     double testDouble;
     // simple internals
 	bool verbose;
-	int newtonCount;
+	int newtonCount,i,j;
     //for T <-> Tc calc
     double ta,halfE,mTTc,deltaT;
     //to handle omega offsets

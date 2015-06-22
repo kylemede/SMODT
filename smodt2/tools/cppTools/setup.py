@@ -19,14 +19,14 @@ _orbit = Extension("_orbit",
              "orbit.cc"],
              include_dirs = [numpy_include],
              )
-_postCtools = Extension("_postCtools",
-            ["postCtools_wrap.cxx",
-             "postCtools.cc"],
+_postctools = Extension("_postctools",
+            ["postctools_wrap.cxx",
+             "postctools.cc"],
              include_dirs = [numpy_include],
              )
 
 setup(name= "cppStuffSetUp",
 	description = "Object for calculating predicted orbit, and some post-processing tools with c++",
 	author      = "Kyle Mede",
-	py_modules  = ["orbit","postCtools"],
-	ext_modules = [_orbit,_postCtools])
+	py_modules  = ["orbit","postctools"],
+	ext_modules = [_orbit,_postctools])

@@ -9,18 +9,18 @@
 class PostCtools{
 public:
 	//internal params
-	int i,i_last,j,n;
+	int i,i_last,j,n,colNum;
 	double s,ep;
 	double ave,var,sum;
 	double varALL,halfVarALL,numCorrLengths,corrLengthsTotal;
 	//input data ary
 	double* data;
-	int data_nx;
+	int data_nx,data_ny;
 	//funcs
-	void loadAry(double *x, int x_nx);
+	void loadParamData(double *zz, int zz_nx, int zz_ny);
 	void sumCalc(int startPoint,int lastPoint);
 	void meanCalc(int startPoint, int lastPoint);
-	void varianceCalc(int startPoint, int lastPoint);
-	double corrLenCalc();
+	double varianceCalc(int startPoint, int lastPoint);
+	double corrLenCalc(int parNum);
 };
 #endif

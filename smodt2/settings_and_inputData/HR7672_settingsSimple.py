@@ -10,7 +10,7 @@ simpleSettingsDict={
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HR7672-3D-MCMC-TEST3",
+'outRoot' : "SMODT2-HR7672-3D-MCMC-wideOpenP",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -21,7 +21,7 @@ simpleSettingsDict={
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
 # NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
-'mass1MIN' : 0.5,
+'mass1MIN' : 0.4,
 'mass1MAX' : 1.6,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.055,
@@ -34,14 +34,14 @@ simpleSettingsDict={
 'OmegaMAX' : 160.0,
 # Minimum/Maximum allowed value for the Eccentricity, allowed range [0,0.98]. [double]
 'eMIN' : 0.4,
-'eMAX' : 0.56,
+'eMAX' : 0.6,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
 'TMIN' : 2456400,
 'TMAX' : 2457700,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 55,
-'PMAX' :90,
+'PMAX' :200,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
 'incMIN' : 90.0,
 'incMAX' : 105.0,
@@ -54,7 +54,7 @@ simpleSettingsDict={
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
 'vMINs' :[200,200,200,200,200,200,200],
-'vMAXs' :[550,500,500,500,500,500,500],
+'vMAXs' :[550,550,550,550,550,550,550],
 }
 
 

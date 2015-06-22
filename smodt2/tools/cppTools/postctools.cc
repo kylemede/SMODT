@@ -1,17 +1,20 @@
 //@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
-#include "postCtools.h"
+#include "postctools.h"
 
-void PostCtools::loadAry(double *x, int x_nx){
-	data = x;
-	data_nx = x_nx;
-}
+void PostCtools::loadParamData(double *zz, int zz_nx, int zz_ny){
+	if (false)
+			std::cout<<"\nInside loadData function"<<std::endl;
+	data = zz;
+	data_nx = zz_nx;
+	data_ny = zz_ny;
+};
 
 void PostCtools::sumCalc(int startPoint,int lastPoint)
 {
 	sum = 0.0;
 	//loop through all data points to get total value
 	for (j=startPoint;j<(lastPoint+1);j++)
-		sum+=data[j];
+		sum+=data[colNum+j*data_ny];
 };
 
 void PostCtools::meanCalc(int startPoint, int lastPoint)
@@ -27,7 +30,7 @@ void PostCtools::meanCalc(int startPoint, int lastPoint)
 	ave = sum/(double(lastPoint-startPoint+1));
 };
 
-void PostCtools::varianceCalc(int startPoint, int lastPoint)
+double PostCtools::varianceCalc(int startPoint, int lastPoint)
 {
 	/**
 	 * This will calculate the "bias-corrected sample variance"
@@ -40,25 +43,27 @@ void PostCtools::varianceCalc(int startPoint, int lastPoint)
 	//loop through all points to load up sums needed for "corrected two-pass algorithm", eq 14.1.8 pg 724
 	for (j=startPoint;j<n;j++)
 	{
-		s=data[j]-ave;
+		s=data[colNum+j*data_ny]-ave;
 		ep+=s;
 		var+=s*s;
 	}
 	//calc var and return it
 	var=(var-ep*ep/n)/(n-1);
+	return var;
 };
 
-double PostCtools::corrLenCalc(){
+double PostCtools::corrLenCalc(int parNum){
 	/**
 	 * Calculates the average correlation length
 	 * of the input parameter's data in a boxcar style.
 	 */
-	varALL = varianceCalc(0,(x_nx-1));
+	colNum = parNum;
+	varALL = varianceCalc(0,(data_nx-1));
 	halfVarALL = varALL/2.0;
 	numCorrLengths=0.0;
 	i_last=0;
 	for (i=0;i<data_nx;i++){
-		varianceCalc(i_last,i);
+		var = varianceCalc(i_last,i);
 		if (var>halfVarALL){
 			corrLengthsTotal+=(i-i_last+1);
 			i_last=i;

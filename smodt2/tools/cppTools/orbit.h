@@ -43,7 +43,6 @@ public:
     //to calculate the True and Eccentric anomalies
     void anomalyCalc(double ecc, double T, double Tc,double P, double epoch);
     void calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n);
-    //void calculate(double *dataModelAry, int dataModelAry_nx, int dataModelAry_ny, double *params, int params_n);
 };
 double testFunc(double t);
 

@@ -178,7 +178,7 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
     
     ## check if plot data dir exists, else make it
     plotDataDir = os.path.join(os.path.dirname(outputDataFilename),"plotData")
-    print 'plotDataDir = '+plotDataDir
+    #print 'plotDataDir = '+plotDataDir
     if os.path.exists(plotDataDir)==False:      
         os.mkdir(plotDataDir)
     plotDataDir+='/'
@@ -217,7 +217,7 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                     completeCLstr+=paramStrs2[i]+clStr+'\n'+'-'*75+'\n'
                     log.debug('Making hist file for parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
                     histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i])
-                    print 'histDataBaseName = '+histDataBaseName
+                    #print 'histDataBaseName = '+histDataBaseName
                     histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
                     if (os.path.exists(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
                         np.savetxt(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'),CLevels)
@@ -373,11 +373,11 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         Orbit.calculate(fitDataDI,paramsDI)
         ## Get locations of start/end for semi-major axis or COM, and AN/DN for line-of-nodes
         ## Get 1/4 locations (useful for drawing semi-major axis, and finding loc of COM)
-        fakeRealDataQuarter = np.ones((4,8),dtype=np.dtype('d'))
+        fakeRealDataQuarter = np.ones((4,8),dtype=np.dtype('d'),order='C')
         for i in range(0,4):
             fakeRealDataQuarter[i,0] = paramsDI[5]+(const.daysPerYear*paramsDI[7]*(i/4.0))
         Orbit.loadRealData(fakeRealDataQuarter)
-        fitDataQuarter = np.zeros((4,3),dtype=np.dtype('d'))
+        fitDataQuarter = np.zeros((4,3),dtype=np.dtype('d'),order='C')
         Orbit.calculate(fitDataQuarter,paramsDI)
         ## make semi-major locs
         semiMajorLocs = np.array([[fitDataQuarter[0,0],fitDataQuarter[0,1]],[fitDataQuarter[2,0],fitDataQuarter[2,1]]])
@@ -388,10 +388,10 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         nodeEpochs = nodeEpochsCalc(paramsDI,settingsDict["omegaFdi"][0]) 
         print 'period/2 = '+repr(const.daysPerYear*paramsDI[7]*(1.0/2.0))
         print 'nodeEpochs = '+repr(nodeEpochs)
-        lonData = np.ones((2,8),dtype=np.dtype('d'))
+        lonData = np.ones((2,8),dtype=np.dtype('d'),order='C')
         lonData[:,0]=nodeEpochs
         Orbit.loadRealData(lonData)
-        tmpData = np.ones((2,3),dtype=np.dtype('d'))
+        tmpData = np.ones((2,3),dtype=np.dtype('d'),order='C')
         Orbit.calculate(tmpData,paramsDI)
         lonXYs = tmpData[:,:2]#[[tmpData[0,0],tmpData[0,1]]]
         

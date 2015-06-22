@@ -1,8 +1,10 @@
 #@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 #import numpy as np
 import smodtLogger
+import cppTools
 import os
 import shutil
+import timeit
 import glob
 import numpy as np
 import sys
@@ -85,11 +87,23 @@ def mcmcEffPtsCalc(outputDataFilename):
     (head,data) = loadFits(outputDataFilename)
     numSteps = data.shape[0]
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
+    ## Make post tools cpp obj
+    PostCTools = cppTools.PostCtools()
+    PostCTools.loadParamData(np.reshape(data,data.shape,order='C'))
     
     completeStr = '\n'+'-'*45+'\nThe correlation lengths of all params are:\n'+'-'*45+'\nparam #, param name, correlation length'
     completeStr+= ' -> total number of steps/correlation length = number of effective points\n'
     for i in range(0,len(paramList)):
+        print 'starting to calculate corr length for '+paramStrs[paramList[i]]+' with CPP'
+        tic=timeit.default_timer()
+        meanCorrLengthC = PostCTools.corrLenCalc(paramList[i])
+        print 'meanCorrLengthC = '+str(meanCorrLengthC)
+        print 'it took: '+timeStrMaker(timeit.default_timer()-tic)
+        print 'starting to calculate corr length for '+paramStrs[paramList[i]]+' with Python'
+        tic=timeit.default_timer()
         meanCorrLength = corrLengthCalcVar(data[:,paramList[i]])
+        print 'meanCorrLength = '+str(meanCorrLength)
+        print 'it took: '+timeStrMaker(timeit.default_timer()-tic)
         currParamStr = str(paramList[i])+', '+paramStrs[paramList[i]]+", "+str(meanCorrLength)
         currParamStr+=    ' -> '+str(numSteps)+'/'+str(meanCorrLength)+' = '+str(numSteps/meanCorrLength)+'\n'
         completeStr+=currParamStr

@@ -1,12 +1,12 @@
 # SWIG
-INTERFACES = orbit.i
+INTERFACES = orbit.i postctools.i
 WRAPPERS   = $(INTERFACES:.i=_wrap.cxx)
 PROXIES    = $(INTERFACES:.i=.py      )
 # Default target: build the tests
 
 .PHONY : all
 all: cwrapp  
-cwrapp: $(WRAPPERS) orbit.cc
+cwrapp: $(WRAPPERS) orbit.cc postctools.cc
 	./setup.py build_ext -i
 
 # Rule: %.i -> %_wrap.cpp

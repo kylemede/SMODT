@@ -33,13 +33,14 @@ def incPrior(inc):
     else:
         return 1.0
 def mass1Prior(mass):
-    if mass!=0:
-        if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
-            return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
-        else:
-            return 1.0
-    else:
-        return 1.0
+    return 1.0
+#     if mass!=0:
+#         if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
+#             return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
+#         else:
+#             return 1.0
+#     else:
+#         return 1.0
 def mass2Prior(mass):
     return 1.0
 #     if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
@@ -90,10 +91,11 @@ advancedDict = {
 # Settings for MCMC mode ###
 ############################
 # Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
-'CalcBurn' :False,
+'CalcBurn' :True,
 # remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?
-'delBurn' : (False,"Remove Burn-in?"),
+'delBurn' : (True,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
+# NOTE: CAUTION, can take a long time for long runs
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
 'nSAsamp' :(1000000,"Number of Annealing samples"),
@@ -154,8 +156,8 @@ advancedDict = {
 'mass2Est' : (0.2,"Secondary's estimated mass"),
 'mass2Err' : (0.1,"Secondary's estimated mass error"),
 #best estimate of parallax, and error [double][mas]
-'paraEst' : (0.2,"Estimated parallax"),
-'paraErr' : (0.003,"Estimated parallax error"),
+'paraEst' : (200,"Estimated parallax"),
+'paraErr' : (10,"Estimated parallax error"),
 ##################################
 # Push prior functions into dict #
 ##################################

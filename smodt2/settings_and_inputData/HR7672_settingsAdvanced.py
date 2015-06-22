@@ -95,7 +95,7 @@ advancedDict = {
 # remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by ST though...)? [bool]
 'delBurn' : (True,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
-# NOTE: caution, can take a long time for long runs
+# NOTE: CAUTION, can take a long time for long runs
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
 'nSAsamp' :(500000,"Number of Annealing samples"),
@@ -124,7 +124,7 @@ advancedDict = {
 # Make plots of Simulated Annealing progress plots? [bool]$$$$$ still not coded up $$$
 'pltSAprog' :False,
 # Calculate the Gelman-Rubin statistic? [bool]
-'CalcGR' :False,
+'CalcGR' :True,
 # How many times do you want the Gelman-Rubin statistic calculated [int]  $$$$$ still not coded up -> Kill??$$$
 'nGRcalc' :10,
 #####################################

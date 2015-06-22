@@ -104,11 +104,10 @@ def mcmcEffPtsCalc(outputDataFilename):
         #meanCorrLengthC = PostCTools.corrLenCalc(paramList[i])
         #print 'meanCorrLengthC = '+str(meanCorrLengthC)
         #print 'it took: '+timeStrMaker(timeit.default_timer()-tic)
-        print 'starting to calculate corr length for '+paramStrs[paramList[i]]+' with Python'
+        log.debug('starting to calculate corr length for '+paramStrs[paramList[i]]+' with Python')
         tic=timeit.default_timer()
         meanCorrLength = corrLengthCalcVar(data[:,paramList[i]])
-        print 'meanCorrLength = '+str(meanCorrLength)
-        print 'it took: '+timeStrMaker(timeit.default_timer()-tic)
+        log.debug('it took: '+timeStrMaker(timeit.default_timer()-tic))
         currParamStr = str(paramList[i])+', '+paramStrs[paramList[i]]+", "+str(meanCorrLength)
         currParamStr+=    ' -> '+str(numSteps)+'/'+str(meanCorrLength)+' = '+str(numSteps/meanCorrLength)+'\n'
         completeStr+=currParamStr
@@ -658,7 +657,7 @@ def combineFits(filenames,outFname):
     hdulist.close()
     log.info("output file written to:below\n"+outFname)
     
-def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit):
+def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr):
     """
     Make a txt file that summarizes the results nicely.
     """
@@ -714,10 +713,11 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit):
         log.critical("A problem occured while trying to produce advanced summary strings.")
     f.write('\n'+clStr)
     f.write('\n'+burnInStr)
+    f.write('\n'+grStr)
     f.close()
     log.info("Summary file written to:\n"+summaryFname)  
 
-def summaryFilePart2(settingsDict,grStr,effPtsStr,allTime,postTime):
+def summaryFilePart2(settingsDict,effPtsStr,allTime,postTime):
     """
     Finish writting the important summary information for the post-processing 
     steps that can take along time.
@@ -726,7 +726,6 @@ def summaryFilePart2(settingsDict,grStr,effPtsStr,allTime,postTime):
     f = open(summaryFname,'a')
     f.write('\n\nPost-Processing took: '+timeStrMaker(postTime)+'\n')
     f.write('Total simulation took: '+timeStrMaker(allTime)+'\n')
-    f.write('\n'+grStr)
     f.write('\n'+effPtsStr)
     f.close()
     log.info("Summary file written to:\n"+summaryFname)

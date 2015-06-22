@@ -10,24 +10,25 @@ simpleSettingsDict={
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-FakeData2-DI-kmasses",
+'outRoot' : "SMODT2-FakeData2-3D-startAtBest-kmasses",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
-'dataMode' : ('DI',"Data Mode (RV,DI,3D)"),
+'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
 # mode to run simulation in, choices {'MC','SA','MCMC'} [string]
 'symMode' : ('MCMC',"Simulator mode (MC,SA,MCMC)"),
 ###################################################
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
+# NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
 'mass1MIN' : 0.1,
 'mass1MAX' : 2.0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.01,
 'mass2MAX' : 0.5,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 0.1,
-'paraMAX' : 0.3,
+'paraMIN' : 100,
+'paraMAX' : 300,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 20.0,
 'OmegaMAX' : 110.0,
@@ -47,9 +48,6 @@ simpleSettingsDict={
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 80,
 'omegaMAX' : 140,
-## Minimum/Maximum allowed value for the total semi-major axis [double][AU]{NOTE: only useful for DIonly simulations as RV requires separate a1,a2,M1,M2!}
-#a_totMIN :2,
-#a_totMAX :7,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 1000,
 'KMAX' : 1300,

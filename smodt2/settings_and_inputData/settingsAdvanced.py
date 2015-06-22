@@ -124,7 +124,7 @@ advancedDict = {
 # Make plots of Simulated Annealing progress plots? [bool]
 'pltSAprog' :False,
 # Calculate the Gelman-Rubin statistic? [bool]
-'CalcGR' :False,
+'CalcGR' :True,
 # How many times do you want the Gelman-Rubin statistic calculated [int]
 'nGRcalc' :10,
 #####################################

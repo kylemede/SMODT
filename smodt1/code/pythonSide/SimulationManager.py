@@ -249,31 +249,6 @@ def simulator(paramSettingsDict):
         PMlogFile.write(s)
     
     ############################################################
-    ## make general parameter result summary figures
-    ############################################################
-    summaryPlotFile = os.path.join(paramSettingsDict['outputData_dir'],'summaryPlot')
-    keyPosteriorsPlotFile = os.path.join(paramSettingsDict['outputData_dir'],'KeyPosteriorsPlot')
-    cleanDataFilename=''
-    if True:
-        if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
-            s= '**** Starting to plot the posterior distributions of the final data file ****'
-            print s
-            PMlogFile.write(s)
-            if True:
-                #tools.plot.summaryPlotter(dataFinalFilename, summaryPlotFile, weight=False, confLevels=True, nu=nu, plot4x1=plot4x1, TcStepping=paramSettingsDict['TcStepping'] )  
-                tools.plot.summaryPlotter(dataFinalFilename, summaryPlotFile, shadeConfLevels=True, nu=nu)       
-            if False:
-                if paramSettingsDict['SILENT']==False:
-                    print "\n\n"+"!"*75+'\nNOTE: Making Posteriors plot with the makeCleanSummaryPlot function instead of standard summaryPlotter\n'+"!"*75+"\n\n"
-                cleanDataFilename = tools.plot.makeCleanSummaryPlot(dataFinalFilename)
-            s = '**** Back from making summary plot if requested ****\n'
-            if paramSettingsDict['SILENT']==False:
-                print s
-            PMlogFile.write(s)
-            if False:
-                tools.plot.stackedPosteriorsPlotterFunc([dataFinalFilename],keyPosteriorsPlotFile)
-        
-    ############################################################
     ## Make RV scatter.trend plots if RV data exists
     ############################################################
     RVdatafilename = os.path.join(paramSettingsDict['outputData_dir'],'code-used/'+paramSettingsDict['RVdataFilename'])
@@ -305,6 +280,31 @@ def simulator(paramSettingsDict):
         if paramSettingsDict['SILENT']==False:
             print s
         PMlogFile.write(s)
+    
+    ############################################################
+    ## make general parameter result summary figures
+    ############################################################
+    summaryPlotFile = os.path.join(paramSettingsDict['outputData_dir'],'summaryPlot')
+    keyPosteriorsPlotFile = os.path.join(paramSettingsDict['outputData_dir'],'KeyPosteriorsPlot')
+    cleanDataFilename=''
+    if True:
+        if (paramSettingsDict['simAnneal']==False)and(paramSettingsDict['makePosteriorsPlot']):
+            s= '**** Starting to plot the posterior distributions of the final data file ****'
+            print s
+            PMlogFile.write(s)
+            if True:
+                #tools.plot.summaryPlotter(dataFinalFilename, summaryPlotFile, weight=False, confLevels=True, nu=nu, plot4x1=plot4x1, TcStepping=paramSettingsDict['TcStepping'] )  
+                tools.plot.summaryPlotter(dataFinalFilename, summaryPlotFile, shadeConfLevels=True, nu=nu)       
+            if False:
+                if paramSettingsDict['SILENT']==False:
+                    print "\n\n"+"!"*75+'\nNOTE: Making Posteriors plot with the makeCleanSummaryPlot function instead of standard summaryPlotter\n'+"!"*75+"\n\n"
+                cleanDataFilename = tools.plot.makeCleanSummaryPlot(dataFinalFilename)
+            s = '**** Back from making summary plot if requested ****\n'
+            if paramSettingsDict['SILENT']==False:
+                print s
+            PMlogFile.write(s)
+            if False:
+                tools.plot.stackedPosteriorsPlotterFunc([dataFinalFilename],keyPosteriorsPlotFile)
         
         #################################################################################################
         ##$$$$$$$$$$$$ This section is for the 'looped MCMC' method.  Not sure if we should #$$$$$$$$$$$$ 

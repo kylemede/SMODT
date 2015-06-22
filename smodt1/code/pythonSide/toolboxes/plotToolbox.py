@@ -1144,7 +1144,10 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1)
                         print 'confidence levels data stored to:\n'+os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+str(i)+'.dat')
         
         # Create empty figure to be filled up with plots
-        fig = plt.figure(figsize=(10,10)) 
+        if len(paramList)<13:
+            fig = plt.figure(5,figsize=(10,10)) 
+        else:
+            fig = plt.figure(5,figsize=(10,12)) 
                     
         ## make combined/stacked plot for each parameter in list
         for i in range(0,len(paramList)):
@@ -1152,7 +1155,10 @@ def summaryPlotter(outputDataFilename, plotFilename, shadeConfLevels=True, nu=1)
             s='\nStarting to plot shaded hist for '+paramStrs[i]
             if verbose:
                 print s
-            subPlot = fig.add_subplot(3,4,i+1)
+            if len(paramList)<13:
+                subPlot = fig.add_subplot(3,4,i+1)
+            else:
+                subPlot = fig.add_subplot(4,4,i+1)
             
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+str(i))
             print 'Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramList))+": "+paramStrs[i]#+" for file:\n"+outputDataFilename
@@ -2137,7 +2143,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     ############################################################################################################################################
 
     ## Create figure, axes and start plotting/drawing everything
-    fig = plt.figure(1,figsize=(10,9))
+    fig = plt.figure(2,figsize=(10,9))
     main = fig.add_subplot(111)
         
     # Draw orbit ERRORS !!
@@ -2200,7 +2206,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     
     # Draw larger star for primary star's location
     # create a primary star polygon at center of plot
-    starPolygon = star((asConversion/1000.0)*12.0*a[0], 0, 0, color='yellow', N=6, thin = 0.5)
+    starPolygon = star((asConversion/1000.0)*2.0*a[0], 0, 0, color='yellow', N=6, thin = 0.5)
     main.add_patch(starPolygon)
     
     ## call function to calculate, create and return polygons for the 
@@ -2374,7 +2380,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     
     #Create a figure for the Residuals in SA and PA
     if True:
-        fig2 = plt.figure(1,figsize=(30,20))
+        fig2 = plt.figure(4,figsize=(30,20))
         saPlot = fig2.add_subplot(211)
         saPlot.set_xlabel('Epochs [JD]', fontsize=30)
         saPlot.set_ylabel('SA Residuals ["]', fontsize=30)
@@ -2408,7 +2414,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     
     if True:
         ## Create figure for writting the sorta legend to
-        fig = plt.figure(1,figsize=(10,20))
+        fig = plt.figure(3,figsize=(10,20))
         #main = fig.add_subplot(111)
         if True:
             legendStr = legendStr+"\n\n"+PredictedLocationString
@@ -3284,7 +3290,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         
     ############################################################
     ## Create figure, axes and start plotting/drawing everything
-    fig = plt.figure(1,figsize=(10,5))
+    fig = plt.figure(6,figsize=(10,5))
     #plt.suptitle(plotFileTitle, fontsize=10)
     residualsPlot = fig.add_subplot(212)
     residualsPlot.set_position([0.12,0.15,0.83,0.23])
@@ -3460,7 +3466,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
         print "\nabout to load up trend plot"
         if len(argPeri_deg)>len(colorsList):
             P =ProgressBar('red',width=30,block='=',empty='-',lastblock='>')
-        fig2 = plt.figure(2,figsize=(10,5))
+        fig2 = plt.figure(7,figsize=(10,5))
         #plt.suptitle(plotFileTitle, fontsize=10)
         residualsPlotTrend = fig2.add_subplot(212)
         residualsPlotTrend.set_position([0.12,0.15,0.83,0.23])
@@ -3527,7 +3533,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
             residuals2_trimmed.append(residual_trimmed)
         residuals3_trimmed.append(residuals2_trimmed)
         #print "len(RV_epochsIN2) = "+str(RV_epochsIN2)+"\n"+"len(residuals3) = "+str(residuals3)+"\n"+"len(residual_trimmed) = "+str(residual_trimmed)+"\n"+"len(residuals2_trimmed) = "+str(residuals2_trimmed)+"\n"+"len(residuals3_trimmed) = "+str(residuals3_trimmed)+"\n"   #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        fig3 = plt.figure(3,figsize=(10,10))
+        fig3 = plt.figure(8,figsize=(10,10))
         residualsGaussian = fig3.add_subplot(111)
         residualsGaussian.hist(residuals3_trimmed,normed=1)
         residualsGaussian=fixPlotBordersAndLabels(residualsGaussian)
@@ -3550,7 +3556,7 @@ def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, pa
 
     if True:
         ## Create figure for writting the sorta legend to
-        fig = plt.figure(1,figsize=(10,5))
+        fig = plt.figure(9,figsize=(10,5))
         #main = fig.add_subplot(111)
         fig.text(0.05,0.05,paramsLegndStr,ha='left')
         if plotFilename!='':

@@ -2,7 +2,7 @@
 # Fake data using Tim's model, System Data
 
 # System distance [PC]
-Sys_Dist_PC = 5
+Sys_Dist_PC = 20
 # System distance error [PC]
 Sys_Dist_PC_error = 0.05
 # Mass of primary star [Msun] # ESTIMATED
@@ -79,7 +79,7 @@ star_P = 0
 # Star's period error [years][double]
 star_P_error = 0
 # Star's Mass [Msun][double]
-star_Mass2 = 0.2
+star_Mass2 = 0.33
 # Star's Mass error [Msun][double]
 star_Mass2_error = 0.01
 # Star's argument of pariapsis [degrees][double]

@@ -320,6 +320,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
     '-DI.png' and/or '-RV.png' will be added to end of plotFnameBase 
     to make the filenames for each type of plot.
     """
+    
+    
     latex=True
     plt.rcParams['ps.useafm']= True
     plt.rcParams['pdf.use14corefonts'] = True
@@ -566,8 +568,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             #    print 'model Data = '+str(modelDataRV[i,2])
             
             ## add real data to plots
-            residualsPlot = addRVdataToPlot(residualsPlot,phasesReal,residualData[:,5]*kmConversion,residualData[:,6]*kmConversion,alf=0.4,color='k',plotErrorBars=False)
-            fitPlot = addRVdataToPlot(fitPlot,phasesReal,zeroedRealDataRV[:,5]*kmConversion,zeroedRealDataRV[:,6]*kmConversion,alf=0.4,color='k',plotErrorBars=True)
+            residualsPlot = addRVdataToPlot(residualsPlot,phasesReal,residualData[:,5]*kmConversion,residualData[:,6]*kmConversion,alf=0.2,color='k',plotErrorBars=False)
+            fitPlot = addRVdataToPlot(fitPlot,phasesReal,zeroedRealDataRV[:,5]*kmConversion,zeroedRealDataRV[:,6]*kmConversion,alf=0.2,color='k',plotErrorBars=True)
             ##plot fit epochsORphases,RVs,RVerrs
             fitPlot.plot(phasesFit,fitDataRV[:,2]*kmConversion,c='Blue',linewidth=2.0,alpha=1.0)
             

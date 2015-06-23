@@ -62,16 +62,16 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (150.0,"Max reduced chiSquared during MC and SA"),
+'chiMAX' : (100.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed best reduced chiSquared out of SA before entering ST [double]
-'chiMaxST':(1.5,'Max reduced chiSquared to enter ST.'),
+'chiMaxST':(1.6,'Max reduced chiSquared to enter ST.'),
 # maximum allowed best reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(1.2,'Max reduced chiSquared to enter MCMC.'),
+'cMaxMCMC':(1.35,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 30,
+'logLevel' : 10,
 #number of times to produce a summary log msg during a stage's progress [int]
-'nSumry'  :0,
+'nSumry'  :20,
 # make plot of posterior distributions? [bool]
 'pltDists' : True,
 # make plots of RV and DI/AM orbit fits [bool]
@@ -79,7 +79,7 @@ advancedDict = {
 # Delete chain files after simulation is complete? [bool]
 'delChains' :True,
 # Delete combined data files after simulation is complete? [bool]
-'delCombined' :True,
+'delCombined' :False,
 # run 'make' on C++/SWIG code to make sure it is up-to-date [bool]
 'remake' :False,
 ###$$$$$$$$$$$$$$$$$$$$$$ Keep in final version? $$$$$$$$$$$$$$$$$$$$$$$$$$

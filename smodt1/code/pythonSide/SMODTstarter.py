@@ -141,7 +141,7 @@ def main():
     tools.gen.copytree(cppCodeDir, outputCodeUsedFolderCPP)
     
     if paramSettingsDict['CopyToDrobox']:
-        finalFolder2 = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/',filename[:-4]+'/')
+        finalFolder2 = os.path.join('/run/media/kmede/HOME/Dropbox/SMODT-outputCopies/',filename[:-4]+'/')
         if os.path.exists(finalFolder2):
             if paramSettingsDict['SILENT']==False:
                 print '\n'+'$'*100+'\n'

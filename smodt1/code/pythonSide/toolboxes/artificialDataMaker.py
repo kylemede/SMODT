@@ -32,18 +32,18 @@ def calc_orbit():
     #7. RV ERROR [m/s]
     """
     #Computer Directory
-    baseSaveDir='/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
+    baseSaveDir='/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MATCH YOUR COMPUTER!!! 
     #baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
-    NumDataPointsOut = 10 #must be much less than 10000.  values between 10-500 are suitable.
+    NumDataPointsOut = 20 #must be much less than 10000.  values between 10-500 are suitable.
     storePrimaryRVs = True
     percentError = 5 #error is set to a percentage of the median
     realizeErrors = True
     overlapEnds = True # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
-    massratio = 5.0
+    massratio = 3.0
     M_primary = 1.0 #Solar masses
-    distance = 5.0 #parsecs
+    distance = 20.0 #parsecs
     km_to_arcsec = 1/149597870.7/distance # convert km to arcsecond
     
     #constants
@@ -51,11 +51,11 @@ def calc_orbit():
     
     #Orbital Elements
     TimeLastPeri = 2457000.0 #JD
-    e = 0.4
-    period = 15. # years
-    Omega = 60*np.pi/180 # Longitude of ascending node
-    omega = 110*np.pi/180 # Argument of periastron
-    i = 30*np.pi/180 # Inclination
+    e = 0.8
+    period = 80. # years
+    Omega = 300*np.pi/180 # Longitude of ascending node
+    omega = 210*np.pi/180 # Argument of periastron
+    i = 80*np.pi/180 # Inclination
  
     mu = G*M_primary*1.9884e33*(1 + 1./massratio) #gravitational parameter
     a = (mu*(period*86400*365.2422)**2/4/np.pi**2)**(1./3) #in cm
@@ -74,7 +74,7 @@ def calc_orbit():
     print "Time of Last Periapsis = "+str(TimeLastPeri)+" JD"
     print "Mass 1 = "+str(M_primary)+" Msun"
     print "Mass 2 = "+str(M_primary/massratio)+" Msun"
-    print "System distance = "+str(distance)+" PC "
+    print "System distance = "+str(distance)+" PC, or "+str(1.0/(distance/1000.0))+' [mas]'
     #settings prints
     if storePrimaryRVs:
         print "Saving RVs of primary star relative to Center of Mass\n"

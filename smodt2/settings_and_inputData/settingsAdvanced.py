@@ -62,7 +62,7 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (100.0,"Max reduced chiSquared during MC"),
+'chiMAX' : (200.0,"Max reduced chiSquared during MC"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(1.5,'Max reduced chiSquared to enter ST.'),
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
@@ -150,14 +150,14 @@ advancedDict = {
 # System Information #
 ######################
 #best estimate of primary's mass, and error [double][Msun]
-'mass1Est' : (1.0,"Primary's estimated mass"),
-'mass1Err' : (0.1,"Primary's estimated mass error"),
+'mass1Est' : (0.0,"Primary's estimated mass"),
+'mass1Err' : (0.0,"Primary's estimated mass error"),
 #best estimate of secondary's mass, and error [double][Msun]
-'mass2Est' : (0.2,"Secondary's estimated mass"),
-'mass2Err' : (0.1,"Secondary's estimated mass error"),
+'mass2Est' : (0.0,"Secondary's estimated mass"),
+'mass2Err' : (0.0,"Secondary's estimated mass error"),
 #best estimate of parallax, and error [double][mas]
-'paraEst' : (200,"Estimated parallax"),
-'paraErr' : (10,"Estimated parallax error"),
+'paraEst' : (50,"Estimated parallax"),
+'paraErr' : (5,"Estimated parallax error"),
 ##################################
 # Push prior functions into dict #
 ##################################

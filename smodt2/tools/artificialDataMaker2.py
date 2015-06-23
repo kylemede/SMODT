@@ -65,7 +65,7 @@ def calc_orbit():
     print "Time of Last Periapsis = "+str(TimeLastPeri)+" JD"
     print "Mass 1 = "+str(M_primary)+" Msun"
     print "Mass 2 = "+str(M_primary/massratio)+" Msun"
-    print "System distance = "+str(distance)+" PC "
+    print "System distance = "+str(distance)+" PC, or "+str(1.0/(distance/1000.0))+' [mas]'
     #settings prints
     if storePrimaryRVs:
         print "Saving RVs of primary star relative to Center of Mass\n"

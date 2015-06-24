@@ -677,7 +677,7 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
         stgNsampStrDict = {"MC":"nSamples","SA":"nSAsamp","ST":"nSTsamp","MCMC":"nSamples"}
         numFilesStr = '\nTotal # of files that finished each stage were:\n'
         chiSquaredsStr = '\nBest Reduced Chi Squareds for each stage were:\n'
-        log.debug('ln653')  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        log.debug('ln680:summaryFilePart1')  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         for stage in stageList:
             fnames = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits")))
             if (stage=="MCMC")and settingsDict["delBurn"][0]:
@@ -687,15 +687,18 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
                 log.debug('len(fnames) = '+repr(len(fnames)))#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 chiSquaredsStr+=stage+" = ["
                 for fname in fnames: 
-                    bestFit2 = findBestOrbit(fname)
-                    chiSquaredsStr+=str(bestFit2[11]/float(head['NU']))+', '
+                    try:
+                        bestFit2 = findBestOrbit(fname)
+                        chiSquaredsStr+=str(bestFit2[11]/float(head['NU']))+', '
+                    except:
+                        logt.error("A problem occurred while trying to find best fit of:\n"+fname)
                 chiSquaredsStr = chiSquaredsStr[:-2]+']\n'
-        log.debug('ln666')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        log.debug('ln696:summaryFilePart1')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         numFilesStr+="\n"+"*"*65+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*65+'\n'
         f.write(numFilesStr)
         f.write(chiSquaredsStr)
         bestStr = '\n'+'-'*21+'\nBest fit values were:\n'+'-'*21+'\n'
-        log.debug('ln671')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        log.debug('ln701:summaryFilePart1')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         for i in range(len(bestFit)):
             if i==2:
                 bestStr+=paramStrs[2]+" = "+str(bestFit[2])
@@ -708,7 +711,7 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
                 bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
         bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[11]/float(head['nu']))+'\n'+'*'*45
         f.write(bestStr)
-        log.debug('ln684')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        log.debug('ln714:summaryFilePart1')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     except:
         log.critical("A problem occured while trying to produce advanced summary strings.")
     f.write('\n'+clStr)

@@ -10,7 +10,7 @@ simpleSettingsDict={
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HR7672-3D-MCMC-startAtBest-fixedM1M2Parallax-wideOpenP",
+'outRoot' : "SMODT2-HR7672-3D-MCMC-fixedM1M2Parallax-wideOpenP",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -40,7 +40,7 @@ simpleSettingsDict={
 'TMIN' : 2456400,
 'TMAX' : 2457700,
 # Minimum/Maximum allowed value for the Period [double][yrs]
-'PMIN' : 55,
+'PMIN' : 30,
 'PMAX' :150,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
 'incMIN' : 90.0,

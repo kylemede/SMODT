@@ -157,7 +157,7 @@ advancedDict = {
 'mass2Err' : (0.0,"Secondary's estimated mass error"),
 #best estimate of parallax, and error [double][mas]
 'paraEst' : (50,"Estimated parallax"),
-'paraErr' : (5,"Estimated parallax error"),
+'paraErr' : (2.5,"Estimated parallax error"),
 ##################################
 # Push prior functions into dict #
 ##################################

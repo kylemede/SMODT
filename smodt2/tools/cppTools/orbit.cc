@@ -113,18 +113,18 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	params = y;
 	params_n = y_n;
 	bool verbose=false;
-	if (verbose)
-		std::cout<<"\nInside Orbit calculator function"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
-	if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$
-		std::cout<<"real data inside Orbit c++ code:"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
-		for (int i=0; i<dataRealAry_nx; i++){//$$$$$$$$$$$$$$$$$$$$$$$$$
-			std::cout<<"[";//$$$$$$$$$$$$$$$$$$$$$$$$$
-			for (int j=0;j<dataRealAry_ny;j++){//$$$$$$$$$$$$$$$$$$$$$$$$$
-				std::cout<<dataRealAry[j+i*dataRealAry_ny]<<", ";//$$$$$$$$$$$$$$$$$$$$$$$$$
-			}//$$$$$$$$$$$$$$$$$$$$$$$$$
-			std::cout<<"]"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
-		}//$$$$$$$$$$$$$$$$$$$$$$$$$
-	}
+//	if (verbose)
+//		std::cout<<"\nInside Orbit calculator function"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+//	if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$
+//		std::cout<<"real data inside Orbit c++ code:"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+//		for (int i=0; i<dataRealAry_nx; i++){//$$$$$$$$$$$$$$$$$$$$$$$$$
+//			std::cout<<"[";//$$$$$$$$$$$$$$$$$$$$$$$$$
+//			for (int j=0;j<dataRealAry_ny;j++){//$$$$$$$$$$$$$$$$$$$$$$$$$
+//				std::cout<<dataRealAry[j+i*dataRealAry_ny]<<", ";//$$$$$$$$$$$$$$$$$$$$$$$$$
+//			}//$$$$$$$$$$$$$$$$$$$$$$$$$
+//			std::cout<<"]"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+//		}//$$$$$$$$$$$$$$$$$$$$$$$$$
+//	}
 
 	//--------------------------------------------------------------------------
 	//------------------------------- 	START REAL CALCULATE STEPS -------------
@@ -135,10 +135,12 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 		atot =pow(((params[7]*params[7]*secPerYear*secPerYear*Grav*KGperMsun*(params[0]+params[1]))/(4.0*pi*pi)),(1.0/3.0));
 	params[10]=atot/MperAU;
 	if ((dataRealAry[6]<1e6)&&(params[12]==0)){
+		//NOTE: both forms were tested and showed to be the same to the 1e-11 level.
+		//      Thus, the same to the limit of rounding errors.  Using semi-major version as it is simpler
 		//Semi-major axis version
-		//K = ((2.0*pi*(atot/(1.0+(params[0]/params[1])))*sin(params[8]*(pi/180.0)))/(params[7]*secPerYear*pow((1.0-params[4]*params[4]),(1.0/2.0))));
+		K = ((2.0*pi*(atot/(1.0+(params[0]/params[1])))*sin(params[8]*(pi/180.0)))/(params[7]*secPerYear*pow((1.0-params[4]*params[4]),(1.0/2.0))));
 		//Masses version
-		K = pow((2.0*pi*Grav)/(params[7]*secPerYear),(1.0/3.0))*((params[1]*KGperMsun)/pow((params[0]+params[1])*KGperMsun,(2.0/3.0)))*(sin(params[8]*(pi/180.0))/pow((1.0-params[4]*params[4]),(1.0/2.0)));
+		//K = pow((2.0*pi*Grav)/(params[7]*secPerYear),(1.0/3.0))*((params[1]*KGperMsun)/pow((params[0]+params[1])*KGperMsun,(2.0/3.0)))*(sin(params[8]*(pi/180.0))/pow((1.0-params[4]*params[4]),(1.0/2.0)));
 		params[12]=K;
 	}
 	//Get the model version of each omega and shift into [0,360]

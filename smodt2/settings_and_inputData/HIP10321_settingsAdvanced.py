@@ -10,7 +10,7 @@ import constants
 #NOTE: only change the code and not the name of the functions or their inputs.
 def ePrior(e,P):
     if (e!=0)and(P!=0):
-        if ((P*constants.daysPerYear)<1000.0)and(simpleSettingsDict['eMAX']!=0):
+        if ((P*constants.daysPerYear)>1000.0)and(simpleSettingsDict['eMAX']!=0):
             return 2.0*e
         else:
             return 1.0

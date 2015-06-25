@@ -51,11 +51,11 @@ def calc_orbit():
     
     #Orbital Elements
     TimeLastPeri = 2457000.0 #JD
-    e = 0.8
-    period = 80. # years
-    Omega = 300*np.pi/180 # Longitude of ascending node
-    omega = 210*np.pi/180 # Argument of periastron
-    i = 80*np.pi/180 # Inclination
+    e = 0.001
+    period = 0.2 # years
+    Omega = 50*np.pi/180 # Longitude of ascending node
+    omega = 90*np.pi/180 # Argument of periastron
+    i = 10*np.pi/180 # Inclination
  
     mu = G*M_primary*1.9884e33*(1 + 1./massratio) #gravitational parameter
     a = (mu*(period*86400*365.2422)**2/4/np.pi**2)**(1./3) #in cm

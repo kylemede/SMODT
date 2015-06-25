@@ -373,6 +373,10 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         Orbit.loadRealData(fakeRealData)
         fitDataDI = np.ones((nPts,3),dtype=np.dtype('d'),order='C')
         Orbit.calculate(fitDataDI,paramsDI)
+        ## calculate the fit locations for the DI epochs to calculate 0-C
+        Orbit.loadRealData(realDataDI)
+        predictedDataDI = np.ones((realDataDI.shape[0],3),dtype=np.dtype('d'),order='C')
+        Orbit.calculate(predictedDataDI,paramsDI)
         ## Get locations of start/end for semi-major axis or COM, and AN/DN for line-of-nodes
         ## Get 1/4 locations (useful for drawing semi-major axis, and finding loc of COM)
         fakeRealDataQuarter = np.ones((4,8),dtype=np.dtype('d'),order='C')
@@ -404,8 +408,12 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         outDIdataFit = []
         for i in range(0,len(fitDataDI[:,0])):
             outDIdataFit.append([fitDataDI[i,0],fitDataDI[i,1]])
+        outPredictedDIdata = []
+        for i in range(0,len(predictedDataDI[:,0])):
+            outPredictedDIdata.append([predictedDataDI[i,0],predictedDataDI[i,1]])
         fnameBase = os.path.join(os.path.dirname(plotDataDir),'DIplotData')
         np.savetxt(fnameBase+'-real.dat',outDIdataReal)
+        np.savetxt(fnameBase+'-predicted.dat',outPredictedDIdata)
         np.savetxt(fnameBase+'-fit.dat',outDIdataFit)
 
         diFig = plt.figure(2,figsize=(10,9))

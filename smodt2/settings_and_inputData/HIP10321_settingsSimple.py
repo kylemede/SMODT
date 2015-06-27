@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (10000000,"Number of MCMC or MC samples"),
+'nSamples' : (50000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -24,7 +24,7 @@ simpleSettingsDict={
 'mass1MAX' : 1.001,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.14,
-'mass2MAX' : 0.5,
+'mass2MAX' : 0.9,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 33.00,
 'paraMAX' : 40.00,

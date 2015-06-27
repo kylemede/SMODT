@@ -18,7 +18,7 @@ def rePlot():
     #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbitPlot-MANUAL2-'+settingsDict['symMode'][0])
     #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps')
     #plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
-    #clStr = tools.summaryPlotter(allFname, plotFilename,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc = False)
+    #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc = False)
     
 if __name__ == '__main__':
     rePlot()

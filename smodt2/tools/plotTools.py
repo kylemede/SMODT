@@ -157,13 +157,14 @@ def addDIdataToPlot(subPlot,realData,asConversion):
         subPlot.plot([xCent,xCent],[btm,top],linewidth=3,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])
 
-def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevels=True, forceRecalc = True):
+def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],stage='MCMC',shadeConfLevels=True,forceRecalc=True):
     """
-    This advanced plotting function will plot all the data in a 3x4 grid on a single figure.  The data will be plotted
+    This advanced plotting function will plot all the data in a grid on a single figure.  The data will be plotted
     in histograms that will be normalized to a max of 1.0.  The 
     confidence levels of the data can be calculated and the resulting histograms will have the bars inside the
     68% bin shaded as dark grey and 95% as light grey and the rest will be white.
     
+    NOTE: currently a maximum of 20 parameters can be plotted, ie. for a system with up to 7 RV data sets.
     """
     latex=True
     plotFormat = 'eps'   
@@ -207,6 +208,40 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
             paramStrs[0] = '$M_{total}$ [$M_{sun}$]'
             paramFileStrs[0] = 'Mtotal'
         
+        ## check if a subset is to be plotted or the whole set
+        ## remake lists of params to match subset.
+        if len(paramsToPlot)!=0:
+            paramStrs2Use = []
+            paramStrsUse = []
+            paramFileStrsUse = []
+            for par in paramsToPlot:
+                paramStrs2Use.append(paramStrs2[par])
+                paramStrsUse.append(paramStrs[par])
+                paramFileStrsUse.append(paramFileStrs[par])
+            paramStrs2 = paramStrs2Use
+            paramStrs = paramStrsUse
+            paramFileStrs = paramFileStrsUse 
+        ## determine appropriate figure size for number of params to plot
+        figSizes = [(5,6),(6,6),(7,6),(9,6),(9,8),(9,10),(9,12),(9,14)]
+        gridSizes = [(1,1),(1,2),(1,3),(1,4),(2,4),(3,4),(4,4),(5,4)]
+        sz = 0
+        if len(paramStrs2)>20:
+            log.critical("summaryPlotter is only capable of handling up to 20 parameters, "+str(len(paramStrs2))+" were passed in!")
+        elif len(paramStrs2)>16:
+            sz = 7
+        elif len(paramStrs2)>12:
+            sz = 6
+        elif len(paramStrs2)>8:
+            sz = 5
+        elif len(paramStrs2)>4:
+            sz = 4
+        elif len(paramStrs2)>3:
+            sz = 3
+        elif len(paramStrs2)>2:
+            sz = 2
+        elif len(paramStrs2)>1:
+            sz = 1
+            
         ## run through all the data files and parameters requested and make histogram files
         completeCLstr = '-'*22+'\nConfidence Levels are:\n'+'-'*75+'\n'
         for i in range(0,len(paramStrs2)):
@@ -224,27 +259,17 @@ def summaryPlotter(outputDataFilename, plotFilename,stage='MCMC', shadeConfLevel
                         log.debug('confidence levels data stored to:\n'+os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+str(i)+'.dat'))
                 else:
                     log.debug("Nope! no useful data for "+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", in file:\n"+outputDataFilename)
+       
         ## Create empty figure to be filled up with plots
-        if len(paramStrs2)>16:
-            sumFig = plt.figure(figsize=(9,14))
-        elif len(paramStrs2)>12:
-            sumFig = plt.figure(figsize=(9,12))
-        else:
-            sumFig = plt.figure(figsize=(9,10)) 
-                    
-        ## make combined/stacked plot for each parameter in list
+        sumFig = plt.figure(figsize=figSizes[sz])       
+        ## make shaded posterior for each param
         for i in range(0,len(paramStrs2)):
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i])
             if os.path.exists(os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
                 histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i])
             if os.path.exists(histDataBaseName+'.dat'):
                 log.debug('Starting to plot shaded hist for '+paramStrs2[i])
-                if len(paramStrs2)>16:
-                    subPlot = sumFig.add_subplot(5,4,i+1)
-                elif len(paramStrs2)>12:
-                    subPlot = sumFig.add_subplot(4,4,i+1)
-                else:
-                    subPlot = sumFig.add_subplot(3,4,i+1)
+                subPlot = sumFig.add_subplot(gridSizes[sz][0],gridSizes[sz][1],i+1)
                 log.debug('Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i])#+" for file:\n"+outputDataFilename
                 xLim=False
                 CLevels=False
@@ -476,6 +501,10 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         ##crop to limits of data and save
         main.axes.set_xlim((xLimsCrop[1],xLimsCrop[0]))
         main.axes.set_ylim(yLimsCrop)
+        ## plot predicted locations for the data points
+        if True:
+            for i in range(len()):
+                main.plot(outPredictedDIdata[i,0],outPredictedDIdata[i,1],c='Fuchsia',marker='.',markersize=6)
         plotFilenameCrop = plotFnameBase+'-DI-cropped.'+format
         if plotFilenameCrop!='':
             plt.savefig(plotFilenameCrop, dpi=300, orientation=orientStr)

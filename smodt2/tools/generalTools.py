@@ -691,7 +691,7 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
                         bestFit2 = findBestOrbit(fname)
                         chiSquaredsStr+=str(bestFit2[11]/float(head['NU']))+', '
                     except:
-                        logt.error("A problem occurred while trying to find best fit of:\n"+fname)
+                        log.error("A problem occurred while trying to find best fit of:\n"+fname)
                 chiSquaredsStr = chiSquaredsStr[:-2]+']\n'
         log.debug('ln696:summaryFilePart1')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         numFilesStr+="\n"+"*"*65+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*65+'\n'

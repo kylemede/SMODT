@@ -503,8 +503,9 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         main.axes.set_ylim(yLimsCrop)
         ## plot predicted locations for the data points
         if True:
-            for i in range(len()):
-                main.plot(outPredictedDIdata[i,0],outPredictedDIdata[i,1],c='Fuchsia',marker='.',markersize=6)
+            for i in range(0,len(predictedDataDI[:,0])):
+                main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=7)
+                #print 'plotted point ['+str(predictedDataDI[i,0]*asConversion)+', '+str(predictedDataDI[i,1]*asConversion)+']'
         plotFilenameCrop = plotFnameBase+'-DI-cropped.'+format
         if plotFilenameCrop!='':
             plt.savefig(plotFilenameCrop, dpi=300, orientation=orientStr)

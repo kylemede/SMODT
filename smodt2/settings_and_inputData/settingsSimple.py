@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (1000000,"Number of MCMC or MC samples"),
+'nSamples' : (100000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (3,"Number of chains"),
@@ -10,7 +10,7 @@ simpleSettingsDict={
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-FakeData5-3D-trueFixedM1M2paraTEST",
+'outRoot' : "SMODT2-FakeDataJUPITER-3D",#"SMODT2-FakeData5-3D-trueFixedM1M2paraTEST",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -21,33 +21,33 @@ simpleSettingsDict={
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
 # NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
-'mass1MIN' : 1.0,
-'mass1MAX' : 0,
+'mass1MIN' : 0.1,
+'mass1MAX' : 3.0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.333,
-'mass2MAX' : 0,
+'mass2MIN' : 0.0001,
+'mass2MAX' : 0.0030,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 50.00,
-'paraMAX' : 0,
+'paraMIN' : 40.00,
+'paraMAX' : 60.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 1.0,
 'OmegaMAX' : 180.0,
 # Minimum/Maximum allowed value for the Eccentricity [double]
 'eMIN' : 0.0001,
-'eMAX' : 0.98,
+'eMAX' : 0.2,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2456990,
-'TMAX' : 2457050,
+'TMIN' : 2451300,
+'TMAX' : 2451800,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 0.01,
-'PMAX' : 10.0,
+'PMAX' : 20.0,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
 'incMIN' : 1,
-'incMAX' : 50.0,
+'incMAX' : 80.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 1,
-'omegaMAX' : 180,
+'omegaMAX' : 360,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,

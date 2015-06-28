@@ -28,25 +28,26 @@ def calc_orbit():
     #Computer Directory
     baseSaveDir='/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
     #baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
-    NumDataPointsOut = 25 #must be much less than 10000.  values between 10-500 are suitable.
+    NumDataPointsOutRV = 25 #must be much less than 10000.  values between 10-500 are suitable.
+    NumDataPointsOutDI = 10 #must be much less than 10000.  values between 10-500 are suitable.
     storePrimaryRVs = True
     percentError = 5 #error is set to a percentage of the median
     realizeErrors = True
     overlapEnds = True # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
-    massratio = 5.0
+    massratio = 1047.0
     M_primary = 1.0 #Solar masses
-    distance = 5.0 #parsecs
+    distance = 20.0 #parsecs
     km_to_arcsec = 1/(constants.MperAU/1000.0)/distance # convert km to arcsecond
 
     #Orbital Elements
-    TimeLastPeri = 2457000.0 #JD
-    e = 0.4
-    period = 15. # years
-    Omega = 60*constants.pi/180 # Longitude of ascending node
-    omega = 110*constants.pi/180 # Argument of periastron
-    i = 30*constants.pi/180 # Inclination
+    TimeLastPeri = 2451545.0 #JD
+    e = 0.05
+    period = 12 # years
+    Omega = 100*constants.pi/180 # Longitude of ascending node
+    omega = 275*constants.pi/180 # Argument of periastron
+    i = 45*constants.pi/180 # Inclination
  
     mu = constants.Gcgs*M_primary*(constants.KGperMsun*1000.0)*(1 + 1./massratio) #gravitational parameter
     a = (mu*(period*constants.secPerYear)**2/4/constants.pi**2)**(1./3) #in cm
@@ -76,7 +77,7 @@ def calc_orbit():
         print 'Data values were realized from the errors'
     else:
         print 'Data values are perfect with NO realization of the errors'
-    print str(NumDataPointsOut)+" epochs will be calculated and stored\n"
+    print str(NumDataPointsOutRV)+" RV, and "+str(NumDataPointsOutDI)+" DI epochs will be calculated and stored\n"
         
     # Positions of both components in km relative to center of mass
     ke = pyasl.KeplerEllipse(a1, period, e=e, Omega=0.)
@@ -121,18 +122,24 @@ def calc_orbit():
     pos_B = np.dot(pos_B, rotmat)
     vel_B = np.dot(vel_B, rotmat)
     
-    ## re-sample position, vel and time arrays to requested number of samples
+    ## Randomly re-sample position, vel and time arrays to requested number of samples 
     pos_Anew = []
     pos_Bnew = []
     vel_Anew = []
     vel_Bnew = []
     tnew = []
-    for i in range(0,len(t),int(len(t)/NumDataPointsOut)):
-        pos_Anew.append(pos_A[i])
-        pos_Bnew.append(pos_B[i])
-        vel_Anew.append(vel_A[i])
-        vel_Bnew.append(vel_B[i])
-        tnew.append(t[i])
+    i=0
+    js=[]
+    while i<NumDataPointsOutRV:
+        j = np.random.randint(0,len(t))
+        if j not in js:
+            js.append(j)
+            pos_Anew.append(pos_A[j])
+            pos_Bnew.append(pos_B[j])
+            vel_Anew.append(vel_A[j])
+            vel_Bnew.append(vel_B[j])
+            tnew.append(t[j])
+            i+=1
     
     pos_A = np.array(pos_Anew)
     pos_B = np.array(pos_Bnew)
@@ -204,7 +211,24 @@ def calc_orbit():
     else:
         dataRV[:,1] = data2[:,4]#RV secondary [m/s]
         dataRV[:,2] = errorRVsecondary#RV secondary error [m/s]
-    print "resulting data files have "+str(len(dataRV[:,0]))+" epochs"
+        
+        
+    if True:
+        ## Randomly re-sample the DI data to half that of the RV to mimick the fact that there is usually more much RV data than DI data
+        dataDI3=[]
+        i=0
+        js=[]
+        while i<NumDataPointsOutDI:
+            j = np.random.randint(0,len(dataDI2[:,0]))
+            if j not in js:
+                js.append(j)
+                dataDI3.append(dataDI2[j,:])
+                i+=1
+        dataDI3 = np.array(dataDI3)
+    else:
+        dataDI3 = dataDI2
+    #print "resulting RV data files have "+str(len(dataRV[:,0]))+" epochs"
+    #print "resulting DI data files have "+str(len(dataDI3[:,0]))+" epochs"
     
     ##write files to disk
     if False:
@@ -213,7 +237,7 @@ def calc_orbit():
     if True:
         #2 files for SMODT 2.0
         np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODT2format-RV.dat'), dataRV, fmt="%.10g")
-        np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODT2format-DI.dat'), dataDI2, fmt="%.10g")
+        np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODT2format-DI.dat'), dataDI3, fmt="%.10g")
     print '\nOutput data files written to:\n'+baseSaveDir
 
 if __name__ == "__main__":

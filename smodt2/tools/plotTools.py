@@ -5,6 +5,7 @@ import pylab
 import copy
 import glob
 import shutil
+gridspec =  pylab.matplotlib.gridspec
 plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
 MultLoc = pylab.matplotlib.ticker.MultipleLocator
@@ -98,7 +99,8 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
         plot.axes.set_xlim(xLims)
     plot.locator_params(axis='x',nbins=3) # maximum number of x labels
     plot.locator_params(axis='y',nbins=5) # maximum number of y labels
-    plot.tick_params(axis='both',which='major',width=0.5,length=0,pad=3,direction='in',labelsize=13)
+    plot.tick_params(axis='x',which='major',width=0.5,length=3,pad=3,direction='in',labelsize=20)
+    plot.tick_params(axis='y',which='major',width=0.5,length=3,pad=3,direction='in',labelsize=20)
     plot.spines['right'].set_linewidth(0.7)
     plot.spines['bottom'].set_linewidth(0.7)
     plot.spines['top'].set_linewidth(0.7)
@@ -106,15 +108,18 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     # add axes label
     if showYlabel:
         if latex:
-            plot.axes.set_ylabel(r'$\frac{dp}{dx} \times constant $',fontsize=15)
+            plot.axes.set_ylabel(r'$\frac{dp}{dx} \times constant $',fontsize=27)
         else:
-            plot.axes.set_ylabel('dp/dx(*constant)',fontsize=15)
+            plot.axes.set_ylabel('dp/dx(*constant)',fontsize=25)
     else:
         plot.axes.set_yticklabels(['','',''])
+    fsize=23
+    if xLabel in ['e','$e$']:
+        fsize=fsize+10
     if latex:
-        plot.axes.set_xlabel(r''+xLabel,fontsize=13)
+        plot.axes.set_xlabel(r''+xLabel,fontsize=fsize)
     else:
-        plot.axes.set_xlabel(xLabel,fontsize=13)
+        plot.axes.set_xlabel(xLabel,fontsize=fsize)
         
     return plot
 
@@ -129,7 +134,7 @@ def addRVdataToPlot(subPlot,epochsORphases,RVs,RVerrs,alf=1.0,color='blue',plotE
             ys = [RVs[i]-RVerrs[i],RVs[i]+RVerrs[i]]
             #print str(RVerrs[i])+", -> ["+str(epochsORphases[i])+", "+str(RVs[i])+']'
             if plotErrorBars:
-                subPlot.plot(xs,ys,c=color,linewidth=2,alpha=alf)
+                subPlot.plot(xs,ys,c=color,linewidth=1,alpha=alf)
             subPlot.plot(epochsORphases[i],RVs[i],c='k',marker='.',markersize=6)
     return subPlot
 
@@ -157,7 +162,7 @@ def addDIdataToPlot(subPlot,realData,asConversion):
         subPlot.plot([xCent,xCent],[btm,top],linewidth=1.5,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])
 
-def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],stage='MCMC',shadeConfLevels=True,forceRecalc=True):
+def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],stage='MCMC',shadeConfLevels=True,forceRecalc=True):
     """
     This advanced plotting function will plot all the data in a grid on a single figure.  The data will be plotted
     in histograms that will be normalized to a max of 1.0.  The 
@@ -222,7 +227,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],stage='MCMC',
             paramStrs = paramStrsUse
             paramFileStrs = paramFileStrsUse 
         ## determine appropriate figure size for number of params to plot
-        figSizes =  [(5.5,4.5),(8,4.5),(9,4.5),(11,4.5),(11,8),(11,11),(11,14),(11,16)]
+        figSizes =  [(5.5,7),(8,7),(9,7),(10,3.5),(11,8),(11,11),(11,14),(11,16)]
         gridSizes = [(1,1),(1,2),(1,3),(1,4),(2,4),(3,4),(4,4),(5,4)]
         sz = 0
         if len(paramStrs2)>20:
@@ -241,7 +246,16 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],stage='MCMC',
             sz = 2
         elif len(paramStrs2)>1:
             sz = 1
-            
+#         wRatios = []
+#         hRatios = []
+#         for i in range(0,len(paramStrs2)):
+#             wRatios.append(1)
+#             hRatios.append(3)
+#         print 'gridsize = '+repr(gridSizes[sz])
+#         print 'figSize = '+repr(figSizes[sz])
+#         gs = gridspec.GridSpec(gridSizes[sz][0],gridSizes[sz][1])#,width_ratios=wRatios,height_ratios=hRatios)    
+#         gs.update(wspace=0.1,hspace=0)
+        
         ## run through all the data files and parameters requested and make histogram files
         completeCLstr = '-'*22+'\nConfidence Levels are:\n'+'-'*75+'\n'
         for i in range(0,len(paramStrs2)):
@@ -269,10 +283,13 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],stage='MCMC',
                 histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i])
             if os.path.exists(histDataBaseName+'.dat'):
                 log.debug('Starting to plot shaded hist for '+paramStrs2[i])
-                subPlot = sumFig.add_subplot(gridSizes[sz][0],gridSizes[sz][1],i+1)
+                #print 'gs[i] = '+repr(gs[0,i])+'\n\n'
+                subPlot = plt.subplot(gridSizes[sz][0],gridSizes[sz][1],i+1)#gs[i])
                 log.debug('Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i])#+" for file:\n"+outputDataFilename
-                xLim=False
                 CLevels=False
+                xLim=False
+                if len(paramsToPlot)!=0:
+                    xLim=xLims[i]
                 if shadeConfLevels:
                     clFile = os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
                     if os.path.exists(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')):
@@ -284,6 +301,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],stage='MCMC',
                 subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[i],xLims=xLim,latex=latex,showYlabel=showYlabel)         
             else:
                 log.debug("Not plotting shaded hist for "+paramStrs2[i]+" as its hist file doesn't exist:\n"+histDataBaseName)
+        plt.tight_layout()
         ## Save file if requested.
         log.debug('\nStarting to save param hist figure:')
         if plotFilename!='':
@@ -490,6 +508,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             yLabel = '$Dec$ '+unitStr
         main.set_xlabel(xLabel, fontsize=25)
         main.set_ylabel(yLabel, fontsize=25)
+        #plt.tight_layout()
         ## save fig to file and maybe convert to pdf if format=='eps'
         orientStr = 'landscape'
         if format=='eps':
@@ -606,10 +625,10 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             #    print 'model Data = '+str(modelDataRV[i,2])
             
             ## add real data to plots
-            residualsPlot = addRVdataToPlot(residualsPlot,phasesReal,residualData[:,5]*kmConversion,residualData[:,6]*kmConversion,alf=0.2,color='k',plotErrorBars=False)
+            residualsPlot = addRVdataToPlot(residualsPlot,phasesReal,residualData[:,5]*kmConversion,residualData[:,6]*kmConversion,alf=0.1,color='k',plotErrorBars=True)
             fitPlot = addRVdataToPlot(fitPlot,phasesReal,zeroedRealDataRV[:,5]*kmConversion,zeroedRealDataRV[:,6]*kmConversion,alf=0.2,color='k',plotErrorBars=True)
             ##plot fit epochsORphases,RVs,RVerrs
-            fitPlot.plot(phasesFit,fitDataRV[:,2]*kmConversion,c='Blue',linewidth=2.0,alpha=1.0)
+            fitPlot.plot(phasesFit,fitDataRV[:,2]*kmConversion,c='Blue',linewidth=1.0,alpha=1.0)
             
             ## Find and set limits 
             xLims = (np.min([np.min(phasesFit),np.min(phasesReal)]),np.max([np.max(phasesFit),np.max(phasesReal)]))
@@ -625,7 +644,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             fitPlot.axes.set_xlim(xLims)
             fitPlot.axes.set_ylim(fitYlims)
             ##plot zero vel line
-            residualsPlot.axhline(linewidth=2.0,c='Blue') #adds a x-axis origin line
+            residualsPlot.axhline(linewidth=1.0,c='Blue') #adds a x-axis origin line
             
             ##load resulting data to file for re-plotting by others
             #real [phases,JD,offset subtracted RV, residual]
@@ -658,7 +677,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             residualsPlot.tick_params(axis='x',which='major',width=1,length=5,pad=8,direction='in',labelsize=20)
             residualsPlot.tick_params(axis='y',which='minor',width=2,length=4,pad=8,direction='in')
             residualsPlot.tick_params(axis='x',which='minor',width=2,bottom='on',length=4,pad=8,direction='in')
-            residualsPlot.locator_params(axis='y',nbins=6) #fix number of y-axis label points
+            residualsPlot.locator_params(axis='y',nbins=4) #fix number of y-axis label points
             plt.minorticks_on()
             residualsPlot.spines['right'].set_linewidth(1.0)
             residualsPlot.spines['bottom'].set_linewidth(1.0)
@@ -666,6 +685,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             residualsPlot.spines['left'].set_linewidth(1.0)
     
             ## save fig to file and maybe convert to pdf if format=='eps'
+            #plt.tight_layout()
             orientStr = 'landscape'
             if format=='eps':
                 orientStr = 'portrait'

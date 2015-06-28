@@ -94,6 +94,8 @@ class Simulator(object):
             sigmas.append(sigSize)
             rangeMins.append(self.dictVal('vMINs')[i])
             rangeMaxs.append(self.dictVal('vMAXs')[i])
+        rangeMaxs = np.array(rangeMaxs)
+        rangeMins = np.array(rangeMins)
         ##figure out which parameters are varying in this run.
         ##don't vary atot or chiSquared ever, 
         ##and take care of TcEqualT and Kdirect cases
@@ -427,7 +429,7 @@ class Simulator(object):
         if (stage=='SA')or(stage=='MC'):
             ## get starting params and sigmas as these two stages start at a random point
             sigmas = copy.deepcopy(self.starterSigmas)
-            proposedPars = self.increment(np.zeros((len(self.rangeMins))),sigmas,stage='MC')
+            proposedPars = self.increment(self.rangeMins,sigmas,stage='MC')
             proposedPars[11]=self.dictVal('chiMAX')*10*self.nu
             if stage=='SA':
                 temp=self.dictVal('strtTemp')

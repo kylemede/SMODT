@@ -2,15 +2,15 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (40000000,"Number of MCMC or MC samples"),
+'nSamples' : (40000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (7,"Number of chains"),
+'nChains' : (3,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-FakeData5-3D",
+'outRoot' : "SMODT2-FakeData5-3D-trueFixedM1M2paraTEST",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -21,14 +21,14 @@ simpleSettingsDict={
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
 # NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
-'mass1MIN' : 0.1,
-'mass1MAX' : 3.00,
+'mass1MIN' : 1.0,
+'mass1MAX' : 0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.02,
-'mass2MAX' : 1.9,
+'mass2MIN' : 0.333,
+'mass2MAX' : 0,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 30.99,
-'paraMAX' : 70.01,
+'paraMIN' : 50.00,
+'paraMAX' : 0,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 1.0,
 'OmegaMAX' : 180.0,

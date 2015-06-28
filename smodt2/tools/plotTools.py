@@ -96,9 +96,9 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     plot.axes.set_ylim([0.0,1.02])
     if xLims!=False:
         plot.axes.set_xlim(xLims)
-    plot.locator_params(axis='x',nbins=4) # maximum number of x labels
+    plot.locator_params(axis='x',nbins=3) # maximum number of x labels
     plot.locator_params(axis='y',nbins=5) # maximum number of y labels
-    plot.tick_params(axis='both',which='major',width=0.5,length=0,pad=3,direction='in',labelsize=10)
+    plot.tick_params(axis='both',which='major',width=0.5,length=0,pad=3,direction='in',labelsize=13)
     plot.spines['right'].set_linewidth(0.7)
     plot.spines['bottom'].set_linewidth(0.7)
     plot.spines['top'].set_linewidth(0.7)
@@ -112,9 +112,9 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     else:
         plot.axes.set_yticklabels(['','',''])
     if latex:
-        plot.axes.set_xlabel(r''+xLabel,fontsize=10)
+        plot.axes.set_xlabel(r''+xLabel,fontsize=13)
     else:
-        plot.axes.set_xlabel(xLabel,fontsize=10)
+        plot.axes.set_xlabel(xLabel,fontsize=13)
         
     return plot
 
@@ -205,7 +205,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],stage='MCMC',
         ## modify x labels to account for DI only situations where M1=Mtotal
         if np.var(data[:,1])==0:
             paramStrs2[0] = 'M total [Msun]'
-            paramStrs[0] = '$M_{total}$ [$M_{sun}$]'
+            paramStrs[0] = '$M_{total}$ [$M_{\odot}$]'
             paramFileStrs[0] = 'Mtotal'
         
         ## check if a subset is to be plotted or the whole set
@@ -222,7 +222,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],stage='MCMC',
             paramStrs = paramStrsUse
             paramFileStrs = paramFileStrsUse 
         ## determine appropriate figure size for number of params to plot
-        figSizes = [(5,6),(6,6),(7,6),(9,6),(9,8),(9,10),(9,12),(9,14)]
+        figSizes =  [(5.5,4.5),(8,4.5),(9,4.5),(10,4.5),(10,8),(10,10),(10,12),(10,14)]
         gridSizes = [(1,1),(1,2),(1,3),(1,4),(2,4),(3,4),(4,4),(5,4)]
         sz = 0
         if len(paramStrs2)>20:

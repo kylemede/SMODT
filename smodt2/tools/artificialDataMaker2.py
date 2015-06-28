@@ -33,7 +33,7 @@ def calc_orbit():
     storePrimaryRVs = True
     percentError = 5 #error is set to a percentage of the median
     realizeErrors = True
-    overlapEnds = True # will ensure some points near end overlap the beginning of the orbit.
+    overlapEnds = False # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
     massratio = 1047.0

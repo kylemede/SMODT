@@ -5,11 +5,11 @@ import numpy as np
 
 def rePlot():
     rootDir = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/'
-    bestFit = np.array([1.12808647e+00,   1.05725558e-03,   4.81033871e+01,
-         9.97488899e+01,   4.48211024e-02,   2.45694802e+06,
-         2.45694802e+06,   1.19839147e+01,   4.47671348e+01,
-         2.70731658e+02,   5.45288743e+00,   7.32365555e+01,
-         8.94578734e+00,   7.87455080e-02 ])  
+    bestFit = np.array([1.29317263e+00,   1.12053685e-03,   4.67045643e+01,
+         9.91969983e+01,   5.63000318e-02,   2.45157942e+06,
+         2.45157942e+06,   1.20863533e+01,   4.57675756e+01,
+         2.78900707e+02,   5.73920929e+00,   3.73509461e+01,
+         8.78771777e+00,   3.47375918e-02 ])  
     
     settingsDict = tools.startup(sys.argv,rootDir,rePlot=True)
     allFname = os.path.join(settingsDict['finalFolder'],'combined-BIstripped-MCMCdata.fits')

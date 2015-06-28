@@ -48,7 +48,7 @@ def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, norme
         print "output dat file:\n"+outFilename
 
 
-def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel='X',xLims=False,latex=False,showYlabel=False):
+def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel='X',xLims=False,latex=False,showYlabel=False,parInt=0):
     """
     Loads previously plotted histograms that were written to disk by histPlotAndDump, and plot them up 
     in a way that is ready for publication.  This is the standard plotter used for plotting simple posteriors
@@ -64,6 +64,15 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     maxN = np.max(histData[:,1])
     minSub = 0
     valRange = np.max(histData[:,0])-np.min(histData[:,0])
+    ## check if M2 and if it should be in jupiter masses
+    if parInt==1:
+        if np.max(histData[:,0])<0.02:
+            histData[:,0]=histData[:,0]*(const.KGperMsun/const.KGperMjupiter)
+            valRange = np.max(histData[:,0])-np.min(histData[:,0])
+            xLabel='M2 [Mjupiter]'
+            if latex:
+                xLabel='$M2$ [$M_{jupiter}$]'
+            confLevels=confLevels*(const.KGperMsun/const.KGperMjupiter)
     if (np.max(histData[:,0])>100000) or (valRange<(np.min(histData[:,0])/100.0)):
         #must be the To or Tc, so subtract int(min) and add to x-axis label
         #doing this as it doesn't go well allowing matplotlib to do it itself formatting wise
@@ -219,13 +228,16 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],stag
             paramStrs2Use = []
             paramStrsUse = []
             paramFileStrsUse = []
+            paramListUse = []
             for par in paramsToPlot:
                 paramStrs2Use.append(paramStrs2[par])
                 paramStrsUse.append(paramStrs[par])
                 paramFileStrsUse.append(paramFileStrs[par])
+                paramListUse.append(par)
             paramStrs2 = paramStrs2Use
             paramStrs = paramStrsUse
             paramFileStrs = paramFileStrsUse 
+            paramList = paramListUse
         ## determine appropriate figure size for number of params to plot
         figSizes =  [(5.5,7),(8,7),(9,7),(10,3.5),(11,8),(11,11),(11,14),(11,16)]
         gridSizes = [(1,1),(1,2),(1,3),(1,4),(2,4),(3,4),(4,4),(5,4)]
@@ -298,7 +310,12 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],stag
                 showYlabel=False
                 if i in [0,4,8,12]:
                     showYlabel = True
-                subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[i],xLims=xLim,latex=latex,showYlabel=showYlabel)         
+                par=0
+                try:
+                    par = paramList[i]
+                except:
+                    log.warning("Parameter "+str(i)+" not in paramList: \n"+repr(paramList))
+                subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[i],xLims=xLim,latex=latex,showYlabel=showYlabel,parInt=par)         
             else:
                 log.debug("Not plotting shaded hist for "+paramStrs2[i]+" as its hist file doesn't exist:\n"+histDataBaseName)
         plt.tight_layout()

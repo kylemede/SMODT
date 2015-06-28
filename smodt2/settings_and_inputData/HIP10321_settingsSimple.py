@@ -2,10 +2,10 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (5000,"Number of MCMC or MC samples"),
+'nSamples' : (1000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (3,"Number of chains"),
+'nChains' : (4,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
@@ -24,9 +24,9 @@ simpleSettingsDict={
 'mass1MAX' : 0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.14,
-'mass2MAX' : 0.9,
+'mass2MAX' : 0.55,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 33.00,
+'paraMIN' : 35.5,
 'paraMAX' : 40.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 180.0,
@@ -43,7 +43,7 @@ simpleSettingsDict={
 'PMAX' : 22.5,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
 'incMIN' : 140.0,
-'incMAX' : 180.0,
+'incMAX' : 169.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 345.0,
 'omegaMAX' : 360.0,

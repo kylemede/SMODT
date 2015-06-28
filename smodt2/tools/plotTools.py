@@ -153,8 +153,8 @@ def addDIdataToPlot(subPlot,realData,asConversion):
         right = xCent+diData[i,2]*asConversion
         top = yCent+diData[i,4]*asConversion
         btm = yCent-diData[i,4]*asConversion
-        subPlot.plot([left,right],[yCent,yCent],linewidth=3,color='k',alpha=1.0)
-        subPlot.plot([xCent,xCent],[btm,top],linewidth=3,color='k',alpha=1.0)
+        subPlot.plot([left,right],[yCent,yCent],linewidth=1.5,color='k',alpha=1.0)
+        subPlot.plot([xCent,xCent],[btm,top],linewidth=1.5,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])
 
 def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],stage='MCMC',shadeConfLevels=True,forceRecalc=True):
@@ -222,7 +222,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],stage='MCMC',
             paramStrs = paramStrsUse
             paramFileStrs = paramFileStrsUse 
         ## determine appropriate figure size for number of params to plot
-        figSizes =  [(5.5,4.5),(8,4.5),(9,4.5),(10,4.5),(10,8),(10,10),(10,12),(10,14)]
+        figSizes =  [(5.5,4.5),(8,4.5),(9,4.5),(11,4.5),(11,8),(11,11),(11,14),(11,16)]
         gridSizes = [(1,1),(1,2),(1,3),(1,4),(2,4),(3,4),(4,4),(5,4)]
         sz = 0
         if len(paramStrs2)>20:
@@ -450,7 +450,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             asConversion = 1000.0
             unitStr = '[mas]'
         ## Draw orbit fit
-        main.plot(fitDataDI[:,0]*asConversion,fitDataDI[:,1]*asConversion,linewidth=2.5,color='Blue') 
+        main.plot(fitDataDI[:,0]*asConversion,fitDataDI[:,1]*asConversion,linewidth=1,color='Blue') 
         ## Draw line-of-nodes
         main.plot(lonXYs[:,0]*asConversion,lonXYs[:,1]*asConversion,'-.',linewidth=1.0,color='Green')
         #print 'lonXYs*asConversion = '+repr(lonXYs*asConversion)
@@ -504,7 +504,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         ## plot predicted locations for the data points
         if True:
             for i in range(0,len(predictedDataDI[:,0])):
-                main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=7)
+                main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=5)
                 #print 'plotted point ['+str(predictedDataDI[i,0]*asConversion)+', '+str(predictedDataDI[i,1]*asConversion)+']'
         plotFilenameCrop = plotFnameBase+'-DI-cropped.'+format
         if plotFilenameCrop!='':

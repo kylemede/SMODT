@@ -17,8 +17,8 @@ def rePlot():
     #effPtsStr = tools.mcmcEffPtsCalc(allFname)
     plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbitPlot-MANUAL-'+settingsDict['symMode'][0])
     tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps')
-    #plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
-    #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,3,4],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+    plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
+    clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,2,3,4,5,6,7],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
     
 if __name__ == '__main__':
     rePlot()

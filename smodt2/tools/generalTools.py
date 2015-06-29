@@ -2,6 +2,7 @@
 #import numpy as np
 import smodtLogger
 import cppTools
+import constants as const
 import os
 import shutil
 import timeit

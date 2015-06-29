@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (50000000,"Number of MCMC or MC samples"),
+'nSamples' : (60000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -23,11 +23,11 @@ simpleSettingsDict={
 'mass1MIN' : 1.00,
 'mass1MAX' : 0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.14,
-'mass2MAX' : 0.55,
+'mass2MIN' : 0.05,
+'mass2MAX' : 0.6,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 35.5,
-'paraMAX' : 40.00,
+'paraMAX' : 45.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 180.0,
 'OmegaMAX' : 360.0,
@@ -43,7 +43,7 @@ simpleSettingsDict={
 'PMAX' : 22.5,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
 'incMIN' : 140.0,
-'incMAX' : 169.0,
+'incMAX' : 172.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 345.0,
 'omegaMAX' : 360.0,

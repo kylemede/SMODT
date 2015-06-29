@@ -62,11 +62,11 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (500.0,"Max reduced chiSquared during MC"),
+'chiMAX' : (300.0,"Max reduced chiSquared during MC"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(4,'Max reduced chiSquared to enter ST.'),
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(1.3,'Max reduced chiSquared to enter MCMC.'),
+'cMaxMCMC':(1.5,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 10,
@@ -108,10 +108,10 @@ advancedDict = {
 # Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/50)!
 'nTmpStps'  : (1000,"Number of temperature steps during SA."),
 # number of samples to draw for sigma tuning stage [int].
-'nSTsamp' :(70000,"Number of Tuning samples"),
+'nSTsamp' :(100000,"Number of Tuning samples"),
 # number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]. 
 # Allowed vals [1,nSTsamp) Ideal is int(nSTsamp/2000)!
-'nSigStps': (35,"Times to calc acceptance and tune sigmas."),
+'nSigStps': (50,"Times to calc acceptance and tune sigmas."),
 # Maximum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
 'sigMax' :(1.0,'Maximum ratio of params range,for step size.'),
 # Minimum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]

@@ -710,8 +710,11 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
                 else:
                     bestStr+='\n'
             elif i==1:
-                mJupMult=(const.KGperMsun/const.KGperMjupiter)
-                bestStr+=paramStrs[i]+" = "+str(bestFit[i])+", OR "+str(bestFit[i]*mJupMult)+' in [Mjupiter]\n'
+                if bestFit[i]<0.02:
+                    mJupMult=(const.KGperMsun/const.KGperMjupiter)
+                    bestStr+=paramStrs[i]+" = "+str(bestFit[i])+", OR "+str(bestFit[i]*mJupMult)+' in [Mjupiter]\n'
+                else:
+                    bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
             else:
                 bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
         bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[11]/float(head['nu']))+'\n'+'*'*45
@@ -845,14 +848,14 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
             s=s+ "\nerror is centered on best \n"
             s=s+"68.3% error level = "+str(bestDataVal-conf68Vals[0])+'\n'
             s=s+" ->   "+str(bestDataVal)+'  +/-  '+str(bestDataVal-conf68Vals[0])+'\n'
-            if colNum==1:
+            if (colNum==1) and (bestDataVal<0.02):
                 s=s+"Or in Mjup: ->   "+str(bestDataVal*mJupMult)+'  +/-  '+str(bestDataVal*mJupMult-conf68Vals[0]*mJupMult)+'\n'
             outStr+=s
         else:
             s=s+ "\nerror is centered on Median \n"
             s=s+"68.3% error level = "+str(dataMedian-conf68Vals[0])
             s=s+" ->   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
-            if colNum==1:
+            if (colNum==1) and (dataMedian<0.02):
                 s=s+"Or in Mjup: ->   "+str(dataMedian*mJupMult)+'  +/-  '+str(dataMedian*mJupMult-conf68Vals[0]*mJupMult)+'\n'
             outStr+=s
         s=s+'\n'+75*'-'+'\n Leaving confLevelFinder \n'+75*'-'+'\n'

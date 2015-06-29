@@ -374,14 +374,16 @@ def epochsToPhases(epochs,Tc,P_yrs, halfOrbit=False):
             print 'phase = ',phase        
     return phases
 
-def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
+def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],RVlims=[]):
     """
     Make both the DI and RV plots.
     '-DI.png' and/or '-RV.png' will be added to end of plotFnameBase 
     to make the filenames for each type of plot.
+    
+    Optional tweaks:
+    DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]
+    RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
     """
-    
-    
     latex=True
     plt.rcParams['ps.useafm']= True
     plt.rcParams['pdf.use14corefonts'] = True
@@ -508,6 +510,13 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
         ## FLIP X-AXIS to match backawards Right Ascension definition
         a = main.axis()
         main.axis([a[1],a[0],a[2],a[3]])
+        ## update lims with custom values if provided
+        if len(DIlims)>0:
+            #DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]
+            xLimsFull=(DIlims[0][0][0],DIlims[0][0][1])
+            yLimsFull=(DIlims[0][1][0],DIlims[0][1][1])
+            xLimsCrop=(DIlims[1][0][0],DIlims[1][0][1])
+            yLimsCrop=(DIlims[1][1][0],DIlims[1][1][1])
         main.axes.set_xlim((xLimsFull[1],xLimsFull[0]))
         main.axes.set_ylim(yLimsFull)
         plt.minorticks_on()
@@ -656,8 +665,15 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png'):
             residYlims = (np.min(residualData[:,5]*kmConversion),np.max(residualData[:,5]*kmConversion))
             residYrange = residYlims[1]-residYlims[0]
             residYlims = (residYlims[0]-residYrange*.05,residYlims[1]+residYrange*.05)
+            ## update lims with custom values if provided
+            if len(RVlims)>0:
+                #RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
+                fitYlims = (RVlims[0][0],RVlims[0][1])
+                residYlims = (RVlims[1][0],RVlims[1][1])
+                xLims = (RVlims[2][0],RVlims[2][1])
             residualsPlot.axes.set_xlim(xLims)
             residualsPlot.axes.set_ylim(residYlims)
+            #RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
             fitPlot.axes.set_xlim(xLims)
             fitPlot.axes.set_ylim(fitYlims)
             ##plot zero vel line

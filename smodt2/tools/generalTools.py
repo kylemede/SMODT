@@ -123,9 +123,8 @@ def burnInCalc(mcmcFnames,combinedFname):
  
     Calculate the burn in for a set of MCMC chains following the formulation of Tegmark.
      
-    Burn-in is defined as the first point in a chain when the chi squared is equal or less
-     than the median value of all the chains in the simulation.  Thus, there MUST 
-     be more than 1 chain to perform this calculation.
+    Burn-in is defined as the first point in a chain where the likelihood is greater than 
+    the median value of all the chains.  Thus, there MUST be more than 1 chain to perform this calculation.
     """
     log.info("Starting to calculate burn-in.")
      
@@ -133,10 +132,12 @@ def burnInCalc(mcmcFnames,combinedFname):
     burnInLengths = []
     # calculate median of combined data ary
     (head0,data0) = loadFits(combinedFname)
+    nu = float(head0['nu'])
     chiSqsALL = data0[:,11]
     if type(chiSqsALL)!=np.ndarray:
         chiSqsALL = np.array(chiSqsALL)
-    medainALL = np.median(chiSqsALL,axis=0)         
+    likelihoodsALL = np.exp(-nu*chiSqsALL/2.0)
+    medainALL = np.median(likelihoodsALL,axis=0)         
     log.debug("medainALL = "+str(medainALL))
     s = '\nmedian value for all chains = '+str(medainALL)
     ## calculate location of medianALL in each chain
@@ -144,9 +145,10 @@ def burnInCalc(mcmcFnames,combinedFname):
         if os.path.exists(filename):
             (head,data) = loadFits(filename)
             chiSqsChain = data[:,11]
+            likelihoodsChain = np.exp(-nu*chiSqsChain/2.0)
             #medianChain = np.median(chiSquaredsChain)
-            for i in range(1,len(chiSqsChain)):
-                if chiSqsChain[i]<medainALL:
+            for i in range(1,len(likelihoodsChain)):
+                if likelihoodsChain[i]>medainALL:
                     #print 'chiSqsChain[i] = '+str(chiSqsChain[i])
                     burnInLength = i+1
                     break
@@ -707,6 +709,9 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
                     #print 'bestStr '+bestStr#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 else:
                     bestStr+='\n'
+            elif i==1:
+                mJupMult=(const.KGperMsun/const.KGperMjupiter)
+                bestStr+=paramStrs[i]+" = "+str(bestFit[i])+", OR "+str(bestFit[i]*mJupMult)+' in [Mjupiter]\n'
             else:
                 bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
         bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[11]/float(head['nu']))+'\n'+'*'*45
@@ -833,17 +838,22 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
             conf95Vals = [dataValueStart,dataValueStart]
             chiSquareds = 0
             
+        mJupMult=(const.KGperMsun/const.KGperMjupiter)
         s= "\nFinal 68% range values are: "+repr(conf68Vals)+'\n'
         s=s+"Final 95% range values are: "+repr(conf95Vals)+'\n'
         if bestCentered:
             s=s+ "\nerror is centered on best \n"
             s=s+"68.3% error level = "+str(bestDataVal-conf68Vals[0])+'\n'
-            s=s+" =>   "+str(dataMedian)+'  +/-  '+str(bestDataVal-conf68Vals[0])+'\n'
+            s=s+" ->   "+str(bestDataVal)+'  +/-  '+str(bestDataVal-conf68Vals[0])+'\n'
+            if colNum==1:
+                s=s+"Or in Mjup: ->   "+str(bestDataVal*mJupMult)+'  +/-  '+str(bestDataVal*mJupMult-conf68Vals[0]*mJupMult)+'\n'
             outStr+=s
         else:
             s=s+ "\nerror is centered on Median \n"
             s=s+"68.3% error level = "+str(dataMedian-conf68Vals[0])
             s=s+" ->   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
+            if colNum==1:
+                s=s+"Or in Mjup: ->   "+str(dataMedian*mJupMult)+'  +/-  '+str(dataMedian*mJupMult-conf68Vals[0]*mJupMult)+'\n'
             outStr+=s
         s=s+'\n'+75*'-'+'\n Leaving confLevelFinder \n'+75*'-'+'\n'
         log.debug(s)

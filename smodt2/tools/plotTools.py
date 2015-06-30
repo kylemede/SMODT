@@ -722,11 +722,11 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         main.spines['top'].set_linewidth(1.0)
         main.spines['left'].set_linewidth(1.0)
         main.set_position([0.15,0.115,0.80,0.84])
-        xLabel = 'RA '+unitStr
-        yLabel = 'Dec '+unitStr
+        xLabel = 'Relative RA '+unitStr
+        yLabel = 'Relative Dec '+unitStr
         if latex:
-            xLabel = '$RA$ '+unitStr
-            yLabel = '$Dec$ '+unitStr
+            xLabel = '$Relative$ $RA$ '+unitStr#'$\alpha$ '+unitStr
+            yLabel = '$Relative$ $Dec$ '+unitStr#'$\delta$ '+unitStr
         main.set_xlabel(xLabel, fontsize=25)
         main.set_ylabel(yLabel, fontsize=25)
         #plt.tight_layout()

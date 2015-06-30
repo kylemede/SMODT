@@ -48,6 +48,75 @@ def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, norme
         print "output dat file:\n"+outFilename
 
 
+def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='k',xLims=False,latex=False,showYlabel=False,parInt=0):
+    """
+    Loads previously plotted histograms that were written to disk by histPlotAndDump, and plot them up 
+    in a way that is ready for publication.  This version is to plot a posterior of the same parameter 
+    for multiple simulation runs to see how they differ.
+    
+    It is foreseen that many versions of this function will exist for different specific publication ready plots.
+    NOTE: this is extremely similar to histLoadAndPlot_ShadedPosteriors.  Re-factor to remove doubled code!!
+    """
+    if outFilename[-4]!='.dat':
+        outFilename=outFilename+'.dat'
+    histData = np.loadtxt(outFilename)  
+    ys=[]
+    xs=[]
+    maxN = np.max(histData[:,1])
+    minSub = 0
+    valRange = np.max(histData[:,0])-np.min(histData[:,0])
+    ## check if M2 and if it should be in jupiter masses
+    if parInt==1:
+        if np.max(histData[:,0])<0.02:
+            histData[:,0]=histData[:,0]*(const.KGperMsun/const.KGperMjupiter)
+            valRange = np.max(histData[:,0])-np.min(histData[:,0])
+            xLabel='M2 [Mjupiter]'
+            if latex:
+                xLabel='$M2$ [$M_{jupiter}$]'
+            confLevels=confLevels*(const.KGperMsun/const.KGperMjupiter)
+    if (np.max(histData[:,0])>100000) or (valRange<(np.min(histData[:,0])/100.0)):
+        #must be the To or Tc, so subtract int(min) and add to x-axis label
+        #doing this as it doesn't go well allowing matplotlib to do it itself formatting wise
+        minSub = int(np.min(histData[:,0]))
+        histData[:,0]-=minSub
+        xLabel = xLabel+" +"+str(minSub)
+    halfBinWidth = (histData[1][0]-histData[0][0])/2.0
+    # load up list of x,y values for tops of bins
+    for i in range(0,histData.shape[0]):
+        ys.append(histData[i][1]/maxN)
+        ys.append(histData[i][1]/maxN)
+        xs.append(histData[i][0]-halfBinWidth)
+        xs.append(histData[i][0]+halfBinWidth)
+    plot.plot(xs,ys,color=lineColor,linewidth=1)
+    plot.axes.set_ylim([0.0,1.02])
+    if xLims!=False:
+        plot.axes.set_xlim(xLims)
+    plot.locator_params(axis='x',nbins=3) # maximum number of x labels
+    plot.locator_params(axis='y',nbins=5) # maximum number of y labels
+    plot.tick_params(axis='x',which='major',width=0.5,length=3,pad=3,direction='in',labelsize=20)
+    plot.tick_params(axis='y',which='major',width=0.5,length=3,pad=3,direction='in',labelsize=20)
+    plot.spines['right'].set_linewidth(0.7)
+    plot.spines['bottom'].set_linewidth(0.7)
+    plot.spines['top'].set_linewidth(0.7)
+    plot.spines['left'].set_linewidth(0.7)
+    # add axes label
+    if showYlabel:
+        if latex:
+            plot.axes.set_ylabel(r'$\frac{dp}{dx} \times constant $',fontsize=27)
+        else:
+            plot.axes.set_ylabel('dp/dx(*constant)',fontsize=25)
+    else:
+        plot.axes.set_yticklabels(['','',''])
+    fsize=23
+    if xLabel in ['e','$e$']:
+        fsize=fsize+10
+    if latex:
+        plot.axes.set_xlabel(r''+xLabel,fontsize=fsize)
+    else:
+        plot.axes.set_xlabel(xLabel,fontsize=fsize)
+    
+    return plot
+
 def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel='X',xLims=False,latex=False,showYlabel=False,parInt=0):
     """
     Loads previously plotted histograms that were written to disk by histPlotAndDump, and plot them up 
@@ -171,6 +240,132 @@ def addDIdataToPlot(subPlot,realData,asConversion):
         subPlot.plot([xCent,xCent],[btm,top],linewidth=1.5,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])
 
+def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[],stage='MCMC'):
+    """
+    This will plot a simple posterior distribution for each parameter in the data files
+    stacked ontop of each other for comparison between different runs.
+    It can only be ran on folders which have their histograms already calculated and saved in the 
+    plotData subfolder!
+    
+    It is called by the custom function stackedPosteriorsPlotterHackStarter in rePlot.py.
+    
+    Very similar to summaryPlotter, but the loop is first in parameter int, then
+    file to ensure all are stacked on same subplot properly.  
+    NOTE: might be able to extract doubled code to clean things up...
+    """
+    latex=True
+    plotFormat = 'eps'   
+    plt.rcParams['ps.useafm']= True
+    plt.rcParams['pdf.use14corefonts'] = True
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    if latex:
+        plt.rc('text', usetex=True)
+    
+    if type(outputDataFilenames)!=list:
+        outputDataFilenames = [outputDataFilenames]
+    
+    colorsList =['Black','Blue','DarkGreen','Red','Purple','Fuchsia','Crimson','Aqua','Gold','OrangeRed','Plum','Chartreuse','Chocolate','SteelBlue ','Teal','Salmon','Brown']
+    
+    if os.path.exists(outputDataFilenames[0]):  
+        log.debug('\nCreating a simple plot of some key posteriors for files:\n'+repr(outputDataFilenames))
+        log.debug("writing resulting figure to:\n"+plotFilename)
+        
+        ## load first data file to get param lists 
+        (head,data) = genTools.loadFits(outputDataFilenames[0])
+        (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex)
+        (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False)
+        ## modify x labels to account for DI only situations where M1=Mtotal
+        if np.var(data[:,1])==0:
+            paramStrs2[0] = 'M total [Msun]'
+            paramStrs[0] = '$M_{total}$ [$M_{\odot}$]'
+            paramFileStrs[0] = 'Mtotal'
+        ## check if a subset is to be plotted or the whole set
+        ## remake lists of params to match subset.
+        if len(paramsToPlot)!=0:
+            paramStrs2Use = []
+            paramStrsUse = []
+            paramFileStrsUse = []
+            paramListUse = []
+            for par in paramsToPlot:
+                paramStrs2Use.append(paramStrs2[par])
+                paramStrsUse.append(paramStrs[par])
+                paramFileStrsUse.append(paramFileStrs[par])
+                paramListUse.append(par)
+            paramStrs2 = paramStrs2Use
+            paramStrs = paramStrsUse
+            paramFileStrs = paramFileStrsUse 
+            paramList = paramListUse
+        ## determine appropriate figure size for number of params to plot
+        figSizes =  [(5.5,7),(8,7),(9,7),(10,3.5),(11,8),(11,11),(11,14),(11,16)]
+        gridSizes = [(1,1),(1,2),(1,3),(1,4),(2,4),(3,4),(4,4),(5,4)]
+        sz = 0
+        if len(paramStrs2)>20:
+            log.critical("summaryPlotter is only capable of handling up to 20 parameters, "+str(len(paramStrs2))+" were passed in!")
+        elif len(paramStrs2)>16:
+            sz = 7
+        elif len(paramStrs2)>12:
+            sz = 6
+        elif len(paramStrs2)>8:
+            sz = 5
+        elif len(paramStrs2)>4:
+            sz = 4
+        elif len(paramStrs2)>3:
+            sz = 3
+        elif len(paramStrs2)>2:
+            sz = 2
+        elif len(paramStrs2)>1:
+            sz = 1
+        ## Create empty figure to be filled up with plots
+        stackedFig = plt.figure(figsize=figSizes[sz])     
+        colorInt = 0
+        
+        ## Go through params and re-load the hist for each files and plot them 
+        for i in range(0,len(paramStrs2)):
+            log.debug('Starting to plot stacked hist for '+paramStrs2[i])
+            subPlot = plt.subplot(gridSizes[sz][0],gridSizes[sz][1],i+1)
+            xLim=False
+            if len(paramsToPlot)!=0:
+                xLim=xLims[i]
+            showYlabel=False
+            if i in [0,4,8,12]:
+                showYlabel = True
+            par=0
+            try:
+                par = paramList[i]
+            except:
+                log.warning("Parameter "+str(i)+" not in paramList: \n"+repr(paramList))
+            ## go through each file and plot this param's hist on same plot
+            for outputDataFilename in outputDataFilenames:
+                log.debug('Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+" for file:\n"+outputDataFilename)
+                ## check if plot data dir exists
+                plotDataDir = os.path.join(os.path.dirname(outputDataFilename),"plotData")
+                if os.path.exists(plotDataDir)==False:      
+                    log.critical("PlotDataDir doesn't exist!! at:\n"+plotDataDir)
+                else:
+                    plotDataDir+='/'
+                    histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i])
+                    if os.path.exists(os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
+                        histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i])
+                    if os.path.exists(histDataBaseName+'.dat'):
+                        subPlot = histLoadAndPlot_StackedPosteriors(subPlot,outFilename=histDataBaseName,xLabel=paramStrs[i],lineColor=colorsList[colorInt],xLims=xLim,latex=latex,showYlabel=showYlabel,parInt=par)
+                    else:
+                        log.debug("Not plotting hist for "+paramStrs2[i]+" as its hist file doesn't exist:\n"+histDataBaseName)
+                    colorInt+=1
+        plt.tight_layout()        
+        ## Save file if requested.
+        log.debug('\nStarting to save stacked param hist figure:')
+        if plotFilename!='':
+            plt.savefig(plotFilename,format=plotFormat)
+            s= 'stacked hist plot saved to: '+plotFilename
+            log.info(s)
+        plt.close()
+        if True:
+            log.debug('converting to PDF as well')
+            try:
+                os.system("epstopdf "+plotFilename)
+            except:
+                log.warning("Seems epstopdf failed.  Check if it is installed properly.")
+        
 def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],stage='MCMC',shadeConfLevels=True,forceRecalc=True):
     """
     This advanced plotting function will plot all the data in a grid on a single figure.  The data will be plotted

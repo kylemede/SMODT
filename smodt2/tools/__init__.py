@@ -30,3 +30,4 @@ import cppTools
 
 from plotTools import summaryPlotter
 from plotTools import orbitPlotter
+from plotTools import stackedPosteriorsPlotter

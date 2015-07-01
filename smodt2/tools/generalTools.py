@@ -133,12 +133,14 @@ def burnInCalc(mcmcFnames,combinedFname):
     burnInLengths = []
     # calculate median of combined data ary
     (head0,data0) = loadFits(combinedFname)
-    nu = float(head0['nu'])
+    #nu = float(head0['NU'])
     chiSqsALL = data0[:,11]
     if type(chiSqsALL)!=np.ndarray:
         chiSqsALL = np.array(chiSqsALL)
-    likelihoodsALL = np.exp(-nu*chiSqsALL/2.0)
-    medainALL = np.median(likelihoodsALL,axis=0)         
+    likelihoodsALL = np.exp(-chiSqsALL/2.0)
+    log.debug("likelihoodsALL min = "+repr(np.min(likelihoodsALL)))
+    log.debug("likelihoodsALL max = "+repr(np.max(likelihoodsALL)))
+    medainALL = np.median(likelihoodsALL)         
     log.debug("medainALL = "+str(medainALL))
     s = '\nmedian value for all chains = '+str(medainALL)
     ## calculate location of medianALL in each chain
@@ -146,8 +148,9 @@ def burnInCalc(mcmcFnames,combinedFname):
         if os.path.exists(filename):
             (head,data) = loadFits(filename)
             chiSqsChain = data[:,11]
-            likelihoodsChain = np.exp(-nu*chiSqsChain/2.0)
+            likelihoodsChain = np.exp(-chiSqsChain/2.0)
             #medianChain = np.median(chiSquaredsChain)
+            burnInLength = len(likelihoodsChain)
             for i in range(1,len(likelihoodsChain)):
                 if likelihoodsChain[i]>medainALL:
                     #print 'chiSqsChain[i] = '+str(chiSqsChain[i])

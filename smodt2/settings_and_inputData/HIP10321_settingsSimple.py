@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (60000000,"Number of MCMC or MC samples"),
+'nSamples' : (1000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -10,7 +10,7 @@ simpleSettingsDict={
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HIP10321-3D-retro-MCMC-lowerDIerrors-M1equal1",
+'outRoot' : "SMODT2-HIP10321-3D-retro-MCMC-lowerDIerrors-M1equal1-test",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -24,9 +24,9 @@ simpleSettingsDict={
 'mass1MAX' : 0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.05,
-'mass2MAX' : 0.6,
+'mass2MAX' : 0.5,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 35.5,
+'paraMIN' : 36,
 'paraMAX' : 45.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 180.0,
@@ -43,9 +43,9 @@ simpleSettingsDict={
 'PMAX' : 22.5,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
 'incMIN' : 140.0,
-'incMAX' : 172.0,
+'incMAX' : 170.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : 345.0,
+'omegaMIN' : 340.0,
 'omegaMAX' : 360.0,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 800,

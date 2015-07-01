@@ -585,8 +585,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
     plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
         plt.rc('text', usetex=True)
-        #plt.rcParams['text.latex.unicode']=True 
-        #plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
+        plt.rcParams['text.latex.unicode']=True 
+        plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
         #plt.rcParams['text.latex.preamble'] = '\usepackage{sfmath}' 
     else:
         plt.rc('font',family='serif')

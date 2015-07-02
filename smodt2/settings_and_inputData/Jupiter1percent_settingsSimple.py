@@ -10,7 +10,7 @@ simpleSettingsDict={
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-SyntheticJUPITER-3D-5percent",
+'outRoot' : "SMODT2-SyntheticJUPITER-3D-1percent-tight",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -21,8 +21,8 @@ simpleSettingsDict={
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
 # NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
-'mass1MIN' : 0.1,
-'mass1MAX' : 3.0,
+'mass1MIN' : 0.5,
+'mass1MAX' : 1.9,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.0001,
 'mass2MAX' : 0.0030,
@@ -30,31 +30,31 @@ simpleSettingsDict={
 'paraMIN' : 40.00,
 'paraMAX' : 60.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-'OmegaMIN' : 1.0,
-'OmegaMAX' : 180.0,
+'OmegaMIN' : 90.0,
+'OmegaMAX' : 110.0,
 # Minimum/Maximum allowed value for the Eccentricity [double]
-'eMIN' : 0.0001,
-'eMAX' : 0.2,
+'eMIN' : 0.01,
+'eMAX' : 0.07,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2451100,
-'TMAX' : 2451900,
+'TMIN' : 2451450,
+'TMAX' : 2451600,
 # Minimum/Maximum allowed value for the Period [double][yrs]
-'PMIN' : 0.01,
-'PMAX' : 20.0,
+'PMIN' : 10.0,
+'PMAX' : 15.0,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 1,
-'incMAX' : 80.0,
+'incMIN' : 35,
+'incMAX' : 50.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : 1,
-'omegaMAX' : 360,
+'omegaMIN' : 260,
+'omegaMAX' : 280,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-'vMINs' :[-150],
-'vMAXs' :[150],
+'vMINs' :[-5],
+'vMAXs' :[5],
 }
 
 

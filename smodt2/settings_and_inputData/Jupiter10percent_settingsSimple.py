@@ -10,7 +10,7 @@ simpleSettingsDict={
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-SyntheticJUPITER-3D-5percent",
+'outRoot' : "SMODT2-SyntheticJUPITER-3D-10percent",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -37,8 +37,8 @@ simpleSettingsDict={
 'eMAX' : 0.2,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2451100,
-'TMAX' : 2451900,
+'TMIN' : 2450600,
+'TMAX' : 2453000,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 0.01,
 'PMAX' : 20.0,
@@ -46,15 +46,15 @@ simpleSettingsDict={
 'incMIN' : 1,
 'incMAX' : 80.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : 1,
+'omegaMIN' : 180,
 'omegaMAX' : 360,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-'vMINs' :[-150],
-'vMAXs' :[150],
+'vMINs' :[-50],
+'vMAXs' :[50],
 }
 
 

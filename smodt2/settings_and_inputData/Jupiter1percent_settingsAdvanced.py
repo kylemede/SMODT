@@ -62,7 +62,7 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (300.0,"Max reduced chiSquared during MC"),
+'chiMAX' : (100.0,"Max reduced chiSquared during MC"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(5,'Max reduced chiSquared to enter ST.'),
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]

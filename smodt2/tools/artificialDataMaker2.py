@@ -31,7 +31,7 @@ def calc_orbit():
     NumDataPointsOutRV = 25 #must be much less than 10000.  values between 10-500 are suitable.
     NumDataPointsOutDI = 10 #must be much less than 10000.  values between 10-500 are suitable.
     storePrimaryRVs = True
-    percentError = 5 #error is set to a percentage of the median
+    percentError = 1 #error is set to a percentage of the median
     realizeErrors = True
     overlapEnds = False # will ensure some points near end overlap the beginning of the orbit.
 

@@ -28,13 +28,14 @@ def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, norme
     """
     if outFilename[-4]!='.dat':
         outFilename=outFilename+'.dat'
-        
     if weight:
-        theWeights = genTools.likelihoodsCalc(chiSquareds, nu)
+        ## use the likelihoods as the weights
+        theWeights = np.exp(-chiSquareds/2.0)
     else:
         theWeights = np.ones(len(data))      
     fig = plt.figure(1)
     subPlot = fig.add_subplot(111)
+    ##numpy.histogram(a, bins=10, range=None, normed=False, weights=None, density=None) ##with density=True giving the probability distribution back
     (n,bins,rectangles)=subPlot.hist(data, bins=nbins, normed=False, weights=theWeights,linewidth=7,histtype=histType,log=logY, fill=False)
     #find center of bins
     if type(bins)!=np.ndarray:
@@ -87,11 +88,11 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
         ys.append(histData[i][1]/maxN)
         xs.append(histData[i][0]-halfBinWidth)
         xs.append(histData[i][0]+halfBinWidth)
-    plot.plot(xs,ys,color=lineColor,linewidth=1)
+    plot.plot(xs,ys,color=lineColor,linewidth=2)
     plot.axes.set_ylim([0.0,1.02])
     if xLims!=False:
         plot.axes.set_xlim(xLims)
-    plot.locator_params(axis='x',nbins=3) # maximum number of x labels
+    plot.locator_params(axis='x',nbins=4) # maximum number of x labels
     plot.locator_params(axis='y',nbins=5) # maximum number of y labels
     plot.tick_params(axis='x',which='major',width=0.5,length=3,pad=3,direction='in',labelsize=20)
     plot.tick_params(axis='y',which='major',width=0.5,length=3,pad=3,direction='in',labelsize=20)
@@ -253,6 +254,7 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
     file to ensure all are stacked on same subplot properly.  
     NOTE: might be able to extract doubled code to clean things up...
     """
+    log.setStreamLevel(lvl=10)
     latex=True
     plotFormat = 'eps'   
     plt.rcParams['ps.useafm']= True
@@ -296,7 +298,7 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
             paramFileStrs = paramFileStrsUse 
             paramList = paramListUse
         ## determine appropriate figure size for number of params to plot
-        figSizes =  [(5.5,7),(8,7),(9,7),(10,3.5),(11,8),(11,11),(11,14),(11,16)]
+        figSizes =  [(6.5,7),(8,4),(9,7),(10,3.5),(11,8),(11,11),(11,14),(11,16)]
         gridSizes = [(1,1),(1,2),(1,3),(1,4),(2,4),(3,4),(4,4),(5,4)]
         sz = 0
         if len(paramStrs2)>20:
@@ -317,10 +319,10 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
             sz = 1
         ## Create empty figure to be filled up with plots
         stackedFig = plt.figure(figsize=figSizes[sz])     
-        colorInt = 0
         
         ## Go through params and re-load the hist for each files and plot them 
         for i in range(0,len(paramStrs2)):
+            colorInt = 0
             log.debug('Starting to plot stacked hist for '+paramStrs2[i])
             subPlot = plt.subplot(gridSizes[sz][0],gridSizes[sz][1],i+1)
             xLim=False
@@ -347,6 +349,7 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
                     if os.path.exists(os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
                         histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i])
                     if os.path.exists(histDataBaseName+'.dat'):
+                        log.debug("plotting file:\n"+histDataBaseName)
                         subPlot = histLoadAndPlot_StackedPosteriors(subPlot,outFilename=histDataBaseName,xLabel=paramStrs[i],lineColor=colorsList[colorInt],xLims=xLim,latex=latex,showYlabel=showYlabel,parInt=par)
                     else:
                         log.debug("Not plotting hist for "+paramStrs2[i]+" as its hist file doesn't exist:\n"+histDataBaseName)
@@ -355,14 +358,14 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
         ## Save file if requested.
         log.debug('\nStarting to save stacked param hist figure:')
         if plotFilename!='':
-            plt.savefig(plotFilename,format=plotFormat)
-            s= 'stacked hist plot saved to: '+plotFilename
+            plt.savefig(plotFilename+'.'+plotFormat,format=plotFormat)
+            s= 'stacked hist plot saved to: '+plotFilename+'.'+plotFormat
             log.info(s)
         plt.close()
         if True:
             log.debug('converting to PDF as well')
             try:
-                os.system("epstopdf "+plotFilename)
+                os.system("epstopdf "+plotFilename+'.'+plotFormat)
             except:
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")
         

@@ -69,22 +69,22 @@ def customPost():
 def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
     if False:
-        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-20PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
-        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-10PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
-        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-5PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
-        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-1PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
+        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-20PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
+        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-10PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
+        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-5PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
+        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-1PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
     else:
-        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-20PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat')
-        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-10PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat')
-        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-5PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat')
-        outputDataFilenames.append('/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-1PercentRealizedError2--50-Million-in_Total/outputData-ALL.dat')
+        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-20percent/combined-BIstripped-MCMCdata.fits')
+        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-10percent/combined-BIstripped-MCMCdata.fits')
+        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-5percent/combined-BIstripped-MCMCdata.fits')
+        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-1percent-tight/combined-BIstripped-MCMCdata.fits')
     
     plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosteriorsPlot')
-    tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,ALLparams=False)
+    tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[4,8],xLims=[[-0.02,0.31],[0,70]])
     #print 'Final stacked plot file written to:\n'+plotFilename
     if True:
         print 'converted to PDF as well'
         os.system("epstopdf "+plotFilename+'.eps')
     
 if __name__ == '__main__':
-    customPost()
+    stackedPosteriorsPlotterHackStarter()

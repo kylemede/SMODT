@@ -777,17 +777,34 @@ def getParInts(head):
     for i in ints:
         parInts.append(int(i))  
     return parInts
+
+def confLevelFinderMeanTEST(filename, colNum=False):
+    """
+    Trials for finding confidence levels centered on the mean.
+    """
+    if os.path.exists(filename):
+        (dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReader(filename, colNum)
+        if len(dataAry>0) or (dataValueStart!=dataValueMid!=dataValueEnd):
+            mn = np.mean(dataAry)
+            
+        
+        
         
 def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False):
     """
-    A function to find the 68.3 and 95.4% confidence levels in a given output data file's column.
+    A function to find the 68.3 and 95.4% confidence levels in a given output data file's column 
+    centered on the median value.
     
     return [[68.3% minimum, 68.3% maximum],[95.5% minimum, 95.5% maximum]]
     
     columnNum must be an int.    
+    
+    NOTE: This function calculates the confidence levels based on the median, while the
+          more common standard is to centere it on the mean.  Doing that though requires a 
+          time consuming loop over the data to total up that around the mean...
+          Can't think of any faster way, so not doing it for now.
     """
     verboseInternal = False
-    bestCentered = False
     log.debug('Inside confLevelFinder')
     outStr=''
     if os.path.exists(filename):
@@ -797,11 +814,7 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
             #Convert data array to a sorted numpy array
             dataAry = np.sort(dataAry)
             size = dataAry.size
-        
-            if bestCentered:
-                mid = np.where(dataAry==bestDataVal)[0][0]
-            else:
-                mid=size//2
+            mid=size//2
                 
             minLoc68=mid-int(float(size)*0.683)//2
             if minLoc68<0:
@@ -848,20 +861,12 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
         mJupMult=(const.KGperMsun/const.KGperMjupiter)
         s= "\nFinal 68% range values are: "+repr(conf68Vals)+'\n'
         s=s+"Final 95% range values are: "+repr(conf95Vals)+'\n'
-        if bestCentered:
-            s=s+ "\nerror is centered on best \n"
-            s=s+"68.3% error level = "+str(bestDataVal-conf68Vals[0])+'\n'
-            s=s+" ->   "+str(bestDataVal)+'  +/-  '+str(bestDataVal-conf68Vals[0])+'\n'
-            if (colNum==1) and (bestDataVal<0.02):
-                s=s+"Or in Mjup: ->   "+str(bestDataVal*mJupMult)+'  +/-  '+str(bestDataVal*mJupMult-conf68Vals[0]*mJupMult)+'\n'
-            outStr+=s
-        else:
-            s=s+ "\nerror is centered on Median \n"
-            s=s+"68.3% error level = "+str(dataMedian-conf68Vals[0])
-            s=s+" ->   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
-            if (colNum==1) and (dataMedian<0.02):
-                s=s+"Or in Mjup: ->   "+str(dataMedian*mJupMult)+'  +/-  '+str(dataMedian*mJupMult-conf68Vals[0]*mJupMult)+'\n'
-            outStr+=s
+        s=s+ "\nerror is centered on Median \n"
+        s=s+"68.3% error level = "+str(dataMedian-conf68Vals[0])
+        s=s+" ->   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
+        if (colNum==1) and (dataMedian<0.02):
+            s=s+"Or in Mjup: ->   "+str(dataMedian*mJupMult)+'  +/-  '+str(dataMedian*mJupMult-conf68Vals[0]*mJupMult)+'\n'
+        outStr+=s
         s=s+'\n'+75*'-'+'\n Leaving confLevelFinder \n'+75*'-'+'\n'
         log.debug(s)
         

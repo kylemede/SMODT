@@ -77,9 +77,14 @@ void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
 	//std::cout<<"\nin anomaly calc: EDI = "<<EDI<<", thetaRV = "<<thetaRV<<std::endl;//$$$$$$$$$$$$$$$$$$
 };
 
-void Orbit::loadStaticVars(double omegaoffsetDI,double omegaoffsetRV){
+void Orbit::loadStaticVars(double omegaoffsetDI,double omegaoffsetRV,bool lowEcc_in){
 	omegaOffsetDI = omegaoffsetDI;
 	omegaOffsetRV = omegaoffsetRV;
+	lowEcc = lowEcc_in;
+//	if (lowEcc)
+//		std::cout<<"lowEcc is true"<<std::endl;
+//	if (lowEcc==false)
+//		std::cout<<"lowEcc is false"<<std::endl;
 };
 
 void Orbit::loadRealData(double *xx, int xx_nx, int xx_ny){
@@ -102,7 +107,37 @@ void Orbit::loadConstants(double Grav_in,double pi_in,double KGperMsun_in, doubl
 		std::cout<<"constants loaded!"<<std::endl;
 };
 
-void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
+void Orbit::convertParsFromRaw(double *p, int p_n){
+	/*
+	 Convert sqrt(e)sin(omega)&sqrt(e)cos(omega) => e and omega if required.
+	 Else, do nothing.
+	 */
+	if (lowEcc){
+		//std::cout<<"converting params to use forms"<<std::endl;
+		e = p[4]*p[4]+p[9]*p[9];
+		omega = (180.0/pi)*atan2(p[4],p[9]);
+		if (omega<0)
+			omega+=360.0;
+		p[4] = e;
+		p[9] = omega;
+	}
+};
+
+void Orbit::convertParsToRaw(double *p, int p_n){
+	/*
+	Convert e and omega => sqrt(e)sin(omega)&sqrt(e)cos(omega) if required.
+	Else, do nothing.
+	 */
+	if (lowEcc){
+		//std::cout<<"converting params to Raw forms"<<std::endl;
+		e = p[4];
+		omega = p[9];
+		p[4] = sqrt(e)*sin((pi/180.0)*omega);
+		p[9] = sqrt(e)*cos((pi/180.0)*omega);
+	}
+};
+
+void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *p, int p_n){
     /*
     The calculator function to perform the primary
     orbit calculations for the C++ Orbit object.
@@ -110,8 +145,8 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *y, int y_n){
 	dataModelAry=yy;
 	dataModelAry_nx=yy_nx;
 	dataModelAry_ny=yy_ny;
-	params = y;
-	params_n = y_n;
+	params = p;
+	params_n = p_n;
 	bool verbose=false;
 //	if (verbose)
 //		std::cout<<"\nInside Orbit calculator function"<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$

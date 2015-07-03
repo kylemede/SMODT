@@ -129,6 +129,9 @@ advancedDict = {
 #####################################
 # Special Settings for the models ###
 #####################################
+# Operate in low eccenctricity mode? [bool]
+# Then step through in sqrt(e)sin(omega) and sqrt(e)cos(omega) instead of e & omega directly
+'lowEcc'   : (False,"low eccentricty stepping?"),
 # fit to the primary's RV orbit [bool]
 'fitPrime' : (False,"Fit primary's orbit?"),
 # Are the RVs in the RVdata.dat for the Primary star? [bool]

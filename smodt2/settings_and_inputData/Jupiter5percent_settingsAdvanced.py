@@ -9,11 +9,12 @@ import constants
 #NOTE: key max = 8characters, value+comment max = 68 characters, comment Max=47 it seems in testing.
 #NOTE: only change the code and not the name of the functions or their inputs.
 def ePrior(e,P):
-    if (e!=0)and(P!=0):
-        if ((P*constants.daysPerYear)>1000.0)and(simpleSettingsDict['eMAX']!=0):
-            return 2.0*e
-        else:
-            return 1.0
+    if simpleSettingsDict['lowEcc']==False:
+        if (e!=0)and(P!=0):
+            if ((P*constants.daysPerYear)>1000.0)and(simpleSettingsDict['eMAX']!=0):
+                return 2.0*e
+            else:
+                return 1.0
     else:
         return 1.0
 def pPrior(P):
@@ -130,6 +131,9 @@ advancedDict = {
 #####################################
 # Special Settings for the models ###
 #####################################
+# Operate in low eccenctricity mode? [bool]
+# Then step through in sqrt(e)sin(omega) and sqrt(e)cos(omega) instead of e & omega directly
+'lowEcc'   : (True,"low eccentricty stepping?"),
 # fit to the primary's RV orbit [bool]
 'fitPrime' : (False,"Fit primary's orbit?"),
 # Are the RVs in the RVdata.dat for the Primary star? [bool]

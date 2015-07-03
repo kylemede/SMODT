@@ -30,9 +30,9 @@ class Simulator(object):
         self.log = tools.getLogger('main.simulator',lvl=100,addFH=False)
         tools.logSystemInfo(self.log)
         self.realData = tools.loadRealData(os.path.join(self.dictVal('settingsDir'),self.dictVal('prepend')),dataMode=self.dictVal('dataMode'))
-        (self.rangeMaxs,self.rangeMins,self.starterSigmas,self.paramInts,self.nu,self.nuDI,self.nuRV) = self.starter() 
+        (self.rangeMaxsRaw,self.rangeMinsRaw,self.rangeMaxs,self.rangeMins,self.starterSigmas,self.paramInts,self.nu,self.nuDI,self.nuRV) = self.starter() 
         self.Orbit = tools.cppTools.Orbit()
-        self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'))
+        self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'),self.dictVal('lowEcc'))
         self.Orbit.loadRealData(self.realData)
         self.Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
         self.seed = int(timeit.default_timer())#reset in resetTracked()
@@ -96,6 +96,14 @@ class Simulator(object):
             rangeMaxs.append(self.dictVal('vMAXs')[i])
         rangeMaxs = np.array(rangeMaxs)
         rangeMins = np.array(rangeMins)
+        ##For lowEcc case, make Raw min/max vals for param drawing during MC mode
+        rangeMaxsRaw = rangeMaxs
+        rangeMinsRaw = rangeMins
+        if self.dictVal('lowEcc'):
+            rangeMaxsRaw[9] = np.sqrt(rangeMaxs[4])
+            rangeMaxsRaw[4] = np.sqrt(rangeMaxs[4])
+            rangeMinsRaw[9] = -1.0*np.sqrt(rangeMins[4])
+            rangeMinsRaw[4] = -1.0*np.sqrt(rangeMins[4])
         ##figure out which parameters are varying in this run.
         ##don't vary atot or chiSquared ever, 
         ##and take care of TcEqualT and Kdirect cases
@@ -172,7 +180,7 @@ class Simulator(object):
         self.settingsDict['parInts'] = (paramIntsStr,"Varried params")
         self.settingsDict['chainNum'] = (self.chainNum,"chain number")
 
-        return (rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
+        return (rangeMaxsRaw,rangeMinsRaw,rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
     
     def dictVal(self,key):
         """
@@ -198,12 +206,12 @@ class Simulator(object):
         if  ('MCMC'not in stage) and (stage=='MC'):
             for i in range(0,len(pars)):
                 if i in self.paramInts:
-                    parsOut[i]=np.random.uniform(self.rangeMins[i],self.rangeMaxs[i])
+                    parsOut[i]=np.random.uniform(self.rangeMinsRaw[i],self.rangeMaxsRaw[i])
         ## vary a random param if SA, ST or MCMC
         else:
             varyInt = self.paramInts[np.random.randint(0,len(self.paramInts))]
             self.parIntVaryAry.append(varyInt)
-            sig = sigs[varyInt]*(self.rangeMaxs[varyInt]-self.rangeMins[varyInt])
+            sig = sigs[varyInt]*(self.rangeMaxsRaw[varyInt]-self.rangeMinsRaw[varyInt])
             parsOut[varyInt]=np.random.uniform(pars[varyInt]-sig,pars[varyInt]+sig)        
         ## if TcEqualT, push the varied one into the other
         if self.dictVal('TcEqualT'):
@@ -223,20 +231,24 @@ class Simulator(object):
         """
         inRange=True
         paramsOut = copy.deepcopy(pars)
+        ## convert from Raw form if in lowEcc mode
+        self.Orbit.convertParsFromRaw(paramsOut)
         for i in range(0,len(pars)):
             if i in self.paramInts:
                 if (i==6)and(self.dictVal('TcStep')):
-                    if (self.rangeMins[i]>pars[i])or(pars[i]>self.rangeMaxs[i]):
+                    if (self.rangeMins[i]>paramsOut[i])or(paramsOut[i]>self.rangeMaxs[i]):
                         inRange=False
                 elif (i==5)and(self.dictVal('TcStep')==False):
-                    if (self.rangeMins[i]>pars[i])or(pars[i]>self.rangeMaxs[i]):
+                    if (self.rangeMins[i]>paramsOut[i])or(paramsOut[i]>self.rangeMaxs[i]):
                         inRange=False
                 elif (i!=5) and (i!=6):
-                    if (self.rangeMins[i]>pars[i])or(pars[i]>self.rangeMaxs[i]):
+                    if (self.rangeMins[i]>paramsOut[i])or(paramsOut[i]>self.rangeMaxs[i]):
                         inRange=False
         if (numAccepted==0)and(stage=='SA'):
             ##Jump as starting position was in poor part of param space. for SA only.
             paramsOut = self.increment(pars,np.zeros(pars.shape),stage='MC')
+            ## convert from Raw form if in lowEcc mode
+            self.Orbit.convertParsFromRaw(paramsOut)
             #self.log.debug("Chain #"+str(self.chainNum)+" Nothing accepted yet, so jumping to new starting position.")
             inRange=True
         return (paramsOut,inRange)
@@ -269,7 +281,10 @@ class Simulator(object):
             self.bestRedChiSqr=(paramsOut[11]/self.nu)
             self.bestSumStr = stage+" chain #"+str(self.chainNum)+' BEST reduced chiSquareds so far: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
             #self.bestSumStr+='\nbest total non-reduced chiSquared/nu = '+str(paramsOut[11])+'/'+str(self.nu)
-            self.paramsBest = paramsOut
+            bestPars = copy.deepcopy(paramsOut)
+            ## convert back to sqrt(e)sin(omega), sqrt(e)cos(omega) if in lowEcc mode
+            self.Orbit.convertParsToRaw(bestPars)
+            self.paramsBest = bestPars
         ## check if this step is accepted
         accept = False
         if stage=='MC':
@@ -376,8 +391,8 @@ class Simulator(object):
         sumStr+=str(float(self.acceptCount)/float(self.dictVal(self.stgNsampDict[stage])))+"\n"
         sumStr+= "Total number of steps stored = "+str(totSaved)+"\n"
         sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
-        sumStr+="Last params = "+repr(self.paramsLast)+'\n'
-        sumStr+="Best params = "+repr(self.paramsBest)+'\n'
+        sumStr+="Last params  = "+repr(self.paramsLast)+'\n'
+        sumStr+="Best params (Raw) = "+repr(self.paramsBest)+'\n'
         if (stage=="ST")or(stage=="MCMC"):
             if stage=='ST':
                 sumStr+="Final Sigmas = "+repr(sigmas)+'\n'
@@ -408,6 +423,9 @@ class Simulator(object):
         startStr+= 'params = '+repr(pars)+'\n'
         startStr+= 'rangeMins = '+repr(self.rangeMins)+'\n'
         startStr+= 'rangeMaxs = '+repr(self.rangeMaxs)+'\n'
+        if self.dictVal('lowEcc'):
+            startStr+= 'rangeMinsRaw = '+repr(self.rangeMinsRaw)+'\n'
+            startStr+= 'rangeMaxsRaw = '+repr(self.rangeMaxsRaw)+'\n'
         startStr+= 'sigmas = '+repr(sigs)+'\n'
         startStr+= 'paramInts = '+repr(self.paramInts)+'\n'
         startStr+= '[nu,nuDI,nuRV] = ['+str(self.nu)+', '+str(self.nuDI)+', '+str(self.nuRV)+']\n'
@@ -429,49 +447,55 @@ class Simulator(object):
         if (stage=='SA')or(stage=='MC'):
             ## get starting params and sigmas as these two stages start at a random point
             sigmas = copy.deepcopy(self.starterSigmas)
-            proposedPars = self.increment(self.rangeMins,sigmas,stage='MC')
-            proposedPars[11]=self.dictVal('chiMAX')*10*self.nu
+            proposedParsRaw = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
+            proposedParsRaw[11]=self.dictVal('chiMAX')*10*self.nu
             if stage=='SA':
                 temp=self.dictVal('strtTemp')
         else:
-            proposedPars = copy.deepcopy(startParams)
+            proposedParsRaw = copy.deepcopy(startParams)
             sigmas = copy.deepcopy(startSigmas)
-        latestPars = copy.deepcopy(proposedPars)
-        self.paramsLast = proposedPars
+        latestParsRaw = copy.deepcopy(proposedParsRaw)
+        paramsLast = copy.deepcopy(proposedParsRaw)
+        ## convert from Raw form if in lowEcc mode
+        self.Orbit.convertParsFromRaw(paramsLast)
+        self.paramsLast = paramsLast
         #self.startSummary(proposedPars,sigmas,stage)
         ##loop through each sample 
         ##Follows these steps: in Range?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? DONE ->write output data
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
-            (proposedPars,inRange)=self.rangeCheck(proposedPars,len(acceptedParams),stage)
+            #print 'proposedParsRaw = '+repr(proposedParsRaw)
+            (proposedPars,inRange)=self.rangeCheck(proposedParsRaw,len(acceptedParams),stage)
             if inRange:
+                #print 'proposedPars = '+repr(proposedPars)
                 self.Orbit.calculate(modelData,proposedPars)
                 (params,accept) = self.accept(sample,proposedPars,modelData,len(acceptedParams),temp,stage)
                 if accept:
-                    latestPars = copy.deepcopy(params)
+                    latestParsRaw = copy.deepcopy(params)
+                    ## convert back to sqrt(e)sin(omega), sqrt(e)cos(omega) if in lowEcc mode
+                    self.Orbit.convertParsToRaw(latestParsRaw)
                     if ('MCMC' not in stage)and(stage=='MC'):
                         acceptedParams.append(params)
                     elif (self.acceptCount%self.dictVal('saveInt'))==0:
                         acceptedParams.append(params)                   
             else:
                 self.acceptBoolAry.append(0)
-            proposedPars = self.increment(latestPars,sigmas,stage)
+            proposedParsRaw = self.increment(latestParsRaw,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
             sigmas = self.sigTune(sample,sigmas,stage)
             if (self.dictVal('logLevel')<40)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):
                 bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), stage+str(chainNum)+' complete so far.')
         if self.dictVal('logLevel')<40:
             bar.render(100,stage+str(chainNum)+' complete!\n')
-        toc=timeit.default_timer()
-        self.log.debug(stage+" took: "+str(int(toc-tic))+' seconds')#$$$$$ need time format function still $$$$$$$$$$$$$$
+        self.log.debug(stage+" took: "+tools.timeStrMaker(timeit.default_timer()-tic))
         self.endSummary(len(acceptedParams),temp,sigmas,stage)
         outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',acceptedParams,self.settingsDict)
         if stage=='ST':
-            return (latestPars,sigmas,self.bestRedChiSqr)
-            #return (self.paramsBest,sigmas,self.bestRedChiSqr)
+            ##start MCMC at best or end of ST?
+            #return (latestParsRaw,sigmas,self.bestRedChiSqr)
+            return (self.paramsBest,sigmas,self.bestRedChiSqr)
         elif stage=='SA':
-            #start ST at the best location with tight sigmas, and it will tune to ideal sigmas
+            ##start ST at the best location with tight sigmas, and it will tune to ideal sigmas
             return (self.paramsBest,np.ones(np.array(sigmas).shape)*0.01,self.bestRedChiSqr)
         elif(stage=='MC')or(stage=='MCMC'):
             return outFname
-        
 #END OF FILE      

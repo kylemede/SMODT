@@ -96,6 +96,7 @@ void Orbit::loadRealData(double *xx, int xx_nx, int xx_ny){
     if (false)
     	std::cout<<"data loaded!"<<std::endl;
 };
+
 void Orbit::loadConstants(double Grav_in,double pi_in,double KGperMsun_in, double daysPerYear_in,double secPerYear_in,double MperAU_in){
 	Grav = Grav_in;
 	pi = pi_in;

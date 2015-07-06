@@ -2,6 +2,7 @@
 import numpy as np
 import os
 import copy
+import sys
 #from scipy.constants.codata import precision
 import tools
 import timeit
@@ -97,13 +98,45 @@ class Simulator(object):
         rangeMaxs = np.array(rangeMaxs)
         rangeMins = np.array(rangeMins)
         ##For lowEcc case, make Raw min/max vals for param drawing during MC mode
-        rangeMaxsRaw = rangeMaxs
-        rangeMinsRaw = rangeMins
+        rangeMaxsRaw = copy.deepcopy(rangeMaxs)
+        rangeMinsRaw = copy.deepcopy(rangeMins)
         if self.dictVal('lowEcc'):
-            rangeMaxsRaw[9] = np.sqrt(rangeMaxs[4])
-            rangeMaxsRaw[4] = np.sqrt(rangeMaxs[4])
-            rangeMinsRaw[9] = -1.0*np.sqrt(rangeMins[4])
-            rangeMinsRaw[4] = -1.0*np.sqrt(rangeMins[4])
+            ## run through the possible numbers for e and omega to find min/max for RAW versions
+            fourMin=1e6
+            fourMax=-1e6
+            nineMin=1e6
+            nineMax=-1e6
+            for omeg in range(int(rangeMins[9]*10),int(rangeMaxs[9]*10),1):
+                omega = float(omeg)/10.0
+                for e in range(int(rangeMins[4]*100),int(rangeMaxs[4]*100),1):
+                    ecc = float(e)/100.0
+                    four = np.sqrt(ecc)*np.sin((np.pi/180.0)*omega)
+                    nine = np.sqrt(ecc)*np.cos((np.pi/180.0)*omega)
+                    if four>fourMax:
+                        fourMax = four
+                        #a= 'fourMax: e = '+str(ecc)+', omega = '+str(omega)
+                    if four<fourMin:
+                        fourMin = four
+                        #b= 'fourMin: e = '+str(ecc)+', omega = '+str(omega)
+                    if nine>nineMax:
+                        nineMax = nine
+                        #c= 'nineMax: e = '+str(ecc)+', omega = '+str(omega)
+                    if nine<nineMin:
+                        nineMin = nine
+                        #d= 'nineMin: e = '+str(ecc)+', omega = '+str(omega)
+            rangeMaxsRaw[9] = nineMax
+            rangeMaxsRaw[4] = fourMax
+            rangeMinsRaw[9] = nineMin
+            rangeMinsRaw[4] = fourMin
+            #print 'rangeMins[4] = '+str(rangeMins[4])+", rangeMaxs[4] = "+str(rangeMaxs[4])
+            #print 'rangeMins[9] = '+str(rangeMins[9])+", rangeMaxs[9] = "+str(rangeMaxs[9])
+            #print a
+            #print b
+            #print c
+            #print d
+            #print 'rangeMinsRaw[4] = '+str(rangeMinsRaw[4])+", rangeMaxsRaw[4] = "+str(rangeMaxsRaw[4])
+            #print 'rangeMinsRaw[9] = '+str(rangeMinsRaw[9])+", rangeMaxsRaw[9] = "+str(rangeMaxsRaw[9])
+            #sys.exit(0)
         ##figure out which parameters are varying in this run.
         ##don't vary atot or chiSquared ever, 
         ##and take care of TcEqualT and Kdirect cases
@@ -298,6 +331,10 @@ class Simulator(object):
                 likelihoodRatio = np.e**((self.paramsLast[11] - paramsOut[11])/(2.0*temp))
                 #print "likelihoodRatio = "+repr(likelihoodRatio)
                 ###### put all prior funcs together in dict??
+                #print 'paramsOut[4] = '+str(paramsOut[4])
+                #print 'paramsOut[7] = '+str(paramsOut[7])
+                #print 'paramsOut[4] = '+str(self.paramsLast[4])
+                #print 'paramsOut[7] = '+str(self.paramsLast[7])
                 priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
                 #print "a = "+repr((self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7])))
                 priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
@@ -310,6 +347,7 @@ class Simulator(object):
                 #print "e = "+repr((self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1])))
                 priorsRatio*= (self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) 
                 #print "f = "+repr((self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) )
+                #print 'priorsRatio = '+str(priorsRatio)
                 if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
                     accept = True
             except:

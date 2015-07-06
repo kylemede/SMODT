@@ -1,4 +1,5 @@
 import tools
+from tools import constants as const
 import sys
 import os
 import numpy as np
@@ -85,6 +86,38 @@ def stackedPosteriorsPlotterHackStarter():
     if True:
         print 'converted to PDF as well'
         os.system("epstopdf "+plotFilename+'.eps')
+        
+def paramConverterTest():
+    
+    ## Make Orbit cpp obj
+    Orbit = tools.cppTools.Orbit()
+    Orbit.loadStaticVars(0,0,True)
+    Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
+    bestFit = np.array([ 1.08040127e+00,   9.60493873e-04,   5.02111885e+01,
+          1.00808667e+02,   6.29123973e-02,   2.45151739e+06,
+          2.45151739e+06,   1.19376399e+01,   4.75040520e+01,
+          2.71592539e+02,   5.36101436e+00,   4.15438649e+01,
+          8.77774317e+00,  -5.73899482e-02]) 
+    ## ensure orbParams are in required format for Orbit
+    params = []
+    for par in bestFit:
+        params.append(par)
+    params=np.array(params,dtype=np.dtype('d'),order='C')
+    
+    es = [0.1,0.25,0.5,0.75,0.99]
+    omegas=[1.,45.,90.,135.,180.,225.,270.,315.,360.]
+    
+    for i in range(len(omegas)):
+        params[4]=0.25
+        params[9]=omegas[i]
+        print 'before: e= '+str(params[4])+', omega= '+str(params[9])
+        Orbit.convertParsToRaw(params)
+        print 'raw: par[4]= '+str(params[4])+', par[9]= '+str(params[9])
+        Orbit.convertParsFromRaw(params)
+        print 'after: e= '+str(params[4])+', omega= '+str(params[9])
     
 if __name__ == '__main__':
-    stackedPosteriorsPlotterHackStarter()
+    #customPost()
+    #stackedPosteriorsPlotterHackStarter()
+    paramConverterTest()
+    

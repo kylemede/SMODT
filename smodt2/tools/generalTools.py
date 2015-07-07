@@ -672,6 +672,7 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
     (head,data) = loadFits(finalFits)
     totalSamps = head['NSAMPLES']
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
+    f.write("\n"+"*"*65+"\noutRoot:  "+settingsDict['outRoot']+"\n"+"*"*65+"\n")
     f.write('\n'+'-'*7+'\nBasics:\n'+'-'*7)
     f.write('\nparamList:\n'+repr(paramList))
     f.write('\nparamStrs:\n'+repr(paramStrs))

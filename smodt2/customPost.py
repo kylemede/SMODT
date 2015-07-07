@@ -8,7 +8,8 @@ import glob
 def customPost():
     rootDir = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/'
     settingsDict = tools.startup(sys.argv,rootDir,rePlot=True)
-    allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
+    #allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
+    allFname = os.path.join(settingsDict['finalFolder'],"combined-BIstripped-MCMCdata.fits")
     log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=10)
     ##make list of stages to run
     stageList = []
@@ -49,13 +50,13 @@ def customPost():
     ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
     ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
     plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbitPlot-MANUAL-'+settingsDict['symMode'][0])
-    tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
-    #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.9],[-0.7,0.8],[-0.515,0.515]])
+    #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
+    tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.9],[-0.7,0.8],[-0.515,0.515]])
     
     clStr=''
     plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
-    clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-    #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,7,8],xLims=[[0.0,3.0],[0.5,1.7],[11.5,12.5],[30,60]],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+    #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+    clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,7,8],xLims=[[0.0,3.0],[0.5,1.7],[11.5,12.5],[30,60]],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
     
     ##calc R?
     grStr = ''
@@ -69,18 +70,13 @@ def customPost():
     
 def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
-    if False:
-        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-20PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
-        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-10PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
-        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-5PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
-        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-tight-1PercentRealizedError--14-Million-in_Total/outputData-ALL.dat')
-    else:
-        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-20percent/combined-BIstripped-MCMCdata.fits')
-        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-10percent/combined-BIstripped-MCMCdata.fits')
-        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-5percent/combined-BIstripped-MCMCdata.fits')
-        outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-1percent-tight/combined-BIstripped-MCMCdata.fits')
     
-    plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosteriorsPlot')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-20percent-lowEccTrue/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-10percent-lowEccTrue/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-5percent-lowEccTrue/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-1percent-tight-lowEccTrue/combined-BIstripped-MCMCdata.fits')
+    
+    plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosteriorsPlot-lowEccTrue')
     tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[4,8],xLims=[[-0.02,0.31],[0,70]])
     #print 'Final stacked plot file written to:\n'+plotFilename
     if True:
@@ -118,6 +114,6 @@ def paramConverterTest():
     
 if __name__ == '__main__':
     #customPost()
-    #stackedPosteriorsPlotterHackStarter()
-    paramConverterTest()
+    stackedPosteriorsPlotterHackStarter()
+    #paramConverterTest()
     

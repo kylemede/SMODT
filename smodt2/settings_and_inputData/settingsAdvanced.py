@@ -9,11 +9,12 @@ import constants
 #NOTE: key max = 8characters, value+comment max = 68 characters, comment Max=47 it seems in testing.
 #NOTE: only change the code and not the name of the functions or their inputs.
 def ePrior(e,P):
-    if (e!=0)and(P!=0):
-        if ((P*constants.daysPerYear)>1000.0)and(simpleSettingsDict['eMAX']!=0):
-            return 2.0*e
-        else:
-            return 1.0
+    if advancedDict['lowEcc'][0]==False:
+        if (e!=0)and(P!=0):
+            if ((P*constants.daysPerYear)>1000.0)and(simpleSettingsDict['eMAX']!=0):
+                return 2.0*e
+            else:
+                return 1.0
     else:
         return 1.0
 def pPrior(P):
@@ -119,6 +120,9 @@ advancedDict = {
 # interval of accepted values between storing in output array (for SA,ST,MCMC, not MC) [int]
 # Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
 'saveInt' : (10,"Interval between saving params, for all but MC."),
+# Start MCMC at the best params from the ST stage? [bool]
+'strBest' : (True,"Start MCMC at best fit params from ST"),
+## NOTE: progress plots have no code yet, so MUST be False!!!
 # Make plots of MCMC progress plots? [bool]
 'pltMCMCprog' :False,
 # Make plots of Simulated Annealing progress plots? [bool]
@@ -130,6 +134,9 @@ advancedDict = {
 #####################################
 # Special Settings for the models ###
 #####################################
+# Operate in low eccenctricity mode? [bool]
+# Then step through in sqrt(e)sin(omega) and sqrt(e)cos(omega) instead of e & omega directly
+'lowEcc'   : (True,"low eccentricty stepping?"),
 # fit to the primary's RV orbit [bool]
 'fitPrime' : (False,"Fit primary's orbit?"),
 # Are the RVs in the RVdata.dat for the Primary star? [bool]

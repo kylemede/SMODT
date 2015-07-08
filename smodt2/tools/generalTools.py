@@ -577,12 +577,12 @@ def cleanUp(settingsDict,stageList,allFname):
     ##get combined data filename to delete
     if settingsDict["delCombined"]:
         delFiles.append(allFname)
-        if settingsDict['delBurn'][0]:
-            ##the burn-in was stripped in the final file, so kill the non-stripped version if it exists
-            nm = os.path.join(os.path.dirname(allFname),'combined*data.fits')
-            if os.path.exists(nm):
-                delFiles.append(nm)
-                
+    if settingsDict['delBurn'][0]:
+        ##the burn-in was stripped in the final file, so kill the non-stripped version if it exists
+        nm = os.path.join(os.path.dirname(allFname),'combined*data.fits')
+        if os.path.exists(nm):
+            delFiles.append(nm)
+            
     ##try to delete files
     for fname in delFiles:
         try:
@@ -745,6 +745,21 @@ def summaryFilePart2(settingsDict,effPtsStr,allTime,postTime):
     f.write('\n'+effPtsStr)
     f.close()
     log.info("Summary file written to:\n"+summaryFname)
+    
+def KeplersThird(p=0,atot=0,mtot=0):
+    """
+    Kepler's Third rule.  
+    Find the missing value provided you know 2 of them.
+    """
+    if (atot==0)and(mtot!=0)and(p!=0):
+        atot =pow(((p*p*const.secPerYear*secPerYear*Grav*KGperMsun*(params[0]+params[1]))/(4.0*pi*pi)),(1.0/3.0))
+    elif (atot!=0)and(mtot==0)and(p!=0):
+        do=True
+    elif (atot!=0)and(mtot!=0)and(p==0):
+        do=True
+    else:
+        print 'More than 1 parameter was zero, so I can not calc K3'
+    
     
     
 def copyToDB(settingsDict):

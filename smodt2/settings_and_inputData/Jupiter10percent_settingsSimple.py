@@ -10,7 +10,7 @@ simpleSettingsDict={
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-SyntheticJUPITER-3D-10percent-lowEccTrue",
+'outRoot' : "SMODT2-SyntheticJUPITER-3D-10percent-startAtBest-lowEccTrue",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),

@@ -529,8 +529,10 @@ class Simulator(object):
         outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',acceptedParams,self.settingsDict)
         if stage=='ST':
             ##start MCMC at best or end of ST?
-            return (latestParsRaw,sigmas,self.bestRedChiSqr)
-            #return (self.paramsBest,sigmas,self.bestRedChiSqr)
+            if self.dictVal('strBest'):
+                return (self.paramsBest,sigmas,self.bestRedChiSqr)
+            else:
+                return (latestParsRaw,sigmas,self.bestRedChiSqr)
         elif stage=='SA':
             ##start ST at the best location with tight sigmas, and it will tune to ideal sigmas
             return (self.paramsBest,np.ones(np.array(sigmas).shape)*0.01,self.bestRedChiSqr)

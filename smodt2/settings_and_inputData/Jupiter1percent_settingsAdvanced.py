@@ -120,6 +120,9 @@ advancedDict = {
 # interval of accepted values between storing in output array (for SA,ST,MCMC, not MC) [int]
 # Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
 'saveInt' : (10,"Interval between saving params, for all but MC."),
+# Start MCMC at the best params from the ST stage? [bool]
+'strBest' : (True,"Start MCMC at best fit params from ST"),
+## NOTE: progress plots have no code yet, so MUST be False!!!
 # Make plots of MCMC progress plots? [bool]
 'pltMCMCprog' :False,
 # Make plots of Simulated Annealing progress plots? [bool]

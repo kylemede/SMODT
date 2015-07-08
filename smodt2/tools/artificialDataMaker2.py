@@ -31,22 +31,22 @@ def calc_orbit():
     NumDataPointsOutRV = 25 #must be much less than 10000.  values between 10-500 are suitable.
     NumDataPointsOutDI = 10 #must be much less than 10000.  values between 10-500 are suitable.
     storePrimaryRVs = True
-    percentError = 1 #error is set to a percentage of the median
+    percentError = 5 #error is set to a percentage of the median
     realizeErrors = True
     overlapEnds = False # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
-    massratio = 1047.0
+    massratio = 334505.0
     M_primary = 1.0 #Solar masses
-    distance = 20.0 #parsecs
+    distance = 1.0 #parsecs
     km_to_arcsec = 1/(constants.MperAU/1000.0)/distance # convert km to arcsecond
 
     #Orbital Elements
-    TimeLastPeri = 2451545.0 #JD
-    e = 0.05
-    period = 12 # years
-    Omega = 100*constants.pi/180 # Longitude of ascending node
-    omega = 275*constants.pi/180 # Argument of periastron
+    TimeLastPeri = 2450817.5 #JD
+    e = 0.01671022
+    period = 0.99997862 # years
+    Omega = 348.73936*constants.pi/180 # Longitude of ascending node
+    omega = 102.94719*constants.pi/180 # Argument of periastron
     i = 45*constants.pi/180 # Inclination
  
     mu = constants.Gcgs*M_primary*(constants.KGperMsun*1000.0)*(1 + 1./massratio) #gravitational parameter

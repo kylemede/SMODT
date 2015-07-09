@@ -117,8 +117,8 @@ void Orbit::convertParsFromRaw(double *p, int p_n){
 		//std::cout<<"converting params to use forms"<<std::endl;
 		e = p[4]*p[4]+p[9]*p[9];
 		omega = (180.0/pi)*atan2(p[4],p[9]);
-		if (omega<0)
-			omega+=360.0;
+		//if (omega<0)
+		//	omega+=360.0;
 		p[4] = e;
 		p[9] = omega;
 	}

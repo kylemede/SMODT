@@ -266,7 +266,7 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
     if type(outputDataFilenames)!=list:
         outputDataFilenames = [outputDataFilenames]
     
-    colorsList =['Black','Blue','DarkGreen','Red','Purple','Fuchsia','Crimson','Aqua','Gold','OrangeRed','Plum','Chartreuse','Chocolate','SteelBlue ','Teal','Salmon','Brown']
+    colorsList =['Red','DarkGreen','Blue','Black','Purple','Fuchsia','Crimson','Aqua','Gold','OrangeRed','Plum','Chartreuse','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     
     if os.path.exists(outputDataFilenames[0]):  
         log.debug('\nCreating a simple plot of some key posteriors for files:\n'+repr(outputDataFilenames))

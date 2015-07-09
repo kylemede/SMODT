@@ -746,21 +746,22 @@ def summaryFilePart2(settingsDict,effPtsStr,allTime,postTime):
     f.close()
     log.info("Summary file written to:\n"+summaryFname)
     
-def KeplersThird(p=0,atot=0,mtot=0):
+def keplersThird(p=0,atot=0,mtot=0):
     """
     Kepler's Third rule.  
     Find the missing value provided you know 2 of them.
     """
     if (atot==0)and(mtot!=0)and(p!=0):
-        atot =pow(((p*p*const.secPerYear*secPerYear*Grav*KGperMsun*(params[0]+params[1]))/(4.0*pi*pi)),(1.0/3.0))
+        atot = (((P**2)*(const.secPerYear**2)*const.Grav*const.KGperMsun*mtot)/(4.0*const.pi**2))**(1.0/3.0)
+        atot = atot/const.MperAU
     elif (atot!=0)and(mtot==0)and(p!=0):
-        do=True
+        mtot = ((((atot*const.MperAU)**3)*4.0*const.pi**2)/((p**2)*(const.secPerYear**2)*const.Grav*const.KGperMsun))
     elif (atot!=0)and(mtot!=0)and(p==0):
-        do=True
+        p = np.sqrt((((atot*const.MperAU)**3)*4.0*(const.pi**2))/(const.Grav*mtot*(const.secPerYear**2)*const.KGperMsun))
     else:
-        print 'More than 1 parameter was zero, so I can not calc K3'
+        log.critical('More than 1 parameter was zero, so I can not calc K3')
     
-    
+    return (p,atot,mtot)
     
 def copyToDB(settingsDict):
     """

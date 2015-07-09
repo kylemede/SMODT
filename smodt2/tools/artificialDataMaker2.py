@@ -36,18 +36,18 @@ def calc_orbit():
     overlapEnds = False # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
-    massratio = 334505.0
-    M_primary = 1.0 #Solar masses
-    distance = 1.0 #parsecs
+    massratio = 1052.7314#334505.0
+    M_primary = 1.00 #Solar masses
+    distance = 20.0 #parsecs
     km_to_arcsec = 1/(constants.MperAU/1000.0)/distance # convert km to arcsecond
 
     #Orbital Elements
-    TimeLastPeri = 2450817.5 #JD
-    e = 0.01671022
-    period = 0.99997862 # years
-    Omega = 348.73936*constants.pi/180 # Longitude of ascending node
-    omega = 102.94719*constants.pi/180 # Argument of periastron
-    i = 45*constants.pi/180 # Inclination
+    TimeLastPeri = 2450639.5#2450817.5 #JD
+    e = 0.048#0.01671022
+    period = 11.9#0.99997862 # years
+    Omega = 100.6*constants.pi/180# Longitude of ascending node#348.73936
+    omega = 14.8*constants.pi/180 # Argument of periastron$ 102.94719
+    i = 45.0*constants.pi/180 # Inclination
  
     mu = constants.Gcgs*M_primary*(constants.KGperMsun*1000.0)*(1 + 1./massratio) #gravitational parameter
     a = (mu*(period*constants.secPerYear)**2/4/constants.pi**2)**(1./3) #in cm

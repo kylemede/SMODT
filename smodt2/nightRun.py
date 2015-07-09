@@ -6,7 +6,6 @@ def nightRun():
     """
     cmdList = [
                "python SMODT.py Jupiter1percent_",
-               "python SMODT.py Jupiter20percent_",
                "python SMODT.py Jupiter10percent_",
                "python SMODT.py Jupiter5percent_",
                "python customPost.py"

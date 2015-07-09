@@ -31,23 +31,23 @@ def calc_orbit():
     NumDataPointsOutRV = 25 #must be much less than 10000.  values between 10-500 are suitable.
     NumDataPointsOutDI = 10 #must be much less than 10000.  values between 10-500 are suitable.
     storePrimaryRVs = True
-    percentError = 5 #error is set to a percentage of the median
+    percentError = 10 #error is set to a percentage of the median
     realizeErrors = True
     overlapEnds = False # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
-    M_secondary =  0.0000149474579663#1.0*(const.KGperMjupiter/const.KGperMsun)#Solar masses
+    M_secondary =  1.0*(const.KGperMjupiter/const.KGperMsun)#Solar masses
     M_primary = 1.00 #Solar masses
-    distance = 1.0 #parsecs
+    distance = 20.0 #parsecs
     km_to_arcsec = 1/(const.MperAU/1000.0)/distance # convert km to arcsecond
     massratio=M_primary/M_secondary
 
     #Orbital Elements
-    TimeLastPeri = 2450817.5 #JD  #2450639.5#
-    e =0.017  #0.048#
-    period = 1.0000697145834374#0.99997862 # years  #11.9#
-    Omega = 348.73936*const.pi/180# Longitude of ascending node#348.73936 100.6
-    omega = 102.94719*const.pi/180 # Argument of periastron$ 102.94719    14.8
+    TimeLastPeri =2450639.5  #JD  #2450817.5
+    e =0.048#0.017  #
+    period = 11.9#1.0000697145834374#0.99997862 # years  #11.9#
+    Omega =100.6*const.pi/180# Longitude of ascending node#348.73936 100.6
+    omega = 14.8*const.pi/180 # Argument of periastron$ 102.94719    14.8
     i = 45.0*const.pi/180 # Inclination
     
     mu = const.Gcgs*M_primary*(const.KGperMsun*1000.0)*(1 + 1./massratio) #gravitational parameter

@@ -72,11 +72,11 @@ def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
     
     #outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-20percent-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-10percent-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-5percent-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-1percent-tight-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-JUPITER2-3D-10percent-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-JUPITER2-3D-5percent-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-JUPITER2-3D-1percent-tight-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
     
-    plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosteriorsPlot-lowEccTrue')
+    plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosteriorsPlot2-lowEccTrue')
     tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[4,8],xLims=[[-0.01,0.13],[25,57]])
     #print 'Final stacked plot file written to:\n'+plotFilename
     if True:

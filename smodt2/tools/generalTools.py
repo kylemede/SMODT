@@ -597,7 +597,17 @@ def writeFits(baseFilename,data,settingsDict):
     with the .header loaded up with the tuples from the settingsDict 
     and .data = provided data.
     File will be stored in the 'finalFolder' directory from the settingsDict.
+    If data variable is a string, this function will assume it is a filename 
+    of where the data is stored in a .npy file, and load it in.
     """
+    ##check if data is a .npy filename
+    if type(data)==str:
+        if os.path.exists(data):
+            dataFname = data
+            data = np.load(dataFname)
+            os.remove(dataFname)
+            print "just removed data file from disk:\n"+dataFname+'\n'
+    
     if '.fits' not in baseFilename:
         baseFilename=baseFilename+'.fits'
     outFname = os.path.join(settingsDict['finalFolder'],baseFilename)
@@ -639,6 +649,18 @@ def loadFits(filename):
         log.critical("fits file does not exist!!! filename =\n"+str(filename))
         head=data=False
     return (head,data)
+
+def periodicDataDump(filename,d):
+    """
+    dump a ndarray to disk.  If first time, just dump it.
+    Else, load current ary and cat d to it before dumping.
+    """
+    if os.path.exists(filename):
+        d0 = np.load(filename)
+        np.save(filename,np.concatenate((d0,d)))
+    else:
+        np.save(filename,d)
+
 
 def combineFits(filenames,outFname):
     """

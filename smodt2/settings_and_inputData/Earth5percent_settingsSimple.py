@@ -8,6 +8,9 @@ simpleSettingsDict={
 'nChains' : (3,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
+# Directory on an SSD for fast reading/writting of temp data files to save on RAM usage.
+##NOTE: just set to same as outDir if you don't have an SSD.
+'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
 'outRoot' : "SMODT2-SyntheticEARTH-DI-5percent-retro-lowEccTrue-test",
@@ -37,7 +40,7 @@ simpleSettingsDict={
 'eMAX' : 0.05,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2450400,
+'TMIN' : 2450650,
 'TMAX' : 2451000,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 0.01,

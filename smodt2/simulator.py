@@ -17,6 +17,7 @@ class Simulator(object):
     def __init__(self,settingsDict):
         self.paramsLast = 0
         self.paramsBest = 0
+        self.nSaved = 0
         self.bestSumStr = ''
         self.latestSumStr = ''
         self.bestRedChiSqr = 1e6
@@ -38,6 +39,7 @@ class Simulator(object):
         self.Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
         self.seed = int(timeit.default_timer())#reset in resetTracked()
         np.random.seed(self.seed)
+        self.tmpDataFile = os.path.join(self.dictVal('tmpDir'),str(self.chainNum)+".npy")
         
         
     def starter(self):
@@ -258,7 +260,7 @@ class Simulator(object):
             parsOut[12] = 0
         return parsOut
     
-    def rangeCheck(self,pars,numAccepted=0,stage=''):
+    def rangeCheck(self,pars,stage=''):
         """
         Check if values inside allowed range
         """
@@ -277,7 +279,7 @@ class Simulator(object):
                 elif (i!=5) and (i!=6):
                     if (self.rangeMins[i]>paramsOut[i])or(paramsOut[i]>self.rangeMaxs[i]):
                         inRange=False
-        if (numAccepted==0)and(stage=='SA'):
+        if (self.acceptCount==0)and(stage=='SA'):
             ##Jump as starting position was in poor part of param space. for SA only.
             paramsOut = self.increment(pars,np.zeros(pars.shape),stage='MC')
             ## convert from Raw form if in lowEcc mode
@@ -286,7 +288,7 @@ class Simulator(object):
             inRange=True
         return (paramsOut,inRange)
     
-    def accept(self,sample,pars,modelData,nSaved=0,temp=1.0,stage=''):
+    def accept(self,sample,pars,modelData,temp=1.0,stage=''):
         """
         First this will calculate chi squared for model vs real data.
         
@@ -362,7 +364,7 @@ class Simulator(object):
         ##log a status summary?
         if self.dictVal('nSumry')>0:
             if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
-                sumStr = "below\n"+stage+" chain #"+str(self.chainNum)+", # Accepted: "+str(self.acceptCount)+", # Saved: "+str(nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
+                sumStr = "below\n"+stage+" chain #"+str(self.chainNum)+", # Accepted: "+str(self.acceptCount)+", # Saved: "+str(self.nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
                 sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
                 self.log.debug(sumStr)
                 #print 'priorsRatio = '+repr(priorsRatio)
@@ -417,9 +419,13 @@ class Simulator(object):
                 if self.dictVal('nSumry')>0:
                     if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
                         self.log.debug(self.acceptStr+self.shiftStr)
+        else:
+            #No need to track these, so reset them to empty to save any RAM they are using
+            self.acceptBoolAry = []
+            self.parIntVaryAry = []
         return sigmasOut
     
-    def endSummary(self,totSaved,temp,sigmas,stage=''):
+    def endSummary(self,temp,sigmas,stage=''):
         """
         Make a final summary of important statistics for the chain.
         """
@@ -427,7 +433,7 @@ class Simulator(object):
         sumStr+= str(temp)+"\nTotal number of steps accepted = "+str(self.acceptCount)+"\n"
         sumStr+= "Average acceptance rate = "
         sumStr+=str(float(self.acceptCount)/float(self.dictVal(self.stgNsampDict[stage])))+"\n"
-        sumStr+= "Total number of steps stored = "+str(totSaved)+"\n"
+        sumStr+= "Total number of steps stored = "+str(self.nSaved)+"\n"
         sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
         sumStr+="Last params  = "+repr(self.paramsLast)+'\n'
         sumStr+="Best params (Raw) = "+repr(self.paramsBest)+'\n'
@@ -447,6 +453,7 @@ class Simulator(object):
         self.acceptStr = ''
         self.shiftStr = ''
         self.bestRedChiSqr = 1e6
+        self.nSaved = 0
         self.acceptCount = 0
         self.acceptBoolAry = []
         self.parIntVaryAry = []
@@ -455,6 +462,10 @@ class Simulator(object):
         self.log.debug("Chain# "+str(self.chainNum)+" has random number seed = "+str(self.seed))
         self.settingsDict['chainNum'] = (self.chainNum,"chain number")
         np.random.seed(self.seed)
+        self.tmpDataFile = os.path.join(self.dictVal('tmpDir'),self.dictVal('outRoot')+str(self.chainNum)+".npy")
+        if os.path.exists(self.tmpDataFile):
+            os.remove(self.tmpDataFile)
+            print "just removed data file from disk:\n"+self.tmpDataFile+'\n'
     
     def startSummary(self,pars,sigs,stage):
         startStr=stage+" chain #"+str(self.chainNum)+' VALS AT START OF '+stage+' SIM:\n'
@@ -502,31 +513,38 @@ class Simulator(object):
         ##Follows these steps: in Range?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? DONE ->write output data
         for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
             #print 'proposedParsRaw = '+repr(proposedParsRaw)
-            (proposedPars,inRange)=self.rangeCheck(proposedParsRaw,len(acceptedParams),stage)
+            (proposedPars,inRange)=self.rangeCheck(proposedParsRaw,stage)
             if inRange:
                 #print 'proposedPars = '+repr(proposedPars)
                 self.Orbit.calculate(modelData,proposedPars)
-                (params,accept) = self.accept(sample,proposedPars,modelData,len(acceptedParams),temp,stage)
+                (params,accept) = self.accept(sample,proposedPars,modelData,temp,stage)
                 if accept:
                     latestParsRaw = copy.deepcopy(params)
                     ## convert back to sqrt(e)sin(omega), sqrt(e)cos(omega) if in lowEcc mode
                     self.Orbit.convertParsToRaw(latestParsRaw)
                     if ('MCMC' not in stage)and(stage=='MC'):
                         acceptedParams.append(params)
+                        self.nSaved+=1
                     elif (self.acceptCount%self.dictVal('saveInt'))==0:
-                        acceptedParams.append(params)                   
+                        acceptedParams.append(params)  
+                        self.nSaved+=1                 
             else:
                 self.acceptBoolAry.append(0)
             proposedParsRaw = self.increment(latestParsRaw,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
             sigmas = self.sigTune(sample,sigmas,stage)
-            if (self.dictVal('logLevel')<40)and(sample%(self.dictVal(self.stgNsampDict[stage])//20)==0):
+            if (sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('ndump'))==0):
+                self.log.debug('Dumping data to filename:\n'+self.tmpDataFile+'\nThe acceptedParams Ary had size MB = '+str(np.array(acceptedParams).nbytes/1.0e6)+'\n')
+                np.save(self.tmpDataFile,np.array(acceptedParams))
+                acceptedParams = []
+            if (self.dictVal('logLevel')<40)and(sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0):
                 bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), stage+str(chainNum)+' complete so far.')
         if self.dictVal('logLevel')<40:
             bar.render(100,stage+str(chainNum)+' complete!\n')
         self.log.debug(stage+" took: "+tools.timeStrMaker(timeit.default_timer()-tic))
-        self.endSummary(len(acceptedParams),temp,sigmas,stage)
-        outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',acceptedParams,self.settingsDict)
+        self.endSummary(temp,sigmas,stage)
+        np.save(self.tmpDataFile,np.array(acceptedParams))
+        outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',self.tmpDataFile,self.settingsDict)
         if stage=='ST':
             ##start MCMC at best or end of ST?
             if self.dictVal('strBest'):

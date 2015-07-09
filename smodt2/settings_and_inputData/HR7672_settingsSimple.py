@@ -8,6 +8,9 @@ simpleSettingsDict={
 'nChains' : (7,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
+# Directory on an SSD for fast reading/writting of temp data files to save on RAM usage.
+##NOTE: just set to same as outDir if you don't have an SSD.
+'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
 'outRoot' : "SMODT2-HR7672-3D-MCMC-fixedM1M2Parallax-wideOpenP",

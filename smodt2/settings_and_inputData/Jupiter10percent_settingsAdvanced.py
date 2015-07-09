@@ -99,7 +99,7 @@ advancedDict = {
 # NOTE: CAUTION, can take a long time for long runs
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(1000000,"Number of Annealing samples"),
+'nSAsamp' :(500000,"Number of Annealing samples"),
 # Simulated Annealing starting temperature [double]
 'strtTemp' : (500.0,"SA starting temperature."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
@@ -120,6 +120,8 @@ advancedDict = {
 # interval of accepted values between storing in output array (for SA,ST,MCMC, not MC) [int]
 # Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
 'saveInt' : (10,"Interval between saving params, for all but MC."),
+# Number of times during MCMC or MC to write/dump the data to disk to avoid consuming too much RAM during long runs.
+'ndump'   : 20,
 # Start MCMC at the best params from the ST stage? [bool]
 'strBest' : (True,"Start MCMC at best fit params from ST"),
 ## NOTE: progress plots have no code yet, so MUST be False!!!

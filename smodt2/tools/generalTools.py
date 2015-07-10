@@ -577,7 +577,7 @@ def cleanUp(settingsDict,stageList,allFname):
     ##get combined data filename to delete
     if settingsDict["delCombined"]:
         delFiles.append(allFname)
-    if settingsDict['delBurn'][0]:
+    if settingsDict['rmBurn'][0]:
         ##the burn-in was stripped in the final file, so kill the non-stripped version if it exists
         nm = os.path.join(os.path.dirname(allFname),'combined*data.fits')
         if os.path.exists(nm):

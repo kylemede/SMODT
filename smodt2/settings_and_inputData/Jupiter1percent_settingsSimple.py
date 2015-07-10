@@ -28,10 +28,10 @@ simpleSettingsDict={
 'mass1MAX' : 1.5,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.0006,
-'mass2MAX' : 0.0012,
+'mass2MAX' : 0.0014,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 44.00,
-'paraMAX' : 58.00,
+'paraMIN' : 42.00,
+'paraMAX' : 59.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 90.0,
 'OmegaMAX' : 105.0,
@@ -40,7 +40,7 @@ simpleSettingsDict={
 'eMAX' : 0.07,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2450550,
+'TMIN' : 2450520,
 'TMAX' : 2450720,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 11,
@@ -50,7 +50,7 @@ simpleSettingsDict={
 'incMAX' : 50.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 5,
-'omegaMAX' : 20,
+'omegaMAX' : 22,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,

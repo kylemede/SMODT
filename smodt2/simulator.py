@@ -37,7 +37,8 @@ class Simulator(object):
         self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'),self.dictVal('lowEcc'))
         self.Orbit.loadRealData(self.realData)
         self.Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
-        self.seed = int(timeit.default_timer())#reset in resetTracked()
+        #Just initial seed val, reset in resetTracked() to be unique for each chain.
+        self.seed = int(timeit.default_timer())
         np.random.seed(self.seed)
         self.tmpDataFile = os.path.join(self.dictVal('tmpDir'),str(self.chainNum)+".npy")
         
@@ -300,6 +301,7 @@ class Simulator(object):
         for Simulated Annealing.
         """
         paramsOut = copy.deepcopy(pars)
+        ## Calculate chi squareds for 3D,DI,RV and update bestPars and bestSumStr if this is better than the best
         diffs = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1]),(self.realData[:,5]-modelData[:,2])))
         errors = np.concatenate((self.realData[:,2],self.realData[:,4],self.realData[:,6]))
         paramsOut[11] = np.sum((diffs**2)/(errors**2))
@@ -457,8 +459,8 @@ class Simulator(object):
         self.acceptCount = 0
         self.acceptBoolAry = []
         self.parIntVaryAry = []
-        temp = np.random.uniform(1,1e6)
-        self.seed = int((timeit.default_timer()/(self.chainNum+1))/temp)
+        t = np.random.uniform(1,1e6)
+        self.seed = int((timeit.default_timer()/(self.chainNum+1))/t)
         self.log.debug("Chain# "+str(self.chainNum)+" has random number seed = "+str(self.seed))
         self.settingsDict['chainNum'] = (self.chainNum,"chain number")
         np.random.seed(self.seed)

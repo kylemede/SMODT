@@ -129,7 +129,7 @@ def smodt():
     burnInStr = ''
     if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
         (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
-        if settingsDict['delBurn'][0]:
+        if settingsDict['rmBurn'][0]:
             strippedFnames = tools.burnInStripper(outFiles,burnInLengths)
             outFiles = strippedFnames
             ## combine stripped files to make final file?

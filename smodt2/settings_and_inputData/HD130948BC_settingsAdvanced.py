@@ -93,7 +93,7 @@ advancedDict = {
 # Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
 'CalcBurn' :True,
 # remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by ST though...)? [bool]
-'delBurn' : (True,"Remove Burn-in?"),
+'rmBurn' : (True,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 'calcCL' :True,
 # number of samples to draw for simulated annealing stage [int] 

@@ -828,11 +828,11 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
             fitPlot = figRV.add_subplot(211)
             fitPlot.set_position([0.13,0.38,0.84,0.57])
             xLabel = "Orbital Phase"
-            fitYlabel = 'RV '
+            fitYlabel = 'vr '
             residYlabel = 'O-C '
             if latex:
                 residYlabel = '$O-C$ '
-                fitYlabel = '$RV$ '
+                fitYlabel = '$vr$ '
                 xLabel = "$Orbital$ $Phase$"
             residualsPlot.axes.set_xlabel(xLabel,fontsize=20)
             residualsPlot.axes.set_ylabel(residYlabel,fontsize=20)

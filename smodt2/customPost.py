@@ -77,7 +77,7 @@ def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-JUPITER2-3D-1percent-tight-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
     
     plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosteriorsPlot2-lowEccTrue')
-    tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[4,8],xLims=[[-0.01,0.13],[25,57]])
+    tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[4,8],xLims=[[-0.01,0.15],[28,76]])
     #print 'Final stacked plot file written to:\n'+plotFilename
     if True:
         print 'converted to PDF as well'

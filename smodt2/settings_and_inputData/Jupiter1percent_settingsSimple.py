@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (40000000,"Number of MCMC or MC samples"),
+'nSamples' : (4000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -24,14 +24,14 @@ simpleSettingsDict={
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
 # NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
-'mass1MIN' : 0.7,
-'mass1MAX' : 1.3,
+'mass1MIN' : 0.6,
+'mass1MAX' : 1.5,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.00065,
+'mass2MIN' : 0.0006,
 'mass2MAX' : 0.0012,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 46.00,
-'paraMAX' : 56.00,
+'paraMIN' : 44.00,
+'paraMAX' : 58.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 90.0,
 'OmegaMAX' : 105.0,
@@ -41,7 +41,7 @@ simpleSettingsDict={
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
 'TMIN' : 2450550,
-'TMAX' : 2450690,
+'TMAX' : 2450720,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 11,
 'PMAX' : 13.0,

@@ -655,12 +655,12 @@ def periodicDataDump(filename,d):
     dump a ndarray to disk.  If first time, just dump it.
     Else, load current ary and cat d to it before dumping.
     """
-    if os.path.exists(filename):
-        d0 = np.load(filename)
-        np.save(filename,np.concatenate((d0,d)))
-    else:
-        np.save(filename,d)
-
+    if len(d)!=0:
+        if os.path.exists(filename):
+            d0 = np.load(filename)
+            np.save(filename,np.concatenate((d0,d)))
+        else:
+            np.save(filename,d)
 
 def combineFits(filenames,outFname):
     """

@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (40000000,"Number of MCMC or MC samples"),
+'nSamples' : (4000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -40,8 +40,8 @@ simpleSettingsDict={
 'eMAX' : 0.1,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2450550,
-'TMAX' : 2450900,
+'TMIN' : 2450350,
+'TMAX' : 2451100,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 10,
 'PMAX' : 13.0,

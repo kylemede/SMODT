@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (40000000,"Number of MCMC or MC samples"),
+'nSamples' : (4000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -40,8 +40,8 @@ simpleSettingsDict={
 'eMAX' : 0.2,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2450480,
-'TMAX' : 2451500,
+'TMIN' : 2450100,
+'TMAX' : 2452100,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 9,
 'PMAX' : 15.0,
@@ -49,8 +49,8 @@ simpleSettingsDict={
 'incMIN' : 20,
 'incMAX' : 80.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : 0,
-'omegaMAX' : 120,
+'omegaMIN' : -10,
+'omegaMAX' : 180,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,

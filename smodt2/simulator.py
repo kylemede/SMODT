@@ -533,9 +533,9 @@ class Simulator(object):
             proposedParsRaw = self.increment(latestParsRaw,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
             sigmas = self.sigTune(sample,sigmas,stage)
-            if (sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('ndump'))==0):
+            if (self.nSaved%self.dictVal('dmpInt'))==0:
                 self.log.debug('Dumping data to filename:\n'+self.tmpDataFile+'\nThe acceptedParams Ary had size MB = '+str(np.array(acceptedParams).nbytes/1.0e6)+'\n')
-                np.save(self.tmpDataFile,np.array(acceptedParams))
+                tools.periodicDataDump(self.tmpDataFile,np.array(acceptedParams))
                 acceptedParams = []
             if (self.dictVal('logLevel')<40)and(sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0):
                 bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), stage+str(chainNum)+' complete so far.')
@@ -543,7 +543,7 @@ class Simulator(object):
             bar.render(100,stage+str(chainNum)+' complete!\n')
         self.log.debug(stage+" took: "+tools.timeStrMaker(timeit.default_timer()-tic))
         self.endSummary(temp,sigmas,stage)
-        np.save(self.tmpDataFile,np.array(acceptedParams))
+        tools.periodicDataDump(self.tmpDataFile,np.array(acceptedParams))
         outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',self.tmpDataFile,self.settingsDict)
         if stage=='ST':
             ##start MCMC at best or end of ST?

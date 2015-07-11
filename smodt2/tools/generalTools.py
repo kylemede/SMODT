@@ -54,7 +54,9 @@ def corrLengthCalcVar(paramIN):
         corrLengths = []
         notFinished=True
         while notFinished:
-            for i in range(startLoc+1,len(paramIN)+1):
+            i = startLoc
+            while i<(len(paramIN)+1):
+                i+=1
                 if i>=len(paramIN):
                     #hit the end, so stop
                     notFinished=False
@@ -151,7 +153,9 @@ def burnInCalc(mcmcFnames,combinedFname):
             likelihoodsChain = np.exp(-chiSqsChain/2.0)
             #medianChain = np.median(chiSquaredsChain)
             burnInLength = len(likelihoodsChain)
-            for i in range(1,len(likelihoodsChain)):
+            i=0
+            while i<(len(likelihoodsChain)+1):
+                i+=1
                 if likelihoodsChain[i]>medainALL:
                     #print 'chiSqsChain[i] = '+str(chiSqsChain[i])
                     burnInLength = i+1
@@ -579,7 +583,7 @@ def cleanUp(settingsDict,stageList,allFname):
         delFiles.append(allFname)
     if settingsDict['rmBurn'][0]:
         ##the burn-in was stripped in the final file, so kill the non-stripped version if it exists
-        nm = os.path.join(os.path.dirname(allFname),'combined*data.fits')
+        nm = os.path.join(os.path.dirname(allFname),'combinedMCMCdata.fits')
         if os.path.exists(nm):
             delFiles.append(nm)
             
@@ -606,7 +610,7 @@ def writeFits(baseFilename,data,settingsDict):
             dataFname = data
             data = np.load(dataFname)
             os.remove(dataFname)
-            print "just removed data file from disk:\n"+dataFname+'\n'
+            log.debug("just removed data file from disk:\n"+dataFname)
     
     if '.fits' not in baseFilename:
         baseFilename=baseFilename+'.fits'
@@ -815,19 +819,7 @@ def getParInts(head):
     parInts = []
     for i in ints:
         parInts.append(int(i))  
-    return parInts
-
-def confLevelFinderMeanTEST(filename, colNum=False):
-    """
-    Trials for finding confidence levels centered on the mean.
-    """
-    if os.path.exists(filename):
-        (dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReader(filename, colNum)
-        if len(dataAry>0) or (dataValueStart!=dataValueMid!=dataValueEnd):
-            mn = np.mean(dataAry)
-            
-        
-        
+    return parInts        
         
 def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=False, returnBestDataVal=False):
     """
@@ -978,8 +970,7 @@ def findBestOrbit(filename):
     orbBest = data[loc[0][0],:]
     log.info("Best fit found to be:\n"+repr(orbBest))
     return orbBest
-                                         
-                                         
+                                                    
 def copytree(src, dst):
     """
     Recursively copy a directory and its contents to another directory.

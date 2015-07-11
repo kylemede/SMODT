@@ -1,6 +1,7 @@
 #@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 import numpy as np
 import os
+import gc
 import copy
 import sys
 #from scipy.constants.codata import precision
@@ -18,11 +19,13 @@ class Simulator(object):
         self.paramsLast = 0
         self.paramsBest = 0
         self.nSaved = 0
+        self.nSavedPeriodic = 0
         self.bestSumStr = ''
         self.latestSumStr = ''
         self.bestRedChiSqr = 1e6
         self.stgNsampDict = {'SA':'nSAsamp','ST':'nSTsamp','MC':'nSamples','MCMC':'nSamples'}
         self.acceptCount = 0
+        
         self.acceptStr = ''
         self.shiftStr = ''
         self.acceptBoolAry = []
@@ -40,7 +43,7 @@ class Simulator(object):
         #Just initial seed val, reset in resetTracked() to be unique for each chain.
         self.seed = int(timeit.default_timer())
         np.random.seed(self.seed)
-        self.tmpDataFile = os.path.join(self.dictVal('tmpDir'),str(self.chainNum)+".npy")
+        self.tmpDataFile = os.path.join(self.dictVal('tmpDir'),self.dictVal('outRoot')+"-"+str(self.chainNum)+".npy")
         
         
     def starter(self):
@@ -360,13 +363,16 @@ class Simulator(object):
             self.acceptCount+=1
             self.acceptBoolAry.append(1)
             self.paramsLast=paramsOut
-            self.latestSumStr = stage+" chain #"+str(self.chainNum)+' Latest accepted reduced chiSquareds: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
+            self.latestSumStr = stage+" chain #"+str(self.chainNum)+' Latest accepted reduced chiSquareds: [total,DI,RV] = ['+\
+            str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
         else:
             self.acceptBoolAry.append(0)
         ##log a status summary?
         if self.dictVal('nSumry')>0:
             if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
-                sumStr = "below\n"+stage+" chain #"+str(self.chainNum)+", # Accepted: "+str(self.acceptCount)+", # Saved: "+str(self.nSaved)+", Finished: "+str(sample)+"/"+str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
+                sumStr = "below\n"+stage+" chain #"+str(self.chainNum)+", # Accepted: "+str(self.acceptCount)+", # Saved: "+\
+                str(self.nSaved)+' (curr '+str(self.nSavedPeriodic)+"), Finished: "+str(sample)+"/"+\
+                str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
                 sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
                 self.log.debug(sumStr)
                 #print 'priorsRatio = '+repr(priorsRatio)
@@ -457,6 +463,7 @@ class Simulator(object):
         self.bestRedChiSqr = 1e6
         self.nSaved = 0
         self.acceptCount = 0
+        self.nSavedPeriodic = 0
         self.acceptBoolAry = []
         self.parIntVaryAry = []
         t = np.random.uniform(1,1e6)
@@ -464,10 +471,10 @@ class Simulator(object):
         self.log.debug("Chain# "+str(self.chainNum)+" has random number seed = "+str(self.seed))
         self.settingsDict['chainNum'] = (self.chainNum,"chain number")
         np.random.seed(self.seed)
-        self.tmpDataFile = os.path.join(self.dictVal('tmpDir'),self.dictVal('outRoot')+str(self.chainNum)+".npy")
+        self.tmpDataFile = os.path.join(self.dictVal('tmpDir'),self.dictVal('outRoot')+"-"+str(self.chainNum)+".npy")
         if os.path.exists(self.tmpDataFile):
             os.remove(self.tmpDataFile)
-            print "just removed data file from disk:\n"+self.tmpDataFile+'\n'
+            self.log.debug("just removed data file from disk:\n"+self.tmpDataFile)
     
     def startSummary(self,pars,sigs,stage):
         startStr=stage+" chain #"+str(self.chainNum)+' VALS AT START OF '+stage+' SIM:\n'
@@ -512,12 +519,12 @@ class Simulator(object):
         self.paramsLast = paramsLast
         #self.startSummary(proposedPars,sigmas,stage)
         ##loop through each sample 
-        ##Follows these steps: in Range?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? DONE ->write output data
-        for sample in range(0,self.dictVal(self.stgNsampDict[stage])):
-            #print 'proposedParsRaw = '+repr(proposedParsRaw)
+        ##Follows these steps: in Range?,calc model,accept?,Store?,increment,lower temp?,tune sigmas? dump data to disk? DONE ->write output data
+        sample=0
+        while sample<(self.dictVal(self.stgNsampDict[stage])+1):
+            sample+=1
             (proposedPars,inRange)=self.rangeCheck(proposedParsRaw,stage)
             if inRange:
-                #print 'proposedPars = '+repr(proposedPars)
                 self.Orbit.calculate(modelData,proposedPars)
                 (params,accept) = self.accept(sample,proposedPars,modelData,temp,stage)
                 if accept:
@@ -527,18 +534,26 @@ class Simulator(object):
                     if ('MCMC' not in stage)and(stage=='MC'):
                         acceptedParams.append(params)
                         self.nSaved+=1
+                        self.nSavedPeriodic+=1  
                     elif (self.acceptCount%self.dictVal('saveInt'))==0:
                         acceptedParams.append(params)  
-                        self.nSaved+=1                 
+                        self.nSaved+=1   
+                        self.nSavedPeriodic+=1                
             else:
                 self.acceptBoolAry.append(0)
             proposedParsRaw = self.increment(latestParsRaw,sigmas,stage)
             temp = self.tempDrop(sample,temp,stage)
             sigmas = self.sigTune(sample,sigmas,stage)
-            if (self.nSaved%self.dictVal('dmpInt'))==0:
-                self.log.debug('Dumping data to filename:\n'+self.tmpDataFile+'\nThe acceptedParams Ary had size MB = '+str(np.array(acceptedParams).nbytes/1.0e6)+'\n')
+            if (self.nSavedPeriodic>0)and((self.nSaved%self.dictVal('dmpInt'))==0):
+                ## dump acceptedParams array to disk and collect garbage
+                self.log.debug('Dumping data to filename:\n'+self.tmpDataFile+\
+                               '\nThe acceptedParams Ary had '+str(np.array(acceptedParams).shape[0])+\
+                               ' param sets, and size = '+str(np.array(acceptedParams).nbytes/1.0e6)+' MB')
                 tools.periodicDataDump(self.tmpDataFile,np.array(acceptedParams))
                 acceptedParams = []
+                self.nSavedPeriodic = 0
+                self.log.debug('about to collect the garbage')
+                gc.collect()
             if (self.dictVal('logLevel')<40)and(sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0):
                 bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), stage+str(chainNum)+' complete so far.')
         if self.dictVal('logLevel')<40:

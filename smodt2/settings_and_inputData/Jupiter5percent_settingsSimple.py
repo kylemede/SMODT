@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (1000000,"Number of MCMC or MC samples"),
+'nSamples' : (60000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-JUPITER2-3D-5percent-startAtBest-lowEccTrue",
+'outRoot' : "SMODT2-JUPITER2-3D-5percent-startAtBest-lowEccTrue-3",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -40,8 +40,8 @@ simpleSettingsDict={
 'eMAX' : 0.1,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2450250,
-'TMAX' : 2451500,
+'TMIN' : 2450200,
+'TMAX' : 2451700,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 10,
 'PMAX' : 13.0,
@@ -50,7 +50,7 @@ simpleSettingsDict={
 'incMAX' : 55.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : -30,
-'omegaMAX' : 80,
+'omegaMAX' : 110,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,

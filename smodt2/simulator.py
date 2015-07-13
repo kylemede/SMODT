@@ -25,7 +25,6 @@ class Simulator(object):
         self.bestRedChiSqr = 1e6
         self.stgNsampDict = {'SA':'nSAsamp','ST':'nSTsamp','MC':'nSamples','MCMC':'nSamples'}
         self.acceptCount = 0
-        
         self.acceptStr = ''
         self.shiftStr = ''
         self.acceptBoolAry = []
@@ -44,7 +43,6 @@ class Simulator(object):
         self.seed = int(timeit.default_timer())
         np.random.seed(self.seed)
         self.tmpDataFile = os.path.join(self.dictVal('tmpDir'),self.dictVal('outRoot')+"-"+str(self.chainNum)+".npy")
-        
         
     def starter(self):
         """
@@ -218,8 +216,32 @@ class Simulator(object):
         paramIntsStr = repr(paramInts).replace(' ','')
         self.settingsDict['parInts'] = (paramIntsStr,"Varried params")
         self.settingsDict['chainNum'] = (self.chainNum,"chain number")
-
         return (rangeMaxsRaw,rangeMinsRaw,rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
+    
+    def combinedPriors(self,paramsCurr):
+        """
+        """
+        
+    #print "likelihoodRatio = "+repr(likelihoodRatio)
+    ###### put all prior funcs together in dict??
+    #print 'paramsOut[4] = '+str(paramsOut[4])
+    #print 'paramsOut[7] = '+str(paramsOut[7])
+    #print 'paramsOut[4] = '+str(self.paramsLast[4])
+    #print 'paramsOut[7] = '+str(self.paramsLast[7])
+    priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
+    #print "a = "+repr((self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7])))
+    priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
+    #print "b = "+repr((self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7])))
+    priorsRatio*= (self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
+    #print "c = "+repr((self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8])))
+    priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
+    #print "d = "+repr((self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0])))
+    priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
+    #print "e = "+repr((self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1])))
+    priorsRatio*= (self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) 
+    #print "f = "+repr((self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) )
+    #print 'priorsRatio = '+str(priorsRatio)
+    
     
     def dictVal(self,key):
         """

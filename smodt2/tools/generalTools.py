@@ -611,32 +611,34 @@ def writeFits(baseFilename,data,settingsDict):
             data = np.load(dataFname)
             os.remove(dataFname)
             log.debug("just removed data file from disk:\n"+dataFname)
-    
-    if '.fits' not in baseFilename:
-        baseFilename=baseFilename+'.fits'
-    outFname = os.path.join(settingsDict['finalFolder'],baseFilename)
-    hdu = pyfits.PrimaryHDU(data)
-    hdulist = pyfits.HDUList([hdu])
-    header = hdulist[0].header
-    ##load up header with tuples from settingsDict
-    for key in settingsDict:
-        if type(settingsDict[key])==tuple:
-            header[key]=settingsDict[key]
-            if len(settingsDict[key][1])>47:
-                log.warning("comment too long for pyfits headers:"+settingsDict[key][1])
-    hdulist.writeto(outFname)
-    log.info("output file written to:below\n"+outFname)
-    hdulist.close()
-    ## check resulting fits file header
-    if False:
-        f = pyfits.open(os.path.join(settingsDict['finalFolder'],baseFilename),'readonly')
-        head = f[0].header
-        f.close()
+    if len(data)>0:
+        if '.fits' not in baseFilename:
+            baseFilename=baseFilename+'.fits'
+        outFname = os.path.join(settingsDict['finalFolder'],baseFilename)
+        hdu = pyfits.PrimaryHDU(data)
+        hdulist = pyfits.HDUList([hdu])
+        header = hdulist[0].header
+        ##load up header with tuples from settingsDict
+        for key in settingsDict:
+            if type(settingsDict[key])==tuple:
+                header[key]=settingsDict[key][0]
+                if len(settingsDict[key][1])>47:
+                    log.warning("comment too long for pyfits headers:"+settingsDict[key][1])
+        hdulist.writeto(outFname)
+        log.info("output file written to:below\n"+outFname)
+        hdulist.close()
+        ## check resulting fits file header
         if False:
-            for key in head:
-                print key+' = '+repr((header[key],header.comments[key]))
-                #print 'type(header[key] = '+repr(type(header[key]))
-        print '\n\nEntire Header as a repr:\n'+repr(head)
+            f = pyfits.open(os.path.join(settingsDict['finalFolder'],baseFilename),'readonly')
+            head = f[0].header
+            f.close()
+            if False:
+                for key in head:
+                    print key+' = '+repr((header[key],header.comments[key]))
+                    #print 'type(header[key] = '+repr(type(header[key]))
+            print '\n\nEntire Header as a repr:\n'+repr(head)
+    else:
+        log.error("No data to write to file:\n"+baseFilename)
     return outFname
     
 def loadFits(filename):

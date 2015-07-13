@@ -165,17 +165,17 @@ advancedDict = {
 'mass2Est' : (0.0,"Secondary's estimated mass"),
 'mass2Err' : (0.0,"Secondary's estimated mass error"),
 #best estimate of parallax, and error [double][mas]
-'paraEst' : (50,"Estimated parallax"),
-'paraErr' : (2.5,"Estimated parallax error"),
+'paraEst'  : (50,"Estimated parallax"),
+'paraErr'  : (2.5,"Estimated parallax error"),
 ##################################
 # Push prior functions into dict #
 ##################################
-'ePrior' :ePrior,
-'pPrior' :pPrior,
-'incPrior' :incPrior,
-'mass1Prior' :mass1Prior,
-'mass2Prior' :mass2Prior,
-'paraPrior' :paraPrior,
+'ePrior'    :(True,'Use prior for eccentricity?',ePrior),
+'pPrior'    :(True,'Use prior for eccentricity?',pPrior),
+'incPrior'  :(True,'Use prior for eccentricity?',incPrior),
+'mass1Prior':(True,'Use prior for eccentricity?',mass1Prior),
+'mass2Prior':(True,'Use prior for eccentricity?',mass2Prior),
+'paraPrior' :(True,'Use prior for eccentricity?',paraPrior),
 }
 
 

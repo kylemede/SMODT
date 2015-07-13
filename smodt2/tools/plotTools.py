@@ -74,7 +74,6 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
             xLabel='M2 [Mjupiter]'
             if latex:
                 xLabel='$M2$ [$M_{jupiter}$]'
-            confLevels=confLevels*(const.KGperMsun/const.KGperMjupiter)
     if (np.max(histData[:,0])>100000) or (valRange<(np.min(histData[:,0])/100.0)):
         #must be the To or Tc, so subtract int(min) and add to x-axis label
         #doing this as it doesn't go well allowing matplotlib to do it itself formatting wise
@@ -298,8 +297,8 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
             paramFileStrs = paramFileStrsUse 
             paramList = paramListUse
         ## determine appropriate figure size for number of params to plot
-        figSizes =  [(6.5,7),(8,4),(9,7),(10,3.5),(11,8),(11,11),(11,14),(11,16)]
-        gridSizes = [(1,1),(1,2),(1,3),(1,4),(2,4),(3,4),(4,4),(5,4)]
+        figSizes =  [(7,4),(8,4),(9,4),(10,4), (12,8),(12,11),(12,13),(12,15)]
+        gridSizes = [(1,1),(1,2),(1,3),(1,4),  (2,4),(3,4),(4,4),(5,4)]
         sz = 0
         if len(paramStrs2)>20:
             log.critical("summaryPlotter is only capable of handling up to 20 parameters, "+str(len(paramStrs2))+" were passed in!")

@@ -452,7 +452,7 @@ class Simulator(object):
         sumStr+='\n'+'='*70+'\n'
         self.log.info(sumStr)
     
-    def resetTracked(self):
+    def resetTracked(self,stage):
         """
         Reset the internal strings, arys and counters.
         """
@@ -466,11 +466,12 @@ class Simulator(object):
         self.nSavedPeriodic = 0
         self.acceptBoolAry = []
         self.parIntVaryAry = []
-        t = np.random.uniform(1,1e6)
-        self.seed = int((timeit.default_timer()/(self.chainNum+1))/t)
-        self.log.debug("Chain# "+str(self.chainNum)+" has random number seed = "+str(self.seed))
-        self.settingsDict['chainNum'] = (self.chainNum,"chain number")
-        np.random.seed(self.seed)
+        if (stage=="MC")or(stage=="SA"):
+            t = np.random.uniform(1,1e6)
+            self.seed = int((timeit.default_timer()/(self.chainNum+1))/t)
+            self.log.debug("Chain# "+str(self.chainNum)+" has random number seed = "+str(self.seed))
+            self.settingsDict['chainNum'] = (self.chainNum,"chain number")
+            np.random.seed(self.seed)
         self.tmpDataFile = os.path.join(self.dictVal('tmpDir'),self.dictVal('outRoot')+"-"+str(self.chainNum)+".npy")
         if os.path.exists(self.tmpDataFile):
             os.remove(self.tmpDataFile)
@@ -497,7 +498,7 @@ class Simulator(object):
         tic=timeit.default_timer()
         self.log.debug("Trying "+str(self.dictVal(self.stgNsampDict[stage]))+" samples for chain #"+str(chainNum)+" in "+stage+" mode.")
         self.chainNum = chainNum
-        self.resetTracked()
+        self.resetTracked(stage)
         bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
         modelData = np.zeros((len(self.realData),3))
         acceptedParams = []

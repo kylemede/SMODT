@@ -890,11 +890,12 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
             chiSquareds = 0
             
         mJupMult=(const.KGperMsun/const.KGperMjupiter)
-        s= "\nFinal 68% range values are: "+repr(conf68Vals)+'\n'
-        s=s+"Final 95% range values are: "+repr(conf95Vals)+'\n'
-        s=s+ "\nerror is centered on Median \n"
-        s=s+"68.3% error level = "+str(dataMedian-conf68Vals[0])
-        s=s+" ->   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
+        s = "\nFinal TOTAL range values are: "+repr([dataAry[0],dataAry[-1]])+'\n'
+        s+= "\nFinal 68% range values are: "+repr(conf68Vals)+'\n'
+        s+="Final 95% range values are: "+repr(conf95Vals)+'\n'
+        s+= "\nerror is centered on Median \n"
+        s+="68.3% error level = "+str(dataMedian-conf68Vals[0])
+        s+=" ->   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
         if (colNum==1) and (dataMedian<0.02):
             s=s+"Or in Mjup: ->   "+str(dataMedian*mJupMult)+'  +/-  '+str(dataMedian*mJupMult-conf68Vals[0]*mJupMult)+'\n'
         outStr+=s

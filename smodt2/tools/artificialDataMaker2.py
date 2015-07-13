@@ -33,6 +33,7 @@ def calc_orbit():
     storePrimaryRVs = True
     percentError = 10 #error is set to a percentage of the median
     realizeErrors = True
+    percentCoverage = 10.00 #percent of total orbit for data to span.  Over 100% is ok if you want overlapping data.
     overlapEnds = False # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
@@ -68,7 +69,6 @@ def calc_orbit():
     print "Mass 1 = "+str(M_primary)+" Msun"
     print "Mass 2 = "+str(M_secondary)+" Msun"
     print "Mass 2 = "+str(M_secondary*(const.KGperMsun/const.KGperMjupiter))+" Mjupiter"
-    
     print "System distance = "+str(distance)+" PC, or "+str(1.0/(distance/1000.0))+' [mas]'
     #settings prints
     if storePrimaryRVs:
@@ -80,20 +80,24 @@ def calc_orbit():
         print 'Data values were realized from the errors'
     else:
         print 'Data values are perfect with NO realization of the errors'
-    print str(NumDataPointsOutRV)+" RV, and "+str(NumDataPointsOutDI)+" DI epochs will be calculated and stored\n"
+    print str(NumDataPointsOutRV)+" RV, and "+str(NumDataPointsOutDI)+" DI epochs will be calculated and stored"
+    print 'The data will cover '+str(percentCoverage)+'% of the total orbit.\n'
         
     # Positions of both components in km relative to center of mass
     ke = pyasl.KeplerEllipse(a1, period, e=e, Omega=0.)
     NptsBIG = 10000
     t = (np.arange(NptsBIG) - 1)/(NptsBIG - 2.)*period
    
-    ## Extend t to include a tenth of extra points at the end that overlap the beginning of the orbit
-    if overlapEnds:
-        NumOverlapPts = NptsBIG//10
-        t2 = np.empty((t.shape[0]+NumOverlapPts))
+    ## update t to cover the percent of total orbit requested.
+    #print 'len(t) before = '+str(len(t))
+    t2=np.empty(( int((percentCoverage/100)*len(t)) ))
+    if percentCoverage<=100.0:
+        t2[0:t2.size]=t[0:t2.size]
+    elif percentCoverage<200.0:
         t2[0:t.size]=t
-        t2[t.size:]=t[2]*np.arange(NumOverlapPts+1)[1:]+t[-1]
-        t=t2
+        t2[t.size:]=t[0:( int(((percentCoverage-100.0)/100)*len(t)) )]+period
+    t=t2
+    #print 'len(t) after = '+str(len(t))
     pos_A = ke.xyzPos(t)
     pos_B = -pos_A/massratio
     

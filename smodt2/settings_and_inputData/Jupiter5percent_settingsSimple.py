@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (80000,"Number of MCMC or MC samples"),
+'nSamples' : (1000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (1,"Number of chains"),

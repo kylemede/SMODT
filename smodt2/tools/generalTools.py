@@ -581,7 +581,7 @@ def cleanUp(settingsDict,stageList,allFname):
     ##get combined data filename to delete
     if settingsDict["delCombined"]:
         delFiles.append(allFname)
-    if settingsDict['rmBurn'][0]:
+    if (settingsDict['rmBurn'][0])and(settingsDict['nChains'][0]>1):
         ##the burn-in was stripped in the final file, so kill the non-stripped version if it exists
         nm = os.path.join(os.path.dirname(allFname),'combinedMCMCdata.fits')
         if os.path.exists(nm):

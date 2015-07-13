@@ -216,33 +216,51 @@ class Simulator(object):
         paramIntsStr = repr(paramInts).replace(' ','')
         self.settingsDict['parInts'] = (paramIntsStr,"Varried params")
         self.settingsDict['chainNum'] = (self.chainNum,"chain number")
+        ## check priors are ok with range mins
+        self.combinedPriors(rangeMins,rangeMins,True)
+        
         return (rangeMaxsRaw,rangeMinsRaw,rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
     
-    def combinedPriors(self,paramsCurr):
+    def combinedPriors(self,parsCurr,parsLast,test=False):
         """
-        """
+        A function to combine priors in the settings dict.
+        This can be used at the Simulator's instantiation to make sure the
+        priors have no errors before starting a run.  This will be done 
+        using the minimum range values.
+        Else, it is just called during accept to calc the priors ratio.
         
-    #print "likelihoodRatio = "+repr(likelihoodRatio)
-    ###### put all prior funcs together in dict??
-    #print 'paramsOut[4] = '+str(paramsOut[4])
-    #print 'paramsOut[7] = '+str(paramsOut[7])
-    #print 'paramsOut[4] = '+str(self.paramsLast[4])
-    #print 'paramsOut[7] = '+str(self.paramsLast[7])
-    priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
-    #print "a = "+repr((self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7])))
-    priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
-    #print "b = "+repr((self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7])))
-    priorsRatio*= (self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
-    #print "c = "+repr((self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8])))
-    priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
-    #print "d = "+repr((self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0])))
-    priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
-    #print "e = "+repr((self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1])))
-    priorsRatio*= (self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) 
-    #print "f = "+repr((self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) )
-    #print 'priorsRatio = '+str(priorsRatio)
-    
-    
+        NOTE: -priors in the Advanced settings dict must be a tuple 
+              of (bool, comment string, function).
+              -Also, remember that non of the range values are allowed to be zero
+              as it breaks this and a few other functions.
+        """
+        priorsRatio = 1.0
+        try:
+            if self.dictVal('ePrior'):
+                priorsRatio*=(self.settingsDict['ePrior'][2](parsCurr[4],parsCurr[7])/self.settingsDict['ePrior'][2](parsLast[4],parsLast[7]))
+                #print 'priorsRatio after e: '+repr(priorsRatio)
+            if self.dictVal('pPrior'):
+                priorsRatio*=(self.settingsDict['pPrior'][2](parsCurr[7])/self.settingsDict['pPrior'][2](parsLast[7]))
+                #print 'priorsRatio after period: '+repr(priorsRatio)
+            if self.dictVal('incPrior'):
+                priorsRatio*=(self.settingsDict['incPrior'][2](parsCurr[8])/self.settingsDict['incPrior'][2](parsLast[8]))
+                #print 'priorsRatio after inclination: '+repr(priorsRatio)
+            if self.dictVal('M1Prior'):
+                priorsRatio*=(self.settingsDict['M1Prior'][2](parsCurr[0])/self.settingsDict['M1Prior'][2](parsLast[0]))
+                #print 'priorsRatio after M1: '+repr(priorsRatio)
+            if self.dictVal('M2Prior'):
+                priorsRatio*=(self.settingsDict['M2Prior'][2](parsCurr[1])/self.settingsDict['M2Prior'][2](parsLast[1]))
+                #print 'priorsRatio after M2: '+repr(priorsRatio)
+            if self.dictVal('parPrior'):
+                priorsRatio*=(self.settingsDict['parPrior'][2](parsCurr[2])/self.settingsDict['parPrior'][2](parsLast[2]))
+                #print 'priorsRatio after parallax: '+repr(priorsRatio)
+            #print 'priorsRatio final: '+repr(priorsRatio)
+            if test==False:
+                return priorsRatio
+        except:
+            log.critical("An error occured while trying to calculate the priors.")
+            sys.exit(0)
+            
     def dictVal(self,key):
         """
         Get the value for a key in the settings dictionary.
@@ -358,25 +376,26 @@ class Simulator(object):
                 #print 'self.paramsLast[11] = '+str(self.paramsLast[11])
                 #print 'paramsOut[11] = '+str(paramsOut[11])
                 likelihoodRatio = np.e**((self.paramsLast[11] - paramsOut[11])/(2.0*temp))
-                #print "likelihoodRatio = "+repr(likelihoodRatio)
-                ###### put all prior funcs together in dict??
-                #print 'paramsOut[4] = '+str(paramsOut[4])
-                #print 'paramsOut[7] = '+str(paramsOut[7])
-                #print 'paramsOut[4] = '+str(self.paramsLast[4])
-                #print 'paramsOut[7] = '+str(self.paramsLast[7])
-                priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
-                #print "a = "+repr((self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7])))
-                priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
-                #print "b = "+repr((self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7])))
-                priorsRatio*= (self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
-                #print "c = "+repr((self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8])))
-                priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
-                #print "d = "+repr((self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0])))
-                priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
-                #print "e = "+repr((self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1])))
-                priorsRatio*= (self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) 
-                #print "f = "+repr((self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) )
-                #print 'priorsRatio = '+str(priorsRatio)
+                priorsRatio = self.combinedPriors(paramsOut,self.paramsLast)
+#                 #print "likelihoodRatio = "+repr(likelihoodRatio)
+#                 ###### put all prior funcs together in dict??
+#                 #print 'paramsOut[4] = '+str(paramsOut[4])
+#                 #print 'paramsOut[7] = '+str(paramsOut[7])
+#                 #print 'paramsOut[4] = '+str(self.paramsLast[4])
+#                 #print 'paramsOut[7] = '+str(self.paramsLast[7])
+#                 priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
+#                 #print "a = "+repr((self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7])))
+#                 priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
+#                 #print "b = "+repr((self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7])))
+#                 priorsRatio*= (self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
+#                 #print "c = "+repr((self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8])))
+#                 priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
+#                 #print "d = "+repr((self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0])))
+#                 priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
+#                 #print "e = "+repr((self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1])))
+#                 priorsRatio*= (self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) 
+#                 #print "f = "+repr((self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) )
+#                 #print 'priorsRatio = '+str(priorsRatio)
                 if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
                     accept = True
             except:
@@ -410,8 +429,10 @@ class Simulator(object):
         There will be a fixed number of temperature steps = 'nTmpStps'.
         """
         if stage=='SA':
-            if sample%(self.dictVal('nSAsamp')//self.dictVal('nTmpStps'))==0:
-                temp-=(self.dictVal('strtTemp')-0.01)*(1.0/self.dictVal('nTmpStps'))
+            #if sample%(self.dictVal('nSAsamp')//self.dictVal('nTmpStps'))==0:
+            #    temp-=(self.dictVal('strtTemp')-0.01)*(1.0/self.dictVal('nTmpStps'))
+            if sample%self.dictVal('tempInt')==0:
+                temp-=(self.dictVal('strtTemp')-0.01)*(float(self.dictVal('tempInt'))/float(self.dictVal('nSAsamp')))
         return temp
     
     def sigTune(self,sample,sigs=[],stage=''):
@@ -424,7 +445,8 @@ class Simulator(object):
         """
         sigmasOut = copy.deepcopy(sigs)
         if (stage=='ST')or(stage=='MCMC'):
-            if (sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSigStps'))==0)and(self.acceptCount>1):
+            #if (sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSigStps'))==0)and(self.acceptCount>1):
+            if (sample%(len(self.paramInts)*self.dictVal('sigInt'))==0)and(self.acceptCount>1):
                 self.acceptStr = '\n'+stage+" chain #"+str(self.chainNum)+'\n'
                 self.shiftStr = ''
                 self.parIntVaryAry = np.array(self.parIntVaryAry)

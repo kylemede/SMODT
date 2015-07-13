@@ -70,7 +70,7 @@ advancedDict = {
 'cMaxMCMC':(5,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 30,
+'logLevel' : 10,
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :20,
 # make plot of posterior distributions? [bool]
@@ -93,33 +93,34 @@ advancedDict = {
 ############################
 # Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
 'CalcBurn' :True,
-# remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?
+# remove burn-in of output MCMC chains before combining (must be more than 1 chain) [bool]
+# (should already be handled by SimAnneal stage2 though...)?
 'rmBurn' : (True,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
-# NOTE: CAUTION, can take a long time for long runs
+# NOTE: CAUTION, can take a long time for long runs.  Still needs to be sped up somehow.
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(1000000,"Number of Annealing samples"),
+'nSAsamp' :(1500000,"Num SA samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (500.0,"SA starting temperature."),
+'strtTemp' : (500.0,"SA start temp."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
-'strtSig' : (0.15,"Starting percent param range for SA"),
-# Number of temperature steps over Simulated Annealing [int].  
-# Allowed vals [1,nSAsamp), Ideal is ~ int(nSAsamp/50)!
-'nTmpStps'  : (1000,"Number of temperature steps during SA."),
+'strtSig' : (0.15,"start percent param range for SA"),
+# Number of samples till temperature drop. [int]
+# Allowed vals [1,nSAsamp), Ideal is ~50.
+'tempInt'  : (50,"Num steps till temp drops in SA."),
 # number of samples to draw for sigma tuning stage [int].
-'nSTsamp' :(100000,"Number of Tuning samples"),
-# number of times to calculate acceptance rate for each parameter and vary its sigma value accordingly [int]. 
-# Allowed vals [1,nSTsamp) Ideal is int(nSTsamp/2000)!
-'nSigStps': (50,"Times to calc acceptance and tune sigmas."),
+'nSTsamp' :(100000,"Num ST samples"),
+# number of steps per varying parameter until calculating the acceptance rate and tuning sigmas. [int]
+# Allowed vals [1,nSTsamp), testing shows a value of ~200 works well.
+'sigInt': (200,"Num steps/param till calc accept rate/tune sigs."),
 # Maximum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
-'sigMax' :(1.0,'Maximum ratio of params range,for step size.'),
+'sigMax' :(1.0,'Max ratio of params range,for step size.'),
 # Minimum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
-'sigMin' :(0.02,'Minimum ratio of params range,for step size.'),
+'sigMin' :(0.02,'Min ratio of params range,for step size.'),
 # interval of accepted values between storing in output array (for SA,ST,MCMC, not MC) [int]
 # Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
-'saveInt' : (100,"Interval between saving params, for all but MC."),
+'saveInt' : (100,"Int between saving params, for all but MC."),
 # Interval of saved values before write/dump the data to disk to avoid consuming too much RAM during long runs. They take 11MB/100000.
 'dmpInt'   : 100000,
 # Start MCMC at the best params from the ST stage? [bool]
@@ -171,11 +172,11 @@ advancedDict = {
 # Push prior functions into dict #
 ##################################
 'ePrior'    :(True,'Use prior for eccentricity?',ePrior),
-'pPrior'    :(True,'Use prior for eccentricity?',pPrior),
-'incPrior'  :(True,'Use prior for eccentricity?',incPrior),
-'mass1Prior':(True,'Use prior for eccentricity?',mass1Prior),
-'mass2Prior':(True,'Use prior for eccentricity?',mass2Prior),
-'paraPrior' :(True,'Use prior for eccentricity?',paraPrior),
+'pPrior'    :(True,'Use prior for period?',pPrior),
+'incPrior'  :(True,'Use prior for inclination?',incPrior),
+'M1Prior':(True,'Use prior for M1?',mass1Prior),
+'M2Prior':(True,'Use prior for M2?',mass2Prior),
+'parPrior' :(True,'Use prior for parallax?',paraPrior),
 }
 
 

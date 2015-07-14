@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-JUPITER2-3D-5percent-startAtBest-lowEccTrue-priorsTEST",
+'outRoot' : "SMODT2-JUPITER2-3D-5percent-startAtBest-lowEccTrue-4",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -40,7 +40,7 @@ simpleSettingsDict={
 'eMAX' : 0.1,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2450100,
+'TMIN' : 2450050,
 'TMAX' : 2452300,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 11,
@@ -50,7 +50,7 @@ simpleSettingsDict={
 'incMAX' : 55.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : -50,
-'omegaMAX' : 150,
+'omegaMAX' : 160,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,

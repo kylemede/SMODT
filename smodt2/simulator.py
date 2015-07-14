@@ -236,6 +236,7 @@ class Simulator(object):
         """
         priorsRatio = 1.0
         try:
+            #print 'about to try and calc priors'
             if self.dictVal('ePrior'):
                 priorsRatio*=(self.settingsDict['ePrior'][2](parsCurr[4],parsCurr[7])/self.settingsDict['ePrior'][2](parsLast[4],parsLast[7]))
                 #print 'priorsRatio after e: '+repr(priorsRatio)
@@ -258,7 +259,7 @@ class Simulator(object):
             if test==False:
                 return priorsRatio
         except:
-            log.critical("An error occured while trying to calculate the priors.")
+            self.log.critical("An error occured while trying to calculate the priors.")
             sys.exit(0)
             
     def dictVal(self,key):

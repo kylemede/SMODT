@@ -2,10 +2,10 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (60000000,"Number of MCMC or MC samples"),
+'nSamples' : (10000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (7,"Number of chains"),
+'nChains' : (3,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # Directory on an SSD for fast reading/writting of temp data files to save on RAM usage.
@@ -13,18 +13,18 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HIP10321-3D-retro-MCMC-lowerDIerrors-startAtBest-M1equal1point4",
+'outRoot' : "SMODT2-HIP10321-RV-retro-MCMC-lowerDIerrors-startAtBest-Kdirect-rvJitterTesting",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
-'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
+'dataMode' : ('RV',"Data Mode (RV,DI,3D)"),
 # mode to run simulation in, choices {'MC','SA','MCMC'} [string]
 'symMode' : ('MCMC',"Simulator mode (MC,SA,MCMC)"),
 ###################################################
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 1.40,
-'mass1MAX' : 0,
+'mass1MIN' : 0.8,
+'mass1MAX' : 1.6,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.05,
 'mass2MAX' : 0.52,
@@ -42,7 +42,7 @@ simpleSettingsDict={
 'TMIN' : 2452200,
 'TMAX' : 2452500,
 # Minimum/Maximum allowed value for the Period [double][yrs]
-'PMIN' : 19.5,
+'PMIN' : 17.5,
 'PMAX' : 22.5,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
 'incMIN' : 140.0,

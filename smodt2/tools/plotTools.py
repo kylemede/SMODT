@@ -877,10 +877,10 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
             residualsPlot.axhline(linewidth=1.0,c='Blue') #adds a x-axis origin line
             
             ##load resulting data to file for re-plotting by others
-            #real [phases,JD,offset subtracted RV, residual]
+            #real [phases,JD,offset subtracted RV, residual, dataset#]
             outRVdataReal = []
             for i in range(0,len(phasesReal)):
-                outRVdataReal.append([phasesReal[i],realDataRV[i,0],zeroedRealDataRV[i,5],residualData[i,5]])
+                outRVdataReal.append([phasesReal[i],realDataRV[i,0],zeroedRealDataRV[i,5],residualData[i,5],realDataRV[i,7]])
             #print repr(outRVdataReal)
             #fit [phases,JD,RV]
             outRVdataFit = []
@@ -889,6 +889,21 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
             fnameBase = os.path.join(os.path.dirname(plotDataDir),'RVplotData')
             np.savetxt(fnameBase+'-real.dat',outRVdataReal)
             np.savetxt(fnameBase+'-fit.dat',outRVdataFit)
+            for i in range(0,int(np.max(residualData[:,7])+1)):
+                ary = []
+                for j in range(0,len(phasesReal)):
+                    if residualData[j,7]==float(i):
+                        if residualData[j,5] not in ary:
+                            ary.append(residualData[j,5])
+                            if np.abs(residualData[j,5])>residualData[j,6]:
+                                print 'dataset '+str(i)+', epoch '+str(realDataRV[j,0])+' had residual  '+str(np.abs(residualData[j,5])-residualData[j,6])+' greater than error'
+                d = np.array(ary)
+                #data = residualData[np.where(residualData[:,7]==float(i))[0],:]
+                d = np.abs(d)
+                print '\nFor RV dataset #'+str(i)
+                print 'Max abs residual = '+str(np.max(d))
+                print 'Min abs residual = '+str(np.min(d))
+                print 'mean abs residual = '+str(np.mean(d))
             
             ##clean up boarders, axis ticks and such 
             plt.minorticks_on()

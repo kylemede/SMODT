@@ -2,10 +2,10 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (10000000,"Number of MCMC or MC samples"),
+'nSamples' : (30000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (3,"Number of chains"),
+'nChains' : (4,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # Directory on an SSD for fast reading/writting of temp data files to save on RAM usage.
@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-SyntheticEARTH-DI-5percent-retro-lowEccTrue-test",
+'outRoot' : "SMODT2-EARTH-DI-5percent-retro-lowEccTrue",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('DI',"Data Mode (RV,DI,3D)"),
@@ -30,27 +30,27 @@ simpleSettingsDict={
 'mass2MIN' : 0.000002,#0.00000298949193585
 'mass2MAX' : 0.000004,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 950.00,
-'paraMAX' : 1050.00,
+'paraMIN' : 980.00,
+'paraMAX' : 1020.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-'OmegaMIN' : 180.0,
-'OmegaMAX' : 380.0,
+'OmegaMIN' : 340.0,
+'OmegaMAX' : 370.0,
 # Minimum/Maximum allowed value for the Eccentricity [double]
-'eMIN' : 0.0001,
-'eMAX' : 0.05,
+'eMIN' : 0.001,
+'eMAX' : 0.07,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
 'TMIN' : 2450650,
-'TMAX' : 2451000,
+'TMAX' : 2450850,
 # Minimum/Maximum allowed value for the Period [double][yrs]
-'PMIN' : 0.01,
-'PMAX' : 5.0,
+'PMIN' : 0.7,
+'PMAX' : 1.3,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 20,
+'incMIN' : 30,
 'incMAX' : 60.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : -20,
-'omegaMAX' : 180,
+'omegaMIN' : -30,
+'omegaMAX' : 160,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,

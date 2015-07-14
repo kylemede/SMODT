@@ -120,7 +120,7 @@ advancedDict = {
 'sigMin' :(0.02,'Min ratio of params range,for step size.'),
 # interval of accepted values between storing in output array (for SA,ST,MCMC, not MC) [int]
 # Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
-'saveInt' : (100,"Int between saving params, for all but MC."),
+'saveInt' : (10,"Int between saving params, for all but MC."),
 # Interval of saved values before write/dump the data to disk to avoid consuming too much RAM during long runs. They take 11MB/100000.
 'dmpInt'   : 100000,
 # Start MCMC at the best params from the ST stage? [bool]

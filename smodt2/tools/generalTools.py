@@ -734,6 +734,24 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
         f.write(chiSquaredsStr)
         bestStr = '\n'+'-'*21+'\nBest fit values were:\n'+'-'*21+'\n'
         log.debug('ln701:summaryFilePart1')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        ############################################
+        ## calculate chi squareds for the best fit #
+        ############################################
+        ##get the real data
+        realData = genTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
+        ## Make Orbit cpp obj
+        Orbit = cppTools.Orbit()
+        Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0],settingsDict['lowEcc'][0])
+        Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
+        ## ensure bestFit are in required format for Orbit
+        params = []
+        for par in bestFit:
+            params.append(par)
+        params=np.array(params,dtype=np.dtype('d'),order='C')
+        Orbit.loadRealData(realData)
+        modelData = np.ones((realData.shape[0],3),dtype=np.dtype('d'),order='C')
+        Orbit.calculate(modelData,params)
+        (raw3D, reducedDI, reducedRV, reduced3D) = chiSquaredCalc3D(realData,modelData,head['NUDI'],head['NURV'],head['NU'])
         for i in range(len(bestFit)):
             if i==2:
                 bestStr+=paramStrs[2]+" = "+str(bestFit[2])
@@ -750,7 +768,7 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
                     bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
             else:
                 bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
-        bestStr+='\n'+'*'*45+'\nBEST REDUCED CHISQUARED = '+str(bestFit[11]/float(head['nu']))+'\n'+'*'*45
+        bestStr+='\n'+'*'*100+'\nBEST REDUCED CHISQUAREDS: [total,DI,RV] = ['+str(reduced3D)+", "+str(reducedDI)+", "+str(reducedRV)+"]\n"+'*'*100
         f.write(bestStr)
         log.debug('ln714:summaryFilePart1')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     except:
@@ -791,6 +809,27 @@ def keplersThird(p=0,atot=0,mtot=0):
     
     return (p,atot,mtot)
     
+def chiSquaredCalc3D(realData,modelData,nuDI,nuRV,nu3D): 
+    """
+    Based on definition, chiSquared=sum((modelVal_i-dataVal_i)^2/(dataError_i^2)) over all values of 'i'.
+    This function will do so for DI, RV and 3D sets of data and provide the reduced chi squared for each.
+    The raw 3D value will also be returned.
+    NOTES: realData is the standard 7 parameter format from loadRealData function, and modelData is 
+           the standard 3 param format.
+           
+    returned (raw3D, reducedDI, reducedRV, reduced3D)
+    """   
+    diffs = np.concatenate(((realData[:,1]-modelData[:,0]),(realData[:,3]-modelData[:,1]),(realData[:,5]-modelData[:,2])))
+    errors = np.concatenate((realData[:,2],realData[:,4],realData[:,6]))
+    raw3D = np.sum((diffs**2)/(errors**2))
+    diffsDI = np.concatenate(((realData[:,1]-modelData[:,0]),(realData[:,3]-modelData[:,1])))
+    errorsDI = np.concatenate((realData[:,2],realData[:,4]))
+    diffsRV = (realData[:,5]-modelData[:,2])
+    errorsRV = realData[:,6][np.where(diffsRV!=0)]
+    rawDI = np.sum((diffsDI[np.where(diffsDI!=0)]**2)/(errorsDI[np.where(diffsDI!=0)]**2))
+    rawRV = np.sum((diffsRV[np.where(diffsRV!=0)]**2)/(errorsRV**2))
+    return (raw3D,rawDI/nuDI,rawRV/nuRV,raw3D/nu3D)
+
 def copyToDB(settingsDict):
     """
     Copy vital results files to Dropbox.

@@ -511,7 +511,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],stag
                 try:
                     par = paramList[i]
                 except:
-                    log.warning("Parameter "+str(i)+" not in paramList: \n"+repr(paramList))
+                    log.debug("Parameter "+str(i)+" not in paramList: \n"+repr(paramList))
                 subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[i],xLims=xLim,latex=latex,showYlabel=showYlabel,parInt=par)         
             else:
                 log.debug("Not plotting shaded hist for "+paramStrs2[i]+" as its hist file doesn't exist:\n"+histDataBaseName)
@@ -891,19 +891,24 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
             np.savetxt(fnameBase+'-fit.dat',outRVdataFit)
             for i in range(0,int(np.max(residualData[:,7])+1)):
                 ary = []
+                chiSqr = 0
+                print ''
                 for j in range(0,len(phasesReal)):
                     if residualData[j,7]==float(i):
                         if residualData[j,5] not in ary:
                             ary.append(residualData[j,5])
+                            chiSqr+=(residualData[j,5]**2.0)/(residualData[j,6]**2.0)
                             if np.abs(residualData[j,5])>residualData[j,6]:
                                 print 'dataset '+str(i)+', epoch '+str(realDataRV[j,0])+' had residual  '+str(np.abs(residualData[j,5])-residualData[j,6])+' greater than error'
                 d = np.array(ary)
                 #data = residualData[np.where(residualData[:,7]==float(i))[0],:]
                 d = np.abs(d)
-                print '\nFor RV dataset #'+str(i)
+                print 'For RV dataset #'+str(i)
                 print 'Max abs residual = '+str(np.max(d))
                 print 'Min abs residual = '+str(np.min(d))
                 print 'mean abs residual = '+str(np.mean(d))
+                print 'chiSqr for this set was = '+str(chiSqr)
+                print 'chiSqr/numRVs for this set was = '+str(chiSqr/len(d))
             
             ##clean up boarders, axis ticks and such 
             plt.minorticks_on()

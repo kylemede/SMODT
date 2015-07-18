@@ -99,7 +99,7 @@ advancedDict = {
 # NOTE: CAUTION, can take a long time for long runs.  Still needs to be sped up somehow.
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(300000,"Num SA samples"),
+'nSAsamp' :(1000000,"Num SA samples"),
 # Simulated Annealing starting temperature [double]
 'strtTemp' : (300.0,"SA start temp."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
@@ -112,7 +112,7 @@ advancedDict = {
 'nSTsamp' :(100000,"Num ST samples"),
 # number of steps per varying parameter until calculating the acceptance rate and tuning sigmas. [int]
 # Allowed vals [1,nSTsamp), testing shows a value of ~200 works well.
-'sigInt': (200,"Num steps/param till calc accept rate/tune sigs."),
+'sigInt': (200,"Num steps/par till calc acc rate/tune sigs."),
 # Maximum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
 'sigMax' :(1.0,'Max ratio of params range,for step size.'),
 # Minimum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
@@ -144,7 +144,7 @@ advancedDict = {
 # Are the RVs in the RVdata.dat for the Primary star? [bool]
 'primeRVs' : (True,"RVs measured from Primary?"),
 # Draw values for K directly, do NOT calculate it [bool]. Kills varying of Inclination.  Only possible in RV only mode.
-'Kdirect'  : (True,'Vary K direct, do not calc it'),
+'Kdirect'  : (False,'Vary K direct, do not calc it'),
 # Step through parameter space in Time of Center Transit (Inferior Conjunction)?  [bool]
 'TcStep' : (False,"Step in Tc not T?"),
 # take the time of center transit (inferior conjunction) into account? [bool]
@@ -173,8 +173,8 @@ advancedDict = {
 'ePrior'    :(True,'Use prior for eccentricity?',ePrior),
 'pPrior'    :(True,'Use prior for period?',pPrior),
 'incPrior'  :(True,'Use prior for inclination?',incPrior),
-'M1Prior':(True,'Use prior for M1?',mass1Prior),
-'M2Prior':(True,'Use prior for M2?',mass2Prior),
+'M1Prior':(False,'Use prior for M1?',mass1Prior),
+'M2Prior':(False,'Use prior for M2?',mass2Prior),
 'parPrior' :(True,'Use prior for parallax?',paraPrior),
 }
 

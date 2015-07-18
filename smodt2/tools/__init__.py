@@ -24,6 +24,7 @@ from generalTools import burnInStripper
 from generalTools import timeStrMaker
 from generalTools import copyToDB
 from generalTools import periodicDataDump
+from generalTools import chiSquaredCalc3D
 
 from progressbar.progressbar import ProgressBar
  

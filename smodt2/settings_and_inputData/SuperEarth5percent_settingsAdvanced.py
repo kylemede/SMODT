@@ -63,14 +63,14 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (100.0,"Max reduced chiSquared during MC"),
+'chiMAX' : (300.0,"Max reduced chiSquared during MC"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(5,'Max reduced chiSquared to enter ST.'),
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
 'cMaxMCMC':(5,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 30,
+'logLevel' : 10,
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :20,
 # make plot of posterior distributions? [bool]
@@ -165,7 +165,7 @@ advancedDict = {
 'mass2Est' : (0.0,"Secondary's estimated mass"),
 'mass2Err' : (0.0,"Secondary's estimated mass error"),
 #best estimate of parallax, and error [double][mas]
-'paraEst' : (50,"Estimated parallax"),
+'paraEst' : (1000,"Estimated parallax"),
 'paraErr' : (2.5,"Estimated parallax error"),
 ##################################
 # Push prior functions into dict #

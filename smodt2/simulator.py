@@ -346,22 +346,25 @@ class Simulator(object):
         """
         paramsOut = copy.deepcopy(pars)
         ## Calculate chi squareds for 3D,DI,RV and update bestPars and bestSumStr if this is better than the best
-        diffs = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1]),(self.realData[:,5]-modelData[:,2])))
-        errors = np.concatenate((self.realData[:,2],self.realData[:,4],self.realData[:,6]))
-        paramsOut[11] = np.sum((diffs**2)/(errors**2))
-        diffsDI = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1])))
-        errorsDI = np.concatenate((self.realData[:,2],self.realData[:,4]))
-        diffsRV = (self.realData[:,5]-modelData[:,2])
-        errorsRV = self.realData[:,6][np.where(diffsRV!=0)]
-        chiSquaredDI = np.sum((diffsDI[np.where(diffsDI!=0)]**2)/(errorsDI[np.where(diffsDI!=0)]**2))
-        chiSquaredRV = np.sum((diffsRV[np.where(diffsRV!=0)]**2)/(errorsRV**2))
+#         diffs = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1]),(self.realData[:,5]-modelData[:,2])))
+#         errors = np.concatenate((self.realData[:,2],self.realData[:,4],self.realData[:,6]))
+#         paramsOut[11] = np.sum((diffs**2)/(errors**2))
+#         diffsDI = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1])))
+#         errorsDI = np.concatenate((self.realData[:,2],self.realData[:,4]))
+#         diffsRV = (self.realData[:,5]-modelData[:,2])
+#         errorsRV = self.realData[:,6][np.where(diffsRV!=0)]
+#         chiSquaredDI = np.sum((diffsDI[np.where(diffsDI!=0)]**2)/(errorsDI[np.where(diffsDI!=0)]**2))
+#         chiSquaredRV = np.sum((diffsRV[np.where(diffsRV!=0)]**2)/(errorsRV**2))
+        (raw3D, reducedDI, reducedRV, reduced3D) = tools.chiSquaredCalc3D(self.realData,modelData,self.nuDI,self.nuRV,self.nu)
+        paramsOut[11] = raw3D
         if self.bestSumStr=='':
             self.bestSumStr = stage+" chain #"+str(self.chainNum)+' Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))
-            self.latestSumStr="Latest reduced chiSquared : [total,DI,RV] = ["+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
-        if (paramsOut[11]/self.nu)<self.bestRedChiSqr:
-            self.bestRedChiSqr=(paramsOut[11]/self.nu)
-            self.bestSumStr = stage+" chain #"+str(self.chainNum)+' BEST reduced chiSquareds so far: [total,DI,RV] = ['+str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
-            #self.bestSumStr+='\nbest total non-reduced chiSquared/nu = '+str(paramsOut[11])+'/'+str(self.nu)
+            self.latestSumStr="Latest reduced chiSquared : [total,DI,RV] = ["+str(reduced3D)+", "+str(reducedDI)+", "+str(reducedRV)+"]"
+        if (reduced3D)<self.bestRedChiSqr:
+            self.bestRedChiSqr=(reduced3D)
+            self.bestSumStr = stage+" chain #"+str(self.chainNum)+\
+            ' BEST reduced chiSquareds so far: [total,DI,RV] = ['\
+            +str(reduced3D)+", "+str(reducedDI)+", "+str(reducedRV)+"]"
             bestPars = copy.deepcopy(paramsOut)
             ## convert back to sqrt(e)sin(omega), sqrt(e)cos(omega) if in lowEcc mode
             self.Orbit.convertParsToRaw(bestPars)
@@ -376,27 +379,8 @@ class Simulator(object):
             try:
                 #print 'self.paramsLast[11] = '+str(self.paramsLast[11])
                 #print 'paramsOut[11] = '+str(paramsOut[11])
-                likelihoodRatio = np.e**((self.paramsLast[11] - paramsOut[11])/(2.0*temp))
+                likelihoodRatio = np.e**((self.paramsLast[11] - raw3D)/(2.0*temp))
                 priorsRatio = self.combinedPriors(paramsOut,self.paramsLast)
-#                 #print "likelihoodRatio = "+repr(likelihoodRatio)
-#                 ###### put all prior funcs together in dict??
-#                 #print 'paramsOut[4] = '+str(paramsOut[4])
-#                 #print 'paramsOut[7] = '+str(paramsOut[7])
-#                 #print 'paramsOut[4] = '+str(self.paramsLast[4])
-#                 #print 'paramsOut[7] = '+str(self.paramsLast[7])
-#                 priorsRatio = (self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7]))
-#                 #print "a = "+repr((self.dictVal('ePrior')(paramsOut[4],paramsOut[7])/self.dictVal('ePrior')(self.paramsLast[4],self.paramsLast[7])))
-#                 priorsRatio*= (self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7]))
-#                 #print "b = "+repr((self.dictVal('pPrior')(paramsOut[7])/self.dictVal('pPrior')(self.paramsLast[7])))
-#                 priorsRatio*= (self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8]))
-#                 #print "c = "+repr((self.dictVal('incPrior')(paramsOut[8])/self.dictVal('incPrior')(self.paramsLast[8])))
-#                 priorsRatio*= (self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0]))
-#                 #print "d = "+repr((self.dictVal('mass1Prior')(paramsOut[0])/self.dictVal('mass1Prior')(self.paramsLast[0])))
-#                 priorsRatio*= (self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1]))
-#                 #print "e = "+repr((self.dictVal('mass2Prior')(paramsOut[1])/self.dictVal('mass2Prior')(self.paramsLast[1])))
-#                 priorsRatio*= (self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) 
-#                 #print "f = "+repr((self.dictVal('paraPrior')(paramsOut[2])/self.dictVal('paraPrior')(self.paramsLast[2])) )
-#                 #print 'priorsRatio = '+str(priorsRatio)
                 if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
                     accept = True
             except:
@@ -405,8 +389,9 @@ class Simulator(object):
             self.acceptCount+=1
             self.acceptBoolAry.append(1)
             self.paramsLast=paramsOut
-            self.latestSumStr = stage+" chain #"+str(self.chainNum)+' Latest accepted reduced chiSquareds: [total,DI,RV] = ['+\
-            str(paramsOut[11]/self.nu)+", "+str(chiSquaredDI/self.nuDI)+", "+str(chiSquaredRV/self.nuRV)+"]"
+            self.latestSumStr = stage+" chain #"+str(self.chainNum)+\
+            ' Latest accepted reduced chiSquareds: [total,DI,RV] = ['+\
+            str(reduced3D)+", "+str(reducedDI)+", "+str(reducedRV)+"]"
         else:
             self.acceptBoolAry.append(0)
         ##log a status summary?

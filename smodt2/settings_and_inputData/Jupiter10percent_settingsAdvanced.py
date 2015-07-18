@@ -112,7 +112,7 @@ advancedDict = {
 'nSTsamp' :(100000,"Num ST samples"),
 # number of steps per varying parameter until calculating the acceptance rate and tuning sigmas. [int]
 # Allowed vals [1,nSTsamp), testing shows a value of ~200 works well.
-'sigInt': (200,"Num steps/param till calc accept rate/tune sigs."),
+'sigInt': (200,"Num steps/par till calc acc rate/tune sigs."),
 # Maximum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
 'sigMax' :(1.0,'Max ratio of params range,for step size.'),
 # Minimum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]

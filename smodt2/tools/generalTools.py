@@ -738,7 +738,7 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
         ## calculate chi squareds for the best fit #
         ############################################
         ##get the real data
-        realData = genTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
+        realData = loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
         ## Make Orbit cpp obj
         Orbit = cppTools.Orbit()
         Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0],settingsDict['lowEcc'][0])

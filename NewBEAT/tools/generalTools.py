@@ -1,6 +1,6 @@
 #@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
 #import numpy as np
-import smodtLogger
+import newBEATlogger
 import cppTools
 import constants as const
 import os
@@ -13,7 +13,7 @@ import pyfits
 import warnings
 warnings.simplefilter("error")
 
-log = smodtLogger.getLogger('main.genTools',lvl=100,addFH=False)
+log = newBEATlogger.getLogger('main.genTools',lvl=100,addFH=False)
 
 def test():
     log.info("inside the tools test func")
@@ -120,7 +120,7 @@ def mcmcEffPtsCalc(outputDataFilename):
 
 def burnInCalc(mcmcFnames,combinedFname):
     """
-    NOTE: SMODT was designed to start the full MCMC chain from the last point of the 
+    NOTE: NewBEAT was designed to start the full MCMC chain from the last point of the 
         Sigma Tuning stage.  As this stage effectively acts as a form of burn-in period
         the burn-in value found from the pure MCMC tends to be very short.
  
@@ -395,7 +395,7 @@ def loadRealData(filenameRoot,dataMode='3D'):
     Load the observed real data into a numpy array.
     This will be a combination of the RV and DI data,sorted into cronological order.
     filenameRoot would be the absolute path plus the prepend to the settings files.
-    ex. '/run/..../SMODT/settings_and_inputData/FakeData_'
+    ex. '/run/..../NewBEAT/settings_and_inputData/FakeData_'
     """
     diEpochs = []
     rvEpochs = []
@@ -446,28 +446,28 @@ def loadSettingsDict(filenameRoot):
     the resulting simulation data file fits header.
     NOTE: the first step is to copy these files to standardized names so they can be called in to 
           use.  They will overwrite the files:
-          SMODT/tools/temp/simpleSettings.py   &   advancedSettings.py 
+          NewBEAT/tools/temp/simpleSettings.py   &   advancedSettings.py 
     
     filenameRoot would be the absolute path plus the prepend to the settings files.
-    ex. '/run/..../SMODT/settings_and_inputData/FakeData_'
+    ex. '/run/..../NewBEAT/settings_and_inputData/FakeData_'
     """
     ## A BIT HACKY FOR NOW, NEED TO FIND A CLEANER WAY TO DO THIS!?!?! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     cwd = os.getcwd()
-    smodtHeadDir = filenameRoot.split("smodt2")[0]
+    NewBEATHeadDir = filenameRoot.split("NewBEAT")[0]
     try:
-        os.remove(os.path.join(smodtHeadDir,'smodt2/tools/temp/settingsSimple.py'))
-        os.remove(os.path.join(smodtHeadDir,'smodt2/tools/temp/settingsAdvanced.py'))
-        os.remove(os.path.join(smodtHeadDir,'smodt2/tools/temp/constants.py'))
+        os.remove(os.path.join(NewBEATHeadDir,'NewBEAT/tools/temp/settingsSimple.py'))
+        os.remove(os.path.join(NewBEATHeadDir,'NewBEAT/tools/temp/settingsAdvanced.py'))
+        os.remove(os.path.join(NewBEATHeadDir,'NewBEAT/tools/temp/constants.py'))
     except:
         temp=True
-    shutil.copy(filenameRoot+'settingsSimple.py',os.path.join(smodtHeadDir,'smodt2/tools/temp/settingsSimple.py'))
-    shutil.copy(filenameRoot+'settingsAdvanced.py',os.path.join(smodtHeadDir,'smodt2/tools/temp/settingsAdvanced.py'))
-    shutil.copy(os.path.join(smodtHeadDir,'smodt2/tools/constants.py'),os.path.join(smodtHeadDir,'smodt2/tools/temp/constants.py'))
+    shutil.copy(filenameRoot+'settingsSimple.py',os.path.join(NewBEATHeadDir,'NewBEAT/tools/temp/settingsSimple.py'))
+    shutil.copy(filenameRoot+'settingsAdvanced.py',os.path.join(NewBEATHeadDir,'NewBEAT/tools/temp/settingsAdvanced.py'))
+    shutil.copy(os.path.join(NewBEATHeadDir,'NewBEAT/tools/constants.py'),os.path.join(NewBEATHeadDir,'NewBEAT/tools/temp/constants.py'))
     if False:
-        print 'Copied simple to:\n'+os.path.join(smodtHeadDir,'smodt2/tools/temp/settingsSimple.py')
-        print 'Copied advanced to:\n'+os.path.join(smodtHeadDir,'smodt2/tools/temp/settingsAdvanced.py')
-        print 'Copied constants to:\n'+os.path.join(smodtHeadDir,'smodt2/tools/temp/constants.py')
-    os.chdir(os.path.join(smodtHeadDir,'smodt2'))
+        print 'Copied simple to:\n'+os.path.join(NewBEATHeadDir,'NewBEAT/tools/temp/settingsSimple.py')
+        print 'Copied advanced to:\n'+os.path.join(NewBEATHeadDir,'NewBEAT/tools/temp/settingsAdvanced.py')
+        print 'Copied constants to:\n'+os.path.join(NewBEATHeadDir,'NewBEAT/tools/temp/constants.py')
+    os.chdir(os.path.join(NewBEATHeadDir,'NewBEAT'))
     from tools.temp.settingsAdvanced import settingsDict
     os.chdir(cwd)
     
@@ -504,7 +504,7 @@ def startup(argv,rootDir,rePlot=False):
     -get master settings dict
     -make output folder
     -remake the SWIG tools?
-    -copy all SMODT2.0 code into output dir for emergencies.    
+    -copy all NewBEAT code into output dir for emergencies.    
     
     NOTE: have rootDir handled with setup.py??
     """    
@@ -517,8 +517,8 @@ def startup(argv,rootDir,rePlot=False):
             print '\nWarning: the settings file prepended feature is not working correctly !!\n'    
     ## Load up the required specific directory paths in dict
     settingsDict = loadSettingsDict(rootDir+'settings_and_inputData/'+prepend)
-    settingsDict['smodtdir']=rootDir
-    settingsDict['settingsDir']=os.path.join(settingsDict['smodtdir'],'settings_and_inputData/')
+    settingsDict['NewBEATdir']=rootDir
+    settingsDict['settingsDir']=os.path.join(settingsDict['NewBEATdir'],'settings_and_inputData/')
     settingsDict['prepend']=prepend
     ## Make a directory (folder) to place all the files from this simulation run
     settingsDict['finalFolder'] = os.path.join(settingsDict['outDir'],settingsDict['outRoot'])
@@ -551,7 +551,7 @@ def startup(argv,rootDir,rePlot=False):
         if settingsDict['remake']:
             cwd = os.getcwd()
             log.debug("-"*45+" Starting to remake CPP/SWIG tools "+45*"-")
-            os.chdir(os.path.join(settingsDict['smodtdir'],'tools/cppTools/'))
+            os.chdir(os.path.join(settingsDict['NewBEATdir'],'tools/cppTools/'))
             os.system('make clean')
             os.system('make')
             os.chdir(cwd)
@@ -560,7 +560,7 @@ def startup(argv,rootDir,rePlot=False):
         codeCopyDir = os.path.join(settingsDict['finalFolder'],'codeUsed')
         os.mkdir(codeCopyDir)
         log.debug('Copying all files in the RESULTS folder over to DropBox folder:\n '+codeCopyDir)
-        copytree(settingsDict['smodtdir'], codeCopyDir)
+        copytree(settingsDict['NewBEATdir'], codeCopyDir)
         
     return settingsDict
         
@@ -643,7 +643,7 @@ def writeFits(baseFilename,data,settingsDict):
     
 def loadFits(filename):
     """
-    Load in a fits file written by SMODT.
+    Load in a fits file written by NewBEAT.
     Return (header dict, data)
     """
     if os.path.exists(filename):
@@ -670,7 +670,7 @@ def periodicDataDump(filename,d):
 
 def combineFits(filenames,outFname):
     """
-    combine the data in multiple SMODT2 fits files together.
+    combine the data in multiple NewBEAT fits files together.
     Used primarily for after multi-process runs.
     """
     nFiles = len(filenames)
@@ -1002,7 +1002,7 @@ def dataReader(filename, colNum=0):
                                          
 def findBestOrbit(filename):        
     """
-    Find the orbital elements for the best fit in a SMODT format fits file.
+    Find the orbital elements for the best fit in a NewBEAT format fits file.
     """             
     log.debug("trying to find best orbit in file:\n"+filename)     
     (head,data) = loadFits(filename)

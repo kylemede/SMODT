@@ -2,7 +2,7 @@
 #import numpy as np
 import tools
 import simulator
-from smodt2path import rootDir
+from newbeatpath import rootDir
 import sys
 import os
 import timeit
@@ -11,14 +11,14 @@ from multiprocessing import Process
 
 
 """
-    This is the 'main' of SMODT. 
+    This is the 'main' of NewBEAT. 
     It will start things off, call the appropriate set of 
     simulation and post-processing steps.
 """
 class singleProc(Process):
     """
     This is the Manager object that controls the a single processes for a 
-    SMODT2.0 simulation run.  It is called by the multiProcessStarter once for 
+    NewBEAT simulation run.  It is called by the multiProcessStarter once for 
     each chain/process requested by the user through the simulation settings 
     file.
     
@@ -68,7 +68,7 @@ class singleProc(Process):
                 self.log.info("NO SA SOLUTION WITH A REDUCED CHISQUARED < "+str(self.settingsDict['chiMaxST'][0])+\
                                   " WAS FOUND FOR CHAIN #"+str(self.chainNum)+'\n')  
                
-def smodt():
+def newBEAT():
     """
     'main'
     """
@@ -186,8 +186,8 @@ def smodt():
     ## Final log messages and end
     log.info("Post-processing took a total of "+tools.timeStrMaker(postTime))
     log.info("\n\nEVERYTHING took a total of "+tools.timeStrMaker(allTime)+'\n\n')
-    log.info("End of SMODT2.0 main")
+    log.info("End of NewBEAT main")
     ##END MAIN 
 
 if __name__ == '__main__':
-    smodt()
+    newBEAT()

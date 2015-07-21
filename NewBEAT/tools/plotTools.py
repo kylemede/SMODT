@@ -12,11 +12,11 @@ MultLoc = pylab.matplotlib.ticker.MultipleLocator
 import constants as const
 import generalTools as genTools
 import cppTools
-import smodtLogger
+import newBEATlogger
 import warnings
 warnings.simplefilter("error")
 
-log = smodtLogger.getLogger('main.plotTools',lvl=100,addFH=False)  
+log = newBEATlogger.getLogger('main.plotTools',lvl=100,addFH=False)  
 
 def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, normed=False, nu=1,logY=False,histType='bar'):
     """

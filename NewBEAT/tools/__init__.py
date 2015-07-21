@@ -1,11 +1,11 @@
 import warnings
 warnings.simplefilter("error")
 
-from smodtLogger import getLogger
-from smodtLogger import setUpLogger
-from smodtLogger import logSystemInfo
-from smodtLogger import addFileHandler
-from smodtLogger import addStreamHandler
+from newBEATlogger import getLogger
+from newBEATlogger import setUpLogger
+from newBEATlogger import logSystemInfo
+from newBEATlogger import addFileHandler
+from newBEATlogger import addStreamHandler
 
 from generalTools import loadRealData
 from generalTools import loadSettingsDict

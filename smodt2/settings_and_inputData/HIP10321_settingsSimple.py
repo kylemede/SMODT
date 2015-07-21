@@ -2,10 +2,10 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (60000000,"Number of MCMC or MC samples"),
+'nSamples' : (800000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (7,"Number of chains"),
+'nChains' : (1,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # Directory on an SSD for fast reading/writting of temp data files to save on RAM usage.
@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-HIP10321-3D-retro-MCMC-startAtBest-afterJitterTweaks2",
+'outRoot' : "SMODT2-HIP10321-3D-retro-MCMC-startAtBest-afterJitterTweaks2-newPriors-test",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -23,11 +23,11 @@ simpleSettingsDict={
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.8,
+'mass1MIN' : 0.7,
 'mass1MAX' : 1.6,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.05,
-'mass2MAX' : 0.52,
+'mass2MIN' : 0.1,
+'mass2MAX' : 0.6,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 35,
 'paraMAX' : 45.00,
@@ -45,8 +45,8 @@ simpleSettingsDict={
 'PMIN' : 17.5,
 'PMAX' : 22.5,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 140.0,
-'incMAX' : 170.0,
+'incMIN' : 145.0,
+'incMAX' : 180.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 340.0,
 'omegaMAX' : 360.0,

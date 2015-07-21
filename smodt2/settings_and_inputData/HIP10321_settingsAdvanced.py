@@ -6,35 +6,47 @@ import constants
 ########################################
 #Define the priors as python functions #
 ########################################
-#NOTE: key max = 8characters, value+comment max = 68 characters, comment Max=47 it seems in testing.
 #NOTE: only change the code and not the name of the functions or their inputs.
-def ePrior(e,P):
-    if advancedDict['lowEcc'][0]==False:
-        if (e!=0)and(P!=0):
-            if ((P*constants.daysPerYear)>1000.0)and(simpleSettingsDict['eMAX']!=0):
-                return 2.0*e
+def ePriorRatio(eProposed,eLast):
+    if (advancedDict['lowEcc'][0]==False)and(simpleSettingsDict['eMAX']!=0):
+        if eProposed!=eLast!=0:
+            if (simpleSettingsDict['PMIN']*constants.daysPerYear)>1000.0:
+                return eProposed/eLast
+            else:
+                return 1.0
+        else:
+            return 1.0
+    else:
+        return 1.0
+def pPriorRatio(Pproposed,Plast):
+    if simpleSettingsDict['PMAX']!=0:
+        if Pproposed!=0:
+            return Plast/Pproposed
+        else:
+            return 1.0
+    else:
+        return 1.0
+def incPriorRatio(incProposed,incLast):
+    if simpleSettingsDict['incMAX']!=0:
+        if (incLast%90.0)!=0:
+            return np.sin(incProposed*(constants.pi/180.0))/np.sin(incLast*(constants.pi/180.0))
+        else:
+            return 1.0
+    else:
+        return 1.0
+    
+def mass1PriorRatio(M1Proposed,M1Last):
+    #we are assuming M1>70Mj
+    if simpleSettingsDict['mass1MAX']!=0:
+        if M1Proposed!=M1Last!=0:
+            if simpleSettingsDict['mass1MIN']>=0.5:
+                return (M1Proposed**(-2.3))/(M1Last**(-2.3))
+            elif (simpleSettingsDict['mass1MIN']>=0.07)and(simpleSettingsDict['mass1MAX']<=0.5):
+                return (M1Proposed**(-1.3))/(M1Last**(-1.3))
             else:
                 return 1.0
     else:
         return 1.0
-def pPrior(P):
-    if P!=0:
-        if simpleSettingsDict['PMAX']!=simpleSettingsDict['PMIN']!=0:
-            return P
-        else:
-            return 1.0
-    else:
-        return 1.0
-def incPrior(inc):
-    if inc!=0:
-        if simpleSettingsDict['incMAX']!=simpleSettingsDict['incMIN']!=0:
-            return np.sin(inc*(constants.pi/180.0))
-        else:
-            return 1.0
-    else:
-        return 1.0
-def mass1Prior(mass):
-    return 1.0
 #     if mass!=0:
 #         if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
 #             return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
@@ -42,16 +54,35 @@ def mass1Prior(mass):
 #             return 1.0
 #     else:
 #         return 1.0
-def mass2Prior(mass):
-    return 1.0
+def mass2PriorRatio(M2Proposed,M2Last,aProposed,aLast):
+    if simpleSettingsDict['mass2MAX']!=0:
+        if M2Proposed!=M2Last!=0:
+            if simpleSettingsDict['mass2MIN']>=0.5:
+                return (M2Proposed**(-2.3))/(M2Last**(-2.3))
+            elif (simpleSettingsDict['mass2MIN']>=0.07)and(simpleSettingsDict['mass2MAX']<=0.5):
+                return (M2Proposed**(-1.3))/(M2Last**(-1.3))
+            elif (simpleSettingsDict['mass2MIN']>=0.005)and(simpleSettingsDict['mass2MAX']<=0.07):
+                if aProposed!=aLast!=0:
+                    return ((M2Proposed**(-0.65))*(aProposed**(-0.85)))/((M2Last**(-0.65))*(aLast**(-0.85)))
+                else:
+                    return 1.0
+            else:
+                return 1.0
+    else:
+        return 1.0
 #     if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
 #         return gaussian(mass, advancedDict['mass2Est'][0], advancedDict['mass2Err'][0])
 #     else:
 #         return 1.0
-def paraPrior(parallax):
-    if parallax!=0:
-        if simpleSettingsDict['paraMIN']!=simpleSettingsDict['paraMAX']!=0:
-            return gaussian(parallax, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
+def paraPriorRatio(paraProposed,paraLast):
+    if paraProposed!=paraLast!=simpleSettingsDict['paraMAX']!=0:
+        if True:
+            return (paraLast**2.0)/(paraProposed**2.0)
+        elif False:
+            ## a Gaussian prior centered on hipparcos and width of hipparcos estimated error
+            top = gaussian(paraLast, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
+            btm = gaussian(paraProposed, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
+            return top/btm
         else:
             return 1.0
     else:
@@ -59,6 +90,7 @@ def paraPrior(parallax):
 
 
 advancedDict = {
+#NOTE: key max = 8characters, value+comment max = 68 characters, comment Max=47 it seems in testing.
 ########################
 ### General Settings ###
 ########################
@@ -170,12 +202,12 @@ advancedDict = {
 ##################################
 # Push prior functions into dict #
 ##################################
-'ePrior'    :(True,'Use prior for eccentricity?',ePrior),
-'pPrior'    :(True,'Use prior for period?',pPrior),
-'incPrior'  :(True,'Use prior for inclination?',incPrior),
-'M1Prior':(False,'Use prior for M1?',mass1Prior),
-'M2Prior':(False,'Use prior for M2?',mass2Prior),
-'parPrior' :(True,'Use prior for parallax?',paraPrior),
+'ePrior'    :(True,'Use prior for eccentricity?',ePriorRatio),
+'pPrior'    :(True,'Use prior for period?',pPriorRatio),
+'incPrior'  :(True,'Use prior for inclination?',incPriorRatio),
+'M1Prior':(False,'Use prior for M1?',mass1PriorRatio),
+'M2Prior':(False,'Use prior for M2?',mass2PriorRatio),
+'parPrior' :(True,'Use prior for parallax?',paraPriorRatio),
 }
 
 

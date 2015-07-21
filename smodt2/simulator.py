@@ -238,22 +238,28 @@ class Simulator(object):
         try:
             #print 'about to try and calc priors'
             if self.dictVal('ePrior'):
-                priorsRatio*=(self.settingsDict['ePrior'][2](parsCurr[4],parsCurr[7])/self.settingsDict['ePrior'][2](parsLast[4],parsLast[7]))
+                priorsRatio*=self.settingsDict['ePrior'][2](parsCurr[4],parsLast[4])
+                #priorsRatio*=(self.settingsDict['ePrior'][2](parsCurr[4],parsCurr[7])/self.settingsDict['ePrior'][2](parsLast[4],parsLast[7]))
                 #print 'priorsRatio after e: '+repr(priorsRatio)
             if self.dictVal('pPrior'):
-                priorsRatio*=(self.settingsDict['pPrior'][2](parsCurr[7])/self.settingsDict['pPrior'][2](parsLast[7]))
+                priorsRatio*=self.settingsDict['pPrior'][2](parsCurr[7],parsLast[7])
+                #priorsRatio*=(self.settingsDict['pPrior'][2](parsCurr[7])/self.settingsDict['pPrior'][2](parsLast[7]))
                 #print 'priorsRatio after period: '+repr(priorsRatio)
             if self.dictVal('incPrior'):
-                priorsRatio*=(self.settingsDict['incPrior'][2](parsCurr[8])/self.settingsDict['incPrior'][2](parsLast[8]))
+                priorsRatio*=self.settingsDict['incPrior'][2](parsCurr[8],parsLast[8])
+                #priorsRatio*=(self.settingsDict['incPrior'][2](parsCurr[8])/self.settingsDict['incPrior'][2](parsLast[8]))
                 #print 'priorsRatio after inclination: '+repr(priorsRatio)
             if self.dictVal('M1Prior'):
-                priorsRatio*=(self.settingsDict['M1Prior'][2](parsCurr[0])/self.settingsDict['M1Prior'][2](parsLast[0]))
+                priorsRatio*=self.settingsDict['M1Prior'][2](parsCurr[0],parsLast[0])
+                #priorsRatio*=(self.settingsDict['M1Prior'][2](parsCurr[0])/self.settingsDict['M1Prior'][2](parsLast[0]))
                 #print 'priorsRatio after M1: '+repr(priorsRatio)
             if self.dictVal('M2Prior'):
-                priorsRatio*=(self.settingsDict['M2Prior'][2](parsCurr[1])/self.settingsDict['M2Prior'][2](parsLast[1]))
+                priorsRatio*=self.settingsDict['M2Prior'][2](parsCurr[1],parsLast[1],parsCurr[10],parsLast[10])
+                #priorsRatio*=(self.settingsDict['M2Prior'][2](parsCurr[1])/self.settingsDict['M2Prior'][2](parsLast[1]))
                 #print 'priorsRatio after M2: '+repr(priorsRatio)
             if self.dictVal('parPrior'):
-                priorsRatio*=(self.settingsDict['parPrior'][2](parsCurr[2])/self.settingsDict['parPrior'][2](parsLast[2]))
+                priorsRatio*=self.settingsDict['parPrior'][2](parsCurr[2],parsLast[2])
+                #priorsRatio*=(self.settingsDict['parPrior'][2](parsCurr[2])/self.settingsDict['parPrior'][2](parsLast[2]))
                 #print 'priorsRatio after parallax: '+repr(priorsRatio)
             #print 'priorsRatio final: '+repr(priorsRatio)
             if test==False:
@@ -346,15 +352,6 @@ class Simulator(object):
         """
         paramsOut = copy.deepcopy(pars)
         ## Calculate chi squareds for 3D,DI,RV and update bestPars and bestSumStr if this is better than the best
-#         diffs = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1]),(self.realData[:,5]-modelData[:,2])))
-#         errors = np.concatenate((self.realData[:,2],self.realData[:,4],self.realData[:,6]))
-#         paramsOut[11] = np.sum((diffs**2)/(errors**2))
-#         diffsDI = np.concatenate(((self.realData[:,1]-modelData[:,0]),(self.realData[:,3]-modelData[:,1])))
-#         errorsDI = np.concatenate((self.realData[:,2],self.realData[:,4]))
-#         diffsRV = (self.realData[:,5]-modelData[:,2])
-#         errorsRV = self.realData[:,6][np.where(diffsRV!=0)]
-#         chiSquaredDI = np.sum((diffsDI[np.where(diffsDI!=0)]**2)/(errorsDI[np.where(diffsDI!=0)]**2))
-#         chiSquaredRV = np.sum((diffsRV[np.where(diffsRV!=0)]**2)/(errorsRV**2))
         (raw3D, reducedDI, reducedRV, reduced3D) = tools.chiSquaredCalc3D(self.realData,modelData,self.nuDI,self.nuRV,self.nu)
         paramsOut[11] = raw3D
         if self.bestSumStr=='':

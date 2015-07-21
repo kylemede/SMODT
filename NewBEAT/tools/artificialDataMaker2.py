@@ -13,14 +13,14 @@ def calc_orbit():
           due to the simple center differencing used to calculate the velocities 
           from the positions and times.
           
-    Outputs are 2 files matching formats used in SMODT2.0 DI and RV.
-    #mockdata-SMODT2format-DI.dat has columns:
+    Outputs are 2 files matching formats used in NewBEAT DI and RV.
+    #mockdata-NewBEATformat-DI.dat has columns:
     #1. JD
     #2. RA (x) ["]
     #3. RA ERROR ["]
     #4. Dec (y) ["]
     #5. Dec ERROR ["]
-    #mockdata-SMODT2format-RV.dat has colunns:
+    #mockdata-NewBEATformat-RV.dat has colunns:
     #1. JD
     #6. RV of primary (or secondary) rel to CofM [m/s]
     #7. RV ERROR [m/s]
@@ -165,7 +165,7 @@ def calc_orbit():
     data[:, 6] = pos_B[:, 1]*km_to_arcsec #7. y position of primary (arcsec)
     data[:, 7] = vel_B[:, 2] #8. radial velocity of primary (km/s)
     
-    #update raw forms to initial SMODT versions
+    #update raw forms to initial NewBEAT versions
     data2 = np.zeros((pos_A.shape[0],5))
     data2[:,0] = data[:, 1]*const.daysPerYear+TimeLastPeri #JD 
     data2[:,1] = pos_A[:, 1]*km_to_arcsec - pos_B[:, 1]*km_to_arcsec #Ythi=Xplot=RA  separation between two bodies based on primary being at 0,0 ["]
@@ -192,7 +192,7 @@ def calc_orbit():
             data2[i,4] += np.random.normal(0,errorRVsecondary)
     
     #########################################################
-    #load up data for into arys for SMODT2.0 DI, SMODT2.0 RV.
+    #load up data for into arys for NewBEAT DI, NewBEAT RV.
     #########################################################
     #dataDI2 has columns:
     #1. JD
@@ -243,8 +243,8 @@ def calc_orbit():
         np.savetxt(os.path.join(baseSaveDir,'mockdata.dat'), data, fmt="%.10g")
     if True:
         #2 files for SMODT 2.0
-        np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODT2format-RV.dat'), dataRV, fmt="%.10g")
-        np.savetxt(os.path.join(baseSaveDir,'mockdata-SMODT2format-DI.dat'), dataDI3, fmt="%.10g")
+        np.savetxt(os.path.join(baseSaveDir,'mockdata-NewBEATformat-RV.dat'), dataRV, fmt="%.10g")
+        np.savetxt(os.path.join(baseSaveDir,'mockdata-NewBEATformat-DI.dat'), dataDI3, fmt="%.10g")
     print '\nOutput data files written to:\n'+baseSaveDir
 
 if __name__ == "__main__":

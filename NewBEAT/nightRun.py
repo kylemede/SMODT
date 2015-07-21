@@ -5,8 +5,8 @@ def nightRun():
     To run a set of SMODT runs in a series to get more done at night.
     """
     cmdList = [
-               "python SMODT.py HIP10321_",
-               "python SMODT.py HIP10321-2_",
+               "python NewBEAT.py HIP10321_",
+               "python NewBEAT.py HIP10321-2_",
                #"python SMODT.py Jupiter5percent_",
                #"python customPost.py"
                #"python SMODT.py HIP10321_",

@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "SMODT2-JUPITER2-3D-5percent-startAtBest-lowEccTrue-4",
+'outRoot' : "JUPITER2-3D-5percent-startAtBest-lowEccTrue-newPriors",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -25,13 +25,13 @@ simpleSettingsDict={
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
 # NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
 'mass1MIN' : 0.3,
-'mass1MAX' : 2.0,
+'mass1MAX' : 1.5,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.0003,
 'mass2MAX' : 0.002,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 38.00,
-'paraMAX' : 62.00,
+'paraMIN' : 40.00,
+'paraMAX' : 72.00,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 95.0,
 'OmegaMAX' : 110.0,
@@ -50,7 +50,7 @@ simpleSettingsDict={
 'incMAX' : 55.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : -50,
-'omegaMAX' : 160,
+'omegaMAX' : 80,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,

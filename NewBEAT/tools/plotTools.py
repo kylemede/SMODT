@@ -5,6 +5,7 @@ import pylab
 import copy
 import glob
 import shutil
+import timeit
 gridspec =  pylab.matplotlib.gridspec
 plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
@@ -117,7 +118,7 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
     
     return plot
 
-def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel='X',xLims=False,latex=False,showYlabel=False,parInt=0):
+def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel='X',xLims=False,bestVal=False,latex=False,showYlabel=False,parInt=0):
     """
     Loads previously plotted histograms that were written to disk by histPlotAndDump, and plot them up 
     in a way that is ready for publication.  This is the standard plotter used for plotting simple posteriors
@@ -173,6 +174,11 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     # draw the top line of hist
     plot.plot(xs,ys,color='k',linewidth=1)
     plot.axes.set_ylim([0.0,1.02])
+    if bestVal is not False:
+        try:
+            plot.plot([bestVal,bestVal],[0.0,1.02],color='blue',linewidth=1.5)
+        except:
+            log.error("Tried to plot a line on the shaded histogram for the best val, but failed")
     if xLims!=False:
         plot.axes.set_xlim(xLims)
     plot.locator_params(axis='x',nbins=3) # maximum number of x labels
@@ -368,7 +374,7 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
             except:
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")
         
-def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],stage='MCMC',shadeConfLevels=True,forceRecalc=True):
+def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],bestVals=[],stage='MCMC',shadeConfLevels=True,forceRecalc=True):
     """
     This advanced plotting function will plot all the data in a grid on a single figure.  The data will be plotted
     in histograms that will be normalized to a max of 1.0.  The 
@@ -497,8 +503,11 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],stag
                 log.debug('Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i])#+" for file:\n"+outputDataFilename
                 CLevels=False
                 xLim=False
+                bestVal = False
                 if len(paramsToPlot)!=0:
                     xLim=xLims[i]
+                    if len(bestVals)>0:
+                        bestVal = bestVals[i]                        
                 if shadeConfLevels:
                     clFile = os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
                     if os.path.exists(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')):
@@ -512,7 +521,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],stag
                     par = paramList[i]
                 except:
                     log.debug("Parameter "+str(i)+" not in paramList: \n"+repr(paramList))
-                subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[i],xLims=xLim,latex=latex,showYlabel=showYlabel,parInt=par)         
+                subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[i],xLims=xLim,bestVal=bestVal,latex=latex,showYlabel=showYlabel,parInt=par)         
             else:
                 log.debug("Not plotting shaded hist for "+paramStrs2[i]+" as its hist file doesn't exist:\n"+histDataBaseName)
         plt.tight_layout()
@@ -979,18 +988,97 @@ def nodeEpochsCalc(paramsDI,omegaDIoffset):
         nodeEpochs.append(paramsDI[5]+delta_t)
     return nodeEpochs
     
-
+def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],bestVals=[]):
+    """
+    make a triangle/corner plot using the same tool in EMCEE.
+    """
+    from triangle import corner
     
+    latex=True
+    plotFormat = 'eps'   
+    plt.rcParams['ps.useafm']= True
+    plt.rcParams['pdf.use14corefonts'] = True
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    if latex:
+        plt.rc('text', usetex=True)
+        
+    (head,data) = genTools.loadFits(outputDataFilename)
     
+    if head!=False:  
+        log.debug(' Inside tranglePlotter')
+        s= '\nCreating summary plot for file:\n'+outputDataFilename
+        s=s+ '\nInput plotfilename:\n'+plotFilename
+        log.info(s)
+        
+        ## check if the passed in value for plotFilename includes format extension
+        if '.'+plotFormat not in plotFilename:
+            plotFilename = plotFilename+"."+plotFormat
+            log.debug('updating plotFilename to:\n'+plotFilename)
+        else:
+            plotFilename = plotFilename
+                
+        (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex)
+        (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False)
+        
+        ## modify x labels to account for DI only situations where M1=Mtotal
+        if np.var(data[:,1])==0:
+            paramStrs2[0] = 'M total [Msun]'
+            paramStrs[0] = '$M_{total}$ [$M_{\odot}$]'
+            paramFileStrs[0] = 'Mtotal'
+        ## check if a subset is to be plotted or the whole set
+        ## remake lists of params to match subset.
+        if len(paramsToPlot)!=0:
+            paramStrs2Use = []
+            paramStrsUse = []
+            paramFileStrsUse = []
+            paramListUse = []
+            for par in paramsToPlot:
+                paramStrs2Use.append(paramStrs2[par])
+                paramStrsUse.append(paramStrs[par])
+                paramFileStrsUse.append(paramFileStrs[par])
+                paramListUse.append(par)
+            paramStrs2 = paramStrs2Use
+            paramStrs = paramStrsUse
+            paramFileStrs = paramFileStrsUse 
+            paramList = paramListUse
     
+        if len(paramsToPlot)>0:   
+            dataUse = data[:,paramsToPlot]
+        else:
+            dataUse = data
+        log.info("will try to make a triangle plot for data of shape: "+repr(dataUse.shape))
+        
+        bests=None
+        if len(bestVals)==len(paramsToPlot)!=0:
+            bests = bestVals
+        ##call triangle plot function corner to make the figure
+        log.debug('About to call corner func')
+        tic=timeit.default_timer()
+        cornerfig = corner(dataUse, bins=20, range=None, color="k",
+                           labels=paramStrs,
+                           truths=bests, truth_color="#4682b4",
+                           verbose=False, fig=None,
+                           max_n_ticks=5, top_ticks=False)
+        log.debug("back from corner func")
+        toc = timeit.default_timer()
+        log.info("corner plotting took a total of "+genTools.timeStrMaker(toc-tic))
     
-    
-    
-    
-    
-    
-    
-    
+        #plt.tight_layout()
+        ## Save file if requested.
+        log.debug('\nStarting to save corner figure:')
+        if plotFilename!='':
+            plt.savefig(plotFilename,format=plotFormat)
+            s= 'Corner plot saved to: '+plotFilename
+            log.info(s)
+        plt.close()
+        toc2 = timeit.default_timer()
+        log.info("Saving took a total of "+genTools.timeStrMaker(toc2-toc))
+        if True:
+            log.debug('converting to PDF as well')
+            try:
+                os.system("epstopdf "+plotFilename)
+            except:
+                log.warning("Seems epstopdf failed.  Check if it is installed properly.")
     
     
 #END OF FILE

@@ -6,7 +6,7 @@ import numpy as np
 import glob
 
 def customPost():
-    rootDir = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/smodt2/'
+    rootDir = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/NewBEAT/'
     settingsDict = tools.startup(sys.argv,rootDir,rePlot=True)
     #allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
     allFname = os.path.join(settingsDict['finalFolder'],"combined-BIstripped-MCMCdata.fits")
@@ -28,36 +28,43 @@ def customPost():
     outFiles = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputDataMCMC*.fits")))
     
     ## calc and strip burn-in?
-    burnInStr = ''
-    if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
-        (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
-        if settingsDict['delBurn'][0]:
-            strippedFnames = tools.burnInStripper(outFiles,burnInLengths)
-            outFiles = strippedFnames
-            ## combine stripped files to make final file?
-            if len(strippedFnames)>0:
-                strippedAllFname = os.path.join(os.path.dirname(strippedFnames[0]),"combined-BIstripped-MCMCdata.fits")
-                tools.combineFits(strippedFnames,strippedAllFname)
-                ## replace final combined filename with new stripped version
-                allFname = strippedAllFname
+    if False:
+        burnInStr = ''
+        if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
+            (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
+            if settingsDict['delBurn'][0]:
+                strippedFnames = tools.burnInStripper(outFiles,burnInLengths)
+                outFiles = strippedFnames
+                ## combine stripped files to make final file?
+                if len(strippedFnames)>0:
+                    strippedAllFname = os.path.join(os.path.dirname(strippedFnames[0]),"combined-BIstripped-MCMCdata.fits")
+                    tools.combineFits(strippedFnames,strippedAllFname)
+                    ## replace final combined filename with new stripped version
+                    allFname = strippedAllFname
     
     ## find best fit
-    if os.path.exists(allFname):
-        bestFit = tools.findBestOrbit(allFname)
+    if False:
+        if os.path.exists(allFname):
+            bestFit = tools.findBestOrbit(allFname)
         
     #effPtsStr = tools.mcmcEffPtsCalc(allFname)
     
-    ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
-    ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
-    plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbitPlot-MANUAL-'+settingsDict['symMode'][0])
-    #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
-    tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.9],[-0.7,0.8],[-0.515,0.515]])
-    
+    if False:
+        ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
+        ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbitPlot-MANUAL-'+settingsDict['symMode'][0])
+        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.9],[-0.7,0.8],[-0.515,0.515]])
+        
     clStr=''
-    plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
-    #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-    clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,7,8],xLims=[[0.0,3.0],[0.5,1.7],[11.5,12.5],[30,60]],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-    
+    if False:
+        plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
+        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,7,8],xLims=[[0.5,2.1],[0.5,1.7],[11.5,13.1],[37,53]],bestVals=[1.0,1.0,11.9,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+    if True: 
+        plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
+        tools.cornerPlotter(allFname, plotFilename)#,paramsToPlot=[0,1,7,8],xLims=[[0.5,2.1],[0.5,1.7],[11.5,13.1],[37,53]],bestVals=[1.0,1.0,11.9,45.0])
+        
     ##calc R?
     grStr = ''
     if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
@@ -65,19 +72,20 @@ def customPost():
     
     ## following post-processing stages can take a long time, so write the current
     ## summary information to the summary file and add the rest later
-    if os.path.exists(allFname):
-        tools.summaryFilePart1(settingsDict,stageList,allFname,clStr,burnInStr,bestFit,grStr)
+    if False:
+        if os.path.exists(allFname):
+            tools.summaryFilePart1(settingsDict,stageList,allFname,clStr,burnInStr,bestFit,grStr)
     
 def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
     
     #outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-20percent-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-JUPITER2-3D-10percent-startAtBest-lowEccTrue-3/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-JUPITER2-3D-5percent-startAtBest-lowEccTrue-3/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-JUPITER2-3D-1percent-tight-startAtBest-lowEccTrue-3/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-10percent-startAtBest-lowEccTrue-newPriors/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-5percent-startAtBest-lowEccTrue-newPriors/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-1percent-tight-startAtBest-lowEccTrue-newPriors/combined-BIstripped-MCMCdata.fits')
     
     plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosteriors3-lowEccTrue')
-    tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[2,4,8],xLims=[[35,65],[-0.005,0.125],[28,61]])
+    tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[1,4,8],xLims=[[0.55,1.8],[-0.005,0.125],[28,61]])
     #tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[])
     #print 'Final stacked plot file written to:\n'+plotFilename
     if True:
@@ -114,7 +122,7 @@ def paramConverterTest():
         print 'after: e= '+str(params[4])+', omega= '+str(params[9])
     
 if __name__ == '__main__':
-    #customPost()
-    stackedPosteriorsPlotterHackStarter()
+    customPost()
+    #stackedPosteriorsPlotterHackStarter()
     #paramConverterTest()
     

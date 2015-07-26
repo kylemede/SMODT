@@ -45,6 +45,8 @@ def mass1PriorRatio(M1Proposed,M1Last):
                 return (M1Proposed**(-1.3))/(M1Last**(-1.3))
             else:
                 return 1.0
+        else:
+            return 1.0
     else:
         return 1.0
 #     if mass!=0:
@@ -68,6 +70,8 @@ def mass2PriorRatio(M2Proposed,M2Last,aProposed,aLast):
                     return 1.0
             else:
                 return 1.0
+        else:
+            return 1.0
     else:
         return 1.0
 #     if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:

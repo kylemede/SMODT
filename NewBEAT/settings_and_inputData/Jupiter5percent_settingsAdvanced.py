@@ -45,6 +45,8 @@ def mass1PriorRatio(M1Proposed,M1Last):
                 return (M1Proposed**(-1.3))/(M1Last**(-1.3))
             else:
                 return 1.0
+        else:
+            return 1.0
     else:
         return 1.0
 #     if mass!=0:
@@ -68,6 +70,8 @@ def mass2PriorRatio(M2Proposed,M2Last,aProposed,aLast):
                     return 1.0
             else:
                 return 1.0
+        else:
+            return 1.0
     else:
         return 1.0
 #     if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
@@ -208,7 +212,7 @@ advancedDict = {
 'incPrior'  :(True,'Use prior for inclination?',incPriorRatio),
 'M1Prior':(False,'Use prior for M1?',mass1PriorRatio),
 'M2Prior':(False,'Use prior for M2?',mass2PriorRatio),
-'parPrior' :(True,'Use prior for parallax?',paraPriorRatio),
+'parPrior' :(False,'Use prior for parallax?',paraPriorRatio),
 }
 
 

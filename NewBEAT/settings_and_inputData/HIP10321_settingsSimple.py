@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "HIP10321-3D-retro-MCMC-startAtBest-afterJitterTweaks2-newPriors",
+'outRoot' : "HIP10321-3D-retro-MCMC-startAtBest-afterJitterTweaks2-newPriors2",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -23,14 +23,14 @@ simpleSettingsDict={
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.51,
-'mass1MAX' : 1.6,
+'mass1MIN' : 0.501,
+'mass1MAX' : 3.0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.1,
-'mass2MAX' : 0.6,
+'mass2MAX' : 0.65,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 30,
-'paraMAX' : 45.00,
+'paraMAX' : 50.0,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 180.0,
 'OmegaMAX' : 360.0,

@@ -84,8 +84,8 @@ def paraPriorRatio(paraProposed,paraLast):
             return (paraLast**2.0)/(paraProposed**2.0)
         elif False:
             ## a Gaussian prior centered on hipparcos and width of hipparcos estimated error
-            top = gaussian(paraLast, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
-            btm = gaussian(paraProposed, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
+            top = gaussian(paraProposed, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
+            btm = gaussian(paraLast, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
             return top/btm
         else:
             return 1.0

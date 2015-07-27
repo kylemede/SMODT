@@ -80,12 +80,12 @@ def mass2PriorRatio(M2Proposed,M2Last,aProposed,aLast):
 #         return 1.0
 def paraPriorRatio(paraProposed,paraLast):
     if paraProposed!=paraLast!=simpleSettingsDict['paraMAX']!=0:
-        if True:
+        if False:
             return (paraLast**2.0)/(paraProposed**2.0)
-        elif False:
+        elif True:
             ## a Gaussian prior centered on hipparcos and width of hipparcos estimated error
-            top = gaussian(paraLast, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
-            btm = gaussian(paraProposed, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
+            top = gaussian(paraProposed, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
+            btm = gaussian(paraLast, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
             return top/btm
         else:
             return 1.0
@@ -210,9 +210,9 @@ advancedDict = {
 'ePrior'    :(True,'Use prior for eccentricity?',ePriorRatio),
 'pPrior'    :(True,'Use prior for period?',pPriorRatio),
 'incPrior'  :(True,'Use prior for inclination?',incPriorRatio),
-'M1Prior':(False,'Use prior for M1?',mass1PriorRatio),
-'M2Prior':(False,'Use prior for M2?',mass2PriorRatio),
-'parPrior' :(False,'Use prior for parallax?',paraPriorRatio),
+'M1Prior':(True,'Use prior for M1?',mass1PriorRatio),
+'M2Prior':(True,'Use prior for M2?',mass2PriorRatio),
+'parPrior' :(True,'Use prior for parallax?',paraPriorRatio),
 }
 
 

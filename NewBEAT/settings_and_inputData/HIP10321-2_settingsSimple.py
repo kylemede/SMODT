@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (100000000,"Number of MCMC or MC samples"),
+'nSamples' : (50000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "HIP10321-3D-retro-startAtBest-afterJitterTweaks2-fixedParallax-newPriors",
+'outRoot' : "HIP10321-3D-retro-MCMC-OrigRVerrors-OrigAstrometry-uniMassPiors-GaussParallax2",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -23,14 +23,14 @@ simpleSettingsDict={
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.6,
-'mass1MAX' : 1.4,
+'mass1MIN' : 0.7,
+'mass1MAX' : 2.0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.1,
-'mass2MAX' : 0.42,
+'mass2MAX' : 0.55,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 37.25,
-'paraMAX' : 0,
+'paraMIN' : 30,
+'paraMAX' : 50.0,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 180.0,
 'OmegaMAX' : 360.0,
@@ -46,7 +46,7 @@ simpleSettingsDict={
 'PMAX' : 22.5,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
 'incMIN' : 145.0,
-'incMAX' : 170.0,
+'incMAX' : 180.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 340.0,
 'omegaMAX' : 360.0,

@@ -74,7 +74,7 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
             valRange = np.max(histData[:,0])-np.min(histData[:,0])
             xLabel='M2 [Mjupiter]'
             if latex:
-                xLabel='$M2$ [$M_{\rm J}$]'
+                xLabel='$M_2$ [$M_{J}$]'
     if (np.max(histData[:,0])>100000) or (valRange<(np.min(histData[:,0])/100.0)):
         #must be the To or Tc, so subtract int(min) and add to x-axis label
         #doing this as it doesn't go well allowing matplotlib to do it itself formatting wise
@@ -141,7 +141,7 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
             valRange = np.max(histData[:,0])-np.min(histData[:,0])
             xLabel='M2 [Mjupiter]'
             if latex:
-                xLabel='$M2$ [$M_{\rm J}$]'
+                xLabel='$M_2$ [$M_{J}$]'
             confLevels=confLevels*(const.KGperMsun/const.KGperMjupiter)
     if (np.max(histData[:,0])>100000) or (valRange<(np.min(histData[:,0])/100.0)):
         #must be the To or Tc, so subtract int(min) and add to x-axis label

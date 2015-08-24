@@ -14,9 +14,6 @@ import warnings
 warnings.simplefilter("error")
 
 log = newBEATlogger.getLogger('main.genTools',lvl=100,addFH=False)
-
-def test():
-    log.info("inside the tools test func")
     
 def corrLengthCalcVar(paramIN):
     """
@@ -808,6 +805,62 @@ def keplersThird(p=0,atot=0,mtot=0):
         log.critical('More than 1 parameter was zero, so I can not calc K3')
     
     return (p,atot,mtot)
+    
+def recheckFit3D(orbParams,settingsDict,finalFits='',nus=[]):
+    if finalFits!='':
+        (head,data) = loadFits(finalFits)
+        nu = head['NU']
+        nuDI = head['NUDI']
+        nuRV = head['NURV']
+    elif len(nus)>1:
+        nu = nus[0]
+        nuDI = nus[1]
+        nuRV = nus[2]
+    else:
+        log.error("nus and finalFits not defined, so cannont calc reduced chiSquareds")
+        nu = 1.0
+        nuDI = 1.0
+        nuRV = 1.0
+        
+    ##get the real data
+    realData = loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
+    ## Make Orbit cpp obj
+    Orbit = cppTools.Orbit()
+    Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0],settingsDict['lowEcc'][0])
+    Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
+    ## ensure orbParams are in required format for Orbit
+    params = []
+    for par in orbParams:
+        params.append(par)
+    params=np.array(params,dtype=np.dtype('d'),order='C')
+    Orbit.loadRealData(realData)
+    predictedData = np.ones((realData.shape[0],3),dtype=np.dtype('d'),order='C')
+    Orbit.calculate(predictedData,params)
+    ## Calculate chi squareds for 3D,DI,RV and update bestPars and bestSumStr if this is better than the best
+    (raw3D, reducedDI, reducedRV, reduced3D) = chiSquaredCalc3D(realData,predictedData,nuDI,nuRV,nu)
+    print '(raw3D, reducedDI, reducedRV, reduced3D) = '+repr((raw3D, reducedDI, reducedRV, reduced3D))
+    
+def predictLocation(orbParams,settingsDict,epochs=[]):
+    
+    ##get the real data
+    realData = loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
+    ## Make Orbit cpp obj
+    Orbit = cppTools.Orbit()
+    Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0],settingsDict['lowEcc'][0])
+    Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
+    ## ensure orbParams are in required format for Orbit
+    params = []
+    for par in orbParams:
+        params.append(par)
+    params=np.array(params,dtype=np.dtype('d'),order='C')
+    fakeData = np.ones((len(epochs),7),dtype=np.dtype('d'),order='C')
+    fakeData[:,0]=epochs[:]
+    Orbit.loadRealData(fakeData)
+    predictedData = np.ones((len(epochs),3),dtype=np.dtype('d'),order='C')
+    print "fakeData are:\n"+repr(fakeData)
+    print "predicted epochs data before are:\n"+repr(predictedData)
+    Orbit.calculate(predictedData,params)
+    print "predicted epochs data are:\n"+repr(predictedData)
     
 def chiSquaredCalc3D(realData,modelData,nuDI,nuRV,nu3D): 
     """

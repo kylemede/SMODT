@@ -60,8 +60,8 @@ def customPost():
     if False:
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,7,8],xLims=[[0.5,2.1],[0.5,1.7],[11.5,13.1],[37,53]],bestVals=[1.0,1.0,11.9,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-    if True: 
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.1],[0.5,1.7],[-0.005,0.125],[37,53]],bestVals=[1.0,1.0,0.048,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+    if False: 
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
         tools.cornerPlotter(allFname, plotFilename)#,paramsToPlot=[0,1,7,8],xLims=[[0.5,2.1],[0.5,1.7],[11.5,13.1],[37,53]],bestVals=[1.0,1.0,11.9,45.0])
         
@@ -69,7 +69,15 @@ def customPost():
     grStr = ''
     if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
         (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
-    
+        
+    ## custom re check of the orbit fit     
+    if True: 
+        orbParams = [1.16679785333,0.263640913869,37.2109325013,245.327413195,0.374265026422,2452348.33995,2452348.33995,20.9645791913,158.909378023,350.3113539,8.57166434448,92.2373136221,868.357550689,6196.81653647,385.187801642,6318.18670944]
+        finalFits=''
+        nus = [70, 2, 66]
+        epochs=[2457259.0]
+        tools.predictLocation(orbParams,settingsDict,epochs)
+        #tools.recheckFit3D(orbParams,settingsDict,finalFits,nus)
     ## following post-processing stages can take a long time, so write the current
     ## summary information to the summary file and add the rest later
     if False:
@@ -80,9 +88,9 @@ def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
     
     #outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-20percent-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-10percent-startAtBest-lowEccTrue-newPriors/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-5percent-startAtBest-lowEccTrue-newPriors/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-1percent-tight-startAtBest-lowEccTrue-newPriors/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-10percent-startAtBest-lowEccTrue-newPriors-gaussParallax/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-5percent-startAtBest-lowEccTrue-newPriors-gaussParallax/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-1percent-startAtBest-lowEccTrue-newPriors-gaussParallax/combined-BIstripped-MCMCdata.fits')
     
     plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosteriors3-lowEccTrue')
     tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[1,4,8],xLims=[[0.55,1.8],[-0.005,0.125],[28,61]])
@@ -91,6 +99,7 @@ def stackedPosteriorsPlotterHackStarter():
     if True:
         print 'converted to PDF as well'
         os.system("epstopdf "+plotFilename+'.eps')
+        
         
 def paramConverterTest():
     

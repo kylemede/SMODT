@@ -37,7 +37,7 @@ def incPriorRatio(incProposed,incLast):
     
 def mass1PriorRatio(M1Proposed,M1Last):
     #we are assuming M1>70Mj
-    if simpleSettingsDict['mass1MAX']!=0:
+    if (simpleSettingsDict['mass1MAX']!=0)and False:
         if M1Proposed!=M1Last!=0:
             if simpleSettingsDict['mass1MIN']>=0.5:
                 return (M1Proposed**(-2.3))/(M1Last**(-2.3))
@@ -54,10 +54,10 @@ def mass1PriorRatio(M1Proposed,M1Last):
 #             return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
 #         else:
 #             return 1.0
-#     else:
+#    else:
 #         return 1.0
 def mass2PriorRatio(M2Proposed,M2Last,aProposed,aLast):
-    if simpleSettingsDict['mass2MAX']!=0:
+    if (simpleSettingsDict['mass2MAX']!=0)and False:
         if M2Proposed!=M2Last!=0:
             if simpleSettingsDict['mass2MIN']>=0.5:
                 return (M2Proposed**(-2.3))/(M2Last**(-2.3))
@@ -80,9 +80,9 @@ def mass2PriorRatio(M2Proposed,M2Last,aProposed,aLast):
 #         return 1.0
 def paraPriorRatio(paraProposed,paraLast):
     if paraProposed!=paraLast!=simpleSettingsDict['paraMAX']!=0:
-        if True:
+        if False:
             return (paraLast**2.0)/(paraProposed**2.0)
-        elif False:
+        elif True:
             ## a Gaussian prior centered on hipparcos and width of hipparcos estimated error
             top = gaussian(paraProposed, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
             btm = gaussian(paraLast, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
@@ -101,9 +101,9 @@ advancedDict = {
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
 'chiMAX' : (300.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed best reduced chiSquared out of SA before entering ST [double]
-'chiMaxST':(5,'Max reduced chiSquared to enter ST.'),
+'chiMaxST':(10,'Max reduced chiSquared to enter ST.'),
 # maximum allowed best reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(3.0,'Max reduced chiSquared to enter MCMC.'),
+'cMaxMCMC':(7.0,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 30,
@@ -116,12 +116,12 @@ advancedDict = {
 # Delete chain files after simulation is complete? [bool]
 'delChains' :True,
 # Delete combined data files after simulation is complete? [bool]
-'delCombined' :False,
+'delCombined' :True,
 # run 'make' on C++/SWIG code to make sure it is up-to-date [bool]
 'remake' :False,
 ###$$$$$$$$$$$$$$$$$$$$$$ Keep in final version? $$$$$$$$$$$$$$$$$$$$$$$$$$
 # Copy output non-data files to a Dropbox folder? [bool]  $$$$$ still not coded up $$$
-'CopyToDB' :False,
+'CopyToDB' :True,
 'dbFolder' : '/run/media/kmede/HOME/Dropbox/SMODT-outputCopies/',
 ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ############################
@@ -157,7 +157,7 @@ advancedDict = {
 # Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
 'saveInt' : (10,"Int between saving params, for all but MC."),
 # Interval of saved values before write/dump the data to disk to avoid consuming too much RAM during long runs. They take 11MB/100000.
-'dmpInt'   : 100000,
+'dmpInt'   : 1000000,
 # Start MCMC at the best params from the ST stage? [bool]
 'strBest' : (True,"Start MCMC at best fit params from ST"),
 ## NOTE: progress plots have no code yet, so MUST be False!!!

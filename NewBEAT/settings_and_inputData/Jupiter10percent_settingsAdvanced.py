@@ -80,9 +80,9 @@ def mass2PriorRatio(M2Proposed,M2Last,aProposed,aLast):
 #         return 1.0
 def paraPriorRatio(paraProposed,paraLast):
     if paraProposed!=paraLast!=simpleSettingsDict['paraMAX']!=0:
-        if True:
+        if False:
             return (paraLast**2.0)/(paraProposed**2.0)
-        elif False:
+        elif True:
             ## a Gaussian prior centered on hipparcos and width of hipparcos estimated error
             top = gaussian(paraProposed, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
             btm = gaussian(paraLast, advancedDict['paraEst'][0], advancedDict['paraErr'][0])

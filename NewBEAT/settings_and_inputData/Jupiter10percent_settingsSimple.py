@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "JUPITER2-3D-10percent-startAtBest-lowEccTrue-newPriors",
+'outRoot' : "JUPITER2-3D-10percent-startAtBest-lowEccTrue-newPriors-gaussParallax",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -25,7 +25,7 @@ simpleSettingsDict={
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
 # NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
 'mass1MIN' : 0.4,
-'mass1MAX' : 2.0,
+'mass1MAX' : 2.3,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.00009,
 'mass2MAX' : 0.0030,
@@ -40,8 +40,8 @@ simpleSettingsDict={
 'eMAX' : 0.2,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2449600,
-'TMAX' : 2453200,
+'TMIN' : 2449400,
+'TMAX' : 2453400,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 9,
 'PMAX' : 15.0,
@@ -49,8 +49,8 @@ simpleSettingsDict={
 'incMIN' : 20,
 'incMAX' : 80.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : -80,
-'omegaMAX' : 210,
+'omegaMIN' : -100,
+'omegaMAX' : 225,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,

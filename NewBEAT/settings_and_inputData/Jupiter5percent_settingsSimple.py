@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (1000000,"Number of MCMC or MC samples"),
+'nSamples' : (60000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -24,8 +24,8 @@ simpleSettingsDict={
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
 # NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
-'mass1MIN' : 0.7,
-'mass1MAX' : 1.5,
+'mass1MIN' : 0.3,
+'mass1MAX' : 1.8,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.0003,
 'mass2MAX' : 0.002,
@@ -40,8 +40,8 @@ simpleSettingsDict={
 'eMAX' : 0.1,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2450050,
-'TMAX' : 2452300,
+'TMIN' : 2449950,
+'TMAX' : 2452600,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 11,
 'PMAX' : 14,
@@ -50,7 +50,7 @@ simpleSettingsDict={
 'incMAX' : 55.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : -50,
-'omegaMAX' : 80,
+'omegaMAX' : 150,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,

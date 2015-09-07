@@ -27,7 +27,7 @@ DIdataFilename = DIdata.dat
 # Name of file where Radial Velocity data is [string, at least 2 chars long]
 RVdataFilename = RVdata.dat
 # Directory where you want the output data folder to go [string, at least 2 chars long]
-outputData_dir = /mnt/Data1/Todai_Work/Data/data_SMODT
+outputData_dir = /run/media/kmede/Data1/Todai_Work/Data/data_SMODT
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
 outputData_filenameRoot = HR8799e-MCMC-circular-75PercentDecreasedErrors-updatedOct2010Vals-TEST

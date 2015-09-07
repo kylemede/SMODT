@@ -151,7 +151,7 @@ def burnInCalc(mcmcFnames,combinedFname):
             #medianChain = np.median(chiSquaredsChain)
             burnInLength = len(likelihoodsChain)
             i=0
-            while i<(len(likelihoodsChain)+1):
+            while i<(len(likelihoodsChain)):
                 i+=1
                 if likelihoodsChain[i]>medainALL:
                     #print 'chiSqsChain[i] = '+str(chiSqsChain[i])

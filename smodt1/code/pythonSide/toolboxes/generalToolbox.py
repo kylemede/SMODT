@@ -2113,7 +2113,7 @@ def cFileToSimSettingsDict(inputSettingsFile, outputSettingsFile="", prependStr 
                             print 'delCombinedDataAfter found to be = '+str(returnDict['delCombinedDataAfter'])
                     elif 'CalcGelmanRubin'in key:
                         VAL_orig = strToBool(val,True) 
-                        if returnDict['useMultiProcessing']==False:
+                        if returnDict['numChains']<1:
                             VAL = False
                         else:
                             VAL = VAL_orig
@@ -2412,12 +2412,14 @@ def strToBool(strIn, default):
     Convert a string of with 'true','True','False' or 'false' in it into a
     bool accordingly.
     """
-    if ('true'in strIn)or('True'in strIn):
+    #print 'strIn = '+repr(strIn)
+    if ('true' in strIn)or('True' in strIn):
         b = True
-    elif ('false'in strIn)or('False'in strIn):
+    elif ('false' in strIn)or('False' in strIn):
         b = False
     else:
         b = default
+    #print 'b = '+repr(b)
     return b
     
 def dictToFile(d, filename):

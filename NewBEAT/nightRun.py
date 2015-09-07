@@ -7,6 +7,7 @@ def nightRun():
     cmdList = [
                "python NewBEAT.py HIP10321_",
                "python NewBEAT.py HIP10321-2_",
+               "python NewBEAT.py HIP10321-1_",
                #"python NewBEAT.py Jupiter5percent_",
                #"python NewBEAT.py Jupiter1percent_",
                #"python NewBEAT.py Jupiter10percent_",

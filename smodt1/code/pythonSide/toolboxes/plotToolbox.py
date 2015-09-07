@@ -709,7 +709,7 @@ def starAndErrorPolys(SAs,SAerrors,PAs,PAerrors,asConversion, transData, telesco
     ymax=-1e6
     ymin = 1e6
     for i in range(0,len(SAs)):
-        if False:
+        if True:
             ### Older version that makes shaded boxes for each
             h = 2.0*SAerrors[i]*math.cos(math.radians(2.0*PAerrors[i]))*asConversion
         w = 2.0*SAerrors[i]*math.sin(math.radians(2.0*PAerrors[i]))*asConversion
@@ -1756,7 +1756,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     :type sys_dist:         float
     """
     quiet = True
-    verboseInternal = False
+    verboseInternal = True
     colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
     mas = False
     if mas:
@@ -1888,7 +1888,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     #########################################################################################
     ellipseErrorsXs2 = []
     ellipseErrorsYs2 = []
-    plotFitErrors = False
+    plotFitErrors = True
     if plotFitErrors:
         incErrors = [33.0,33.1,inc[0],  19.0,19.1,inc[1],  40.0,40.2,inc[2]]
         longAN_degErrors = [125.1,145.3,longAN_deg[0], 92.0,131.0,longAN_deg[1], 137.5,148.5,longAN_deg[2]]
@@ -1928,7 +1928,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     ##************************************************************************************
     ##****************** Calculate the predicted location and fixed JDs ******************
     ##************************************************************************************
-    makePredictions = False
+    makePredictions = True
     predictedXs = []
     predictedYs = []
     PredictedLocationString=''
@@ -1943,16 +1943,16 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
                   2455697.0             
                   ]
         else:
-            ts = [2451965,
-            2453425.282,
-            2454127.085,
-            2454185.028,
-            2454306.737,
-            2454481.192,
-            2454555.068,
-            2454584.106,
-            2455206,
-            2455278
+            ts = [2457579.00,
+            #2453425.282,
+            #2454127.085,
+            #2454185.028,
+            #2454306.737,
+            #2454481.192,
+            #2454555.068,
+            #2454584.106,
+            #2455206,
+            #2455278
             ]
 
         for orb in range(0,len(longAN_deg)):
@@ -2147,7 +2147,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     main = fig.add_subplot(111)
         
     # Draw orbit ERRORS !!
-    if False:
+    if True:
         for orb in range(0,len(periodErrors)):
             if ((orb==0)or(orb==1)or(orb==3)or(orb==4)or(orb==6)or(orb==7)):
                 main.plot(ellipseErrorsXs2[orb],ellipseErrorsYs2[orb],linewidth=1,color=colorsList[int(orb/3.0)],alpha=1.0) 
@@ -2155,21 +2155,22 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
                     print str(orb)+"color = "+colorsList[int(orb/3.0)]
             #else:
             #     main.plot(ellipseErrorsXs2[orb],ellipseErrorsYs2[orb],linewidth=1,color=colorsList[int(orb/3.0)],alpha=1.0) 
-        if verboseInternal:
-            print "error fills"
-        for orb in range(0,len(periodErrors)):
-            if ((orb==0)or(orb==3)or(orb==6)):
-                main.fill(ellipseErrorsXs2[orb:orb+2],ellipseErrorsYs2[orb:orb+2], color=colorsList[int(orb/3.0)], edgecolor=colorsList[int(orb/3.0)], alpha=0.1)
-                if verboseInternal:
-                    print str(orb)+"color = "+colorsList[int(orb/3.0)]
-                #print repr(ellipseErrorsXs2[orb:orb+2])
-    
+        if False:
+            if verboseInternal:
+                print "error fills"
+            for orb in range(0,len(periodErrors)):
+                if ((orb==0)or(orb==3)or(orb==6)):
+                    main.fill(ellipseErrorsXs2[orb:orb+2],ellipseErrorsYs2[orb:orb+2], color=colorsList[int(orb/3.0)], edgecolor=colorsList[int(orb/3.0)], alpha=0.1)
+                    if verboseInternal:
+                        print str(orb)+"color = "+colorsList[int(orb/3.0)]
+                    #print repr(ellipseErrorsXs2[orb:orb+2])
+
     # Draw orbits
     if len(longAN_deg)>len(colorsList):
             print '\nAbout to draw ellipses'
             P =ProgressBar('red',width=30,block='=',empty='-',lastblock='>')
     for orb in range(0,len(longAN_deg)):
-        if False:
+        if True:
             main.plot(ellipseXs2[orb],ellipseYs2[orb],linewidth=2.5,color=colorsList[orb]) 
         else:
             #print 'Plotting ellipse for orbit # '+str(orb)+"/"+str(len(longAN_deg))
@@ -2211,7 +2212,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     
     ## call function to calculate, create and return polygons for the 
     ## companion star locations and boxes for their errors
-    if False:
+    if True:
         (errorBoxes, m2starPolygons,[xmin,xmax,ymin,ymax]) = starAndErrorPolys(SAs,SAerrors,PAs,PAerrors,asConversion, main.transData, telescopeView)
     else:
         (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,SAs,SAerrors,PAs,PAerrors,asConversion,telescopeView=False)
@@ -2311,7 +2312,7 @@ def orbitEllipsePlotter(longAN_deg, e, period, inc, argPeri_deg, a, To, sysDataD
     #main.plot([xLim[0],xLim[1]],[0,0],c='black',linewidth=2)
     #main.plot([0,0],[yLim[0],yLim[1]],c='black',linewidth=2)
     
-    if False:
+    if True:
         # draw the error boxes for the companion start locations in the data
         for errorBox in errorBoxes:
             main.add_patch(errorBox)
@@ -2596,9 +2597,9 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     prepend = ""
     if outputDatafile=='':
         #baseDir = "/mnt/Data1/Todai_Work/Dropbox/EclipseWorkspace/SMODT/settings_and_InputData"
-        outputDatafile = "/mnt/Data1/Todai_Work/Data/data_SMODT/FakeData-mcmc-3D-veryOpen-5Percent--500-Thousand-in_Total/outputData-ALL.dat" 
+        outputDatafile = "/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/HR8799e-MCMC-75PercentDecreasedErrors-updatedOct2010Vals-youngTos-fixedInc40degB--35-Million-in_Total/outputData-ALL.dat" 
         baseDir = os.path.dirname(outputDatafile)
-        prepend = "FakeData_"
+        prepend = "HR8799e_"
     elif outputDatafile!="":
         baseDir = os.path.dirname(outputDatafile)
         prepend = baseDir.split("/")[-1].split("-")[0]+"_"
@@ -2629,7 +2630,8 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     ####################################################
     numModDataSets = 10
     rvPlotFilename = os.path.join(baseDir,"RVplot-Manual")
-    diPlotFilename = os.path.join(baseDir,"DIplot-Manual")
+    #diPlotFilename = os.path.join(baseDir,"DIplot-Manual")
+    diPlotFilename = os.path.join('/run/media/kmede/HOME/Dropbox/SMODT-outputCopies/HR8799-Sept2015/',"HR8799e-DIplot-Manual")
     modDatasetsFilename =  os.path.join("/mnt/Data1/Todai_Work/Data/data_Binary/data_Duo","mod"+str(numModDataSets)+"Dataset.dat")
     TvsEccPlotFilename = os.path.join("/mnt/Data1/Todai_Work/Data/data_Binary/data_Duo","TvsEccentricityPlot")
     ####################################################
@@ -2638,6 +2640,8 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     ####################################################
     logFilename = os.path.join(baseDir,'log-chain_1.txt')        
     [nu,nuRV,nuDI,printStr] = genTools.findNuFromLog(logFilename)
+    
+    print 'settings files all loaded, about to enter optional post-analysis section'
 
     ####################################################
     # combine output chain data files into one $$$$$$$$$ Not sure why you would need this anymore though...$$$
@@ -2656,7 +2660,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     # Perform orbit plotting, either DI, RV or both
     ####################################################
     #bestOrbit = [61.0,0.5,2456847.0,0,]
-    if False:    
+    if True:    
         bestOrbit = []  
         try:
             #print '#'*50
@@ -2693,10 +2697,11 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
             rvModDatasetMaker(e, T, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, paramSettingsDict,\
                      RVoffsets=RVoffsets, modDatasetsFilename=modDatasetsFilename, numModDatasets=numModDataSets)
         ##############   DI plot(s)  #######################
-        if False:
+        print 'before di plotter if statements'
+        if True:
             ## Make a DI fit plot
-            if False:
-                if False:
+            if True:
+                if True:
                     longANs = [136.48,115.03,143.82]
                     argPeris = [90,90,90]
                     incs = [33.04,19.09,40.10]
@@ -2713,10 +2718,12 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
                     a_totals = [bestOrbit[7]]
                     Ts = [bestOrbit[2]]
                     es = [bestOrbit[1]]
-               
-                orbitEllipsePlotter(longANs,es,periods,incs,argPeris,a_totals,\
-                                 sysDataDict,DIdataDict,plotFilename=diPlotFilename,show=False,To=Ts, nuDI=nuDI) 
-            if True:
+                print 'GOING INTO ORBIT PLOTTER'
+                orbitEllipsePlotter(longANs,es,periods,incs,argPeris,a_totals,Ts, sysDataDict,DIdataDict,\
+                                 xLabel='E ["]', yLabel='N ["]',plotFilename=diPlotFilename,xLim=False, yLim=False, show=False,\
+                                  telescopeView=False,nuDI=nuDI,alf=1.0)
+                print 'BACK FROM ORBIT PLOTTER'
+            if False:
                 densityPlot(baseDir, sysDataDict, DIdataDict,RVdataDict,paramSettingsDict, nuDI=nuDI,nuRV=nuRV) 
     ####################################################
     # Extra non-orbit plots and statistic calculations
@@ -2732,7 +2739,7 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
     if False:
         ## Make the posterior prob histograms.
         summaryPlotter(outputDatafile, summaryPlotFile, weight=False, confLevels=True, nu=1, plot4x1=False)
-    if True:
+    if False:
         ## Make the posterior prob histograms.
         summaryPlotFile = os.path.join('/mnt/Data1/Todai_Work/Dropbox/SMODT-outputCopies/',"SummaryPlot-Manual")
         summaryPlotter(outputDatafile, summaryPlotFile, shadeConfLevels=True, nu=1)
@@ -2756,6 +2763,8 @@ def PostSimCompleteAnalysisFunc(outputDatafile=''):
             fileList.append(fname)
             print 'Adding filename to list: '+fname
         genTools.gelmanRubinStage2(fileList)
+    
+    print 'Done PostSimCompleteAnalysisFunc!'
 
 def rvPlotter(e, T, Tc, period, inc, argPeri_deg, a, sysDataDict, RVdataDict, paramSettingsDict,\
                  K=0, RVoffsets=[0], nuRV=1, plotFilename='', show=True, plotFullOrbit=True, primaryRVs=True,alf=1.0):

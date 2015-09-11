@@ -37,12 +37,13 @@ def incPriorRatio(incProposed,incLast):
     
 def mass1PriorRatio(M1Proposed,M1Last):
     #we are assuming M1>70Mj
-    if (simpleSettingsDict['mass1MAX']!=0)and False:
+    if (simpleSettingsDict['mass1MAX']!=0)and True:
         if M1Proposed!=M1Last!=0:
-            if simpleSettingsDict['mass1MIN']>=0.5:
+            if True:#simpleSettingsDict['mass1MIN']>=0.5:
+                #From Table 1 of Chabrier2003
                 return (M1Proposed**(-2.3))/(M1Last**(-2.3))
-            elif (simpleSettingsDict['mass1MIN']>=0.07)and(simpleSettingsDict['mass1MAX']<=0.5):
-                return (M1Proposed**(-1.3))/(M1Last**(-1.3))
+            #elif (simpleSettingsDict['mass1MIN']>=0.07)and(simpleSettingsDict['mass1MAX']<=0.5):
+            #    return (M1Proposed**(-1.3))/(M1Last**(-1.3))
             else:
                 return 1.0
         else:
@@ -57,17 +58,18 @@ def mass1PriorRatio(M1Proposed,M1Last):
 #    else:
 #         return 1.0
 def mass2PriorRatio(M2Proposed,M2Last,aProposed,aLast):
-    if (simpleSettingsDict['mass2MAX']!=0)and False:
+    if (simpleSettingsDict['mass2MAX']!=0)and True:
         if M2Proposed!=M2Last!=0:
-            if simpleSettingsDict['mass2MIN']>=0.5:
+            if True:#simpleSettingsDict['mass2MIN']>=0.5:
+                #From Table 1 of Chabrier2003
                 return (M2Proposed**(-2.3))/(M2Last**(-2.3))
-            elif (simpleSettingsDict['mass2MIN']>=0.07)and(simpleSettingsDict['mass2MAX']<=0.5):
-                return (M2Proposed**(-1.3))/(M2Last**(-1.3))
-            elif (simpleSettingsDict['mass2MIN']>=0.005)and(simpleSettingsDict['mass2MAX']<=0.07):
-                if aProposed!=aLast!=0:
-                    return ((M2Proposed**(-0.65))*(aProposed**(-0.85)))/((M2Last**(-0.65))*(aLast**(-0.85)))
-                else:
-                    return 1.0
+            #elif (simpleSettingsDict['mass2MIN']>=0.07)and(simpleSettingsDict['mass2MAX']<=0.5):
+            #    return (M2Proposed**(-1.3))/(M2Last**(-1.3))
+            #elif (simpleSettingsDict['mass2MIN']>=0.005)and(simpleSettingsDict['mass2MAX']<=0.07):
+            #    if aProposed!=aLast!=0:
+            #        return ((M2Proposed**(-0.65))*(aProposed**(-0.85)))/((M2Last**(-0.65))*(aLast**(-0.85)))
+            #    else:
+            #        return 1.0
             else:
                 return 1.0
         else:
@@ -209,7 +211,7 @@ advancedDict = {
 'ePrior'    :(True,'Use prior for eccentricity?',ePriorRatio),
 'pPrior'    :(True,'Use prior for period?',pPriorRatio),
 'incPrior'  :(True,'Use prior for inclination?',incPriorRatio),
-'M1Prior':(False,'Use prior for M1?',mass1PriorRatio),
+'M1Prior':(True,'Use prior for M1?',mass1PriorRatio),
 'M2Prior':(False,'Use prior for M2?',mass2PriorRatio),
 'parPrior' :(True,'Use prior for parallax?',paraPriorRatio),
 }

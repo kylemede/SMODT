@@ -8,8 +8,11 @@ import glob
 def customPost():
     rootDir = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/NewBEAT/'
     settingsDict = tools.startup(sys.argv,rootDir,rePlot=True)
-    #allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
     allFname = os.path.join(settingsDict['finalFolder'],"combined-BIstripped-MCMCdata.fits")
+    skipBurnInStrip=True
+    if os.path.exists(allFname)==False:
+        allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
+        skipBurnInStrip=False
     log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=10)
     ##make list of stages to run
     stageList = []
@@ -19,49 +22,54 @@ def customPost():
         stageList = ['SA']
     elif settingsDict['symMode'][0]=='MCMC':
         stageList = ['SA','ST','MCMC']
-#     bestFit = np.array([ 1.08040127e+00,   9.60493873e-04,   5.02111885e+01,
-#          1.00808667e+02,   6.29123973e-02,   2.45151739e+06,
-#          2.45151739e+06,   1.19376399e+01,   4.75040520e+01,
-#          2.71592539e+02,   5.36101436e+00,   4.15438649e+01,
-#          8.77774317e+00,  -5.73899482e-02])  
+
     ##make hack list of output files
     outFiles = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputDataMCMC*.fits")))
     
     ## calc and strip burn-in?
-    if False:
+    if True:
+        
         burnInStr = ''
-        if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
-            (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
-            if settingsDict['delBurn'][0]:
-                strippedFnames = tools.burnInStripper(outFiles,burnInLengths)
-                outFiles = strippedFnames
-                ## combine stripped files to make final file?
-                if len(strippedFnames)>0:
-                    strippedAllFname = os.path.join(os.path.dirname(strippedFnames[0]),"combined-BIstripped-MCMCdata.fits")
-                    tools.combineFits(strippedFnames,strippedAllFname)
-                    ## replace final combined filename with new stripped version
-                    allFname = strippedAllFname
-    
+        if skipBurnInStrip==False:
+            if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
+                (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
+                if settingsDict['rmBurn'][0]:
+                    strippedFnames = tools.burnInStripper(outFiles,burnInLengths)
+                    outFiles = strippedFnames
+                    ## combine stripped files to make final file?
+                    if len(strippedFnames)>0:
+                        strippedAllFname = os.path.join(os.path.dirname(strippedFnames[0]),"combined-BIstripped-MCMCdata.fits")
+                        tools.combineFits(strippedFnames,strippedAllFname)
+                        ## replace final combined filename with new stripped version
+                        allFname = strippedAllFname
+        
     ## find best fit
-    if False:
+    if True:
         if os.path.exists(allFname):
             bestFit = tools.findBestOrbit(allFname)
+    else:
+        bestFit = np.array([  1.32366515e+00,   2.73842875e-01,   3.59629752e+01,
+                             2.45465119e+02,   3.72512416e-01,   2.45234944e+06,
+                             2.45234944e+06,   2.09427724e+01,   1.58152772e+02,
+                             3.50344680e+02,   8.88140043e+00,   8.19243621e+01,
+                             8.68267992e+02,   6.19627726e+03,   3.85209089e+02,
+                             6.31690499e+03])
         
     #effPtsStr = tools.mcmcEffPtsCalc(allFname)
     
-    if False:
+    if True:
         ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
         ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
         plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbitPlot-MANUAL-'+settingsDict['symMode'][0])
-        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.9],[-0.7,0.8],[-0.515,0.515]])
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
+        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.9],[-0.7,0.8],[-0.515,0.515]])
         
     clStr=''
-    if False:
+    if True:
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
-        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.1],[0.5,1.7],[-0.005,0.125],[37,53]],bestVals=[1.0,1.0,0.048,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-    if False: 
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.1],[0.5,1.7],[-0.005,0.125],[37,53]],bestVals=[1.0,1.0,0.048,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+    if True: 
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
         tools.cornerPlotter(allFname, plotFilename)#,paramsToPlot=[0,1,7,8],xLims=[[0.5,2.1],[0.5,1.7],[11.5,13.1],[37,53]],bestVals=[1.0,1.0,11.9,45.0])
         
@@ -71,18 +79,32 @@ def customPost():
         (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
         
     ## custom re check of the orbit fit     
-    if True: 
+    if False: 
         orbParams = [1.16679785333,0.263640913869,37.2109325013,245.327413195,0.374265026422,2452348.33995,2452348.33995,20.9645791913,158.909378023,350.3113539,8.57166434448,92.2373136221,868.357550689,6196.81653647,385.187801642,6318.18670944]
         finalFits=''
         nus = [70, 2, 66]
         epochs=[2457259.0]
         tools.predictLocation(orbParams,settingsDict,epochs)
         #tools.recheckFit3D(orbParams,settingsDict,finalFits,nus)
+    
     ## following post-processing stages can take a long time, so write the current
     ## summary information to the summary file and add the rest later
-    if False:
+    if True:
         if os.path.exists(allFname):
             tools.summaryFilePart1(settingsDict,stageList,allFname,clStr,burnInStr,bestFit,grStr)
+            
+    ## calc correlation length & number effective points? # This one takes a long time for long runs!!!
+    effPtsStr = ''
+    if ((len(outFiles)>1)and(settingsDict['symMode'][0]=='MCMC'))and (settingsDict['calcCL'] and os.path.exists(allFname)):
+        effPtsStr = tools.mcmcEffPtsCalc(allFname)
+        
+    if os.path.exists(allFname):
+        tools.summaryFilePart2(settingsDict,effPtsStr,allTime,postTime)
+        
+    ##clean up files (move to folders or delete them)
+    tools.cleanUp(settingsDict,stageList,allFname)
+    if settingsDict['CopyToDB']:
+        tools.copyToDB(settingsDict)
     
 def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []

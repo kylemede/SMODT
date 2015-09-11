@@ -151,7 +151,7 @@ def burnInCalc(mcmcFnames,combinedFname):
             #medianChain = np.median(chiSquaredsChain)
             burnInLength = len(likelihoodsChain)
             i=0
-            while i<(len(likelihoodsChain)):
+            while i<(len(likelihoodsChain)-1):
                 i+=1
                 if likelihoodsChain[i]>medainALL:
                     #print 'chiSqsChain[i] = '+str(chiSqsChain[i])
@@ -1053,7 +1053,7 @@ def dataReader(filename, colNum=0):
         bestDataVal = dataAry[np.where(chiSquareds==np.min(chiSquareds))][0]          
         return (dataAry,chiSquareds,[bestDataVal,np.median(dataAry),dataAry[0],dataAry[len(dataAry)//2],dataAry[-1]])                
                                          
-def findBestOrbit(filename):        
+def findBestOrbit(filename,bestToFile=True):        
     """
     Find the orbital elements for the best fit in a NewBEAT format fits file.
     """             
@@ -1063,6 +1063,12 @@ def findBestOrbit(filename):
     loc = np.where(data[:,11]==chiBest)
     orbBest = data[loc[0][0],:]
     log.info("Best fit found to be:\n"+repr(orbBest))
+    if bestToFile:
+        bestFname = os.path.join(os.path.dirname(filename),'bestOrbitParams.txt')
+        f = open(bestFname,'w')
+        f.write(repr(orbBest))
+        f.close()
+        log.info("Best fit params written to :\n"+bestFname)
     return orbBest
                                                     
 def copytree(src, dst):

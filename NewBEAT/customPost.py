@@ -69,7 +69,7 @@ def customPost():
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
         clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.1],[0.5,1.7],[-0.005,0.125],[37,53]],bestVals=[1.0,1.0,0.048,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-    if True: 
+    if False: 
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
         tools.cornerPlotter(allFname, plotFilename)#,paramsToPlot=[0,1,7,8],xLims=[[0.5,2.1],[0.5,1.7],[11.5,13.1],[37,53]],bestVals=[1.0,1.0,11.9,45.0])
         
@@ -99,7 +99,7 @@ def customPost():
         effPtsStr = tools.mcmcEffPtsCalc(allFname)
         
     if os.path.exists(allFname):
-        tools.summaryFilePart2(settingsDict,effPtsStr,allTime,postTime)
+        tools.summaryFilePart2(settingsDict,effPtsStr,22,22)
         
     ##clean up files (move to folders or delete them)
     tools.cleanUp(settingsDict,stageList,allFname)

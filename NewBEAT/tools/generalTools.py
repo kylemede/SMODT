@@ -284,10 +284,10 @@ def getParStrs(head,latex=True):
     Return matching paramList, paramStrs, paramFileStrs for provided header.
     """
     paramList = getParInts(head)    
-    paramFileStrs = ['M1','M2','parallax','Omega','e','To', 'Tc','P','i','omega','a_total','chiSquared','K']
-    paramStrs = ['M1 [Msun]','M2 [Msun]','Parallax [mas]','Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]','chiSquared','K [m/s]']
+    paramFileStrs = ['m1','m2','parallax','Omega','e','To', 'Tc','P','i','omega','a_total','chiSquared','K']
+    paramStrs = ['m1 [Msun]','m2 [Msun]','Parallax [mas]','Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]','chiSquared','K [m/s]']
     if latex:
-        paramStrs = ['$M_1$ [$M_{\odot}$]','$M_2$ [$M_{\odot}$]','$parallax$ [mas]','$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]','$\chi^2$','$K$ [m/s]']
+        paramStrs = ['$m_1$ [$M_{\odot}$]','$m_2$ [$M_{\odot}$]','$parallax$ [mas]','$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]','$\chi^2$','$K$ [m/s]']
 
     if head["nRVdsets"]>0:
         for dataset in range(1,head["nRVdsets"]+1):

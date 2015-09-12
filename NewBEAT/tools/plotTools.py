@@ -283,9 +283,9 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
         (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False)
         ## modify x labels to account for DI only situations where M1=Mtotal
         if np.var(data[:,1])==0:
-            paramStrs2[0] = 'M total [Msun]'
-            paramStrs[0] = '$M_{total}$ [$M_{\odot}$]'
-            paramFileStrs[0] = 'Mtotal'
+            paramStrs2[0] = 'm total [Msun]'
+            paramStrs[0] = '$m_{total}$ [$M_{\odot}$]'
+            paramFileStrs[0] = 'm-total'
         ## check if a subset is to be plotted or the whole set
         ## remake lists of params to match subset.
         if len(paramsToPlot)!=0:
@@ -421,9 +421,9 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
         
         ## modify x labels to account for DI only situations where M1=Mtotal
         if np.var(data[:,1])==0:
-            paramStrs2[0] = 'M total [Msun]'
-            paramStrs[0] = '$M_{total}$ [$M_{\odot}$]'
-            paramFileStrs[0] = 'Mtotal'
+            paramStrs2[0] = 'm total [Msun]'
+            paramStrs[0] = '$m_{total}$ [$M_{\odot}$]'
+            paramFileStrs[0] = 'm-total'
         
         ## check if a subset is to be plotted or the whole set
         ## remake lists of params to match subset.
@@ -836,11 +836,11 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
             fitPlot = figRV.add_subplot(211)
             fitPlot.set_position([0.13,0.38,0.84,0.57])
             xLabel = "Orbital Phase"
-            fitYlabel = 'vr '
+            fitYlabel = 'v '
             residYlabel = 'O-C '
             if latex:
                 residYlabel = '$O-C$ '
-                fitYlabel = '$vr$ '
+                fitYlabel = '$v$ '
                 xLabel = "$Orbital$ $Phase$"
             residualsPlot.axes.set_xlabel(xLabel,fontsize=20)
             residualsPlot.axes.set_ylabel(residYlabel,fontsize=20)
@@ -1022,9 +1022,9 @@ def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],bestV
         
         ## modify x labels to account for DI only situations where M1=Mtotal
         if np.var(data[:,1])==0:
-            paramStrs2[0] = 'M total [Msun]'
-            paramStrs[0] = '$M_{total}$ [$M_{\odot}$]'
-            paramFileStrs[0] = 'Mtotal'
+            paramStrs2[0] = 'm total [Msun]'
+            paramStrs[0] = '$m_{total}$ [$M_{\odot}$]'
+            paramFileStrs[0] = 'm-total'
         ## check if a subset is to be plotted or the whole set
         ## remake lists of params to match subset.
         if len(paramsToPlot)!=0:

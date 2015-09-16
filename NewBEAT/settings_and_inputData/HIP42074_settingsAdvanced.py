@@ -103,7 +103,7 @@ advancedDict = {
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
 'chiMAX' : (300.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed best reduced chiSquared out of SA before entering ST [double]
-'chiMaxST':(10,'Max reduced chiSquared to enter ST.'),
+'chiMaxST':(30,'Max reduced chiSquared to enter ST.'),
 # maximum allowed best reduced chiSquared out of ST before entering MCMC [double]
 'cMaxMCMC':(20,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 

@@ -13,22 +13,22 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "HIP42074-RV-SA-ALLopenParams",
+'outRoot' : "HIP42074-RV-MCMC-ALLopenParams",
 #'outRoot' : "HIP10321-3D-retro-MCMC-startAtBest-Aug18Astrometry-uniMassPiors-GaussParallax-superlong",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('RV',"Data Mode (RV,DI,3D)"),
 # mode to run simulation in, choices {'MC','SA','MCMC'} [string]
-'symMode' : ('SA',"Simulator mode (MC,SA,MCMC)"),
+'symMode' : ('MCMC',"Simulator mode (MC,SA,MCMC)"),
 ###################################################
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.2,
+'mass1MIN' : 0.01,
 'mass1MAX' : 2.0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.1,
-'mass2MAX' : 0.75,
+'mass2MIN' : 0.01,
+'mass2MAX' : 1.2,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 40,
 'paraMAX' : 60.0,
@@ -36,8 +36,8 @@ simpleSettingsDict={
 'OmegaMIN' : 1.0,
 'OmegaMAX' : 360.0,
 # Minimum/Maximum allowed value for the Eccentricity, allowed range [0,0.98]. [double]
-'eMIN' : 0.1,
-'eMAX' : 0.7,
+'eMIN' : 0.001,
+'eMAX' : 0.95,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
 'TMIN' : -1,
@@ -47,7 +47,7 @@ simpleSettingsDict={
 'PMAX' : 500.0,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
 'incMIN' : 1.0,
-'incMAX' : 90.0,
+'incMAX' : 180.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 1.0,
 'omegaMAX' : 360.0,

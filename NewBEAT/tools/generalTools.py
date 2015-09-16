@@ -199,66 +199,69 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
     GRs=[]
     Ts = []
     grStr = '\n'+'-'*30+"\nGelman-Rubin Results:\n"+'-'*30+'\n'
-    Lcfloat = float(nMCMCsamp)
-    if os.path.exists(mcmcFileList[0]):
-        log.info("Starting to calculate R&T")
-        ###########################################################
-        ## stage 1 ->  load up values for each param in each chain.
-        ## allStg1vals = [chain#, param#, (mean,variance,Lc)]
-        ## stage 2 ->  Use them to compare between chains 
-        ##             then calc R and T.
-        ###########################################################
-        (head,data) = loadFits(mcmcFileList[0])
-        (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
-        Nc = len(mcmcFileList)
-        ##start stage 1
-        allStg1vals=np.zeros((Nc,len(paramList),3))
-        for i in range(0,len(mcmcFileList)):
-            log.debug("Starting to calc chain #"+str(i)+' GR values')
-            (head,data) = loadFits(mcmcFileList[i])
-            allStg1vals[i,:,2]=data.shape[0]
+    try:
+        Lcfloat = float(nMCMCsamp)
+        if os.path.exists(mcmcFileList[0]):
+            log.info("Starting to calculate R&T")
+            ###########################################################
+            ## stage 1 ->  load up values for each param in each chain.
+            ## allStg1vals = [chain#, param#, (mean,variance,Lc)]
+            ## stage 2 ->  Use them to compare between chains 
+            ##             then calc R and T.
+            ###########################################################
+            (head,data) = loadFits(mcmcFileList[0])
+            (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
+            Nc = len(mcmcFileList)
+            ##start stage 1
+            allStg1vals=np.zeros((Nc,len(paramList),3))
+            for i in range(0,len(mcmcFileList)):
+                log.debug("Starting to calc chain #"+str(i)+' GR values')
+                (head,data) = loadFits(mcmcFileList[i])
+                allStg1vals[i,:,2]=data.shape[0]
+                for j in range(0,len(paramList)):
+                    log.debug("calculating stage 1 of GR for chain #"+str(i)+", param: "+paramStrs[j])
+                    allStg1vals[i,j,0]=np.mean(data[:,paramList[j]])
+                    allStg1vals[i,j,1]=np.var(data[:,paramList[j]])
+            ##start stage 2         
+            rHighest = 0
+            tLowest = 1e9       
+            rHighStr = ''
+            tLowStr = ''
             for j in range(0,len(paramList)):
-                log.debug("calculating stage 1 of GR for chain #"+str(i)+", param: "+paramStrs[j])
-                allStg1vals[i,j,0]=np.mean(data[:,paramList[j]])
-                allStg1vals[i,j,1]=np.var(data[:,paramList[j]])
-        ##start stage 2         
-        rHighest = 0
-        tLowest = 1e9       
-        rHighStr = ''
-        tLowStr = ''
-        for j in range(0,len(paramList)):
-            log.debug("Starting stage 2 for param: "+paramStrs[paramList[j]])
-            Ncfloat = float(Nc)
-            ##calc R
-            W = 0
-            for i in range(0,Nc):
-                #Lcfloat = float(allStg1vals[i,j,2])
-                W+=(Lcfloat/(Lcfloat-1.0))*allStg1vals[i,j,1]
-            W=W/Ncfloat
-            V = np.mean(allStg1vals[:,j,1])+(Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0])
-            R=np.NaN
-            if W!=0:
-                R = np.sqrt(V/W)
-            GRs.append(R)
-            ##calc T
-            #B = (Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0]*allStg1vals[:,j,2])
-            B = (Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0])*Lcfloat
-            #Uses the mean of Lc values
-            T = np.NAN
-            if B!=0:
-                #T = np.mean(allStg1vals[:,j,2])*Ncfloat*np.min([(V/B),1.0])
-                T = Lcfloat*Ncfloat*np.min([(V/B),1.0])
-            Ts.append(T)       
-            grStr+=paramStrs[paramList[j]]+" had R = "+str(R)+", T = "+str(T)+'\n'
-            if T<tLowest:
-                tLowest=T
-                tLowStr="Lowest T = "+str(T)+' for '+paramStrs[paramList[j]]+'\n'
-            if R>rHighest:
-                rHighest=R
-                rHighStr="Highest R = "+str(R)+' for '+paramStrs[paramList[j]]+'\n'
-        grStr+='\nWorst R&T values were:\n'+rHighStr+tLowStr+'\n'
-    else:
-        log.critical("Gelman-Rubin stat can NOT be calculated as file does not exist!!:\n"+chainDataFileList[0])
+                log.debug("Starting stage 2 for param: "+paramStrs[paramList[j]])
+                Ncfloat = float(Nc)
+                ##calc R
+                W = 0
+                for i in range(0,Nc):
+                    #Lcfloat = float(allStg1vals[i,j,2])
+                    W+=(Lcfloat/(Lcfloat-1.0))*allStg1vals[i,j,1]
+                W=W/Ncfloat
+                V = np.mean(allStg1vals[:,j,1])+(Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0])
+                R=np.NaN
+                if W!=0:
+                    R = np.sqrt(V/W)
+                GRs.append(R)
+                ##calc T
+                #B = (Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0]*allStg1vals[:,j,2])
+                B = (Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0])*Lcfloat
+                #Uses the mean of Lc values
+                T = np.NAN
+                if B!=0:
+                    #T = np.mean(allStg1vals[:,j,2])*Ncfloat*np.min([(V/B),1.0])
+                    T = Lcfloat*Ncfloat*np.min([(V/B),1.0])
+                Ts.append(T)       
+                grStr+=paramStrs[paramList[j]]+" had R = "+str(R)+", T = "+str(T)+'\n'
+                if T<tLowest:
+                    tLowest=T
+                    tLowStr="Lowest T = "+str(T)+' for '+paramStrs[paramList[j]]+'\n'
+                if R>rHighest:
+                    rHighest=R
+                    rHighStr="Highest R = "+str(R)+' for '+paramStrs[paramList[j]]+'\n'
+            grStr+='\nWorst R&T values were:\n'+rHighStr+tLowStr+'\n'
+        else:
+            log.critical("Gelman-Rubin stat can NOT be calculated as file does not exist!!:\n"+chainDataFileList[0])
+    except:
+        log.critical("Gelman-Rubin stat FAILED to be calculated for some reason")
     
     return (GRs,Ts,grStr)
 
@@ -1097,3 +1100,81 @@ def copytree(src, dst):
             except:
                 log.error('FAILED while copying:\n'+repr(s)+'\nto:\n'+repr(d))                        
     
+def ENtoPASA(E, E_error, N, N_error):
+    """
+    Will calculate the Separation and Position Angles for a given East and North, including their errors.
+    PA and error will be in [deg], with SA and error in ["]
+    :returns: (PA,PA_error,SA,SA_error)
+    """
+    verbose = False
+    PA = np.degrees(np.atan2(E,N))
+    #NOTE: both np.atan2 and np.arctan2 tried with same results, both produce negatives rather than continuous 0-360 
+    #thus, must correct for negative outputs
+    if PA<0:
+        PA = PA+360.0
+    
+    SA = np.sqrt(E**2.0 + N**2.0)
+    
+    PA_error=SA_error=0
+    if (E_error==0)or(N_error==0):
+        if False:
+            print "either the E or N error value was zero, so setting the PA and SA return errors to zero!!"
+    else:
+        top = abs(E/N)*np.sqrt((E_error/E)**2.0 + (N_error/N)**2.0)
+        btm = 1.0+(E/N)**2.0
+        PA_error = abs(np.degrees(top/btm))
+
+        top = SA*(abs(E*E_error)+abs(N*N_error))
+        btm = E**2.0+N**2.0
+        SA_error = abs(top/btm)
+    if verbose:
+        print repr((E, E_error, N, N_error))+" -> "+repr((PA,PA_error,SA,SA_error))    
+    return (PA,PA_error,SA,SA_error)
+
+def PASAtoEN(PA,PA_error,SA,SA_error):
+    """
+    Convert provided Position Angle and Separation Angle, and their errors, into 
+    RA and DEC with errors.  These are the same equations for calculating 
+    x and y in the Thiele-Innes orbit fitting.  Remember that x and y are 
+    flipped in that fitting approach due to how Thiele defined the coord 
+    system when deriving the equations used.
+    
+    NOTE: this can also be used to calculate x and y used in Thiele-Innes
+          With East=RA=y and North=DEC=x.  
+    
+    :returns: (E, E_error, N, N_error)
+    """
+    verbose = False
+    N = SA*np.cos(np.radians(PA))
+    E = SA*np.sin(np.radians(PA))
+    
+    E_error=N_error=0
+    if (SA_error==0)or(PA_error==0):
+        if verbose:
+            print "either the PA and SA error value was zero, so setting the E or N return errors to zero!!"
+    else:
+        tempA = (SA_error/SA)**2.0
+        tempB = ((np.cos(np.radians(PA+PA_error))-np.cos(np.radians(PA))) / np.cos(np.radians(PA)))**2.0
+        N_error = abs(N*np.sqrt(tempA+tempB))
+        
+        # Another way to calculate the error, but the one above is belived to be more currect 
+        tempA2 = (SA_error*np.cos(np.radians(PA)))**2.0
+        tempB2 = (SA*np.sin(np.radians(PA))*np.radians(PA_error))**2.0
+        N_error2 = np.sqrt(tempA2+tempB2)
+        
+        tempC = (SA_error/SA)**2.0
+        tempD = ((np.sin(np.radians(PA+PA_error))-np.sin(np.radians(PA))) / np.sin(np.radians(PA)))**2.0
+        E_error = abs(E*np.sqrt(tempC+tempD))
+        
+        # Another way to calculate the error, but the one above is belived to be more currect 
+        tempC2 = (SA_error*np.sin(np.radians(PA)))**2.0
+        tempD2 = (SA*np.cos(np.radians(PA))*np.radians(PA_error))**2.0
+        E_error2 = np.sqrt(tempC2+tempD2)
+        
+        if verbose:
+            print 'N_error2-N_error = '+str(N_error2-N_error)
+            print 'E_error2-E_error = '+str(E_error2-E_error)
+            print 'E_error2 = '+str(E_error2)+', E_error = '+str(E_error)
+            print 'N_error2 = '+str(N_error2)+', N_error = '+str(N_error)+"\n"
+    
+    return (E, E_error, N, N_error)

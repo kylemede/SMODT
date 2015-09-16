@@ -103,12 +103,12 @@ advancedDict = {
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
 'chiMAX' : (300.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed best reduced chiSquared out of SA before entering ST [double]
-'chiMaxST':(1.4,'Max reduced chiSquared to enter ST.'),
+'chiMaxST':(10,'Max reduced chiSquared to enter ST.'),
 # maximum allowed best reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(1.12,'Max reduced chiSquared to enter MCMC.'),
+'cMaxMCMC':(20,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 20,
+'logLevel' : 10,
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :20,
 # make plot of posterior distributions? [bool]
@@ -197,14 +197,14 @@ advancedDict = {
 # System Information #
 ######################
 #best estimate of primary's mass, and error [double][Msun]
-'mass1Est' : (1.09,"Primary's estimated mass"),
-'mass1Err' : (0.1,"Primary's estimated mass error"),
+'mass1Est' : (0.0,"Primary's estimated mass"),
+'mass1Err' : (0.0,"Primary's estimated mass error"),
 #best estimate of secondary's mass, and error [double][Msun]
-'mass2Est' : (0.0818,"Secondary's estimated mass"),
-'mass2Err' : (0.002,"Secondary's estimated mass error"),
+'mass2Est' : (0.0,"Secondary's estimated mass"),
+'mass2Err' : (0.00,"Secondary's estimated mass error"),
 #best estimate of parallax, and error [double][mas]
-'paraEst' : (37.25,"Estimated parallax"),
-'paraErr' : (0.55,"Estimated parallax error"),
+'paraEst' : (47.21,"Estimated parallax"),
+'paraErr' : (0.72,"Estimated parallax error"),
 ##################################
 # Push prior functions into dict #
 ##################################

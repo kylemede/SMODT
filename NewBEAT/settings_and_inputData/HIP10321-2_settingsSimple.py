@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (50000000,"Number of MCMC or MC samples"),
+'nSamples' : (90000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "HIP10321-3D-retro-MCMC-OrigRVerrors-OrigAstrometry-uniMassPiors-GaussParallax-2",
+'outRoot' : "HIP10321-3D-retro-MCMC-all4msJitter-Aug18Astrometry-flatM1M2Piors-GaussParallax",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -23,11 +23,11 @@ simpleSettingsDict={
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.7,
+'mass1MIN' : 0.5,
 'mass1MAX' : 2.0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.1,
-'mass2MAX' : 0.55,
+'mass2MAX' : 0.6,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 30,
 'paraMAX' : 50.0,

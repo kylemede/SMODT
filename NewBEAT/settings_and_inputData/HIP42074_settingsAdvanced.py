@@ -103,9 +103,9 @@ advancedDict = {
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
 'chiMAX' : (300.0,"Max reduced chiSquared during MC and SA"),
 # maximum allowed best reduced chiSquared out of SA before entering ST [double]
-'chiMaxST':(30,'Max reduced chiSquared to enter ST.'),
+'chiMaxST':(40,'Max reduced chiSquared to enter ST.'),
 # maximum allowed best reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(20,'Max reduced chiSquared to enter MCMC.'),
+'cMaxMCMC':(35,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 10,
@@ -154,7 +154,7 @@ advancedDict = {
 # Maximum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
 'sigMax' :(1.0,'Max ratio of params range,for step size.'),
 # Minimum step size allowed, as a ratio of each parameters range ie. 1.0=100% [double]
-'sigMin' :(0.02,'Min ratio of params range,for step size.'),
+'sigMin' :(0.002,'Min ratio of params range,for step size.'),
 # interval of accepted values between storing in output array (for SA,ST,MCMC, not MC) [int]
 # Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
 'saveInt' : (10,"Int between saving params, for all but MC."),
@@ -211,7 +211,7 @@ advancedDict = {
 'ePrior'    :(True,'Use prior for eccentricity?',ePriorRatio),
 'pPrior'    :(True,'Use prior for period?',pPriorRatio),
 'incPrior'  :(True,'Use prior for inclination?',incPriorRatio),
-'M1Prior':(True,'Use prior for M1?',mass1PriorRatio),
+'M1Prior':(False,'Use prior for M1?',mass1PriorRatio),
 'M2Prior':(False,'Use prior for M2?',mass2PriorRatio),
 'parPrior' :(True,'Use prior for parallax?',paraPriorRatio),
 }

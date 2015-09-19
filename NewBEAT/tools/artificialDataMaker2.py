@@ -3,7 +3,7 @@ import os
 from PyAstronomy import pyasl
 import constants as const
 
-def calc_orbit():
+def calcOrbit(outDir='',outBaseName='mockdata_'):
     """
     This is a tool to produce a Keplerian orbit in RA,Dec,RV to verify SMODT2.0.
     It just computes Kepler orbit positions and velocities then rotates 
@@ -13,27 +13,28 @@ def calc_orbit():
           due to the simple center differencing used to calculate the velocities 
           from the positions and times.
           
-    Outputs are 2 files matching formats used in NewBEAT DI and RV.
-    #mockdata-NewBEATformat-DI.dat has columns:
+    Outputs are 2 files matching formats used in NewBEAT/ExoSOFT DI and RV.
+    outBaseName+'DIdata.dat' has columns:
     #1. JD
     #2. RA (x) ["]
     #3. RA ERROR ["]
     #4. Dec (y) ["]
     #5. Dec ERROR ["]
-    #mockdata-NewBEATformat-RV.dat has colunns:
+    outBaseName+'RVdata.dat' has colunns:
     #1. JD
     #6. RV of primary (or secondary) rel to CofM [m/s]
     #7. RV ERROR [m/s]
     """
     #Computer Directory
-    baseSaveDir='/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
+    if outDir=='':
+        outDir='/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
     #baseSaveDir = '/run/media/kmede/SharedData/Data/data_SMODT/'
     NumDataPointsOutRV = 25 #must be much less than 10000.  values between 10-500 are suitable.
     NumDataPointsOutDI = 10 #must be much less than 10000.  values between 10-500 are suitable.
     storePrimaryRVs = True
-    percentError = 10 #error is set to a percentage of the median
+    percentError = 5 #error is set to a percentage of the median
     realizeErrors = True
-    percentCoverage = 10.00 #percent of total orbit for data to span.  Over 100% is ok if you want overlapping data.
+    percentCoverage = 100.00 #percent of total orbit for data to span.  Over 100% is ok if you want overlapping data.
     overlapEnds = False # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
@@ -240,11 +241,11 @@ def calc_orbit():
     ##write files to disk
     if False:
         #raw all in one format, NOT for SMODT use.
-        np.savetxt(os.path.join(baseSaveDir,'mockdata.dat'), data, fmt="%.10g")
+        np.savetxt(os.path.join(outDir,outBaseName+'.dat'), data, fmt="%.10g")
     if True:
-        #2 files for SMODT 2.0
-        np.savetxt(os.path.join(baseSaveDir,'mockdata-NewBEATformat-RV.dat'), dataRV, fmt="%.10g")
-        np.savetxt(os.path.join(baseSaveDir,'mockdata-NewBEATformat-DI.dat'), dataDI3, fmt="%.10g")
+        #2 files for SMODT 2.0/NewBEAT/ExoSOFT
+        np.savetxt(os.path.join(outDir,outBaseName+'RVdata.dat'), dataRV, fmt="%.10g")
+        np.savetxt(os.path.join(outDir,outBaseName+'DIdata.dat'), dataDI3, fmt="%.10g")
     print '\nOutput data files written to:\n'+baseSaveDir
 
 if __name__ == "__main__":

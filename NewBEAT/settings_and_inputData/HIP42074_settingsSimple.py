@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (1000000,"Number of MCMC or MC samples"),
+'nSamples' : (50000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -13,25 +13,25 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "HIP42074-RV-MCMC-ALLopenParams",
+'outRoot' : "HIP42074-3D-MCMC-uniMassPiors-GaussParallax-tighterm1-2",
 #'outRoot' : "HIP10321-3D-retro-MCMC-startAtBest-Aug18Astrometry-uniMassPiors-GaussParallax-superlong",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
-'dataMode' : ('RV',"Data Mode (RV,DI,3D)"),
+'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
 # mode to run simulation in, choices {'MC','SA','MCMC'} [string]
 'symMode' : ('MCMC',"Simulator mode (MC,SA,MCMC)"),
 ###################################################
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.01,
-'mass1MAX' : 2.0,
+'mass1MIN' : 0.5,
+'mass1MAX' : 1.3,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.01,
-'mass2MAX' : 1.2,
+'mass2MAX' : 0.2,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 40,
-'paraMAX' : 60.0,
+'paraMAX' : 55.0,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 1.0,
 'OmegaMAX' : 360.0,
@@ -44,10 +44,10 @@ simpleSettingsDict={
 'TMAX' : -1,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 10.0,
-'PMAX' : 500.0,
+'PMAX' : 1900.0,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 1.0,
-'incMAX' : 180.0,
+'incMIN' : 20.0,
+'incMAX' : 150.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : 1.0,
 'omegaMAX' : 360.0,
@@ -56,6 +56,6 @@ simpleSettingsDict={
 'KMAX' : 900,
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-'vMINs' :[-2000],
-'vMAXs' :[2000],
+'vMINs' :[-1000],
+'vMAXs' :[1000],
 }

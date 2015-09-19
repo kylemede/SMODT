@@ -29,6 +29,8 @@ from generalTools import recheckFit3D
 from generalTools import predictLocation
 
 from progressbar.progressbar import ProgressBar
+
+from artificialDataMaker2 import calcOrbit
  
 import cppTools
 

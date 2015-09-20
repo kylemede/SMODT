@@ -246,7 +246,7 @@ def calcOrbit(outDir='',outBaseName='mockdata_'):
         #2 files for SMODT 2.0/NewBEAT/ExoSOFT
         np.savetxt(os.path.join(outDir,outBaseName+'RVdata.dat'), dataRV, fmt="%.10g")
         np.savetxt(os.path.join(outDir,outBaseName+'DIdata.dat'), dataDI3, fmt="%.10g")
-    print '\nOutput data files written to:\n'+baseSaveDir
+    print '\nOutput data files written to:\n'+outDir
 
 if __name__ == "__main__":
     calc_orbit()

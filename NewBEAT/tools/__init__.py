@@ -23,6 +23,7 @@ from generalTools import burnInCalc
 from generalTools import burnInStripper
 from generalTools import timeStrMaker
 from generalTools import copyToDB
+from generalTools import copytree
 from generalTools import periodicDataDump
 from generalTools import chiSquaredCalc3D
 from generalTools import recheckFit3D

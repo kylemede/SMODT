@@ -660,8 +660,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         yCOM = (fakeRealDataQuarter[3,1]+fakeRealDataQuarter[0,1])/2.0
         ## Find Ascending and Descending Node locations
         nodeEpochs = nodeEpochsCalc(paramsDI,settingsDict["omegaFdi"][0]) 
-        print 'period/2 = '+repr(const.daysPerYear*paramsDI[7]*(1.0/2.0))
-        print 'nodeEpochs = '+repr(nodeEpochs)
+        #print 'period/2 = '+repr(const.daysPerYear*paramsDI[7]*(1.0/2.0))
+        #print 'nodeEpochs = '+repr(nodeEpochs)
         lonData = np.ones((2,8),dtype=np.dtype('d'),order='C')
         lonData[:,0]=nodeEpochs
         Orbit.loadRealData(lonData)
@@ -912,12 +912,12 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
                 d = np.array(ary)
                 #data = residualData[np.where(residualData[:,7]==float(i))[0],:]
                 d = np.abs(d)
-                print 'For RV dataset #'+str(i)
-                print 'Max abs residual = '+str(np.max(d))
-                print 'Min abs residual = '+str(np.min(d))
-                print 'mean abs residual = '+str(np.mean(d))
-                print 'chiSqr for this set was = '+str(chiSqr)
-                print 'chiSqr/numRVs for this set was = '+str(chiSqr/len(d))
+                #print 'For RV dataset #'+str(i)
+                #print 'Max abs residual = '+str(np.max(d))
+                #print 'Min abs residual = '+str(np.min(d))
+                #print 'mean abs residual = '+str(np.mean(d))
+                #print 'chiSqr for this set was = '+str(chiSqr)
+                #print 'chiSqr/numRVs for this set was = '+str(chiSqr/len(d))
             
             ##clean up boarders, axis ticks and such 
             plt.minorticks_on()

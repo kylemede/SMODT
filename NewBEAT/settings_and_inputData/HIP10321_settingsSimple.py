@@ -13,8 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "HIP10321-3D-retro-MCMC-all155msJitter-Aug18Astrometry-IMFm1flatm2-GaussParallax-fixedRanges3-SUPERlong",
-#'outRoot' : "HIP10321-3D-retro-MCMC-startAtBest-Aug18Astrometry-uniMassPiors-GaussParallax-superlong",
+'outRoot' : "HIP10321-3D-retro-MCMC-all155msJitter-Aug18Astrometry-IMFm1flatm2-GaussParallax-fixedRanges4-SUPERlong",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -28,7 +27,7 @@ simpleSettingsDict={
 'mass1MAX' : 2.0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.1,
-'mass2MAX' : 0.85,
+'mass2MAX' : 0.95,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 30,
 'paraMAX' : 50.0,

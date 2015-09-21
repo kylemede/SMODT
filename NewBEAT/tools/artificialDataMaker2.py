@@ -25,6 +25,7 @@ def calcOrbit(outDir='',outBaseName='mockdata_'):
     #6. RV of primary (or secondary) rel to CofM [m/s]
     #7. RV ERROR [m/s]
     """
+    quiet = True
     #Computer Directory
     if outDir=='':
         outDir='/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
@@ -60,29 +61,30 @@ def calcOrbit(outDir='',outBaseName='mockdata_'):
     a1 = a_km - a2 # Semimajor axis of the low-mass component (in km)
     
     # print input orbital elements
-    print "\n\nOrbital Elements Used:\ne = "+str(e)
-    print "period = "+str(period)+" Years"
-    print "LongAN = "+str(Omega*180.0/const.pi)+" deg"
-    print "ArgPeri = "+str(omega*180.0/const.pi)+" deg"
-    print "a_total = "+str(a_AU)+" AU"
-    print "inclination = "+str(i*180.0/const.pi)+" deg"
-    print "Time of Last Periapsis = "+str(TimeLastPeri)+" JD"
-    print "Mass 1 = "+str(M_primary)+" Msun"
-    print "Mass 2 = "+str(M_secondary)+" Msun"
-    print "Mass 2 = "+str(M_secondary*(const.KGperMsun/const.KGperMjupiter))+" Mjupiter"
-    print "System distance = "+str(distance)+" PC, or "+str(1.0/(distance/1000.0))+' [mas]'
-    #settings prints
-    if storePrimaryRVs:
-        print "Saving RVs of primary star relative to Center of Mass\n"
-    else:
-        print "Saving RVs of companion relative to Center of Mass\n"
-    print 'Errors were calculated as '+str(percentError)+"% of the median value in the observables"
-    if realizeErrors:
-        print 'Data values were realized from the errors'
-    else:
-        print 'Data values are perfect with NO realization of the errors'
-    print str(NumDataPointsOutRV)+" RV, and "+str(NumDataPointsOutDI)+" DI epochs will be calculated and stored"
-    print 'The data will cover '+str(percentCoverage)+'% of the total orbit.\n'
+    if quiet==False:
+        print "\n\nOrbital Elements Used:\ne = "+str(e)
+        print "period = "+str(period)+" Years"
+        print "LongAN = "+str(Omega*180.0/const.pi)+" deg"
+        print "ArgPeri = "+str(omega*180.0/const.pi)+" deg"
+        print "a_total = "+str(a_AU)+" AU"
+        print "inclination = "+str(i*180.0/const.pi)+" deg"
+        print "Time of Last Periapsis = "+str(TimeLastPeri)+" JD"
+        print "Mass 1 = "+str(M_primary)+" Msun"
+        print "Mass 2 = "+str(M_secondary)+" Msun"
+        print "Mass 2 = "+str(M_secondary*(const.KGperMsun/const.KGperMjupiter))+" Mjupiter"
+        print "System distance = "+str(distance)+" PC, or "+str(1.0/(distance/1000.0))+' [mas]'
+        #settings prints
+        if storePrimaryRVs:
+            print "Saving RVs of primary star relative to Center of Mass\n"
+        else:
+            print "Saving RVs of companion relative to Center of Mass\n"
+        print 'Errors were calculated as '+str(percentError)+"% of the median value in the observables"
+        if realizeErrors:
+            print 'Data values were realized from the errors'
+        else:
+            print 'Data values are perfect with NO realization of the errors'
+        print str(NumDataPointsOutRV)+" RV, and "+str(NumDataPointsOutDI)+" DI epochs will be calculated and stored"
+        print 'The data will cover '+str(percentCoverage)+'% of the total orbit.\n'
         
     # Positions of both components in km relative to center of mass
     ke = pyasl.KeplerEllipse(a1, period, e=e, Omega=0.)
@@ -246,7 +248,8 @@ def calcOrbit(outDir='',outBaseName='mockdata_'):
         #2 files for SMODT 2.0/NewBEAT/ExoSOFT
         np.savetxt(os.path.join(outDir,outBaseName+'RVdata.dat'), dataRV, fmt="%.10g")
         np.savetxt(os.path.join(outDir,outBaseName+'DIdata.dat'), dataDI3, fmt="%.10g")
-    print '\nOutput data files written to:\n'+outDir
+    if quiet==False:
+        print '\nOutput data files written to:\n'+outDir
 
 if __name__ == "__main__":
     calc_orbit()

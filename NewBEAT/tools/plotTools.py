@@ -907,8 +907,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
                         if residualData[j,5] not in ary:
                             ary.append(residualData[j,5])
                             chiSqr+=(residualData[j,5]**2.0)/(residualData[j,6]**2.0)
-                            if np.abs(residualData[j,5])>residualData[j,6]:
-                                print 'dataset '+str(i)+', epoch '+str(realDataRV[j,0])+' had residual  '+str(np.abs(residualData[j,5])-residualData[j,6])+' greater than error'
+                            #if np.abs(residualData[j,5])>residualData[j,6]:
+                                #print 'dataset '+str(i)+', epoch '+str(realDataRV[j,0])+' had residual  '+str(np.abs(residualData[j,5])-residualData[j,6])+' greater than error'
                 d = np.array(ary)
                 #data = residualData[np.where(residualData[:,7]==float(i))[0],:]
                 d = np.abs(d)

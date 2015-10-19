@@ -13,7 +13,7 @@ def customPost():
     if os.path.exists(allFname)==False:
         allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
         skipBurnInStrip=False
-    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=10)
+    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=30)
     ##make list of stages to run
     stageList = []
     if settingsDict['symMode'][0]=='MC':
@@ -27,8 +27,7 @@ def customPost():
     outFiles = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputDataMCMC*.fits")))
     
     ## calc and strip burn-in?
-    if True:
-        
+    if False:
         burnInStr = ''
         if skipBurnInStrip==False:
             if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
@@ -44,16 +43,16 @@ def customPost():
                         allFname = strippedAllFname
         
     ## find best fit
-    if True:
+    if False:
         if os.path.exists(allFname):
             bestFit = tools.findBestOrbit(allFname)
     else:
-        bestFit = np.array([  1.32366515e+00,   2.73842875e-01,   3.59629752e+01,
-                             2.45465119e+02,   3.72512416e-01,   2.45234944e+06,
-                             2.45234944e+06,   2.09427724e+01,   1.58152772e+02,
-                             3.50344680e+02,   8.88140043e+00,   8.19243621e+01,
-                             8.68267992e+02,   6.19627726e+03,   3.85209089e+02,
-                             6.31690499e+03])
+        bestFit = np.array([  1.13180350e+00,   2.68532490e-01,   3.74386560e+01,
+                         2.45377958e+02,   3.77452530e-01,   2.45234682e+06,
+                         2.45234682e+06,   2.09473056e+01,   1.59792230e+02,
+                         3.50313383e+02,   8.50107500e+00,   7.18302194e+01,
+                         8.64670523e+02,   6.19351313e+03,   3.81532493e+02,
+                         6.32362381e+03])
         
     #effPtsStr = tools.mcmcEffPtsCalc(allFname)
     
@@ -61,22 +60,37 @@ def customPost():
         ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
         ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
         plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbitPlot-MANUAL-'+settingsDict['symMode'][0])
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
-        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.9],[-0.7,0.8],[-0.515,0.515]])
+        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]])
         
     clStr=''
-    if True:
-        plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
-        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+    if False:
+        plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-3'+settingsDict['symMode'][0])
+        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+        #for fake jupiter
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.1],[0.5,1.7],[-0.005,0.125],[37,53]],bestVals=[1.0,1.0,0.048,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+        #for HIP10321
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,13,14,15],xLims=[[0.51,1.5],[0.15,0.59],[0.36,0.40],[20.5,21.5],[35,40],[150,175],[240,250],[345,355],[6140,6250],[350,450],[6250,6400]],bestVals=[1.098,0.274,0.378,20.98,37.63,160.44,245.26,350.33,6195.30,383.03,6323.40],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
     if False: 
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
         tools.cornerPlotter(allFname, plotFilename)#,paramsToPlot=[0,1,7,8],xLims=[[0.5,2.1],[0.5,1.7],[11.5,13.1],[37,53]],bestVals=[1.0,1.0,11.9,45.0])
         
+    if False:
+        #make progress plot
+        for stgStr in ['SA','ST','MCMC']:
+            for procNum in range(0,4):
+                dataFname = os.path.join(settingsDict['finalFolder'],'outputData'+stgStr+str(procNum)+'.fits')
+                for parNum in [1,4,8]:
+                    plotFilename = os.path.join(settingsDict['finalFolder'],'progressPlot-'+stgStr+str(procNum)+'-'+str(parNum))
+                    try:
+                        tools.progressPlotter(dataFname,plotFilename,parNum,yLims=[],bestVals=[])
+                    except:
+                        print 'could not make plot for proc# '+str(procNum)+', and par# '+str(parNum)
     ##calc R?
-    grStr = ''
-    if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
-        (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
+    if False:
+        grStr = ''
+        if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
+            (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
         
     ## custom re check of the orbit fit     
     if False: 
@@ -89,22 +103,23 @@ def customPost():
     
     ## following post-processing stages can take a long time, so write the current
     ## summary information to the summary file and add the rest later
-    if True:
+    if False:
         if os.path.exists(allFname):
             tools.summaryFilePart1(settingsDict,stageList,allFname,clStr,burnInStr,bestFit,grStr)
             
     ## calc correlation length & number effective points? # This one takes a long time for long runs!!!
-    effPtsStr = ''
-    if ((len(outFiles)>1)and(settingsDict['symMode'][0]=='MCMC'))and (settingsDict['calcCL'] and os.path.exists(allFname)):
-        effPtsStr = tools.mcmcEffPtsCalc(allFname)
-        
-    if os.path.exists(allFname):
-        tools.summaryFilePart2(settingsDict,effPtsStr,22,22)
+    if False:
+        effPtsStr = ''
+        if ((len(outFiles)>1)and(settingsDict['symMode'][0]=='MCMC'))and (settingsDict['calcCL'] and os.path.exists(allFname)):
+            effPtsStr = tools.mcmcEffPtsCalc(allFname)
+        if os.path.exists(allFname):
+            tools.summaryFilePart2(settingsDict,effPtsStr,22,22)
         
     ##clean up files (move to folders or delete them)
-    tools.cleanUp(settingsDict,stageList,allFname)
-    if settingsDict['CopyToDB']:
-        tools.copyToDB(settingsDict)
+    if False:
+        tools.cleanUp(settingsDict,stageList,allFname)
+        if settingsDict['CopyToDB']:
+            tools.copyToDB(settingsDict)
     
 def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []

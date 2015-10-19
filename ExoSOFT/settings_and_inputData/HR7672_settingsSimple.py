@@ -2,10 +2,10 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (150000000,"Number of MCMC or MC samples"),
+'nSamples' : (30000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (15,"Number of chains"),
+'nChains' : (10,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # Directory on an SSD for fast reading/writting of temp data files to save on RAM usage.
@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "HIP10321-3D-retro-MCMC-all155msJitter-Aug18Astrometry-IMFm1flatm2-GaussParallax-fixedRanges4-SUPERlong",
+'outRoot' : "HR7672-3D-MCMC-PDMFm1m2-gaussParallax-wideOpenP-long",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -23,38 +23,41 @@ simpleSettingsDict={
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.1,
-'mass1MAX' : 2.0,
+# NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
+'mass1MIN' : 0.7,
+'mass1MAX' : 1.5,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.1,
-'mass2MAX' : 0.95,
+'mass2MIN' : 0.002,
+'mass2MAX' : 0.09,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 30,
-'paraMAX' : 50.0,
+'paraMIN' : 53.0,
+'paraMAX' : 59,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-'OmegaMIN' : 180.0,
-'OmegaMAX' : 360.0,
+'OmegaMIN' : 145.0,
+'OmegaMAX' : 160.0,
 # Minimum/Maximum allowed value for the Eccentricity, allowed range [0,0.98]. [double]
-'eMIN' : 0.32,
-'eMAX' : 0.43,
+'eMIN' : 0.4,
+'eMAX' : 0.7,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2452200,
-'TMAX' : 2452500,
+'TMIN' : 2456300,
+'TMAX' : 2457700,
 # Minimum/Maximum allowed value for the Period [double][yrs]
-'PMIN' : 17.5,
-'PMAX' : 22.5,
+'PMIN' : 30,
+'PMAX' :150,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 143.0,
-'incMAX' : 175.0,
+'incMIN' : 90.0,
+'incMAX' : 105.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : 335.0,
-'omegaMAX' : 365.0,
+'omegaMIN' : 220.0,
+'omegaMAX' : 290.0,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
-'KMIN' : 800,
-'KMAX' : 900,
+'KMIN' : 0,
+'KMAX' : 0,
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-'vMINs' :[6100,310,6220],
-'vMAXs' :[6290,440,6420],
+'vMINs' :[200,200,200,200,200,200,200],
+'vMAXs' :[550,550,550,550,550,550,550],
 }
+
+

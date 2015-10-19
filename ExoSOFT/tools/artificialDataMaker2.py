@@ -39,7 +39,7 @@ def calcOrbit(outDir='',outBaseName='mockdata_'):
     overlapEnds = False # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
-    M_secondary =  1.0*(const.KGperMjupiter/const.KGperMsun)#Solar masses
+    M_secondary =  0.2#1.0*(const.KGperMjupiter/const.KGperMsun    #Solar masses
     M_primary = 1.00 #Solar masses
     distance = 20.0 #parsecs
     km_to_arcsec = 1/(const.MperAU/1000.0)/distance # convert km to arcsecond

@@ -6,6 +6,8 @@ import copy
 import glob
 import shutil
 import timeit
+from matplotlib.backends.qt_editor.formlayout import ColorLayout
+from PyAstronomy.pyasl.asl import lineWidth
 gridspec =  pylab.matplotlib.gridspec
 plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
@@ -18,7 +20,7 @@ import warnings
 warnings.simplefilter("error")
 
 log = newBEATlogger.getLogger('main.plotTools',lvl=100,addFH=False)  
-
+colorsList =['Red','Orange','Purple','Fuchsia','Crimson','Green','Aqua','DarkGreen','Gold','DarkCyan','OrangeRed','Plum','Chartreuse','Chocolate','Teal','Salmon','Brown','Blue']
 def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, normed=False, nu=1,logY=False,histType='bar'):
     """
     This will make a matplotlib histogram using the input settings, then writing the resulting  
@@ -207,7 +209,7 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
         
     return plot
 
-def addRVdataToPlot(subPlot,epochsORphases,RVs,RVerrs,alf=1.0,color='blue',plotErrorBars=False):
+def addRVdataToPlot(subPlot,epochsORphases,RVs,RVerrs,datasetInts=[],alf=1.0,color='blue',plotErrorBars=False):
     """
     Add '+' markers for the data locations with respective y axis errors 
     shown as the height of the markers. 
@@ -218,8 +220,12 @@ def addRVdataToPlot(subPlot,epochsORphases,RVs,RVerrs,alf=1.0,color='blue',plotE
             ys = [RVs[i]-RVerrs[i],RVs[i]+RVerrs[i]]
             #print str(RVerrs[i])+", -> ["+str(epochsORphases[i])+", "+str(RVs[i])+']'
             if plotErrorBars:
-                subPlot.plot(xs,ys,c=color,linewidth=1,alpha=alf)
-            subPlot.plot(epochsORphases[i],RVs[i],c='k',marker='.',markersize=6)
+                subPlot.plot(xs,ys,c=color,linewidth=2,alpha=alf)
+            if len(datasetInts)<len(RVs):
+                clr = 'k'
+            else:
+                clr=colorsList[int(datasetInts[i])]
+            subPlot.plot(epochsORphases[i],RVs[i],c=clr,marker='.',markersize=9)
     return subPlot
 
 def addDIdataToPlot(subPlot,realData,asConversion):
@@ -242,8 +248,8 @@ def addDIdataToPlot(subPlot,realData,asConversion):
         right = xCent+diData[i,2]*asConversion
         top = yCent+diData[i,4]*asConversion
         btm = yCent-diData[i,4]*asConversion
-        subPlot.plot([left,right],[yCent,yCent],linewidth=1.5,color='k',alpha=1.0)
-        subPlot.plot([xCent,xCent],[btm,top],linewidth=1.5,color='k',alpha=1.0)
+        subPlot.plot([left,right],[yCent,yCent],linewidth=2.5,color='k',alpha=1.0)
+        subPlot.plot([xCent,xCent],[btm,top],linewidth=2.5,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])
 
 def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[],stage='MCMC'):
@@ -271,7 +277,12 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
     if type(outputDataFilenames)!=list:
         outputDataFilenames = [outputDataFilenames]
     
-    colorsList =['Red','DarkGreen','Blue','Black','Purple','Fuchsia','Crimson','Aqua','Gold','OrangeRed','Plum','Chartreuse','Chocolate','SteelBlue ','Teal','Salmon','Brown']
+    #colorsList =['Red','DarkGreen','Blue','Black','Purple','Fuchsia','Crimson','Aqua','Gold','OrangeRed','Plum','Chartreuse','Chocolate','Teal','Salmon','Brown']
+    colorsList2 = []
+    while len(outputDataFilenames)>len(colorsList2):
+        for color in colorsList:
+            colorsList2.append(color)
+    colorsList = colorsList2
     
     if os.path.exists(outputDataFilenames[0]):  
         log.debug('\nCreating a simple plot of some key posteriors for files:\n'+repr(outputDataFilenames))
@@ -355,6 +366,7 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
                         histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i])
                     if os.path.exists(histDataBaseName+'.dat'):
                         log.debug("plotting file:\n"+histDataBaseName)
+                        print str(len(colorsList))+' < '+str(colorInt)
                         subPlot = histLoadAndPlot_StackedPosteriors(subPlot,outFilename=histDataBaseName,xLabel=paramStrs[i],lineColor=colorsList[colorInt],xLims=xLim,latex=latex,showYlabel=showYlabel,parInt=par)
                     else:
                         log.debug("Not plotting hist for "+paramStrs2[i]+" as its hist file doesn't exist:\n"+histDataBaseName)
@@ -603,7 +615,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         plt.rc('font',family='serif')
         plt.rc('text', usetex=False)
     log.debug("Starting to make orbit plots")
-    colorsList =['Blue','BlueViolet','Chartreuse','Fuchsia','Crimson','Aqua','Gold','DarkCyan','OrangeRed','Plum','DarkGreen','Chocolate','SteelBlue ','Teal','Salmon','Brown']
+    
 
     ## check if plot data dir exists, else make it
     plotDataDir = os.path.join(os.path.dirname(plotFnameBase),"plotData")
@@ -736,8 +748,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         xLabel = 'Relative RA '+unitStr
         yLabel = 'Relative Dec '+unitStr
         if latex:
-            xLabel = '$Relative$ $RA$ '+unitStr#'$\alpha$ '+unitStr
-            yLabel = '$Relative$ $Dec$ '+unitStr#'$\delta$ '+unitStr
+            xLabel = '$Relative$ $RA$ '+unitStr#'$\Delta$ $\alpha$ '+unitStr
+            yLabel = '$Relative$ $Dec$ '+unitStr#'$\Delta$ $\delta$ '+unitStr
         main.set_xlabel(xLabel, fontsize=25)
         main.set_ylabel(yLabel, fontsize=25)
         #plt.tight_layout()
@@ -755,7 +767,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         ## plot predicted locations for the data points
         if True:
             for i in range(0,len(predictedDataDI[:,0])):
-                main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=5)
+                main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=9)
                 #print 'plotted point ['+str(predictedDataDI[i,0]*asConversion)+', '+str(predictedDataDI[i,1]*asConversion)+']'
         plotFilenameCrop = plotFnameBase+'-DI-cropped.'+format
         if plotFilenameCrop!='':
@@ -857,8 +869,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
             #    print 'model Data = '+str(modelDataRV[i,2])
             
             ## add real data to plots
-            residualsPlot = addRVdataToPlot(residualsPlot,phasesReal,residualData[:,5]*kmConversion,residualData[:,6]*kmConversion,alf=0.1,color='k',plotErrorBars=True)
-            fitPlot = addRVdataToPlot(fitPlot,phasesReal,zeroedRealDataRV[:,5]*kmConversion,zeroedRealDataRV[:,6]*kmConversion,alf=0.2,color='k',plotErrorBars=True)
+            residualsPlot = addRVdataToPlot(residualsPlot,phasesReal,residualData[:,5]*kmConversion,residualData[:,6]*kmConversion,datasetInts=residualData[:,7],alf=0.1,color='k',plotErrorBars=True)
+            fitPlot = addRVdataToPlot(fitPlot,phasesReal,zeroedRealDataRV[:,5]*kmConversion,zeroedRealDataRV[:,6]*kmConversion,datasetInts=residualData[:,7],alf=0.2,color='k',plotErrorBars=True)
             ##plot fit epochsORphases,RVs,RVerrs
             fitPlot.plot(phasesFit,fitDataRV[:,2]*kmConversion,c='Blue',linewidth=1.0,alpha=1.0)
             
@@ -1006,7 +1018,7 @@ def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],bestV
     
     if head!=False:  
         log.debug(' Inside tranglePlotter')
-        s= '\nCreating summary plot for file:\n'+outputDataFilename
+        s= '\nCreating corner plot for file:\n'+outputDataFilename
         s=s+ '\nInput plotfilename:\n'+plotFilename
         log.info(s)
         
@@ -1080,5 +1092,97 @@ def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],bestV
             except:
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")
     
+def progressPlotter(outputDataFilename,plotFilename,paramToPlot,yLims=[],bestVals=[]):
+    """
+    Plots progress of a single parameter's chain over one stage of simulation, AND the 
+    reduced chi squared as a time series.
+    """
     
+    latex=True
+    plotFormat = 'eps'   
+    plt.rcParams['ps.useafm']= True
+    plt.rcParams['pdf.use14corefonts'] = True
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    if latex:
+        plt.rc('text', usetex=True)
+        
+    (head,data) = genTools.loadFits(outputDataFilename)
+    
+    if head!=False:  
+        log.debug(' Inside progressPlotter')
+        s= '\nCreating progress plot for file:\n'+outputDataFilename
+        s=s+ '\nInput plotfilename:\n'+plotFilename
+        log.info(s)
+        
+        
+        ## check if the passed in value for plotFilename includes format extension
+        if '.'+plotFormat not in plotFilename:
+            plotFilename = plotFilename+"."+plotFormat
+            log.debug('updating plotFilename to:\n'+plotFilename)
+        else:
+            plotFilename = plotFilename
+                
+        (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex)
+        (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False)
+        nu =  head['NU']
+        
+        ## modify y labels to account for DI only situations where M1=Mtotal
+        if np.var(data[:,1])==0:
+            paramStrs2[0] = 'm total [Msun]'
+            paramStrs[0] = '$m_{total}$ [$M_{\odot}$]'
+            paramFileStrs[0] = 'm-total'
+
+        ##make progress plots for parameter requested and reduced chi squared
+        saveInt = int(head['SAVEINT'])
+        samples = range(0,len(data[:,11])-1)*saveInt
+        
+        #Find best orbit params
+        bestPars = genTools.findBestOrbit(outputDataFilename,bestToFile=False)
+        #print 'back from findBestOrbit'
+        
+        ## Create empty figure to be filled up with plots
+        fig = plt.figure(figsize=(8,5))  
+        #print 'made fig'
+        #plot requested param  
+        subPlot = plt.subplot(2,1,1)
+        #print 'len(data[:,paramToPlot]) = '+repr(len(data[:,paramToPlot]))
+        samples = np.arange(0,len(data[:,paramToPlot])*saveInt,saveInt)
+        #print 'len(samples) = '+repr(len(samples))
+        subPlot.plot(samples,data[:,paramToPlot],color='k',linewidth=1)
+        #print '##plotted data##'
+        #print repr([samples[0],samples[-1]])+', '+repr([bestPars[paramToPlot],bestPars[paramToPlot]])
+        subPlot.plot([samples[0],samples[-1]],[bestPars[paramToPlot],bestPars[paramToPlot]],color='blue',linewidth=2)
+        #print '##plotted best##'
+        if latex:
+            subPlot.axes.set_ylabel(r''+paramStrs[paramToPlot],fontsize=20)
+        else:
+            subPlot.axes.set_ylabel(paramStrs2[paramToPlot],fontsize=20)
+        #plot chi squareds
+        subPlot = plt.subplot(2,1,2)
+        #print 'len(data[:,11]*(1.0/nu)) = '+repr(len(data[:,11]*(1.0/nu)))
+        samples = np.arange(0,len(data[:,11])*saveInt,saveInt)
+        #print 'len(samples) = '+repr(len(samples))
+        subPlot.plot(samples,data[:,11]*(1.0/nu),color='k',linewidth=1)
+        if latex:
+            subPlot.axes.set_xlabel(r''+'$Sample$',fontsize=20)
+            #subPlot.axes.set_ylabel(r''+'$\chi^2_{\nu}$',fontsize=20)
+            subPlot.axes.set_ylabel(r''+'$reduced$ $chi$ $sqr$',fontsize=20)
+        else:
+            subPlot.axes.set_xlabel('Sample',fontsize=20)
+            subPlot.axes.set_ylabel('reduced chi sqr',fontsize=20)
+        
+        plt.tight_layout()
+        ## Save file if requested.
+        log.debug('\nStarting to save param progress figure:')
+        if plotFilename!='':
+            plt.savefig(plotFilename,format=plotFormat)
+            s= 'progress plot saved to: '+plotFilename
+            log.info(s)
+        plt.close()
+        if True:
+            log.debug('converting to PDF as well')
+            try:
+                os.system("epstopdf "+plotFilename)
+            except:
+                log.warning("Seems epstopdf failed.  Check if it is installed properly.")
 #END OF FILE

@@ -290,13 +290,13 @@ def getParStrs(head,latex=True):
     paramFileStrs = ['m1','m2','parallax','Omega','e','To', 'Tc','P','i','omega','a_total','chiSquared','K']
     paramStrs = ['m1 [Msun]','m2 [Msun]','Parallax [mas]','Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]','chiSquared','K [m/s]']
     if latex:
-        paramStrs = ['$m_1$ [$M_{\odot}$]','$m_2$ [$M_{\odot}$]','$parallax$ [mas]','$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]','$\chi^2$','$K$ [m/s]']
+        paramStrs = ['$m_1$ [$M_{\odot}$]','$m_2$ [$M_{\odot}$]','$\pi$ [mas]','$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]','$\chi^2$','$K$ [m/s]']
 
     if head["nRVdsets"]>0:
         for dataset in range(1,head["nRVdsets"]+1):
             paramFileStrs.append('offset_'+str(dataset))
             if latex:
-                paramStrs.append("$offset_{"+str(dataset)+"}$ [m/s]")
+                paramStrs.append("$\gamma_{"+str(dataset)+"}$ [m/s]")
             else:
                 paramStrs.append('offset '+str(dataset)+' [m/s]')
     return (paramList,paramStrs,paramFileStrs)
@@ -765,7 +765,7 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
                 else:
                     bestStr+='\n'
             elif i==1:
-                if bestFit[i]<0.02:
+                if bestFit[i]<0.1:
                     mJupMult=(const.KGperMsun/const.KGperMjupiter)
                     bestStr+=paramStrs[i]+" = "+str(bestFit[i])+", OR "+str(bestFit[i]*mJupMult)+' in [Mjupiter]\n'
                 else:
@@ -996,7 +996,7 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
         s+= "\nerror is centered on Median \n"
         s+="68.3% error level = "+str(dataMedian-conf68Vals[0])
         s+=" ->   "+str(dataMedian)+'  +/-  '+str(dataMedian-conf68Vals[0])+'\n'
-        if (colNum==1) and (dataMedian<0.02):
+        if (colNum==1) and (dataMedian<0.1):
             s=s+"Or in Mjup: ->   "+str(dataMedian*mJupMult)+'  +/-  '+str(dataMedian*mJupMult-conf68Vals[0]*mJupMult)+'\n'
         outStr+=s
         s=s+'\n'+75*'-'+'\n Leaving confLevelFinder \n'+75*'-'+'\n'

@@ -254,7 +254,7 @@ class Simulator(object):
                 #priorsRatio*=(self.settingsDict['M1Prior'][2](parsCurr[0])/self.settingsDict['M1Prior'][2](parsLast[0]))
                 #print 'priorsRatio after M1: '+repr(priorsRatio)
             if self.dictVal('M2Prior'):
-                priorsRatio*=self.settingsDict['M2Prior'][2](parsCurr[1],parsLast[1],parsCurr[10],parsLast[10])
+                priorsRatio*=self.settingsDict['M2Prior'][2](parsCurr[1],parsLast[1])
                 #priorsRatio*=(self.settingsDict['M2Prior'][2](parsCurr[1])/self.settingsDict['M2Prior'][2](parsLast[1]))
                 #print 'priorsRatio after M2: '+repr(priorsRatio)
             if self.dictVal('parPrior'):

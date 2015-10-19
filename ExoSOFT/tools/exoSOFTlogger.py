@@ -9,9 +9,9 @@ import os
 log_dict={}
 verbose = False # global variable like this is not recommended, just temporary till I do something better or kill it.
 
-class NewBEATlogger(logging.getLoggerClass()):
+class ExoSOFTlogger(logging.getLoggerClass()):
     """
-    This is the advanced logging object used throughout the NewBEAT.  
+    This is the advanced logging object used throughout the ExoSOFT.  
     It inherits from the standard 
     Python library 'logging' and provides added features.
     The default log level for the output file will be 1, ie ALL messages;
@@ -114,7 +114,7 @@ def setUpLogger(name='generalLoggerName',dir='',lvl=20,addFH=True,addSH=True):
         log (SMODTlogger object): A SMODTlogger object that was freshly 
                                    instantiated.
     """
-    logging.setLoggerClass(NewBEATlogger)
+    logging.setLoggerClass(ExoSOFTlogger)
     log = logging.getLogger(name)
     log_dict[name]=log
     log.setLevel(1)
@@ -132,7 +132,7 @@ def addFileHandler(log, dir='',lvl=1):
     This function will add a file handler to a log with the provided level.
     
     Args:
-        log (CharisLogger object): A NewBEATlogger object that was freshly 
+        log (CharisLogger object): A ExoSOFTlogger object that was freshly 
                                    instantiated.
         lvl (int): The severity level of messages printed to the file with 
                     the file handler, default = 1.
@@ -151,7 +151,7 @@ def addStreamHandler(log,lvl=20):
     This function will add a stream handler to a log with the provided level.
     
     Args:
-        log (CharisLogger object): A NewBEATlogger object that was freshly 
+        log (CharisLogger object): A ExoSOFTlogger object that was freshly 
                                    instantiated.
         lvl (int): The severity level of messages printed to the screen with 
                     the stream handler, default = 20.
@@ -166,7 +166,7 @@ def addStreamHandler(log,lvl=20):
     
 def logSystemInfo(log):
     """ A function to be called just after a logging object is instantiated 
-    for NewBEAT to load the log up with info about the computer it is 
+    for ExoSOFT to load the log up with info about the computer it is 
     being ran on and the software version.  This function utilizes the 
     psutil and platform libraries, so they must be install for it to work.  
     For clarity of the log, it is suggested to perform immediately after 

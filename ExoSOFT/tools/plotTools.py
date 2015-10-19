@@ -15,11 +15,11 @@ MultLoc = pylab.matplotlib.ticker.MultipleLocator
 import constants as const
 import generalTools as genTools
 import cppTools
-import newBEATlogger
+import exoSOFTlogger
 import warnings
 warnings.simplefilter("error")
 
-log = newBEATlogger.getLogger('main.plotTools',lvl=100,addFH=False)  
+log = exoSOFTlogger.getLogger('main.plotTools',lvl=100,addFH=False)  
 colorsList =['Red','Orange','Purple','Fuchsia','Crimson','Green','Aqua','DarkGreen','Gold','DarkCyan','OrangeRed','Plum','Chartreuse','Chocolate','Teal','Salmon','Brown','Blue']
 def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, normed=False, nu=1,logY=False,histType='bar'):
     """

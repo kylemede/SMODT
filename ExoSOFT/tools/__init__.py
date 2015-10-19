@@ -1,11 +1,11 @@
 import warnings
 warnings.simplefilter("error")
 
-from newBEATlogger import getLogger
-from newBEATlogger import setUpLogger
-from newBEATlogger import logSystemInfo
-from newBEATlogger import addFileHandler
-from newBEATlogger import addStreamHandler
+from exoSOFTlogger import getLogger
+from exoSOFTlogger import setUpLogger
+from exoSOFTlogger import logSystemInfo
+from exoSOFTlogger import addFileHandler
+from exoSOFTlogger import addStreamHandler
 
 from generalTools import loadRealData
 from generalTools import loadSettingsDict

@@ -131,7 +131,7 @@ advancedDict = {
 # NOTE: CAUTION, can take a long time for long runs.  Still needs to be sped up somehow.
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(5000000,"Num SA samples"),
+'nSAsamp' :(1000000,"Num SA samples"),
 # Simulated Annealing starting temperature [double]
 'strtTemp' : (500.0,"SA start temp."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]

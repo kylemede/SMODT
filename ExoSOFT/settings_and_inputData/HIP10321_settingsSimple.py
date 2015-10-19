@@ -2,10 +2,10 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (150000000,"Number of MCMC or MC samples"),
+'nSamples' : (5000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (8,"Number of chains"),
+'nChains' : (3,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # Directory on an SSD for fast reading/writting of temp data files to save on RAM usage.
@@ -14,7 +14,7 @@ simpleSettingsDict={
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
 #'outRoot' : "HIP10321-3D-retro-MCMC-all155msJitter-PDMFm1m2-fixedRanges4-SUPERlong",
-'outRoot' : "HIP10321-3D-retro-MCMC-all14point6msJitter-PDMFm1m2-fixedRanges6-DI5point3masErr-SUPERlong",
+'outRoot' : "HIP10321-3D-retro-MCMC-all14point6msJitter-1.05m1-PDMFm2-fixedRanges6-DI5point3masErr",
 #'outRoot' : "HIP10321-3D--OPEN-MCMC-all14point6msJitter-PDMFm1m2-DI5point3masErr",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
@@ -25,8 +25,8 @@ simpleSettingsDict={
 # Ranges for acceptable random number inputs ######
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-'mass1MIN' : 0.1,
-'mass1MAX' : 2.0,
+'mass1MIN' : 1.05,
+'mass1MAX' : 0,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.1,
 'mass2MAX' : 0.65,

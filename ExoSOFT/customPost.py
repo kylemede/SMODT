@@ -6,7 +6,7 @@ import numpy as np
 import glob
 
 def customPost():
-    rootDir = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/NewBEAT/'
+    rootDir = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/ExoSOFT/'
     settingsDict = tools.startup(sys.argv,rootDir,rePlot=True)
     allFname = os.path.join(settingsDict['finalFolder'],"combined-BIstripped-MCMCdata.fits")
     skipBurnInStrip=True
@@ -56,24 +56,31 @@ def customPost():
         
     #effPtsStr = tools.mcmcEffPtsCalc(allFname)
     
-    if True:
+    if False:
         ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
         ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
-        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbitPlot-MANUAL-'+settingsDict['symMode'][0])
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5-0mult-1pt5thk-')
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]])
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=1.5)
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5-10mult-3thk-')
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=10,diLnThk=3)
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5-0mult-3thk-')
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=3)
         
     clStr=''
     if False:
-        plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-3'+settingsDict['symMode'][0])
+        plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-5')
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
         #for fake jupiter
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.1],[0.5,1.7],[-0.005,0.125],[37,53]],bestVals=[1.0,1.0,0.048,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
         #for HIP10321
         clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,13,14,15],xLims=[[0.51,1.5],[0.15,0.59],[0.36,0.40],[20.5,21.5],[35,40],[150,175],[240,250],[345,355],[6140,6250],[350,450],[6250,6400]],bestVals=[1.098,0.274,0.378,20.98,37.63,160.44,245.26,350.33,6195.30,383.03,6323.40],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-    if False: 
-        plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-'+settingsDict['symMode'][0])
-        tools.cornerPlotter(allFname, plotFilename)#,paramsToPlot=[0,1,7,8],xLims=[[0.5,2.1],[0.5,1.7],[11.5,13.1],[37,53]],bestVals=[1.0,1.0,11.9,45.0])
+    if True: 
+        plotFilename = os.path.join(settingsDict['finalFolder'],'densityPlot-3')
+        #ranges=[[xMin,xMax],[yMin,yMax]]
+        tools.densityPlotter(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.098,0.274],ranges=[[0.88,1.45],[0.19,0.43]])
+        #plotFilename = os.path.join(settingsDict['finalFolder'],'cornerPlot-6-gaussFiltered-newSigmaLevels')
+        #tools.cornerPlotter(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.098,0.274])
         
     if False:
         #make progress plot

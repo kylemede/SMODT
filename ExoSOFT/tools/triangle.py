@@ -339,11 +339,11 @@ def quantile(x, q, weights=None):
         return np.interp(q, cdf, xsorted).tolist()
 
 
-def hist2d(x, y, bins=20, range=None, weights=None, levels=None, smooth=None,
-           ax=None, color=None, plot_datapoints=True, plot_density=True,
+def hist2d(x, y, bins=50, range=None, weights=None, levels=None, smooth=None,
+           ax=None, color=None, plot_datapoints=False, plot_density=True,
            plot_contours=True, fill_contours=False,
            contour_kwargs=None, contourf_kwargs=None, data_kwargs=None,
-           **kwargs):
+           **kwargs):  ##$$$ plot_datapoints=True,bins=20 $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     """
     Plot a 2-D histogram of samples.
     """
@@ -365,7 +365,8 @@ def hist2d(x, y, bins=20, range=None, weights=None, levels=None, smooth=None,
 
     # Choose the default "sigma" contour levels.
     if levels is None:
-        levels = 1.0 - np.exp(-0.5 * np.arange(0.5, 2.1, 0.5) ** 2)
+        #levels = 1.0 - np.exp(-0.5 * np.arange(0.5, 2.1, 0.5) ** 2)
+        levels = [0.683,0.955,0.997]
 
     # This is the color map for the density plot, over-plotted to indicate the
     # density of the points near the center.

@@ -190,4 +190,4 @@ def exoSOFT():
     ##END MAIN 
 
 if __name__ == '__main__':
-    exoSOFT()()
+    exoSOFT()

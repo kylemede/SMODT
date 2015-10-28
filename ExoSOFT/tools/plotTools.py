@@ -8,6 +8,10 @@ import shutil
 import timeit
 from matplotlib.backends.qt_editor.formlayout import ColorLayout
 from PyAstronomy.pyasl.asl import lineWidth
+#from astropy.convolution import convolve, Gaussian2DKernel
+#from astropy.modeling.models import Gaussian2D
+import scipy.optimize as so
+from scipy import ndimage
 gridspec =  pylab.matplotlib.gridspec
 plt = pylab.matplotlib.pyplot
 patches = pylab.matplotlib.patches
@@ -21,6 +25,8 @@ warnings.simplefilter("error")
 
 log = exoSOFTlogger.getLogger('main.plotTools',lvl=100,addFH=False)  
 colorsList =['Red','Orange','Purple','Fuchsia','Crimson','Green','Aqua','DarkGreen','Gold','DarkCyan','OrangeRed','Plum','Chartreuse','Chocolate','Teal','Salmon','Brown','Blue']
+
+
 def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, normed=False, nu=1,logY=False,histType='bar'):
     """
     This will make a matplotlib histogram using the input settings, then writing the resulting  
@@ -228,10 +234,13 @@ def addRVdataToPlot(subPlot,epochsORphases,RVs,RVerrs,datasetInts=[],alf=1.0,col
             subPlot.plot(epochsORphases[i],RVs[i],c=clr,marker='.',markersize=9)
     return subPlot
 
-def addDIdataToPlot(subPlot,realData,asConversion):
+def addDIdataToPlot(subPlot,realData,asConversion,errMult=0,thkns=1.0):
     """
     To plot a '+' for each data point with width and height matching the errors converted 
     to x,y coords.
+    NOTE:
+    errMult is a multiplier of the horizontal and vertical error lengths.  
+    A value of '1' would double the error lengths.
     """
     ## copy realData and kill off parts where DI errors are 1e6
     diData = copy.deepcopy(realData)
@@ -248,8 +257,10 @@ def addDIdataToPlot(subPlot,realData,asConversion):
         right = xCent+diData[i,2]*asConversion
         top = yCent+diData[i,4]*asConversion
         btm = yCent-diData[i,4]*asConversion
-        subPlot.plot([left,right],[yCent,yCent],linewidth=2.5,color='k',alpha=1.0)
-        subPlot.plot([xCent,xCent],[btm,top],linewidth=2.5,color='k',alpha=1.0)
+        hfWdth = abs(right-left)*errMult*0.5
+        hfHgt = abs(top-btm)*errMult*0.5
+        subPlot.plot([left-hfWdth,right+hfWdth],[yCent,yCent],linewidth=thkns,color='k',alpha=1.0)
+        subPlot.plot([xCent,xCent],[btm-hfHgt,top+hfHgt],linewidth=thkns,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])
 
 def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[],stage='MCMC'):
@@ -592,7 +603,7 @@ def epochsToPhases(epochs,Tc,P_yrs, halfOrbit=False):
             print 'phase = ',phase        
     return phases
 
-def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],RVlims=[]):
+def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],RVlims=[],diErrMult=0,diLnThk=1.0):
     """
     Make both the DI and RV plots.
     '-DI.png' and/or '-RV.png' will be added to end of plotFnameBase 
@@ -705,26 +716,44 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
             asConversion = 1000.0
             unitStr = '[mas]'
         ## Draw orbit fit
-        main.plot(fitDataDI[:,0]*asConversion,fitDataDI[:,1]*asConversion,linewidth=1,color='Blue') 
+        main.plot(fitDataDI[:,0]*asConversion,fitDataDI[:,1]*asConversion,linewidth=diLnThk,color='Blue') 
         ## Draw line-of-nodes
-        main.plot(lonXYs[:,0]*asConversion,lonXYs[:,1]*asConversion,'-.',linewidth=1.0,color='Green')
+        main.plot(lonXYs[:,0]*asConversion,lonXYs[:,1]*asConversion,'-.',linewidth=diLnThk,color='Green')
         #print 'lonXYs*asConversion = '+repr(lonXYs*asConversion)
         ## Draw Semi-Major axis
-        main.plot(semiMajorLocs[:,0]*asConversion,semiMajorLocs[:,1]*asConversion,'-',linewidth=1.0,color='Green')
+        main.plot(semiMajorLocs[:,0]*asConversion,semiMajorLocs[:,1]*asConversion,'-',linewidth=diLnThk,color='Green')
         ## Draw larger star for primary star's location
         starPolygon = star(2*paramsDI[10],0,0,color='yellow',N=6,thin=0.5)
         main.add_patch(starPolygon)
         ## Add DI data to plot
-        (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realDataDI,asConversion)
+        (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realDataDI,asConversion,errMult=diErrMult,thkns=diLnThk)#$$$$$$$$ Place for custimization
         ## set limits and other basics of plot looks
         xLims = (np.min([xmin,np.min(fitDataDI[:,0]*asConversion)]),np.max([xmax,np.max(fitDataDI[:,0]*asConversion)]))
         yLims = (np.min([ymin,np.min(fitDataDI[:,1]*asConversion)]),np.max([ymax,np.max(fitDataDI[:,1]*asConversion)]))
+        #force these to be square
+        xR = xLims[1]-xLims[0]
+        yR = yLims[1]-yLims[0]
+        if xR>yR:
+            yLims = (yLims[0]-0.5*abs(xR-yR),yLims[1]+0.5*abs(xR-yR))
+        elif xR<yR:
+            xLims = (xLims[0]-0.5*abs(xR-yR),xLims[1]+0.5*abs(xR-yR))
+        #pad by 5%
         xLimsFull = (xLims[0]-(xLims[1]-xLims[0])*0.05,xLims[1]+(xLims[1]-xLims[0])*0.05)
-        yLimsFull = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)
+        yLimsFull = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)     
+        print 'Full DI plot ranges: '+repr(xLimsFull[1]-xLimsFull[0])+' X '+repr(yLimsFull[1]-yLimsFull[0])
         xLims = (xmin,xmax)
         yLims = (ymin,ymax)
+        #force these to be square
+        xR = xLims[1]-xLims[0]
+        yR = yLims[1]-yLims[0]
+        if xR>yR:
+            yLims = (yLims[0]-0.5*abs(xR-yR),yLims[1]+0.5*abs(xR-yR))
+        elif xR<yR:
+            xLims = (xLims[0]-0.5*abs(xR-yR),xLims[1]+0.5*abs(xR-yR))
+        #pad by 5%
         xLimsCrop = (xLims[0]-(xLims[1]-xLims[0])*0.05,xLims[1]+(xLims[1]-xLims[0])*0.05)
         yLimsCrop = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)
+        print 'cropped DI plot ranges: '+repr(xLimsCrop[1]-xLimsCrop[0])+' X '+repr(yLimsCrop[1]-yLimsCrop[0])
         ## FLIP X-AXIS to match backawards Right Ascension definition
         a = main.axis()
         main.axis([a[1],a[0],a[2],a[3]])
@@ -735,8 +764,6 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
             yLimsFull=(DIlims[0][1][0],DIlims[0][1][1])
             xLimsCrop=(DIlims[1][0][0],DIlims[1][0][1])
             yLimsCrop=(DIlims[1][1][0],DIlims[1][1][1])
-        main.axes.set_xlim((xLimsFull[1],xLimsFull[0]))
-        main.axes.set_ylim(yLimsFull)
         plt.minorticks_on()
         main.tick_params(axis='both',which='major',width=1,length=5,pad=10,direction='in',labelsize=25)
         main.tick_params(axis='both',which='minor',width=1,length=2,pad=10,direction='in')
@@ -752,15 +779,13 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
             yLabel = '$Relative$ $Dec$ '+unitStr#'$\Delta$ $\delta$ '+unitStr
         main.set_xlabel(xLabel, fontsize=25)
         main.set_ylabel(yLabel, fontsize=25)
+        ##
+        ## Save cropped, then save full size figs to file and maybe convert to pdf if format=='eps'
+        ##
         #plt.tight_layout()
-        ## save fig to file and maybe convert to pdf if format=='eps'
         orientStr = 'landscape'
         if format=='eps':
             orientStr = 'portrait'
-        plotFilenameFull = plotFnameBase+'-DI.'+format
-        if plotFilenameFull!='':
-            plt.savefig(plotFilenameFull, dpi=300, orientation=orientStr)
-            log.info("DI orbit plot (Full) saved to:\n"+plotFilenameFull)
         ##crop to limits of data and save
         main.axes.set_xlim((xLimsCrop[1],xLimsCrop[0]))
         main.axes.set_ylim(yLimsCrop)
@@ -773,6 +798,16 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         if plotFilenameCrop!='':
             plt.savefig(plotFilenameCrop, dpi=300, orientation=orientStr)
             log.info("DI orbit plot (cropped) saved to:\n"+plotFilenameCrop)
+            
+         ## maybe overlay bigger errors for show, then save full size fig
+         ## Add DI data to plot
+        (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realDataDI,asConversion,errMult=diErrMult,thkns=diLnThk)#$$$$$$$$ Place for custimization
+        main.axes.set_xlim((xLimsFull[1],xLimsFull[0]))
+        main.axes.set_ylim(yLimsFull)
+        plotFilenameFull = plotFnameBase+'-DI.'+format
+        if plotFilenameFull!='':
+            plt.savefig(plotFilenameFull, dpi=300, orientation=orientStr)
+            log.info("DI orbit plot (Full) saved to:\n"+plotFilenameFull)
         plt.close()
         if (format=='eps')and True:
             log.debug('converting to PDF as well')
@@ -999,10 +1034,199 @@ def nodeEpochsCalc(paramsDI,omegaDIoffset):
         delta_t = (M_s_rad*paramsDI[7]*const.daysPerYear)/(2.0*const.pi)
         nodeEpochs.append(paramsDI[5]+delta_t)
     return nodeEpochs
+ 
+def findConfInt(x, pdf, confidence_level):
+    """copied directly from https://gist.github.com/adrn/3993992"""
+    a = pdf[pdf > x].sum() - confidence_level
+    #print str(confidence_level)+", "+str(pdf[pdf > x].sum())+" -> so far "+str(a)
+    return a
+
+def densityContour(xdata, ydata, nbins, ax=None,ranges=None, **contour_kwargs):
+    """ Create a density contour plot.
+    Parameters
+    ----------
+    xdata : numpy.ndarray
+    ydata : numpy.ndarray
+    nbins_x : int
+        Number of bins along x dimension
+    nbins_y : int
+        Number of bins along y dimension
+    ax : matplotlib.Axes (optional)
+        If supplied, plot the contour to this axis. Otherwise, open a new figure
+    contour_kwargs : dict
+        kwargs to be passed to pyplot.contour()
+        
+    Copied directly, and maybe modified by me after, 
+    from https://gist.github.com/adrn/3993992    
+    """
+    import matplotlib.cm as cm
+    H, xedges, yedges = np.histogram2d(xdata, ydata, bins=nbins,range=ranges, normed=True)
+    x_bin_sizes = (xedges[1:] - xedges[:-1]).reshape((1,nbins))
+    y_bin_sizes = (yedges[1:] - yedges[:-1]).reshape((nbins,1))
+    H = ndimage.gaussian_filter(H, sigma=2)
     
-def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],bestVals=[]):
+    pdf = (H*(x_bin_sizes*y_bin_sizes))
+    
+    ptone_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.080))
+    oneQuarter_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.197))
+    oneHalf_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.383))
+    one_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.68))
+    two_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.95))
+    three_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.997))
+    #four_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.99994))
+    from matplotlib.colors import from_levels_and_colors
+    
+    levels3sigs = [three_sigma,two_sigma,one_sigma]
+    colrs = ['1','0.9','0.8','0.4']
+    #colrs = ['0.81','0.08']
+    (contr_cmap3sigs,n) = from_levels_and_colors(levels3sigs,colrs,extend='both')
+    c = []
+    for i in range(len(levels3sigs)+1):
+        c.append('k')
+    (black_cmap,n) = from_levels_and_colors(levels3sigs,c,extend='both')
+    levels6lvls = [three_sigma, two_sigma, one_sigma, oneHalf_sigma, oneQuarter_sigma, ptone_sigma]
+    #levels6lvls = [ptone_sigma ,oneQuarter_sigma,oneHalf_sigma,one_sigma,two_sigma,three_sigma]
+    colrs = ['1','0.9','0.7','0.55','0.4','0.2','0.01']
+    (contr_cmap6lvls,n) = from_levels_and_colors(levels6lvls,colrs,extend='both')
+
+    X, Y = 0.5*(xedges[1:]+xedges[:-1]), 0.5*(yedges[1:]+yedges[:-1])
+    Z = pdf.T
+    Z2 = Z.max()-Z
+      
+    if ax == None:
+        #contour = plt.contour(X, Y, Z2, origin="lower", cmap=cm.gray,**contour_kwargs)
+        #contour = plt.contourf(X, Y, Z, levels=levels, origin="lower",cmap=contr_cmap,alpha=0.1, **contour_kwargs)
+        contour = plt.contourf(X, Y, Z, levels=levels,origin="lower",cmap=contr_cmap,alpha=1, **contour_kwargs)
+        contour = plt.contour(X, Y, Z, levels=levels, origin="lower", cmap=black_cmap,linewidths=3,**contour_kwargs)
+        #plt.clabel(contour,fontsize=10,inline=1)
+    else:
+        #contour = ax.contour(X, Y, Z, levels=levels, origin="lower",cmap=cm.gray, **contour_kwargs)
+        #contour = ax.contourf(X, Y, Z2, origin="lower", cmap=cm.gray,**contour_kwargs)
+        contour = ax.contourf(X, Y, Z, levels=levels6lvls,origin="lower",cmap=contr_cmap6lvls,alpha=1, **contour_kwargs)
+        contour = ax.contourf(X, Y, Z, levels=[ptone_sigma,oneQuarter_sigma],origin="lower", cmap=black_cmap,**contour_kwargs)
+        #contour = ax.contourf(X, Y, Z, levels=levels,origin="lower",cmap=contr_cmap,alpha=1, **contour_kwargs)
+        contour = ax.contour(X, Y, Z, levels=levels3sigs, origin="lower", cmap=black_cmap,linewidths=3,linestyles='dashed',**contour_kwargs)
+        
+
+    return contour 
+
+def densityPlotter(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],ranges=None,smooth=True):
+    """
+    Will create a 2D density contour plot.
+    Must pass in ONLY 2 params to plot.
+    """
+    
+    latex=True
+    plotFormat = 'eps'   
+    plt.rcParams['ps.useafm']= True
+    plt.rcParams['pdf.use14corefonts'] = True
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    if latex:
+        plt.rc('text', usetex=True)
+        
+    if len(paramsToPlot)==2:
+        (head,data) = genTools.loadFits(outputDataFilename)
+        if head!=False:  
+            log.debug(' Inside densityPlotter')
+            s= '\nCreating 2D density plot for file:\n'+outputDataFilename
+            s=s+ '\nInput plotfilename:\n'+plotFilename
+            log.info(s)
+            
+            ## check if the passed in value for plotFilename includes format extension
+            if '.'+plotFormat not in plotFilename:
+                plotFilename = plotFilename+"."+plotFormat
+                log.debug('updating plotFilename to:\n'+plotFilename)
+            else:
+                plotFilename = plotFilename
+            ## Get strings representing axes titles and plot filenames in latex and standard formats
+            (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex)
+            (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False)
+            ## modify x labels to account for DI only situations where M1=Mtotal
+            if np.var(data[:,1])==0:
+                paramStrs2[0] = 'm total [Msun]'
+                paramStrs[0] = '$m_{total}$ [$M_{\odot}$]'
+                paramFileStrs[0] = 'm-total'
+            ## check if a subset is to be plotted or the whole set
+            ## remake lists of params to match subset.
+            if len(paramsToPlot)!=0:
+                paramStrs2Use = []
+                paramStrsUse = []
+                paramFileStrsUse = []
+                paramListUse = []
+                for par in paramsToPlot:
+                    paramStrs2Use.append(paramStrs2[par])
+                    paramStrsUse.append(paramStrs[par])
+                    paramFileStrsUse.append(paramFileStrs[par])
+                    paramListUse.append(par)
+                paramStrs2 = paramStrs2Use
+                paramStrs = paramStrsUse
+                paramFileStrs = paramFileStrsUse 
+                paramList = paramListUse
+        
+            #if len(paramsToPlot)>0:   
+            #    dataUse = data[:,paramsToPlot]
+            #else:
+            #    dataUse = data
+            #log.info("will try to make a triangle plot for data of shape: "+repr(dataUse.shape))
+        
+            ## make gaussian kernal and convolve with 2d data ary
+            #gaussKern = Gaussian2DKernel(5)
+            #convedAry = convolve(data2D,gaussKern)
+            xdata = data[:,paramsToPlot[0]]
+            ydata = data[:,paramsToPlot[1]]
+            nbins=50
+            fig = plt.figure(figsize=(8,7.8))
+            subPlot = plt.subplot(111)
+            xLabel = paramStrs[paramsToPlot[0]]
+            yLabel = paramStrs[paramsToPlot[1]]
+            ## Tweak plot axis and labels to look nice
+            subPlot.locator_params(axis='x',nbins=7) # maximum number of x labels
+            subPlot.locator_params(axis='y',nbins=7) # maximum number of y labels
+            subPlot.tick_params(axis='x',which='major',width=0.5,length=3,pad=4,direction='in',labelsize=25)
+            subPlot.tick_params(axis='y',which='major',width=0.5,length=3,pad=4,direction='in',labelsize=25)
+            subPlot.spines['right'].set_linewidth(0.7)
+            subPlot.spines['bottom'].set_linewidth(0.7)
+            subPlot.spines['top'].set_linewidth(0.7)
+            subPlot.spines['left'].set_linewidth(0.7)
+            subPlot.set_position([0.17,0.14,0.80,0.80])
+            # add axes labels
+            fsize=34
+            fsizeY = fsize
+            fsizeX = fsize
+            if xLabel in ['e','$e$']:
+                fsizeX =fsize+10
+            elif yLabel in ['e','$e$']:
+                fsizeY =fsize+10
+            if latex:
+                subPlot.axes.set_xlabel(r''+xLabel,fontsize=fsizeX)
+                subPlot.axes.set_ylabel(r''+yLabel,fontsize=fsizeY)
+            else:
+                subPlot.axes.set_xlabel(xLabel,fontsize=fsizeX)
+                subPlot.axes.set_ylabel(yLabel,fontsize=fsizeY)
+            subPlot = densityContour(xdata, ydata, nbins, ax=subPlot,ranges=ranges)#, **contour_kwargs)
+
+            
+            #plt.tight_layout()
+            ## Save file if requested.
+            log.debug('\nStarting to save density contour figure:')
+            if plotFilename!='':
+                plt.savefig(plotFilename,format=plotFormat)
+                s= 'density contour plot saved to: '+plotFilename
+                log.info(s)
+            plt.close()
+            if True:
+                log.debug('converting to PDF as well')
+                try:
+                    os.system("epstopdf "+plotFilename)
+                except:
+                    log.warning("Seems epstopdf failed.  Check if it is installed properly.")
+    else:
+        log.critical(repr(len(paramsToPlot))+" params requested to be plotted, yet only 2 is acceptable.")
+    
+def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],smooth=True):
     """
     make a triangle/corner plot using the same tool in EMCEE.
+    NOTE: the contours of the density plots in here are [ 0.1175031 ,  0.39346934,  0.67534753,  0.86466472]
     """
     from triangle import corner
     
@@ -1066,8 +1290,9 @@ def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],bestV
         ##call triangle plot function corner to make the figure
         log.debug('About to call corner func')
         tic=timeit.default_timer()
-        cornerfig = corner(dataUse, bins=20, range=None, color="k",
-                           labels=paramStrs,
+        ## Create empty figure to be filled up with plots
+        cornerfig = corner(dataUse, bins=50, range=None, color="k",
+                           smooth=smooth,labels=paramStrs,
                            truths=bests, truth_color="#4682b4",
                            verbose=False, fig=None,
                            max_n_ticks=5, top_ticks=False)

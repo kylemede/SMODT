@@ -39,5 +39,5 @@ from plotTools import summaryPlotter
 from plotTools import orbitPlotter
 from plotTools import stackedPosteriorsPlotter
 from plotTools import cornerPlotter
-from plotTools import densityPlotter
+from plotTools import densityPlotter2D
 from plotTools import progressPlotter

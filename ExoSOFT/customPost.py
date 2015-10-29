@@ -78,7 +78,7 @@ def customPost():
     if True: 
         plotFilename = os.path.join(settingsDict['finalFolder'],'densityPlot-3')
         #ranges=[[xMin,xMax],[yMin,yMax]]
-        tools.densityPlotter(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.098,0.274],ranges=[[0.88,1.45],[0.19,0.43]])
+        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.098,0.274],ranges=[[0.88,1.45],[0.19,0.43]])
         #plotFilename = os.path.join(settingsDict['finalFolder'],'cornerPlot-6-gaussFiltered-newSigmaLevels')
         #tools.cornerPlotter(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.098,0.274])
         

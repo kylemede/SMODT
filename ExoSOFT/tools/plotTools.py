@@ -1035,13 +1035,13 @@ def nodeEpochsCalc(paramsDI,omegaDIoffset):
         nodeEpochs.append(paramsDI[5]+delta_t)
     return nodeEpochs
  
-def findConfInt(x, pdf, confidence_level):
+def densConfInt(x, pdf, confidence_level):
     """copied directly from https://gist.github.com/adrn/3993992"""
     a = pdf[pdf > x].sum() - confidence_level
     #print str(confidence_level)+", "+str(pdf[pdf > x].sum())+" -> so far "+str(a)
     return a
 
-def densityContour(xdata, ydata, nbins, ax=None,ranges=None, **contour_kwargs):
+def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
     """ Create a density contour plot.
     Parameters
     ----------
@@ -1056,66 +1056,56 @@ def densityContour(xdata, ydata, nbins, ax=None,ranges=None, **contour_kwargs):
     contour_kwargs : dict
         kwargs to be passed to pyplot.contour()
         
-    Copied directly, and maybe modified by me after, 
+    Copied directly, and heavily modified by me after, 
     from https://gist.github.com/adrn/3993992    
     """
     import matplotlib.cm as cm
+    from matplotlib.colors import from_levels_and_colors
+    ## get data for 2D hist and a pdf from it
     H, xedges, yedges = np.histogram2d(xdata, ydata, bins=nbins,range=ranges, normed=True)
     x_bin_sizes = (xedges[1:] - xedges[:-1]).reshape((1,nbins))
     y_bin_sizes = (yedges[1:] - yedges[:-1]).reshape((nbins,1))
     H = ndimage.gaussian_filter(H, sigma=2)
-    
     pdf = (H*(x_bin_sizes*y_bin_sizes))
     
-    ptone_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.080))
-    oneQuarter_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.197))
-    oneHalf_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.383))
-    one_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.68))
-    two_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.95))
-    three_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.997))
-    #four_sigma = so.brentq(findConfInt, 0., 1., args=(pdf, 0.99994))
-    from matplotlib.colors import from_levels_and_colors
-    
+    ## find contour levels and make color maps
+    tiny_sigma= so.brentq(densConfInt, 0., 1., args=(pdf, 0.001))
+    ptone_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.080))
+    oneQuarter_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.197))
+    oneHalf_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.383))
+    one_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.68))
+    two_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.95))
+    three_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.997))
+    four_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.99994))
     levels3sigs = [three_sigma,two_sigma,one_sigma]
-    colrs = ['1','0.9','0.8','0.4']
-    #colrs = ['0.81','0.08']
-    (contr_cmap3sigs,n) = from_levels_and_colors(levels3sigs,colrs,extend='both')
+    levels7lvls = [three_sigma, two_sigma, one_sigma, oneHalf_sigma, oneQuarter_sigma, ptone_sigma,tiny_sigma]
     c = []
     for i in range(len(levels3sigs)+1):
         c.append('k')
     (black_cmap,n) = from_levels_and_colors(levels3sigs,c,extend='both')
-    levels6lvls = [three_sigma, two_sigma, one_sigma, oneHalf_sigma, oneQuarter_sigma, ptone_sigma]
-    #levels6lvls = [ptone_sigma ,oneQuarter_sigma,oneHalf_sigma,one_sigma,two_sigma,three_sigma]
-    colrs = ['1','0.9','0.7','0.55','0.4','0.2','0.01']
-    (contr_cmap6lvls,n) = from_levels_and_colors(levels6lvls,colrs,extend='both')
 
-    X, Y = 0.5*(xedges[1:]+xedges[:-1]), 0.5*(yedges[1:]+yedges[:-1])
-    Z = pdf.T
-    Z2 = Z.max()-Z
-      
+    X, Y, Z = 0.5*(xedges[1:]+xedges[:-1]), 0.5*(yedges[1:]+yedges[:-1]), pdf.T
     if ax == None:
-        #contour = plt.contour(X, Y, Z2, origin="lower", cmap=cm.gray,**contour_kwargs)
-        #contour = plt.contourf(X, Y, Z, levels=levels, origin="lower",cmap=contr_cmap,alpha=0.1, **contour_kwargs)
-        contour = plt.contourf(X, Y, Z, levels=levels,origin="lower",cmap=contr_cmap,alpha=1, **contour_kwargs)
-        contour = plt.contour(X, Y, Z, levels=levels, origin="lower", cmap=black_cmap,linewidths=3,**contour_kwargs)
-        #plt.clabel(contour,fontsize=10,inline=1)
+        contour = plt.contourf(X, Y, Z, levels=levels7lvls,origin="lower",cmap=cm.Greys,alpha=1)
+        contour = plt.contourf(X, Y, Z, levels=[tiny_sigma,ptone_sigma],origin="lower", cmap=black_cmap)
+        contour = plt.contour(X, Y, Z, levels=levels3sigs, origin="lower", cmap=black_cmap,linewidths=3,linestyles='dashed')
+        if bests!=None:
+            contour = plt.plot([X.min(),X.max()], [bests[0],bests[0]],linewidth=3,color='blue')
+            contour = plt.plot([bests[1],bests[1]],[Y.min(),Y.max()],linewidth=3,color='blue')
     else:
-        #contour = ax.contour(X, Y, Z, levels=levels, origin="lower",cmap=cm.gray, **contour_kwargs)
-        #contour = ax.contourf(X, Y, Z2, origin="lower", cmap=cm.gray,**contour_kwargs)
-        contour = ax.contourf(X, Y, Z, levels=levels6lvls,origin="lower",cmap=contr_cmap6lvls,alpha=1, **contour_kwargs)
-        contour = ax.contourf(X, Y, Z, levels=[ptone_sigma,oneQuarter_sigma],origin="lower", cmap=black_cmap,**contour_kwargs)
-        #contour = ax.contourf(X, Y, Z, levels=levels,origin="lower",cmap=contr_cmap,alpha=1, **contour_kwargs)
-        contour = ax.contour(X, Y, Z, levels=levels3sigs, origin="lower", cmap=black_cmap,linewidths=3,linestyles='dashed',**contour_kwargs)
-        
-
+        contour = ax.contourf(X, Y, Z, levels=levels7lvls,origin="lower",cmap=cm.Greys,alpha=1)
+        contour = ax.contourf(X, Y, Z, levels=[tiny_sigma,ptone_sigma],origin="lower", cmap=black_cmap)
+        contour = ax.contour(X, Y, Z, levels=levels3sigs, origin="lower", cmap=black_cmap,linewidths=3,linestyles='dashed')
+        if bests!=None:
+            contour = ax.plot([X.min(),X.max()], [bests[1],bests[1]],linewidth=3,color='blue')
+            contour = ax.plot([bests[0],bests[0]],[Y.min(),Y.max()],linewidth=3,color='blue')
     return contour 
 
-def densityPlotter(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],ranges=None,smooth=True):
+def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],ranges=None,smooth=True):
     """
     Will create a 2D density contour plot.
     Must pass in ONLY 2 params to plot.
-    """
-    
+    """    
     latex=True
     plotFormat = 'eps'   
     plt.rcParams['ps.useafm']= True
@@ -1140,38 +1130,17 @@ def densityPlotter(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],r
                 plotFilename = plotFilename
             ## Get strings representing axes titles and plot filenames in latex and standard formats
             (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex)
-            (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False)
             ## modify x labels to account for DI only situations where M1=Mtotal
             if np.var(data[:,1])==0:
-                paramStrs2[0] = 'm total [Msun]'
                 paramStrs[0] = '$m_{total}$ [$M_{\odot}$]'
-                paramFileStrs[0] = 'm-total'
             ## check if a subset is to be plotted or the whole set
             ## remake lists of params to match subset.
             if len(paramsToPlot)!=0:
-                paramStrs2Use = []
                 paramStrsUse = []
-                paramFileStrsUse = []
-                paramListUse = []
                 for par in paramsToPlot:
-                    paramStrs2Use.append(paramStrs2[par])
                     paramStrsUse.append(paramStrs[par])
-                    paramFileStrsUse.append(paramFileStrs[par])
-                    paramListUse.append(par)
-                paramStrs2 = paramStrs2Use
                 paramStrs = paramStrsUse
-                paramFileStrs = paramFileStrsUse 
-                paramList = paramListUse
         
-            #if len(paramsToPlot)>0:   
-            #    dataUse = data[:,paramsToPlot]
-            #else:
-            #    dataUse = data
-            #log.info("will try to make a triangle plot for data of shape: "+repr(dataUse.shape))
-        
-            ## make gaussian kernal and convolve with 2d data ary
-            #gaussKern = Gaussian2DKernel(5)
-            #convedAry = convolve(data2D,gaussKern)
             xdata = data[:,paramsToPlot[0]]
             ydata = data[:,paramsToPlot[1]]
             nbins=50
@@ -1203,10 +1172,9 @@ def densityPlotter(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],r
             else:
                 subPlot.axes.set_xlabel(xLabel,fontsize=fsizeX)
                 subPlot.axes.set_ylabel(yLabel,fontsize=fsizeY)
-            subPlot = densityContour(xdata, ydata, nbins, ax=subPlot,ranges=ranges)#, **contour_kwargs)
-
+            ## call densityContour func to fill up subplot with density/contour plot
+            subPlot = densityContourFunc(xdata, ydata, nbins, ax=subPlot,ranges=ranges,bests=bestVals)
             
-            #plt.tight_layout()
             ## Save file if requested.
             log.debug('\nStarting to save density contour figure:')
             if plotFilename!='':

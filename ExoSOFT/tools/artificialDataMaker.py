@@ -5,7 +5,7 @@ import constants as const
 
 def calcOrbit(outDir='',outBaseName='mockdata_'):
     """
-    This is a tool to produce a Keplerian orbit in RA,Dec,RV to verify SMODT2.0.
+    This is a tool to produce a Keplerian orbit in RA,Dec,RV to verify ExoSOFT.
     It just computes Kepler orbit positions and velocities then rotates 
     them into the observed values in the plane of the sky.
     
@@ -13,7 +13,7 @@ def calcOrbit(outDir='',outBaseName='mockdata_'):
           due to the simple center differencing used to calculate the velocities 
           from the positions and times.
           
-    Outputs are 2 files matching formats used in NewBEAT/ExoSOFT DI and RV.
+    Outputs are 2 files matching formats used in ExoSOFT DI and RV.
     outBaseName+'DIdata.dat' has columns:
     #1. JD
     #2. RA (x) ["]
@@ -221,7 +221,6 @@ def calcOrbit(outDir='',outBaseName='mockdata_'):
     else:
         dataRV[:,1] = data2[:,4]#RV secondary [m/s]
         dataRV[:,2] = errorRVsecondary#RV secondary error [m/s]
-        
         
     if True:
         ## Randomly re-sample the DI data to half that of the RV to mimick the fact that there is usually more much RV data than DI data

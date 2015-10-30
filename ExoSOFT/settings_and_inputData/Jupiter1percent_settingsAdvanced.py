@@ -18,6 +18,7 @@ def ePriorRatio(eProposed,eLast):
             return 1.0
     else:
         return 1.0
+    
 def pPriorRatio(Pproposed,Plast):
     if simpleSettingsDict['PMAX']!=0:
         if Pproposed!=0:
@@ -35,49 +36,27 @@ def incPriorRatio(incProposed,incLast):
     else:
         return 1.0
     
-def mass1PriorRatio(M1Proposed,M1Last):
-    #we are assuming M1>70Mj
-    if simpleSettingsDict['mass1MAX']!=0:
-        if M1Proposed!=M1Last!=0:
-            if simpleSettingsDict['mass1MIN']>=0.5:
-                return (M1Proposed**(-2.3))/(M1Last**(-2.3))
-            elif (simpleSettingsDict['mass1MIN']>=0.07)and(simpleSettingsDict['mass1MAX']<=0.5):
-                return (M1Proposed**(-1.3))/(M1Last**(-1.3))
-            else:
-                return 1.0
+def mass1PriorRatio(MProposed,MLast):
+    if (simpleSettingsDict['mass1MAX']!=0)and True:
+        if MProposed!=MLast!=0:
+            prop = chabrierPrior(MProposed,IMF=False)
+            lst = chabrierPrior(MLast,IMF=False)
+            return prop/lst
         else:
             return 1.0
     else:
         return 1.0
-#     if mass!=0:
-#         if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
-#             return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
-#         else:
-#             return 1.0
-#     else:
-#         return 1.0
-def mass2PriorRatio(M2Proposed,M2Last,aProposed,aLast):
-    if simpleSettingsDict['mass2MAX']!=0:
-        if M2Proposed!=M2Last!=0:
-            if simpleSettingsDict['mass2MIN']>=0.5:
-                return (M2Proposed**(-2.3))/(M2Last**(-2.3))
-            elif (simpleSettingsDict['mass2MIN']>=0.07)and(simpleSettingsDict['mass2MAX']<=0.5):
-                return (M2Proposed**(-1.3))/(M2Last**(-1.3))
-            elif (simpleSettingsDict['mass2MIN']>=0.005)and(simpleSettingsDict['mass2MAX']<=0.07):
-                if aProposed!=aLast!=0:
-                    return ((M2Proposed**(-0.65))*(aProposed**(-0.85)))/((M2Last**(-0.65))*(aLast**(-0.85)))
-                else:
-                    return 1.0
-            else:
-                return 1.0
+    
+def mass2PriorRatio(MProposed,MLast):
+    if (simpleSettingsDict['mass2MAX']!=0)and True:
+        if MProposed!=MLast!=0:
+            prop = chabrierPrior(MProposed,IMF=False)
+            lst = chabrierPrior(MLast,IMF=False)
+            return prop/lst
         else:
             return 1.0
     else:
         return 1.0
-#     if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
-#         return gaussian(mass, advancedDict['mass2Est'][0], advancedDict['mass2Err'][0])
-#     else:
-#         return 1.0
 def paraPriorRatio(paraProposed,paraLast):
     if paraProposed!=paraLast!=simpleSettingsDict['paraMAX']!=0:
         if False:
@@ -91,6 +70,23 @@ def paraPriorRatio(paraProposed,paraLast):
             return 1.0
     else:
         return 1.0
+    
+def chabrierPrior(m,IMF=False):
+    if IMF==False:
+        if m<1.0:
+            d = (0.068618528140713786/m)*np.exp((-(np.log10(m)+1.1023729087095586)**2)/0.9521999999999998)
+        elif m<3.47:
+            d = 0.019108957203743077*(m**(-5.37))
+        elif m<18.20:
+            d = 0.0065144172285487769*(m**(-4.53))
+        else:
+            d = 0.00010857362047581295*(m**(-3.11))
+    else:
+        if m<1.0:
+            d = (0.068618528140713786/m)*np.exp((-(np.log10(m)+1.1023729087095586)**2)/0.9521999999999998)
+        else:
+            d = 0.019239245548314052*(m**(-2.3))
+    return d
 
 
 advancedDict = {
@@ -99,7 +95,7 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (100.0,"Max reduced chiSquared during MC"),
+'chiMAX' : (300.0,"Max reduced chiSquared during MC"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(5,'Max reduced chiSquared to enter ST.'),
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
@@ -129,7 +125,8 @@ advancedDict = {
 ############################
 # Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
 'CalcBurn' :True,
-# remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?
+# remove burn-in of output MCMC chains before combining (must be more than 1 chain) [bool]
+# (should already be handled by SimAnneal stage2 though...)?
 'rmBurn' : (True,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 # NOTE: CAUTION, can take a long time for long runs.  Still needs to be sped up somehow.
@@ -145,7 +142,7 @@ advancedDict = {
 # Allowed vals [1,nSAsamp), Ideal is ~50.
 'tempInt'  : (50,"Num steps till temp drops in SA."),
 # number of samples to draw for sigma tuning stage [int].
-'nSTsamp' :(100000,"Num ST samples"),
+'nSTsamp' :(500000,"Num ST samples"),
 # number of steps per varying parameter until calculating the acceptance rate and tuning sigmas. [int]
 # Allowed vals [1,nSTsamp), testing shows a value of ~200 works well.
 'sigInt': (200,"Num steps/par till calc acc rate/tune sigs."),
@@ -161,7 +158,7 @@ advancedDict = {
 # Start MCMC at the best params from the ST stage? [bool]
 'strBest' : (True,"Start MCMC at best fit params from ST"),
 ## NOTE: progress plots have no code yet, so MUST be False!!!
-# Make plots of MCMC progress plots? [bool]
+# Make plots of MCMC progress plots? [bool]  
 'pltMCMCprog' :False,
 # Make plots of Simulated Annealing progress plots? [bool]
 'pltSAprog' :False,
@@ -201,16 +198,16 @@ advancedDict = {
 'mass2Est' : (0.0,"Secondary's estimated mass"),
 'mass2Err' : (0.0,"Secondary's estimated mass error"),
 #best estimate of parallax, and error [double][mas]
-'paraEst' : (50,"Estimated parallax"),
-'paraErr' : (2.5,"Estimated parallax error"),
+'paraEst'  : (50,"Estimated parallax"),
+'paraErr'  : (2.5,"Estimated parallax error"),
 ##################################
 # Push prior functions into dict #
 ##################################
 'ePrior'    :(True,'Use prior for eccentricity?',ePriorRatio),
 'pPrior'    :(True,'Use prior for period?',pPriorRatio),
 'incPrior'  :(True,'Use prior for inclination?',incPriorRatio),
-'M1Prior':(True,'Use prior for M1?',mass1PriorRatio),
-'M2Prior':(True,'Use prior for M2?',mass2PriorRatio),
+'M1Prior':(True,'Use prior for m1?',mass1PriorRatio),
+'M2Prior':(True,'Use prior for m2?',mass2PriorRatio),
 'parPrior' :(True,'Use prior for parallax?',paraPriorRatio),
 }
 

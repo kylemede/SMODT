@@ -18,6 +18,7 @@ def ePriorRatio(eProposed,eLast):
             return 1.0
     else:
         return 1.0
+    
 def pPriorRatio(Pproposed,Plast):
     if simpleSettingsDict['PMAX']!=0:
         if Pproposed!=0:
@@ -35,49 +36,27 @@ def incPriorRatio(incProposed,incLast):
     else:
         return 1.0
     
-def mass1PriorRatio(M1Proposed,M1Last):
-    #we are assuming M1>70Mj
-    if simpleSettingsDict['mass1MAX']!=0:
-        if M1Proposed!=M1Last!=0:
-            if simpleSettingsDict['mass1MIN']>=0.5:
-                return (M1Proposed**(-2.3))/(M1Last**(-2.3))
-            elif (simpleSettingsDict['mass1MIN']>=0.07)and(simpleSettingsDict['mass1MAX']<=0.5):
-                return (M1Proposed**(-1.3))/(M1Last**(-1.3))
-            else:
-                return 1.0
+def mass1PriorRatio(MProposed,MLast):
+    if (simpleSettingsDict['mass1MAX']!=0)and True:
+        if MProposed!=MLast!=0:
+            prop = chabrierPrior(MProposed,IMF=False)
+            lst = chabrierPrior(MLast,IMF=False)
+            return prop/lst
         else:
             return 1.0
     else:
         return 1.0
-#     if mass!=0:
-#         if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
-#             return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
-#         else:
-#             return 1.0
-#     else:
-#         return 1.0
-def mass2PriorRatio(M2Proposed,M2Last,aProposed,aLast):
-    if simpleSettingsDict['mass2MAX']!=0:
-        if M2Proposed!=M2Last!=0:
-            if simpleSettingsDict['mass2MIN']>=0.5:
-                return (M2Proposed**(-2.3))/(M2Last**(-2.3))
-            elif (simpleSettingsDict['mass2MIN']>=0.07)and(simpleSettingsDict['mass2MAX']<=0.5):
-                return (M2Proposed**(-1.3))/(M2Last**(-1.3))
-            elif (simpleSettingsDict['mass2MIN']>=0.005)and(simpleSettingsDict['mass2MAX']<=0.07):
-                if aProposed!=aLast!=0:
-                    return ((M2Proposed**(-0.65))*(aProposed**(-0.85)))/((M2Last**(-0.65))*(aLast**(-0.85)))
-                else:
-                    return 1.0
-            else:
-                return 1.0
+    
+def mass2PriorRatio(MProposed,MLast):
+    if (simpleSettingsDict['mass2MAX']!=0)and True:
+        if MProposed!=MLast!=0:
+            prop = chabrierPrior(MProposed,IMF=False)
+            lst = chabrierPrior(MLast,IMF=False)
+            return prop/lst
         else:
             return 1.0
     else:
         return 1.0
-#     if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
-#         return gaussian(mass, advancedDict['mass2Est'][0], advancedDict['mass2Err'][0])
-#     else:
-#         return 1.0
 def paraPriorRatio(paraProposed,paraLast):
     if paraProposed!=paraLast!=simpleSettingsDict['paraMAX']!=0:
         if False:
@@ -91,6 +70,23 @@ def paraPriorRatio(paraProposed,paraLast):
             return 1.0
     else:
         return 1.0
+    
+def chabrierPrior(m,IMF=False):
+    if IMF==False:
+        if m<1.0:
+            d = (0.068618528140713786/m)*np.exp((-(np.log10(m)+1.1023729087095586)**2)/0.9521999999999998)
+        elif m<3.47:
+            d = 0.019108957203743077*(m**(-5.37))
+        elif m<18.20:
+            d = 0.0065144172285487769*(m**(-4.53))
+        else:
+            d = 0.00010857362047581295*(m**(-3.11))
+    else:
+        if m<1.0:
+            d = (0.068618528140713786/m)*np.exp((-(np.log10(m)+1.1023729087095586)**2)/0.9521999999999998)
+        else:
+            d = 0.019239245548314052*(m**(-2.3))
+    return d
 
 
 advancedDict = {
@@ -106,7 +102,7 @@ advancedDict = {
 'cMaxMCMC':(5,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 10,
+'logLevel' : 30,
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :20,
 # make plot of posterior distributions? [bool]
@@ -146,7 +142,7 @@ advancedDict = {
 # Allowed vals [1,nSAsamp), Ideal is ~50.
 'tempInt'  : (50,"Num steps till temp drops in SA."),
 # number of samples to draw for sigma tuning stage [int].
-'nSTsamp' :(100000,"Num ST samples"),
+'nSTsamp' :(500000,"Num ST samples"),
 # number of steps per varying parameter until calculating the acceptance rate and tuning sigmas. [int]
 # Allowed vals [1,nSTsamp), testing shows a value of ~200 works well.
 'sigInt': (200,"Num steps/par till calc acc rate/tune sigs."),
@@ -210,8 +206,8 @@ advancedDict = {
 'ePrior'    :(True,'Use prior for eccentricity?',ePriorRatio),
 'pPrior'    :(True,'Use prior for period?',pPriorRatio),
 'incPrior'  :(True,'Use prior for inclination?',incPriorRatio),
-'M1Prior':(True,'Use prior for M1?',mass1PriorRatio),
-'M2Prior':(True,'Use prior for M2?',mass2PriorRatio),
+'M1Prior':(True,'Use prior for m1?',mass1PriorRatio),
+'M2Prior':(True,'Use prior for m2?',mass2PriorRatio),
 'parPrior' :(True,'Use prior for parallax?',paraPriorRatio),
 }
 

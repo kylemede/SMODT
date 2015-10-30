@@ -6,10 +6,8 @@ import copy
 import glob
 import shutil
 import timeit
-from matplotlib.backends.qt_editor.formlayout import ColorLayout
-from PyAstronomy.pyasl.asl import lineWidth
-#from astropy.convolution import convolve, Gaussian2DKernel
-#from astropy.modeling.models import Gaussian2D
+#from matplotlib.backends.qt_editor.formlayout import ColorLayout
+#from PyAstronomy.pyasl.asl import lineWidth
 import scipy.optimize as so
 from scipy import ndimage
 gridspec =  pylab.matplotlib.gridspec
@@ -80,9 +78,9 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
         if np.max(histData[:,0])<0.02:
             histData[:,0]=histData[:,0]*(const.KGperMsun/const.KGperMjupiter)
             valRange = np.max(histData[:,0])-np.min(histData[:,0])
-            xLabel='M2 [Mjupiter]'
+            xLabel='m2 [Mjupiter]'
             if latex:
-                xLabel='$M_2$ [$M_{J}$]'
+                xLabel='$m_2$ [$M_{J}$]'
     if (np.max(histData[:,0])>100000) or (valRange<(np.min(histData[:,0])/100.0)):
         #must be the To or Tc, so subtract int(min) and add to x-axis label
         #doing this as it doesn't go well allowing matplotlib to do it itself formatting wise
@@ -147,9 +145,9 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
         if np.max(histData[:,0])<0.02:
             histData[:,0]=histData[:,0]*(const.KGperMsun/const.KGperMjupiter)
             valRange = np.max(histData[:,0])-np.min(histData[:,0])
-            xLabel='M2 [Mjupiter]'
+            xLabel='m2 [Mjupiter]'
             if latex:
-                xLabel='$M_2$ [$M_{J}$]'
+                xLabel='$m_2$ [$M_{J}$]'
             confLevels=confLevels*(const.KGperMsun/const.KGperMjupiter)
     if (np.max(histData[:,0])>100000) or (valRange<(np.min(histData[:,0])/100.0)):
         #must be the To or Tc, so subtract int(min) and add to x-axis label
@@ -288,7 +286,7 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
     if type(outputDataFilenames)!=list:
         outputDataFilenames = [outputDataFilenames]
     
-    #colorsList =['Red','DarkGreen','Blue','Black','Purple','Fuchsia','Crimson','Aqua','Gold','OrangeRed','Plum','Chartreuse','Chocolate','Teal','Salmon','Brown']
+    colorsList =['Blue','Red','Black','Chocolate','Purple','Fuchsia','Crimson','Aqua','Gold','OrangeRed','Plum','Chartreuse','Chocolate','Teal','Salmon','Brown']
     colorsList2 = []
     while len(outputDataFilenames)>len(colorsList2):
         for color in colorsList:
@@ -740,7 +738,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         #pad by 5%
         xLimsFull = (xLims[0]-(xLims[1]-xLims[0])*0.05,xLims[1]+(xLims[1]-xLims[0])*0.05)
         yLimsFull = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)     
-        print 'Full DI plot ranges: '+repr(xLimsFull[1]-xLimsFull[0])+' X '+repr(yLimsFull[1]-yLimsFull[0])
+        #print 'Full DI plot ranges: '+repr(xLimsFull[1]-xLimsFull[0])+' X '+repr(yLimsFull[1]-yLimsFull[0])
         xLims = (xmin,xmax)
         yLims = (ymin,ymax)
         #force these to be square
@@ -753,7 +751,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         #pad by 5%
         xLimsCrop = (xLims[0]-(xLims[1]-xLims[0])*0.05,xLims[1]+(xLims[1]-xLims[0])*0.05)
         yLimsCrop = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)
-        print 'cropped DI plot ranges: '+repr(xLimsCrop[1]-xLimsCrop[0])+' X '+repr(yLimsCrop[1]-yLimsCrop[0])
+        #print 'cropped DI plot ranges: '+repr(xLimsCrop[1]-xLimsCrop[0])+' X '+repr(yLimsCrop[1]-yLimsCrop[0])
         ## FLIP X-AXIS to match backawards Right Ascension definition
         a = main.axis()
         main.axis([a[1],a[0],a[2],a[3]])

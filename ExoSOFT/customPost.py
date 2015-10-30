@@ -43,39 +43,38 @@ def customPost():
                         allFname = strippedAllFname
         
     ## find best fit
-    if False:
+    if True:
         if os.path.exists(allFname):
             bestFit = tools.findBestOrbit(allFname)
     else:
-        bestFit = np.array([  1.13180350e+00,   2.68532490e-01,   3.74386560e+01,
-                         2.45377958e+02,   3.77452530e-01,   2.45234682e+06,
-                         2.45234682e+06,   2.09473056e+01,   1.59792230e+02,
-                         3.50313383e+02,   8.50107500e+00,   7.18302194e+01,
-                         8.64670523e+02,   6.19351313e+03,   3.81532493e+02,
-                         6.32362381e+03])
+        bestFit = np.array([  1.08516940e+00,   9.86617236e-04,   4.85701122e+01,
+                     1.01827347e+02,   4.10252219e-02,   2.45073957e+06,
+                     2.45073957e+06,   1.20762039e+01,   4.57744546e+01,
+                     2.57947523e+01,   5.41039136e+00,   2.60726725e+01,
+                     8.69376155e+00,  -8.76996105e-02])
         
     #effPtsStr = tools.mcmcEffPtsCalc(allFname)
     
     if False:
         ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
         ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
-        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5-0mult-1pt5thk-')
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5-0mult-1thk-')
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=1.5)
-        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5-10mult-3thk-')
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=10,diLnThk=3)
-        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5-0mult-3thk-')
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=3)
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.5],[-0.8,0.8],[-0.515,0.515]],diErrMult=0,diLnThk=1)
+        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5-10mult-3thk-')
+        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=10,diLnThk=3)
+        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5-0mult-3thk-')
+       # tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=3)
         
     clStr=''
-    if False:
+    if True:
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-5')
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
         #for fake jupiter
-        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.1],[0.5,1.7],[-0.005,0.125],[37,53]],bestVals=[1.0,1.0,0.048,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.01],[0.5,1.7],[-0.00,0.1],[39,56]],bestVals=[1.0,1.0,0.048,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
         #for HIP10321
-        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,13,14,15],xLims=[[0.51,1.5],[0.15,0.59],[0.36,0.40],[20.5,21.5],[35,40],[150,175],[240,250],[345,355],[6140,6250],[350,450],[6250,6400]],bestVals=[1.098,0.274,0.378,20.98,37.63,160.44,245.26,350.33,6195.30,383.03,6323.40],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-    if True: 
+        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,13,14,15],xLims=[[0.51,1.5],[0.15,0.59],[0.36,0.40],[20.5,21.5],[35,40],[150,175],[240,250],[345,355],[6140,6250],[350,450],[6250,6400]],bestVals=[1.098,0.274,0.378,20.98,37.63,160.44,245.26,350.33,6195.30,383.03,6323.40],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+    if False: 
         plotFilename = os.path.join(settingsDict['finalFolder'],'densityPlot-3')
         #ranges=[[xMin,xMax],[yMin,yMax]]
         tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.098,0.274],ranges=[[0.88,1.45],[0.19,0.43]])
@@ -136,8 +135,8 @@ def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-5percent-startAtBest-lowEccTrue-newPriors-gaussParallax/combined-BIstripped-MCMCdata.fits')
     outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-1percent-startAtBest-lowEccTrue-newPriors-gaussParallax/combined-BIstripped-MCMCdata.fits')
     
-    plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosteriors3-lowEccTrue')
-    tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[1,4,8],xLims=[[0.55,1.8],[-0.005,0.125],[28,61]])
+    plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosteriors4-lowEccTrue')
+    tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[1,4,8],xLims=[[0.65,1.65],[-0.00,0.10],[29.5,60.5]])
     #tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[])
     #print 'Final stacked plot file written to:\n'+plotFilename
     if True:

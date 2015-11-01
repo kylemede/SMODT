@@ -56,7 +56,7 @@ def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, norme
         print "output dat file:\n"+outFilename
 
 
-def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='k',xLims=False,latex=False,showYlabel=False,parInt=0):
+def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='k',xLims=False,latex=False,showYlabel=False,parInt=0,centersOnly=False):
     """
     Loads previously plotted histograms that were written to disk by histPlotAndDump, and plot them up 
     in a way that is ready for publication.  This version is to plot a posterior of the same parameter 
@@ -73,7 +73,7 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
     maxN = np.max(histData[:,1])
     minSub = 0
     valRange = np.max(histData[:,0])-np.min(histData[:,0])
-    ## check if M2 and if it should be in jupiter masses
+    ## check if m2 and if it should be in jupiter masses
     if parInt==1:
         if np.max(histData[:,0])<0.02:
             histData[:,0]=histData[:,0]*(const.KGperMsun/const.KGperMjupiter)
@@ -91,9 +91,13 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
     # load up list of x,y values for tops of bins
     for i in range(0,histData.shape[0]):
         ys.append(histData[i][1]/maxN)
-        ys.append(histData[i][1]/maxN)
-        xs.append(histData[i][0]-halfBinWidth)
-        xs.append(histData[i][0]+halfBinWidth)
+        if centersOnly:
+            xs.append(histData[i][0]-halfBinWidth)
+        else:
+            ys.append(histData[i][1]/maxN)
+            xs.append(histData[i][0]-halfBinWidth)
+            xs.append(histData[i][0]+halfBinWidth)
+        
     plot.plot(xs,ys,color=lineColor,linewidth=2)
     plot.axes.set_ylim([0.0,1.02])
     if xLims!=False:
@@ -261,7 +265,7 @@ def addDIdataToPlot(subPlot,realData,asConversion,errMult=0,thkns=1.0):
         subPlot.plot([xCent,xCent],[btm-hfHgt,top+hfHgt],linewidth=thkns,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])
 
-def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[],stage='MCMC'):
+def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[],stage='MCMC',centersOnly=False):
     """
     This will plot a simple posterior distribution for each parameter in the data files
     stacked ontop of each other for comparison between different runs.
@@ -274,7 +278,7 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
     file to ensure all are stacked on same subplot properly.  
     NOTE: might be able to extract doubled code to clean things up...
     """
-    log.setStreamLevel(lvl=10)
+    log.setStreamLevel(lvl=30)
     latex=True
     plotFormat = 'eps'   
     plt.rcParams['ps.useafm']= True
@@ -375,8 +379,9 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
                         histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i])
                     if os.path.exists(histDataBaseName+'.dat'):
                         log.debug("plotting file:\n"+histDataBaseName)
-                        print str(len(colorsList))+' < '+str(colorInt)
-                        subPlot = histLoadAndPlot_StackedPosteriors(subPlot,outFilename=histDataBaseName,xLabel=paramStrs[i],lineColor=colorsList[colorInt],xLims=xLim,latex=latex,showYlabel=showYlabel,parInt=par)
+                        if colorInt>len(colorsList):
+                            log.warning("More plots requested than colors available in colorsList!! "+str(len(colorsList))+' < '+str(colorInt))
+                        subPlot = histLoadAndPlot_StackedPosteriors(subPlot,outFilename=histDataBaseName,xLabel=paramStrs[i],lineColor=colorsList[colorInt],xLims=xLim,latex=latex,showYlabel=showYlabel,parInt=par,centersOnly=centersOnly)
                     else:
                         log.debug("Not plotting hist for "+paramStrs2[i]+" as its hist file doesn't exist:\n"+histDataBaseName)
                     colorInt+=1
@@ -1075,8 +1080,9 @@ def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
     two_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.95))
     three_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.997))
     four_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.99994))
+    #five_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.999999426))
     levels3sigs = [three_sigma,two_sigma,one_sigma]
-    levels7lvls = [three_sigma, two_sigma, one_sigma, oneHalf_sigma, oneQuarter_sigma, ptone_sigma,tiny_sigma]
+    levels7lvls = [four_sigma,three_sigma, two_sigma, one_sigma, oneHalf_sigma, oneQuarter_sigma, ptone_sigma]
     c = []
     for i in range(len(levels3sigs)+1):
         c.append('k')
@@ -1084,16 +1090,24 @@ def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
 
     X, Y, Z = 0.5*(xedges[1:]+xedges[:-1]), 0.5*(yedges[1:]+yedges[:-1]), pdf.T
     if ax == None:
+        #main contour with grey levels
         contour = plt.contourf(X, Y, Z, levels=levels7lvls,origin="lower",cmap=cm.Greys,alpha=1)
-        contour = plt.contourf(X, Y, Z, levels=[tiny_sigma,ptone_sigma],origin="lower", cmap=black_cmap)
+        #to fill center in black
+        contour = plt.contourf(X, Y, Z, levels=[ptone_sigma,tiny_sigma],origin="lower", cmap=black_cmap)
+        #add lines for 1-2-3sigmas
         contour = plt.contour(X, Y, Z, levels=levels3sigs, origin="lower", cmap=black_cmap,linewidths=3,linestyles='dashed')
+        #Plot lines for best values
         if bests!=None:
             contour = plt.plot([X.min(),X.max()], [bests[0],bests[0]],linewidth=3,color='blue')
             contour = plt.plot([bests[1],bests[1]],[Y.min(),Y.max()],linewidth=3,color='blue')
     else:
+        #main contour with grey levels
         contour = ax.contourf(X, Y, Z, levels=levels7lvls,origin="lower",cmap=cm.Greys,alpha=1)
-        contour = ax.contourf(X, Y, Z, levels=[tiny_sigma,ptone_sigma],origin="lower", cmap=black_cmap)
+        #to fill center in black
+        contour = ax.contourf(X, Y, Z, levels=[ptone_sigma,tiny_sigma],origin="lower", cmap=black_cmap)
+        #add lines for 1-2-3sigmas
         contour = ax.contour(X, Y, Z, levels=levels3sigs, origin="lower", cmap=black_cmap,linewidths=3,linestyles='dashed')
+        #Plot lines for best values
         if bests!=None:
             contour = ax.plot([X.min(),X.max()], [bests[1],bests[1]],linewidth=3,color='blue')
             contour = ax.plot([bests[0],bests[0]],[Y.min(),Y.max()],linewidth=3,color='blue')

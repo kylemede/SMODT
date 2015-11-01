@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (40000000,"Number of MCMC or MC samples"),
+'nSamples' : (70000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "JUPITER2-3D-MCMC-1percent-lowEcc-OctPriors-gaussPara",
+'outRoot' : "JUPITER2-3D-MCMC-1percent-lowEcc-OctPriors-gaussPara-long",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),

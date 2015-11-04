@@ -1065,24 +1065,26 @@ def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
     import matplotlib.cm as cm
     from matplotlib.colors import from_levels_and_colors
     ## get data for 2D hist and a pdf from it
+    print 'np.median(xdata) = '+repr(np.median(xdata))
+    print 'np.median(ydata) = '+repr(np.median(ydata))
     H, xedges, yedges = np.histogram2d(xdata, ydata, bins=nbins,range=ranges, normed=True)
     x_bin_sizes = (xedges[1:] - xedges[:-1]).reshape((1,nbins))
     y_bin_sizes = (yedges[1:] - yedges[:-1]).reshape((nbins,1))
-    H = ndimage.gaussian_filter(H, sigma=2)
+    H = ndimage.gaussian_filter(H, sigma=1)
     pdf = (H*(x_bin_sizes*y_bin_sizes))
     
     ## find contour levels and make color maps
-    tiny_sigma= so.brentq(densConfInt, 0., 1., args=(pdf, 0.001))
-    ptone_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.080))
-    oneQuarter_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.197))
-    oneHalf_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.383))
+    tiny_sigma= so.brentq(densConfInt, 0., 1., args=(pdf, 0.0001))
+    #ptone_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.080))
+    #oneQuarter_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.197))
+    #oneHalf_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.383))
     one_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.68))
     two_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.95))
     three_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.997))
     four_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.99994))
     #five_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.999999426))
     levels3sigs = [three_sigma,two_sigma,one_sigma]
-    levels7lvls = [four_sigma,three_sigma, two_sigma, one_sigma, oneHalf_sigma, oneQuarter_sigma, ptone_sigma]
+    #levels7lvls = [four_sigma,three_sigma, two_sigma, one_sigma, oneHalf_sigma, oneQuarter_sigma, ptone_sigma]
     c = []
     for i in range(len(levels3sigs)+1):
         c.append('k')
@@ -1090,10 +1092,10 @@ def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
 
     X, Y, Z = 0.5*(xedges[1:]+xedges[:-1]), 0.5*(yedges[1:]+yedges[:-1]), pdf.T
     if ax == None:
-        #main contour with grey levels
-        contour = plt.contourf(X, Y, Z, levels=levels7lvls,origin="lower",cmap=cm.Greys,alpha=1)
-        #to fill center in black
-        contour = plt.contourf(X, Y, Z, levels=[ptone_sigma,tiny_sigma],origin="lower", cmap=black_cmap)
+        # Lots of color map choices at (http://matplotlib.org/users/colormaps.html) and note that most have a reversed version by adding '_r' to the end.
+        #possible choices suitable here are: YlGnBu, Blues, PuBuGn, PuBu, afmhot_r, copper_r
+        #main contour
+        contour = plt.contourf(X, Y, np.log(Z+1e-10),levels=np.linspace(np.log(four_sigma),np.log(tiny_sigma),50),origin="lower",cmap=cm.afmhot_r)
         #add lines for 1-2-3sigmas
         contour = plt.contour(X, Y, Z, levels=levels3sigs, origin="lower", cmap=black_cmap,linewidths=3,linestyles='dashed')
         #Plot lines for best values
@@ -1101,10 +1103,8 @@ def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
             contour = plt.plot([X.min(),X.max()], [bests[0],bests[0]],linewidth=3,color='blue')
             contour = plt.plot([bests[1],bests[1]],[Y.min(),Y.max()],linewidth=3,color='blue')
     else:
-        #main contour with grey levels
-        contour = ax.contourf(X, Y, Z, levels=levels7lvls,origin="lower",cmap=cm.Greys,alpha=1)
-        #to fill center in black
-        contour = ax.contourf(X, Y, Z, levels=[ptone_sigma,tiny_sigma],origin="lower", cmap=black_cmap)
+        #main contour
+        contour = ax.contourf(X, Y, np.log(Z+1e-10),levels=np.linspace(np.log(four_sigma),np.log(tiny_sigma),50),origin="lower",cmap=cm.afmhot_r)
         #add lines for 1-2-3sigmas
         contour = ax.contour(X, Y, Z, levels=levels3sigs, origin="lower", cmap=black_cmap,linewidths=3,linestyles='dashed')
         #Plot lines for best values

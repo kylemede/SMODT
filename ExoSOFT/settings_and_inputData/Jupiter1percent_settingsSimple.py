@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "JUPITER2-3D-MCMC-1percent-lowEcc-OctPriors-gaussPara-long",
+'outRoot' : "JUPITER2-3D-MCMC-1percent-lowEcc-OctPriors-gaussPara-strtAtEnd-long3",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -31,9 +31,9 @@ simpleSettingsDict={
 'mass2MAX' : 0.0015,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 39.00,
-'paraMAX' : 59.00,
+'paraMAX' : 60.5,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-'OmegaMIN' : 90.0,
+'OmegaMIN' : 95.0,
 'OmegaMAX' : 105.0,
 # Minimum/Maximum allowed value for the Eccentricity [double]
 'eMIN' : 0.03,
@@ -46,10 +46,10 @@ simpleSettingsDict={
 'PMIN' : 11,
 'PMAX' : 13.0,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 20,
+'incMIN' : 40,
 'incMAX' : 50.0,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : 5,
+'omegaMIN' : 9,
 'omegaMAX' : 25,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,

@@ -27,6 +27,7 @@ def pPriorRatio(Pproposed,Plast):
             return 1.0
     else:
         return 1.0
+    
 def incPriorRatio(incProposed,incLast):
     if simpleSettingsDict['incMAX']!=0:
         if (incLast%90.0)!=0:
@@ -57,17 +58,17 @@ def mass2PriorRatio(MProposed,MLast):
             return 1.0
     else:
         return 1.0
+    
 def paraPriorRatio(paraProposed,paraLast):
     if paraProposed!=paraLast!=simpleSettingsDict['paraMAX']!=0:
-        if False:
-            return (paraLast**2.0)/(paraProposed**2.0)
-        elif True:
+        ratioA = (paraLast**4.0)/(paraProposed**4.0)
+        ratioB = 1.0
+        if advancedDict['paraEst'][0]!=0:
             ## a Gaussian prior centered on hipparcos and width of hipparcos estimated error
             top = gaussian(paraProposed, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
             btm = gaussian(paraLast, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
-            return top/btm
-        else:
-            return 1.0
+            ratioB = top/btm
+        return ratioA*ratioB
     else:
         return 1.0
     
@@ -110,7 +111,7 @@ advancedDict = {
 # make plots of RV and DI/AM orbit fits [bool]
 'pltOrbit' :True,
 # Delete chain files after simulation is complete? [bool]
-'delChains' :True,
+'delChains' :False,
 # Delete combined data files after simulation is complete? [bool]
 'delCombined' :False,
 # run 'make' on C++/SWIG code to make sure it is up-to-date [bool]
@@ -130,14 +131,14 @@ advancedDict = {
 'rmBurn' : (True,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 # NOTE: CAUTION, can take a long time for long runs.  Still needs to be sped up somehow.
-'calcCL' :False,
+'calcCL' :True,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(1500000,"Num SA samples"),
+'nSAsamp' :(1000000,"Num SA samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (500.0,"SA start temp."),
+'strtTemp' : (300.0,"SA start temp."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
-'strtSig' : (0.15,"start percent param range for SA"),
+'strtSig' : (0.08,"start percent param range for SA"),
 # Number of samples till temperature drop. [int]
 # Allowed vals [1,nSAsamp), Ideal is ~50.
 'tempInt'  : (50,"Num steps till temp drops in SA."),
@@ -156,7 +157,7 @@ advancedDict = {
 # Interval of saved values before write/dump the data to disk to avoid consuming too much RAM during long runs. They take 11MB/100000.
 'dmpInt'   : 100000,
 # Start MCMC at the best params from the ST stage? [bool]
-'strBest' : (True,"Start MCMC at best fit params from ST"),
+'strBest' : (False,"Start MCMC at best fit params from ST"),
 ## NOTE: progress plots have no code yet, so MUST be False!!!
 # Make plots of MCMC progress plots? [bool]  
 'pltMCMCprog' :False,
@@ -188,9 +189,10 @@ advancedDict = {
 ## Special settings DI model:
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
 'omegaPdi' : (0.0,"Custom fixed val added to DI omega in model"),
-######################
-# System Information #
-######################
+############################
+#    System Information    #
+# ONLY FOR GAUSSIAN PRIORS #
+############################
 #best estimate of primary's mass, and error [double][Msun]
 'mass1Est' : (0.0,"Primary's estimated mass"),
 'mass1Err' : (0.0,"Primary's estimated mass error"),
@@ -210,7 +212,6 @@ advancedDict = {
 'M2Prior':(True,'Use prior for m2?',mass2PriorRatio),
 'parPrior' :(True,'Use prior for parallax?',paraPriorRatio),
 }
-
 
 def gaussian(x,mu,sig):
     return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))

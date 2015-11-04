@@ -132,12 +132,12 @@ advancedDict = {
 # NOTE: CAUTION, can take a long time for long runs.  Still needs to be sped up somehow.
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(1500000,"Num SA samples"),
+'nSAsamp' :(2000000,"Num SA samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (500.0,"SA start temp."),
+'strtTemp' : (300.0,"SA start temp."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
-'strtSig' : (0.15,"start percent param range for SA"),
+'strtSig' : (0.08,"start percent param range for SA"),
 # Number of samples till temperature drop. [int]
 # Allowed vals [1,nSAsamp), Ideal is ~50.
 'tempInt'  : (50,"Num steps till temp drops in SA."),
@@ -156,7 +156,7 @@ advancedDict = {
 # Interval of saved values before write/dump the data to disk to avoid consuming too much RAM during long runs. They take 11MB/100000.
 'dmpInt'   : 100000,
 # Start MCMC at the best params from the ST stage? [bool]
-'strBest' : (True,"Start MCMC at best fit params from ST"),
+'strBest' : (False,"Start MCMC at best fit params from ST"),
 ## NOTE: progress plots have no code yet, so MUST be False!!!
 # Make plots of MCMC progress plots? [bool]  
 'pltMCMCprog' :False,
@@ -188,9 +188,10 @@ advancedDict = {
 ## Special settings DI model:
 # force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
 'omegaPdi' : (0.0,"Custom fixed val added to DI omega in model"),
-######################
-# System Information #
-######################
+############################
+#    System Information    #
+# ONLY FOR GAUSSIAN PRIORS #
+############################
 #best estimate of primary's mass, and error [double][Msun]
 'mass1Est' : (0.0,"Primary's estimated mass"),
 'mass1Err' : (0.0,"Primary's estimated mass error"),

@@ -11,7 +11,7 @@ public:
 	//internal params
 	int i,i_last,j,n,colNum;
 	double s,ep;
-	double ave,var,sum;
+	double ave,var,sum,Sx,Sxx,x;
 	double varALL,halfVarALL,numCorrLengths,corrLengthsTotal;
 	//input data ary
 	double* data;

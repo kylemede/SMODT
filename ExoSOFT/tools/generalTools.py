@@ -13,106 +13,45 @@ import pyfits
 import warnings
 warnings.simplefilter("error")
 
-log = exoSOFTlogger.getLogger('main.genTools',lvl=100,addFH=False)
-    
-def corrLengthCalcVar(paramIN):
-    """
-    This version uses np.var
-    This is the most ideal way to calculate the correlation length, instead of the std based version.
-    
-    This function will calculate the mean correlation length and return its value.
-    This is equal to the number of steps it takes for the variance to equal half of the total chain's variance.
-    This is done in a loop, calculating it in an end-to-end fashion with the result being the mean of those 
-    correlation lengths.  
-    
-    :param paramIN:     parameter array after burn in data stripped
-    :type paramIN:      array (list) of doubles
-    """
-    verbose = False
-    if verbose:
-        print "Entered corrLengthCalcVar"
-    try:
-        varALL = np.var(paramIN)
-        if verbose:
-            print 'varALL = '+str(varALL)
-    except:
-        useless=0
-    #print 'varALL = '+str(varALL)
-    halfVarALL = varALL/2.0
-    CorrLength = meanCorrLength = len(paramIN)
-    varCur=0
-    
-    if paramIN[0]==paramIN[-1]:
-        if verbose:
-            print 'First and last parameters were the same, so returning a length of the input array.'
-        CorrLength=meanCorrLength=len(paramIN)
-    else:
-        startLoc = 0
-        corrLengths = []
-        notFinished=True
-        while notFinished:
-            i = startLoc
-            while i<(len(paramIN)+1):
-                i+=1
-                if i>=len(paramIN):
-                    #hit the end, so stop
-                    notFinished=False
-                    break
-                try:
-                    varCur = np.var(paramIN[startLoc:i])
-                    if verbose:
-                        print 'varCur = '+str(varCur)
-                except:
-                    useless=1
-                if varCur>halfVarALL:
-                    CorrLength = i-startLoc
-                    corrLengths.append(CorrLength)
-                    if verbose:
-                        print 'CorrLength = '+str(CorrLength)
-                    startLoc = i
-                    break
-        if (startLoc==0)and(CorrLength == len(paramIN)):
-            print "PROBLEM: Param had a correlation length equal to param length, ie. the chain never burned in"
-        meanCorrLength = int(np.mean(corrLengths))
-    if verbose:
-        print 'mean Correlation length found to be = ',meanCorrLength
-        print "Leaving corrLengthCalcVar"
-    return meanCorrLength    
+log = exoSOFTlogger.getLogger('main.genTools',lvl=100,addFH=False)  
     
 def mcmcEffPtsCalc(outputDataFilename):
     """
-    Calculate correlation length and the number of effective steps for each parameter 
+    Calculate average correlation length and the number of effective steps for each parameter 
     that was varying during the simulation.  The results are put into the log.
+    
+    Using Correlation Length based on Tegmark2004.  This is the number of steps until the 
+    variance (aka correlation) is half that of the total chain.  We perform this in a "box car"
+    style that starts calculating it again on the step just after the previously found correlation 
+    length step.  This way it produces an average value that is more reliable.
     """
     log.info("Starting to calculate correlation lengths")
     (head,data) = loadFits(outputDataFilename)
     numSteps = data.shape[0]
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
-    ### Make post tools cpp obj
-    #PostCTools = cppTools.PostCtools()
-    #dataC = []
-    #for i in range(0,numSteps):
-    #    dataC.append(data[i,:])
-    #dataC=np.array(dataC,dtype=np.dtype('d'),order='C')
-    #PostCTools.loadParamData(dataC)
-    
-    completeStr = '\n'+'-'*45+'\nThe correlation lengths of all params are:\n'+'-'*45+'\nparam #, param name, correlation length'
-    completeStr+= ' -> total number of steps/correlation length = number of effective points\n'
-    for i in range(0,len(paramList)):
-        #print 'starting to calculate corr length for '+paramStrs[paramList[i]]+' with CPP'
-        #tic=timeit.default_timer()
-        #meanCorrLengthC = PostCTools.corrLenCalc(paramList[i])
-        #print 'meanCorrLengthC = '+str(meanCorrLengthC)
-        #print 'it took: '+timeStrMaker(timeit.default_timer()-tic)
-        log.debug('starting to calculate corr length for '+paramStrs[paramList[i]]+' with Python')
-        tic=timeit.default_timer()
-        meanCorrLength = corrLengthCalcVar(data[:,paramList[i]])
-        log.debug('it took: '+timeStrMaker(timeit.default_timer()-tic))
-        currParamStr = str(paramList[i])+', '+paramStrs[paramList[i]]+", "+str(meanCorrLength)
-        currParamStr+=    ' -> '+str(numSteps)+'/'+str(meanCorrLength)+' = '+str(numSteps/meanCorrLength)+'\n'
-        completeStr+=currParamStr
-        log.debug(currParamStr)
-    log.debug(completeStr)
+    completeStr=""
+    try:
+        ## Make post tools cpp obj
+        PostCTools = cppTools.PostCtools()
+        dataC = []
+        for i in range(0,numSteps):
+            dataC.append(data[i,:])
+        dataC=np.array(dataC,dtype=np.dtype('d'),order='C')
+        PostCTools.loadParamData(dataC)
+        
+        completeStr+= '\n'+'-'*45+'\nThe mean correlation lengths of all params are:\n'+'-'*45+'\nparam #, param name, mean correlation length'
+        completeStr+= ' -> total # of steps/mean correlation length = number of effective points\n'
+        for i in range(0,len(paramList)):
+            log.debug( "*"*60+"\n"+'starting to mean calculate corr length for '+paramStrs[paramList[i]]+' with CPP')
+            #Call CPP tool to calculate average correlation length.
+            meanCorrLength = PostCTools.corrLenCalc(paramList[i])
+            currParamStr = str(paramList[i])+', '+paramStrs[paramList[i]]+", "+str(meanCorrLength)
+            currParamStr+=    ' -> '+str(numSteps)+'/'+str(meanCorrLength)+' = '+str(numSteps/meanCorrLength)+'\n'
+            completeStr+=currParamStr
+            log.debug(currParamStr)
+        log.debug(completeStr)
+    except:
+        log.error("An error occurred when trying to calculate the correlation lengths, # effective steps")
     return completeStr
 
 def burnInCalc(mcmcFnames,combinedFname):

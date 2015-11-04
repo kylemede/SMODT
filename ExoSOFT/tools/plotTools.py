@@ -44,6 +44,13 @@ def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, norme
     subPlot = fig.add_subplot(111)
     ##numpy.histogram(a, bins=10, range=None, normed=False, weights=None, density=None) ##with density=True giving the probability distribution back
     (n,bins,rectangles)=subPlot.hist(data, bins=nbins, normed=False, weights=theWeights,linewidth=7,histtype=histType,log=logY, fill=False)
+    (hst,bin_edges) = np.histogram(data,bins=nbins,normed=False,weights=theWeights,density=None)
+    print 'from matplotlib hist:'
+    print 'n = '+repr(n)
+    print 'bins = '+repr(bins)
+    print 'from numpy histogram:'
+    print 'hst = '+repr(hst)
+    print 'bin_edges = '+repr(bin_edges)
     #find center of bins
     if type(bins)!=np.ndarray:
         bins = np.array(bins)

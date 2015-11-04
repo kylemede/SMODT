@@ -201,7 +201,6 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
             log.critical("Gelman-Rubin stat can NOT be calculated as file does not exist!!:\n"+chainDataFileList[0])
     except:
         log.critical("Gelman-Rubin stat FAILED to be calculated for some reason")
-    
     return (GRs,Ts,grStr)
 
 def timeStrMaker(deltaT):
@@ -731,7 +730,7 @@ def summaryFilePart2(settingsDict,effPtsStr,allTime,postTime):
     f = open(summaryFname,'a')
     f.write('\n\nPost-Processing took: '+timeStrMaker(postTime)+'\n')
     f.write('Total simulation took: '+timeStrMaker(allTime)+'\n')
-    f.write('\n'+effPtsStr)
+    f.write('\n'+effPtsStr+'\n\nEND OF RESULTS :-D')
     f.close()
     log.info("Summary file written to:\n"+summaryFname)
     

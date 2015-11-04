@@ -39,7 +39,7 @@ double PostCtools::varianceCalc(int startPoint, int lastPoint)
 	 * and uses an advanced "corrected two-pass algorithm" to reduce roundoff error,
 	 * a modified version of function on pg 728 of Numerical Recipes 3rd.
 	 */
-	n=lastPoint+1;//add 1 to lastPoint to make it 1 indexed, instead of zero indexed
+	n=lastPoint;
 	meanCalc(startPoint,lastPoint);
 	var=ep=0.0;
 	if (n>1){
@@ -50,7 +50,6 @@ double PostCtools::varianceCalc(int startPoint, int lastPoint)
 			ep+=s;
 			var+=s*s;
 		}
-		//calc var and return it
 		var=(var-ep*ep/n)/(n-1);
 	}
 	return var;

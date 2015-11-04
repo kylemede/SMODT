@@ -40,8 +40,8 @@ class singleProc(Process):
         
     def run(self):
         #$$$$$$$$$$$$$$$$$$$$$$$ TEMP $$$$$$$$$$$$$$$$$$$$$$$$$$
-        bestRedChiSqrSA=1.0
-        bestRedChiSqrST=1.0
+        #bestRedChiSqrSA=1.0
+        #bestRedChiSqrST=1.0
         #$$$$$$$$$$$$$$$$$$$$$$$ TEMP $$$$$$$$$$$$$$$$$$$$$$$$$$
         
         ## run each requested stage
@@ -83,8 +83,8 @@ def exoSOFT():
     ##################################     
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ##IDEA: could call the set of processes to only perform one stage at a time
-    ##     Then choose the best output from all of them as the start of the next
-    ##     stage.  good idea???
+    ##      Then choose the best output from all of them as the start of the next
+    ##      stage.  good idea???
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     tic=timeit.default_timer()
     ##make list of stages to run
@@ -95,7 +95,6 @@ def exoSOFT():
         stageList = ['SA']
     elif settingsDict['symMode'][0]=='MCMC':
         stageList = ['SA','ST','MCMC']
-    #stageList=['MCMC']##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     ## Start the number of processes/chains requested
     master = []
     log.info("Going to start "+str(settingsDict['nChains'][0])+" chains, with each running these stages: "+repr(stageList))
@@ -164,7 +163,7 @@ def exoSOFT():
     if os.path.exists(allFname):
         tools.summaryFilePart1(settingsDict,stageList,allFname,clStr,burnInStr,bestFit,grStr)
     
-    ## progress plots?  INCLUDE?? maybe kill this one.
+    ## progress plots?  INCLUDE?? maybe kill this one. Function exists, but not decided how to use it here.
     
     ## calc correlation length & number effective points? # This one takes a long time for long runs!!!
     effPtsStr = ''

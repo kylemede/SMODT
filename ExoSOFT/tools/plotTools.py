@@ -25,7 +25,7 @@ log = exoSOFTlogger.getLogger('main.plotTools',lvl=100,addFH=False)
 colorsList =['Red','Orange','Purple','Fuchsia','Crimson','Green','Aqua','DarkGreen','Gold','DarkCyan','OrangeRed','Plum','Chartreuse','Chocolate','Teal','Salmon','Brown','Blue']
 
 
-def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, normed=False, nu=1,logY=False,histType='bar'):
+def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, normed=False, nu=1):
     """
     This will make a matplotlib histogram using the input settings, then writing the resulting  
     centers of the bins and number of data points in said bin values to disk, with '.dat' extension
@@ -40,24 +40,14 @@ def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, norme
         theWeights = np.exp(-chiSquareds/2.0)
     else:
         theWeights = np.ones(len(data))      
-    fig = plt.figure(1)
-    subPlot = fig.add_subplot(111)
-    ##numpy.histogram(a, bins=10, range=None, normed=False, weights=None, density=None) ##with density=True giving the probability distribution back
-    (n,bins,rectangles)=subPlot.hist(data, bins=nbins, normed=False, weights=theWeights,linewidth=7,histtype=histType,log=logY, fill=False)
     (hst,bin_edges) = np.histogram(data,bins=nbins,normed=False,weights=theWeights,density=None)
-    print 'from matplotlib hist:'
-    print 'n = '+repr(n)
-    print 'bins = '+repr(bins)
-    print 'from numpy histogram:'
-    print 'hst = '+repr(hst)
-    print 'bin_edges = '+repr(bin_edges)
     #find center of bins
-    if type(bins)!=np.ndarray:
-        bins = np.array(bins)
-    binCenters = (bins[1:]+bins[:-1])/2.0
-    histData=np.zeros((len(n),2))
+    if type(bin_edges)!=np.ndarray:
+        bin_edges = np.array(bin_edges)
+    binCenters = (bin_edges[1:]+bin_edges[:-1])/2.0
+    histData=np.zeros((len(hst),2))
     histData[:,0]=binCenters
-    histData[:,1]=n
+    histData[:,1]=hst
     np.savetxt(outFilename,histData)
     if False:
         print "output dat file:\n"+outFilename
@@ -515,7 +505,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
                     log.debug('Making hist file for parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
                     histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i])
                     #print 'histDataBaseName = '+histDataBaseName
-                    histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1,logY=False,histType='step')
+                    histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1)
                     if (os.path.exists(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
                         np.savetxt(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'),CLevels)
                         log.debug('confidence levels data stored to:\n'+os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+str(i)+'.dat'))

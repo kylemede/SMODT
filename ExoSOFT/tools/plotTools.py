@@ -653,7 +653,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         realDataDI = copy.deepcopy(realData)
         realDataDI = realDataDI[np.where(realDataDI[:,2]<1e6)[0],:]
         ##Make model data for 100~1000 points for plotting fit
-        nPts = 500
+        nPts = 2000
         fakeRealData = np.zeros((nPts,8),dtype=np.dtype('d'),order='C')
         fakeRealData[:,1:5]=1.0
         fakeRealData[:,6]=1e6
@@ -792,16 +792,13 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         ## plot predicted locations for the data points
         if True:
             for i in range(0,len(predictedDataDI[:,0])):
-                main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=9)
+                main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=diLnThk*3)#$$$$$$$$ Place for custimization
                 #print 'plotted point ['+str(predictedDataDI[i,0]*asConversion)+', '+str(predictedDataDI[i,1]*asConversion)+']'
         plotFilenameCrop = plotFnameBase+'-DI-cropped.'+format
         if plotFilenameCrop!='':
             plt.savefig(plotFilenameCrop, dpi=300, orientation=orientStr)
             log.info("DI orbit plot (cropped) saved to:\n"+plotFilenameCrop)
-            
-         ## maybe overlay bigger errors for show, then save full size fig
-         ## Add DI data to plot
-        (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realDataDI,asConversion,errMult=diErrMult,thkns=diLnThk)#$$$$$$$$ Place for custimization
+        # un-crop and save full size            
         main.axes.set_xlim((xLimsFull[1],xLimsFull[0]))
         main.axes.set_ylim(yLimsFull)
         plotFilenameFull = plotFnameBase+'-DI.'+format

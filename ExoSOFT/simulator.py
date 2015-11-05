@@ -382,6 +382,10 @@ class Simulator(object):
                     accept = True
             except:
                 accept = False
+        ## check for all modes to make sure m2 is never >m1
+        if paramsOut[1]>paramsOut[0]:
+            accept = False
+        ## Update counters and strings
         if accept:
             self.acceptCount+=1
             self.acceptBoolAry.append(1)

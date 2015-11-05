@@ -32,7 +32,7 @@ def customPost():
         os.system('make')
         os.chdir(cwd)
         log.debug("-"*45+" Done re-making CPP/SWIG tools "+45*"-")
-    if True:
+    if False:
         completeStr = tools.mcmcEffPtsCalc(allFname)
         print completeStr
 
@@ -87,10 +87,11 @@ def customPost():
         clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.01],[0.5,1.7],[-0.00,0.1],[39,56]],bestVals=[1.0,1.0,0.048,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
         #for HIP10321
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,13,14,15],xLims=[[0.51,1.5],[0.15,0.59],[0.36,0.40],[20.5,21.5],[35,40],[150,175],[240,250],[345,355],[6140,6250],[350,450],[6250,6400]],bestVals=[1.098,0.274,0.378,20.98,37.63,160.44,245.26,350.33,6195.30,383.03,6323.40],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-    if False: 
-        plotFilename = os.path.join(settingsDict['finalFolder'],'densityPlot-4')
+    if True: 
+        plotFilename = os.path.join(settingsDict['finalFolder'],'densityPlot')
         #ranges=[[xMin,xMax],[yMin,yMax]]
-        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.098,0.274],ranges=[[0.88,1.45],[0.19,0.43]])
+        #tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.098,0.274],ranges=[[0.88,1.45],[0.19,0.43]])
+        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.127,0.267],ranges=[[0.3,1.5],[0.17,1.0]])
         #plotFilename = os.path.join(settingsDict['finalFolder'],'cornerPlot-6-gaussFiltered-newSigmaLevels')
         #tools.cornerPlotter(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.098,0.274])
         

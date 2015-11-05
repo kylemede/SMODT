@@ -1062,8 +1062,6 @@ def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
     import matplotlib.cm as cm
     from matplotlib.colors import from_levels_and_colors
     ## get data for 2D hist and a pdf from it
-    print 'np.median(xdata) = '+repr(np.median(xdata))
-    print 'np.median(ydata) = '+repr(np.median(ydata))
     H, xedges, yedges = np.histogram2d(xdata, ydata, bins=nbins,range=ranges, normed=True)
     x_bin_sizes = (xedges[1:] - xedges[:-1]).reshape((1,nbins))
     y_bin_sizes = (yedges[1:] - yedges[:-1]).reshape((nbins,1))
@@ -1108,9 +1106,14 @@ def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
         if bests!=None:
             contour = ax.plot([X.min(),X.max()], [bests[1],bests[1]],linewidth=3,color='blue')
             contour = ax.plot([bests[0],bests[0]],[Y.min(),Y.max()],linewidth=3,color='blue')
+        if True:
+            print 'np.median(xdata) = '+repr(np.median(xdata))
+            print 'np.median(ydata) = '+repr(np.median(ydata))
+            contour = ax.plot([X.min(),X.max()], [np.median(ydata),np.median(ydata)],linewidth=3,color='red')
+            contour = ax.plot([np.median(xdata),np.median(xdata)],[Y.min(),Y.max()],linewidth=3,color='red')
     return contour 
 
-def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],ranges=None,smooth=True):
+def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=None,ranges=None,smooth=True):
     """
     Will create a 2D density contour plot.
     Must pass in ONLY 2 params to plot.
@@ -1182,7 +1185,22 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[]
                 subPlot.axes.set_xlabel(xLabel,fontsize=fsizeX)
                 subPlot.axes.set_ylabel(yLabel,fontsize=fsizeY)
             ## call densityContour func to fill up subplot with density/contour plot
-            subPlot = densityContourFunc(xdata, ydata, nbins, ax=subPlot,ranges=ranges,bests=bestVals)
+            if True:
+                subPlot = densityContourFunc(xdata, ydata, nbins, ax=subPlot,ranges=ranges,bests=bestVals)
+            ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            ##$$$$$$$$$$$$$$$$$$$$$$$ sanity check with a 1/1000 scatter plot $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            if False:
+                subPlot.scatter(xdata[::1000],ydata[::1000],c='green',edgecolors='k')
+                print 'np.median(xdata) = '+repr(np.median(xdata))
+                print 'np.median(ydata) = '+repr(np.median(ydata))
+                subPlot.plot([ranges[0][0],ranges[0][1]], [np.median(ydata),np.median(ydata)],linewidth=3,color='red')
+                subPlot.plot([np.median(xdata),np.median(xdata)],[ranges[1][0],ranges[1][1]],linewidth=3,color='red')
+                subPlot.plot([ranges[0][0],ranges[0][1]], [bestVals[1],bestVals[1]],linewidth=3,color='blue')
+                subPlot.plot([bestVals[0],bestVals[0]],[ranges[1][0],ranges[1][1]],linewidth=3,color='blue')
+                subPlot.axes.set_xlim((ranges[0][0],ranges[0][1]))
+                subPlot.axes.set_ylim((ranges[1][0],ranges[1][1]))
+            ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             
             ## Save file if requested.
             log.debug('\nStarting to save density contour figure:')

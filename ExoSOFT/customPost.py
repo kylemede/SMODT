@@ -68,16 +68,18 @@ def customPost():
         
     #effPtsStr = tools.mcmcEffPtsCalc(allFname)
     
-    if False:
+    if True:
         ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
         ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
-        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5-0mult-1thk-')
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-0mult-1thk-')
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
         tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.5],[-0.8,0.8],[-0.515,0.515]],diErrMult=0,diLnThk=1)
-        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5-10mult-3thk-')
-        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=10,diLnThk=3)
-        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5-0mult-3thk-')
-       # tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=3)
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-1mult-1thk-')
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.5],[-0.8,0.8],[-0.515,0.515]],diErrMult=1,diLnThk=1)
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-10mult-3thk-')
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=10,diLnThk=3)
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-0mult-3thk-')
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=3)
         
     clStr=''
     if False:
@@ -87,7 +89,7 @@ def customPost():
         clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.01],[0.5,1.7],[-0.00,0.1],[39,56]],bestVals=[1.0,1.0,0.048,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
         #for HIP10321
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,13,14,15],xLims=[[0.51,1.5],[0.15,0.59],[0.36,0.40],[20.5,21.5],[35,40],[150,175],[240,250],[345,355],[6140,6250],[350,450],[6250,6400]],bestVals=[1.098,0.274,0.378,20.98,37.63,160.44,245.26,350.33,6195.30,383.03,6323.40],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-    if True: 
+    if False: 
         plotFilename = os.path.join(settingsDict['finalFolder'],'densityPlot')
         #ranges=[[xMin,xMax],[yMin,yMax]]
         #tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.098,0.274],ranges=[[0.88,1.45],[0.19,0.43]])

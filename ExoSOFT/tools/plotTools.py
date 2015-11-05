@@ -233,13 +233,13 @@ def addRVdataToPlot(subPlot,epochsORphases,RVs,RVerrs,datasetInts=[],alf=1.0,col
             subPlot.plot(epochsORphases[i],RVs[i],c=clr,marker='.',markersize=9)
     return subPlot
 
-def addDIdataToPlot(subPlot,realData,asConversion,errMult=0,thkns=1.0):
+def addDIdataToPlot(subPlot,realData,asConversion,errMult=1.0,thkns=1.0):
     """
     To plot a '+' for each data point with width and height matching the errors converted 
     to x,y coords.
     NOTE:
     errMult is a multiplier of the horizontal and vertical error lengths.  
-    A value of '1' would double the error lengths.
+    A value of '1' would original size the error lengths, '2' would be double.
     """
     ## copy realData and kill off parts where DI errors are 1e6
     diData = copy.deepcopy(realData)
@@ -248,18 +248,19 @@ def addDIdataToPlot(subPlot,realData,asConversion,errMult=0,thkns=1.0):
     xmax = np.max(diData[:,1]+diData[:,2])*asConversion
     ymin = np.min(diData[:,3]-diData[:,4])*asConversion
     ymax = np.max(diData[:,3]+diData[:,4])*asConversion
-    for i in range(0,diData.shape[0]):
-        xCent = diData[i,1]*asConversion
-        yCent = diData[i,3]*asConversion
-        #print 'data [x,y] = ['+str(xCent/asConversion)+', '+str(yCent/asConversion)+']'#$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-        left = xCent-diData[i,2]*asConversion
-        right = xCent+diData[i,2]*asConversion
-        top = yCent+diData[i,4]*asConversion
-        btm = yCent-diData[i,4]*asConversion
-        hfWdth = abs(right-left)*errMult*0.5
-        hfHgt = abs(top-btm)*errMult*0.5
-        subPlot.plot([left-hfWdth,right+hfWdth],[yCent,yCent],linewidth=thkns,color='k',alpha=1.0)
-        subPlot.plot([xCent,xCent],[btm-hfHgt,top+hfHgt],linewidth=thkns,color='k',alpha=1.0)
+    if errMult>0.0:
+        for i in range(0,diData.shape[0]):
+            xCent = diData[i,1]*asConversion
+            yCent = diData[i,3]*asConversion
+            #print 'data [x,y] = ['+str(xCent/asConversion)+', '+str(yCent/asConversion)+']'#$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            left = xCent-diData[i,2]*asConversion
+            right = xCent+diData[i,2]*asConversion
+            top = yCent+diData[i,4]*asConversion
+            btm = yCent-diData[i,4]*asConversion
+            hfWdth = abs(right-left)*errMult*0.5
+            hfHgt = abs(top-btm)*errMult*0.5
+            subPlot.plot([left-hfWdth,right+hfWdth],[yCent,yCent],linewidth=thkns,color='k',alpha=1.0)
+            subPlot.plot([xCent,xCent],[btm-hfHgt,top+hfHgt],linewidth=thkns,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])
 
 def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[],stage='MCMC',centersOnly=False):
@@ -780,31 +781,32 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         main.set_xlabel(xLabel, fontsize=25)
         main.set_ylabel(yLabel, fontsize=25)
         ##
-        ## Save cropped, then save full size figs to file and maybe convert to pdf if format=='eps'
+        ## Save full size fig, then cropped to file and maybe convert to pdf if format=='eps'
         ##
         #plt.tight_layout()
         orientStr = 'landscape'
         if format=='eps':
             orientStr = 'portrait'
-        ##crop to limits of data and save
-        main.axes.set_xlim((xLimsCrop[1],xLimsCrop[0]))
-        main.axes.set_ylim(yLimsCrop)
         ## plot predicted locations for the data points
         if True:
             for i in range(0,len(predictedDataDI[:,0])):
-                main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=diLnThk*3)#$$$$$$$$ Place for custimization
+                main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=diLnThk*5)#$$$$$$$$ Place for custimization
                 #print 'plotted point ['+str(predictedDataDI[i,0]*asConversion)+', '+str(predictedDataDI[i,1]*asConversion)+']'
-        plotFilenameCrop = plotFnameBase+'-DI-cropped.'+format
-        if plotFilenameCrop!='':
-            plt.savefig(plotFilenameCrop, dpi=300, orientation=orientStr)
-            log.info("DI orbit plot (cropped) saved to:\n"+plotFilenameCrop)
-        # un-crop and save full size            
+        # save full size            
         main.axes.set_xlim((xLimsFull[1],xLimsFull[0]))
         main.axes.set_ylim(yLimsFull)
         plotFilenameFull = plotFnameBase+'-DI.'+format
         if plotFilenameFull!='':
-            plt.savefig(plotFilenameFull, dpi=300, orientation=orientStr)
+            plt.savefig(plotFilenameFull, dpi=500, orientation=orientStr)
             log.info("DI orbit plot (Full) saved to:\n"+plotFilenameFull)
+        ##crop to limits of data and save
+        main.axes.set_xlim((xLimsCrop[1],xLimsCrop[0]))
+        main.axes.set_ylim(yLimsCrop)
+        plotFilenameCrop = plotFnameBase+'-DI-cropped.'+format
+        if plotFilenameCrop!='':
+            plt.savefig(plotFilenameCrop, dpi=500, orientation=orientStr)
+            log.info("DI orbit plot (cropped) saved to:\n"+plotFilenameCrop)
+            
         plt.close()
         if (format=='eps')and True:
             log.debug('converting to PDF as well')
@@ -812,7 +814,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
                 os.system("epstopdf "+plotFilenameFull)
                 os.system("epstopdf "+plotFilenameCrop)
             except:
-                log.warning("Seems epstopdf failed.  Check if it is installed properly.")
+                log.warning("Seems epstopdf failed.  Check if it is installed properly.")    
         ## log params used in DI plot
         log.info('\n'+"*"*50+"\nOrbital Elements used in DI plot:\n"+repr(paramsDI))
         log.info("\n with an omega value = "+str(paramsDI[9]+settingsDict["omegaFdi"][0])+'\n'+"*"*50+'\n')

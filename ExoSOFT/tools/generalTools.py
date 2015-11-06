@@ -228,7 +228,7 @@ def getParStrs(head,latex=True):
     paramFileStrs = ['m1','m2','parallax','Omega','e','To', 'Tc','P','i','omega','a_total','chiSquared','K']
     paramStrs = ['m1 [Msun]','m2 [Msun]','Parallax [mas]','Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]','chiSquared','K [m/s]']
     if latex:
-        paramStrs = ['$m_1$ [$M_{\odot}$]','$m_2$ [$M_{\odot}$]','$\varpi$ [mas]','$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]','$\chi^2$','$K$ [m/s]']
+        paramStrs = ['$m_1$ [$M_{\odot}$]','$m_2$ [$M_{\odot}$]','$\pi$ [mas]','$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]','$\chi^2$','$K$ [m/s]']
 
     if head["nRVdsets"]>0:
         for dataset in range(1,head["nRVdsets"]+1):
@@ -998,22 +998,34 @@ def dataReader(filename, colNum=0):
         bestDataVal = dataAry[np.where(chiSquareds==np.min(chiSquareds))][0]          
         return (dataAry,chiSquareds,[bestDataVal,np.median(dataAry),dataAry[0],dataAry[len(dataAry)//2],dataAry[-1]])                
                                          
-def findBestOrbit(filename,bestToFile=True):        
+def findBestOrbit(filename,bestToFile=True,findAgain=False):        
     """
     Find the orbital elements for the best fit in a ExoSOFT format fits file.
     """             
-    log.debug("trying to find best orbit in file:\n"+filename)     
-    (head,data) = loadFits(filename)
-    chiBest = np.min(data[:,11])
-    loc = np.where(data[:,11]==chiBest)
-    orbBest = data[loc[0][0],:]
-    log.info("Best fit found to be:\n"+repr(orbBest))
-    if bestToFile:
-        bestFname = os.path.join(os.path.dirname(filename),'bestOrbitParams.txt')
-        f = open(bestFname,'w')
-        f.write(repr(orbBest))
-        f.close()
-        log.info("Best fit params written to :\n"+bestFname)
+    bestFname = os.path.join(os.path.dirname(filename),'bestOrbitParams.txt')  
+    gotIt = False
+    if os.path.exists(bestFname):
+        try:
+            orbBest = np.loadtxt(bestFname,delimiter=',')
+            log.debug("Using previously found best orbit in file:\n"+bestFname)   
+            gotIt=True
+        except:
+            log.error("Tried to load previously found best orbit from file, but failed, so will find it from data again.")
+    if gotIt==False:
+        log.debug("trying to find best orbit in file:\n"+filename)   
+        (head,data) = loadFits(filename)
+        chiBest = np.min(data[:,11])
+        loc = np.where(data[:,11]==chiBest)
+        orbBest = data[loc[0][0],:]
+        log.info("Best fit found to be:\n"+repr(orbBest))
+        if bestToFile:
+            s=''
+            for val in orbBest:
+                s+=str(val)+","
+            f = open(bestFname,'w')
+            f.write(s[:-1])
+            f.close()
+            log.info("Best fit params written to :\n"+bestFname)
     return orbBest
                                                     
 def copytree(src, dst):

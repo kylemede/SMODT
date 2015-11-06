@@ -6,8 +6,6 @@ import copy
 import glob
 import shutil
 import timeit
-#from matplotlib.backends.qt_editor.formlayout import ColorLayout
-#from PyAstronomy.pyasl.asl import lineWidth
 import scipy.optimize as so
 from scipy import ndimage
 gridspec =  pylab.matplotlib.gridspec
@@ -413,9 +411,10 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
     plt.rcParams['pdf.use14corefonts'] = True
     plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
+        #blah=1
         plt.rc('text', usetex=True)
-        #plt.rcParams['text.latex.unicode']=True 
-        #plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
+        plt.rcParams['text.latex.unicode']=True 
+        plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
         #plt.rcParams['text.latex.preamble'] = '\usepackage{sfmath}' 
     
     ## check if plot data dir exists, else make it
@@ -619,6 +618,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
     plt.rcParams['pdf.use14corefonts'] = True
     plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
+        #blah=1
         plt.rc('text', usetex=True)
         plt.rcParams['text.latex.unicode']=True 
         plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 

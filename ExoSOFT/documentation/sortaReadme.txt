@@ -9,6 +9,10 @@ available at (https://pypi.python.org/pypi/psutil)
 or use command $sudo pip install psutil
 -scipy 
 ($sudo pip install scipy)
+-pylab (usuall installed as a part of scipy or python, but this will ensure it is complete)
+($sudo pip install pylab)
+-matplotlib (installed with pylab, but again just to make sure)
+($sudo pip install matplotlib)
 -swig 
 ($sudo pip install swig)
 -pyfits

@@ -75,7 +75,7 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
             valRange = np.max(histData[:,0])-np.min(histData[:,0])
             xLabel='m2 [Mjupiter]'
             if latex:
-                xLabel='$m_2$ [$M_{J}$]'
+                xLabel=r'$m_2$ [$M_{J}$]'
     if (np.max(histData[:,0])>100000) or (valRange<(np.min(histData[:,0])/100.0)):
         #must be the To or Tc, so subtract int(min) and add to x-axis label
         #doing this as it doesn't go well allowing matplotlib to do it itself formatting wise
@@ -117,7 +117,7 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
     if xLabel in ['e','$e$']:
         fsize=fsize+10
     if latex:
-        plot.axes.set_xlabel(r''+xLabel,fontsize=fsize)
+        plot.axes.set_xlabel(xLabel,fontsize=fsize)
     else:
         plot.axes.set_xlabel(xLabel,fontsize=fsize)
     
@@ -146,14 +146,22 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
             valRange = np.max(histData[:,0])-np.min(histData[:,0])
             xLabel='m2 [Mjupiter]'
             if latex:
-                xLabel='$m_2$ [$M_{J}$]'
+                xLabel=r'$m_2$ [$M_{J}$]'
             confLevels=confLevels*(const.KGperMsun/const.KGperMjupiter)
     if (np.max(histData[:,0])>100000) or (valRange<(np.min(histData[:,0])/100.0)):
         #must be the To or Tc, so subtract int(min) and add to x-axis label
         #doing this as it doesn't go well allowing matplotlib to do it itself formatting wise
         minSub = int(np.min(histData[:,0]))
         histData[:,0]-=minSub
-        xLabel = xLabel+" +"+str(minSub)
+        if np.max(histData[:,0])>100000:
+            xLabel = xLabel+" +"+str(minSub)
+        else:
+            if latex:
+                print 'before = '+repr(xLabel)
+                xLabel = xLabel[:-6]+" [JD+"+str(minSub)+"]}$"
+                print 'after = '+repr(xLabel)
+            else:
+                xLabel = xLabel[:-4]+"[JD+"+str(minSub)+"]"
     halfBinWidth = (histData[1][0]-histData[0][0])/2.0
     # load up list of x,y values for tops of bins
     for i in range(0,histData.shape[0]):
@@ -197,16 +205,19 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     # add axes label
     if showYlabel:
         if latex:
-            plot.axes.set_ylabel(r'$\frac{dp}{dx} \times constant $',fontsize=27)
+            plot.axes.set_ylabel(r'$\frac{dp}{dx} \times {\rm constant} $',fontsize=27)
         else:
             plot.axes.set_ylabel('dp/dx(*constant)',fontsize=25)
     else:
         plot.axes.set_yticklabels(['','',''])
     fsize=23
-    if xLabel in ['e','$e$']:
+    if xLabel in ['e', r'$e$']:
         fsize=fsize+10
+    if 'JD' in xLabel:
+        fsize=fsize-3
+    print 'xlabel = '+repr(xLabel)+", fsize = "+str(fsize)
     if latex:
-        plot.axes.set_xlabel(r''+xLabel,fontsize=fsize)
+        plot.axes.set_xlabel(xLabel,fontsize=fsize)
     else:
         plot.axes.set_xlabel(xLabel,fontsize=fsize)
         
@@ -276,12 +287,17 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
     """
     log.setStreamLevel(lvl=30)
     latex=True
-    plotFormat = 'eps'   
+    plotFormat='eps'
     plt.rcParams['ps.useafm']= True
     plt.rcParams['pdf.use14corefonts'] = True
     plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
         plt.rc('text', usetex=True)
+        plt.rcParams['text.latex.unicode']=True 
+        plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
+    else:
+        plt.rc('font',family='serif')
+        plt.rc('text', usetex=False)
     
     if type(outputDataFilenames)!=list:
         outputDataFilenames = [outputDataFilenames]
@@ -304,7 +320,7 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
         ## modify x labels to account for DI only situations where M1=Mtotal
         if np.var(data[:,1])==0:
             paramStrs2[0] = 'm total [Msun]'
-            paramStrs[0] = '$m_{total}$ [$M_{\odot}$]'
+            paramStrs[0] = r'$m_{total}$ [$M_{\odot}$]'
             paramFileStrs[0] = 'm-total'
         ## check if a subset is to be plotted or the whole set
         ## remake lists of params to match subset.
@@ -406,17 +422,17 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
     NOTE: currently a maximum of 20 parameters can be plotted, ie. for a system with up to 7 RV data sets.
     """
     latex=True
-    plotFormat = 'eps'   
-    #plt.rcParams['ps.useafm']= True
-    #plt.rcParams['pdf.use14corefonts'] = True
-    #plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-    #if latex:
-    #    #blah=1
-    #    plt.rc('text', usetex=True)
-    #    plt.rcParams['text.latex.unicode']=True 
-    #    plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
-    #    #plt.rcParams['text.latex.preamble'] = '\usepackage{sfmath}' 
-    
+    plotFormat='eps'
+    plt.rcParams['ps.useafm']= True
+    plt.rcParams['pdf.use14corefonts'] = True
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    if latex:
+        plt.rc('text', usetex=True)
+        plt.rcParams['text.latex.unicode']=True 
+        plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
+    else:
+        plt.rc('font',family='serif')
+        plt.rc('text', usetex=False)
     ## check if plot data dir exists, else make it
     plotDataDir = os.path.join(os.path.dirname(outputDataFilename),"plotData")
     #print 'plotDataDir = '+plotDataDir
@@ -614,15 +630,14 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
     RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
     """
     latex=True
+    plotFormat='eps'
     plt.rcParams['ps.useafm']= True
     plt.rcParams['pdf.use14corefonts'] = True
     plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
-        #blah=1
         plt.rc('text', usetex=True)
         plt.rcParams['text.latex.unicode']=True 
         plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
-        #plt.rcParams['text.latex.preamble'] = '\usepackage{sfmath}' 
     else:
         plt.rc('font',family='serif')
         plt.rc('text', usetex=False)
@@ -1118,12 +1133,17 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
     Must pass in ONLY 2 params to plot.
     """    
     latex=True
-    plotFormat = 'eps'   
+    plotFormat='eps'
     plt.rcParams['ps.useafm']= True
     plt.rcParams['pdf.use14corefonts'] = True
     plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
         plt.rc('text', usetex=True)
+        plt.rcParams['text.latex.unicode']=True 
+        plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
+    else:
+        plt.rc('font',family='serif')
+        plt.rc('text', usetex=False)
         
     if len(paramsToPlot)==2:
         (head,data) = genTools.loadFits(outputDataFilename)
@@ -1143,7 +1163,7 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
             (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex)
             ## modify x labels to account for DI only situations where M1=Mtotal
             if np.var(data[:,1])==0:
-                paramStrs[0] = '$m_{total}$ [$M_{\odot}$]'
+                paramStrs[0] = r'$m_{total}$ [$M_{\odot}$]'
             ## check if a subset is to be plotted or the whole set
             ## remake lists of params to match subset.
             if len(paramsToPlot)!=0:
@@ -1178,8 +1198,8 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
             elif yLabel in ['e','$e$']:
                 fsizeY =fsize+10
             if latex:
-                subPlot.axes.set_xlabel(r''+xLabel,fontsize=fsizeX)
-                subPlot.axes.set_ylabel(r''+yLabel,fontsize=fsizeY)
+                subPlot.axes.set_xlabel(xLabel,fontsize=fsizeX)
+                subPlot.axes.set_ylabel(yLabel,fontsize=fsizeY)
             else:
                 subPlot.axes.set_xlabel(xLabel,fontsize=fsizeX)
                 subPlot.axes.set_ylabel(yLabel,fontsize=fsizeY)
@@ -1225,12 +1245,17 @@ def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],sm
     from triangle import corner
     
     latex=True
-    plotFormat = 'eps'   
+    plotFormat='eps'
     plt.rcParams['ps.useafm']= True
     plt.rcParams['pdf.use14corefonts'] = True
     plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
         plt.rc('text', usetex=True)
+        plt.rcParams['text.latex.unicode']=True 
+        plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
+    else:
+        plt.rc('font',family='serif')
+        plt.rc('text', usetex=False)
         
     (head,data) = genTools.loadFits(outputDataFilename)
     
@@ -1253,7 +1278,7 @@ def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],sm
         ## modify x labels to account for DI only situations where M1=Mtotal
         if np.var(data[:,1])==0:
             paramStrs2[0] = 'm total [Msun]'
-            paramStrs[0] = '$m_{total}$ [$M_{\odot}$]'
+            paramStrs[0] = r'$m_{total}$ [$M_{\odot}$]'
             paramFileStrs[0] = 'm-total'
         ## check if a subset is to be plotted or the whole set
         ## remake lists of params to match subset.
@@ -1316,14 +1341,18 @@ def progressPlotter(outputDataFilename,plotFilename,paramToPlot,yLims=[],bestVal
     Plots progress of a single parameter's chain over one stage of simulation, AND the 
     reduced chi squared as a time series.
     """
-    
     latex=True
-    plotFormat = 'eps'   
+    plotFormat='eps'
     plt.rcParams['ps.useafm']= True
     plt.rcParams['pdf.use14corefonts'] = True
     plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
         plt.rc('text', usetex=True)
+        plt.rcParams['text.latex.unicode']=True 
+        plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
+    else:
+        plt.rc('font',family='serif')
+        plt.rc('text', usetex=False)
         
     (head,data) = genTools.loadFits(outputDataFilename)
     

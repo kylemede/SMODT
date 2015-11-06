@@ -228,13 +228,13 @@ def getParStrs(head,latex=True):
     paramFileStrs = ['m1','m2','parallax','Omega','e','To', 'Tc','P','i','omega','a_total','chiSquared','K']
     paramStrs = ['m1 [Msun]','m2 [Msun]','Parallax [mas]','Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]','chiSquared','K [m/s]']
     if latex:
-        paramStrs = ['$m_1$ [$M_{\odot}$]','$m_2$ [$M_{\odot}$]','$\varpi$ [mas]','$\Omega$ [deg]','$e$','$T_o$ [JD]', '$T_c$ [JD]','$P$ [Yrs]','$i$ [deg]','$\omega$ [deg]','$a_{total}$ [AU]','$\chi^2$','$K$ [m/s]']
+        paramStrs = [r'$m_1{\rm [M}_{\odot}{\rm ]}$',r'$m_2{\rm [M}_{\odot}{\rm ]}$',r'$\varpi{\rm [mas]}$',r'$\Omega{\rm [deg]}$',r'$e$',r'$T_o{\rm  [JD]}$', r'$T_c{\rm  [JD]}$',r'$P{\rm  [Yrs]}$',r'$i{\rm  [deg]}$',r'$\omega{\rm  [deg]}$',r'$a_{{\rm total}} {\rm [AU]}$',r'$\chi^2$',r'$K{\rm  [m/s]}$']
 
     if head["nRVdsets"]>0:
         for dataset in range(1,head["nRVdsets"]+1):
             paramFileStrs.append('offset_'+str(dataset))
             if latex:
-                paramStrs.append("$\gamma_{"+str(dataset)+"}$ [m/s]")
+                paramStrs.append(r"$\gamma_{{\rm "+str(dataset)+"}}{\\rm [m/s]}$")
             else:
                 paramStrs.append('offset '+str(dataset)+' [m/s]')
     return (paramList,paramStrs,paramFileStrs)

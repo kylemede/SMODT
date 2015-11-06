@@ -163,12 +163,15 @@ def latexMatplotlibTest():
     plotFilename = '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/latexMatplotlibTest'
     
     latex=True
-    plotFormat = 'png'   
-    plt.rcParams['ps.useafm']= True
-    plt.rcParams['pdf.use14corefonts'] = True
-    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    plotFormat = 'eps'   
+    #plt.rcParams['ps.useafm']= True
+    #plt.rcParams['pdf.use14corefonts'] = True
+    #plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
     if latex:
-        plt.rc('text', usetex=True)
+        blah=1
+        #plt.rc('text', usetex=True)
+        #plt.rcParams['text.latex.unicode']=True
+        #plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}'
     #if latex:
     #    #blah=1
     #    plt.rc('text', usetex=True)
@@ -182,18 +185,17 @@ def latexMatplotlibTest():
     f = plt.figure()
     subPlot = plt.subplot(111)
     subPlot.scatter(np.arange(100),np.arange(100))
-    subPlot.axes.set_xlabel(r''+'$\pi$')
-    subPlot.axes.set_ylabel(r''+'$\varpi$')
+    subPlot.axes.set_xlabel(r'$\Delta \delta$')
+    subPlot.axes.set_ylabel(r'$\varpi$')
     ## Save file if requested.
     if plotFilename!='':
         plt.savefig(plotFilename,format=plotFormat)
         print 'density contour plot saved to: '+plotFilename
     plt.close()
-    if True:
+    if (plotFormat=='eps') and True:
         print 'converting to PDF as well'
         try:
-            if plotFormat=='eps':
-                os.system("epstopdf "+plotFilename)
+            os.system("epstopdf "+plotFilename)
         except:
             print "Seems epstopdf failed.  Check if it is installed properly."
         
@@ -227,8 +229,8 @@ def paramConverterTest():
         print 'after: e= '+str(params[4])+', omega= '+str(params[9])
     
 if __name__ == '__main__':
-    #customPost()
+    customPost()
     #stackedPosteriorsPlotterHackStarter()
     #paramConverterTest()
-    latexMatplotlibTest()
+    #latexMatplotlibTest()
     

@@ -81,7 +81,15 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
         #doing this as it doesn't go well allowing matplotlib to do it itself formatting wise
         minSub = int(np.min(histData[:,0]))
         histData[:,0]-=minSub
-        xLabel = xLabel+" +"+str(minSub)
+        if np.max(histData[:,0])>100000:
+            xLabel = xLabel+" +"+str(minSub)
+        else:
+            if latex:
+                print 'before = '+repr(xLabel)
+                xLabel = xLabel[:-6]+" [JD+"+str(minSub)+"]}$"
+                print 'after = '+repr(xLabel)
+            else:
+                xLabel = xLabel[:-4]+"[JD+"+str(minSub)+"]"
     halfBinWidth = (histData[1][0]-histData[0][0])/2.0
     # load up list of x,y values for tops of bins
     for i in range(0,histData.shape[0]):
@@ -108,18 +116,17 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
     # add axes label
     if showYlabel:
         if latex:
-            plot.axes.set_ylabel(r'$\frac{dp}{dx} \times constant $',fontsize=27)
+            plot.axes.set_ylabel(r'$\frac{dp}{dx} \times {\rm constant} $',fontsize=27)
         else:
             plot.axes.set_ylabel('dp/dx(*constant)',fontsize=25)
     else:
         plot.axes.set_yticklabels(['','',''])
     fsize=23
-    if xLabel in ['e','$e$']:
+    if xLabel in ['e', r'$e$']:
         fsize=fsize+10
-    if latex:
-        plot.axes.set_xlabel(xLabel,fontsize=fsize)
-    else:
-        plot.axes.set_xlabel(xLabel,fontsize=fsize)
+    if 'JD' in xLabel:
+        fsize=fsize-3
+    plot.axes.set_xlabel(xLabel,fontsize=fsize)
     
     return plot
 
@@ -215,11 +222,8 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
         fsize=fsize+10
     if 'JD' in xLabel:
         fsize=fsize-3
-    print 'xlabel = '+repr(xLabel)+", fsize = "+str(fsize)
-    if latex:
-        plot.axes.set_xlabel(xLabel,fontsize=fsize)
-    else:
-        plot.axes.set_xlabel(xLabel,fontsize=fsize)
+    #print 'xlabel = '+repr(xLabel)+", fsize = "+str(fsize)
+    plot.axes.set_xlabel(xLabel,fontsize=fsize)
         
     return plot
 

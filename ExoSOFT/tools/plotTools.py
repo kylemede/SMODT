@@ -389,7 +389,7 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
             s= 'stacked hist plot saved to: '+plotFilename+'.'+plotFormat
             log.info(s)
         plt.close()
-        if True:
+        if (plotFormat=='eps') and True:
             log.debug('converting to PDF as well')
             try:
                 os.system("epstopdf "+plotFilename+'.'+plotFormat)
@@ -407,15 +407,15 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
     """
     latex=True
     plotFormat = 'eps'   
-    plt.rcParams['ps.useafm']= True
-    plt.rcParams['pdf.use14corefonts'] = True
-    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
-    if latex:
-        #blah=1
-        plt.rc('text', usetex=True)
-        plt.rcParams['text.latex.unicode']=True 
-        plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
-        #plt.rcParams['text.latex.preamble'] = '\usepackage{sfmath}' 
+    #plt.rcParams['ps.useafm']= True
+    #plt.rcParams['pdf.use14corefonts'] = True
+    #plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    #if latex:
+    #    #blah=1
+    #    plt.rc('text', usetex=True)
+    #    plt.rcParams['text.latex.unicode']=True 
+    #    plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
+    #    #plt.rcParams['text.latex.preamble'] = '\usepackage{sfmath}' 
     
     ## check if plot data dir exists, else make it
     plotDataDir = os.path.join(os.path.dirname(outputDataFilename),"plotData")
@@ -555,7 +555,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
             s= 'Summary plot saved to: '+plotFilename
             log.info(s)
         plt.close()
-        if True:
+        if (plotFormat=='eps') and True:
             log.debug('converting to PDF as well')
             try:
                 os.system("epstopdf "+plotFilename)
@@ -811,8 +811,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         if (format=='eps')and True:
             log.debug('converting to PDF as well')
             try:
-                os.system("epstopdf "+plotFilenameFull)
-                os.system("epstopdf "+plotFilenameCrop)
+                    os.system("epstopdf "+plotFilenameFull)
+                    os.system("epstopdf "+plotFilenameCrop)
             except:
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")    
         ## log params used in DI plot
@@ -1208,7 +1208,7 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
                 s= 'density contour plot saved to: '+plotFilename
                 log.info(s)
             plt.close()
-            if True:
+            if (plotFormat=='eps') and True:
                 log.debug('converting to PDF as well')
                 try:
                     os.system("epstopdf "+plotFilename)
@@ -1304,7 +1304,7 @@ def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],sm
         plt.close()
         toc2 = timeit.default_timer()
         log.info("Saving took a total of "+genTools.timeStrMaker(toc2-toc))
-        if True:
+        if (plotFormat=='eps') and True:
             log.debug('converting to PDF as well')
             try:
                 os.system("epstopdf "+plotFilename)
@@ -1398,7 +1398,7 @@ def progressPlotter(outputDataFilename,plotFilename,paramToPlot,yLims=[],bestVal
             s= 'progress plot saved to: '+plotFilename
             log.info(s)
         plt.close()
-        if True:
+        if (plotFormat=='eps') and True:
             log.debug('converting to PDF as well')
             try:
                 os.system("epstopdf "+plotFilename)

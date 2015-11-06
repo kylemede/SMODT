@@ -157,6 +157,45 @@ def stackedPosteriorsPlotterHackStarter():
         print 'converted to PDF as well'
         os.system("epstopdf "+plotFilename+'.eps')
         
+def latexMatplotlibTest():
+    import pylab
+    plt = pylab.matplotlib.pyplot
+    plotFilename = '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/latexMatplotlibTest'
+    
+    latex=True
+    plotFormat = 'png'   
+    plt.rcParams['ps.useafm']= True
+    plt.rcParams['pdf.use14corefonts'] = True
+    plt.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+    if latex:
+        plt.rc('text', usetex=True)
+    #if latex:
+    #    #blah=1
+    #    plt.rc('text', usetex=True)
+    #    plt.rcParams['text.latex.unicode']=True 
+    #    plt.rcParams['text.latex.preamble'] = '\usepackage{amssymb}' 
+    #    #plt.rcParams['text.latex.preamble'] = '\usepackage{sfmath}' 
+    else:
+        plt.rc('font',family='serif')
+        plt.rc('text', usetex=False)
+    
+    f = plt.figure()
+    subPlot = plt.subplot(111)
+    subPlot.scatter(np.arange(100),np.arange(100))
+    subPlot.axes.set_xlabel(r''+'$\pi$')
+    subPlot.axes.set_ylabel(r''+'$\varpi$')
+    ## Save file if requested.
+    if plotFilename!='':
+        plt.savefig(plotFilename,format=plotFormat)
+        print 'density contour plot saved to: '+plotFilename
+    plt.close()
+    if True:
+        print 'converting to PDF as well'
+        try:
+            if plotFormat=='eps':
+                os.system("epstopdf "+plotFilename)
+        except:
+            print "Seems epstopdf failed.  Check if it is installed properly."
         
 def paramConverterTest():
     
@@ -188,7 +227,8 @@ def paramConverterTest():
         print 'after: e= '+str(params[4])+', omega= '+str(params[9])
     
 if __name__ == '__main__':
-    customPost()
+    #customPost()
     #stackedPosteriorsPlotterHackStarter()
     #paramConverterTest()
+    latexMatplotlibTest()
     

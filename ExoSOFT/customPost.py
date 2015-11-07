@@ -13,7 +13,7 @@ def customPost():
     if os.path.exists(allFname)==False:
         allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
         skipBurnInStrip=False
-    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=10)
+    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=20)
     ##make list of stages to run
     stageList = []
     if settingsDict['symMode'][0]=='MC':
@@ -66,21 +66,21 @@ def customPost():
                      2.57947523e+01,   5.41039136e+00,   2.60726725e+01,
                      8.69376155e+00,  -8.76996105e-02])
     
-    if False:
+    if True:
         ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
         ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
-        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-0mult-1thk-')
+        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-0mult-1thk-')
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.5],[-0.8,0.8],[-0.515,0.515]],diErrMult=0,diLnThk=1)
+        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.5],[-0.8,0.8],[-0.515,0.515]],diErrMult=0,diLnThk=1)
         plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-1mult-1thk-')
         tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.5],[-0.8,0.8],[-0.515,0.515]],diErrMult=1,diLnThk=1)
-        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-10mult-3thk-')
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=10,diLnThk=3)
         plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-0mult-3thk-')
         tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=3)
+        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-0mult-3thk-')
+        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=3)
         
     clStr=''
-    if True:
+    if False:
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-5')
         clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
         #for fake jupiter

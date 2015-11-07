@@ -81,15 +81,11 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
         #doing this as it doesn't go well allowing matplotlib to do it itself formatting wise
         minSub = int(np.min(histData[:,0]))
         histData[:,0]-=minSub
-        if np.max(histData[:,0])>100000:
-            xLabel = xLabel+" +"+str(minSub)
+        if latex:
+            xLabel = xLabel[:-3]+"+"+str(minSub)+"]}$"
         else:
-            if latex:
-                print 'before = '+repr(xLabel)
-                xLabel = xLabel[:-6]+" [JD+"+str(minSub)+"]}$"
-                print 'after = '+repr(xLabel)
-            else:
-                xLabel = xLabel[:-4]+"[JD+"+str(minSub)+"]"
+            xLabel = xLabel[:-1]+"+"+str(minSub)+"]"
+            
     halfBinWidth = (histData[1][0]-histData[0][0])/2.0
     # load up list of x,y values for tops of bins
     for i in range(0,histData.shape[0]):
@@ -160,15 +156,11 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
         #doing this as it doesn't go well allowing matplotlib to do it itself formatting wise
         minSub = int(np.min(histData[:,0]))
         histData[:,0]-=minSub
-        if np.max(histData[:,0])>100000:
-            xLabel = xLabel+" +"+str(minSub)
+        if latex:
+            xLabel = xLabel[:-3]+"+"+str(minSub)+"]}$"
         else:
-            if latex:
-                print 'before = '+repr(xLabel)
-                xLabel = xLabel[:-6]+" [JD+"+str(minSub)+"]}$"
-                print 'after = '+repr(xLabel)
-            else:
-                xLabel = xLabel[:-4]+"[JD+"+str(minSub)+"]"
+            xLabel = xLabel[:-1]+"+"+str(minSub)+"]"
+        
     halfBinWidth = (histData[1][0]-histData[0][0])/2.0
     # load up list of x,y values for tops of bins
     for i in range(0,histData.shape[0]):
@@ -673,7 +665,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         realDataDI = copy.deepcopy(realData)
         realDataDI = realDataDI[np.where(realDataDI[:,2]<1e6)[0],:]
         ##Make model data for 100~1000 points for plotting fit
-        nPts = 2000
+        nPts = 3000
         fakeRealData = np.zeros((nPts,8),dtype=np.dtype('d'),order='C')
         fakeRealData[:,1:5]=1.0
         fakeRealData[:,6]=1e6
@@ -745,6 +737,11 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         ## Draw larger star for primary star's location
         starPolygon = star(2*paramsDI[10],0,0,color='yellow',N=6,thin=0.5)
         main.add_patch(starPolygon)
+        ## plot predicted locations for the data points
+        if True:
+            for i in range(0,len(predictedDataDI[:,0])):
+                main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=diLnThk*5)#$$$$$$$$ Place for custimization
+                #print 'plotted point ['+str(predictedDataDI[i,0]*asConversion)+', '+str(predictedDataDI[i,1]*asConversion)+']'
         ## Add DI data to plot
         (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realDataDI,asConversion,errMult=diErrMult,thkns=diLnThk)#$$$$$$$$ Place for custimization
         ## set limits and other basics of plot looks
@@ -795,8 +792,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         xLabel = 'Relative RA '+unitStr
         yLabel = 'Relative Dec '+unitStr
         if latex:
-            xLabel = '$Relative$ $RA$ '+unitStr#'$\Delta$ $\alpha$ '+unitStr
-            yLabel = '$Relative$ $Dec$ '+unitStr#'$\Delta$ $\delta$ '+unitStr
+            xLabel = r'$\Delta\alpha{\rm '+unitStr+"}$"
+            yLabel = r'$\Delta\delta{\rm '+unitStr+"}$"
         main.set_xlabel(xLabel, fontsize=25)
         main.set_ylabel(yLabel, fontsize=25)
         ##
@@ -806,24 +803,19 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         orientStr = 'landscape'
         if format=='eps':
             orientStr = 'portrait'
-        ## plot predicted locations for the data points
-        if True:
-            for i in range(0,len(predictedDataDI[:,0])):
-                main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=diLnThk*5)#$$$$$$$$ Place for custimization
-                #print 'plotted point ['+str(predictedDataDI[i,0]*asConversion)+', '+str(predictedDataDI[i,1]*asConversion)+']'
         # save full size            
         main.axes.set_xlim((xLimsFull[1],xLimsFull[0]))
         main.axes.set_ylim(yLimsFull)
         plotFilenameFull = plotFnameBase+'-DI.'+format
         if plotFilenameFull!='':
-            plt.savefig(plotFilenameFull, dpi=500, orientation=orientStr)
+            plt.savefig(plotFilenameFull, dpi=800, orientation=orientStr)
             log.info("DI orbit plot (Full) saved to:\n"+plotFilenameFull)
         ##crop to limits of data and save
         main.axes.set_xlim((xLimsCrop[1],xLimsCrop[0]))
         main.axes.set_ylim(yLimsCrop)
         plotFilenameCrop = plotFnameBase+'-DI-cropped.'+format
         if plotFilenameCrop!='':
-            plt.savefig(plotFilenameCrop, dpi=500, orientation=orientStr)
+            plt.savefig(plotFilenameCrop, dpi=800, orientation=orientStr)
             log.info("DI orbit plot (cropped) saved to:\n"+plotFilenameCrop)
             
         plt.close()
@@ -901,16 +893,16 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
             fitPlot = figRV.add_subplot(211)
             fitPlot.set_position([0.13,0.38,0.84,0.57])
             xLabel = "Orbital Phase"
-            fitYlabel = 'v '
+            fitYlabel = 'v '+unitStr
             residYlabel = 'O-C '
             if latex:
-                residYlabel = '$O-C$ '
-                fitYlabel = '$v$ '
-                xLabel = "$Orbital$ $Phase$"
+                residYlabel = r'${\rm O-C}$ '
+                fitYlabel = r'$v{\rm '+unitStr+'}$'
+                xLabel = r"${\rm Orbital}$  ${\rm Phase}$"
             residualsPlot.axes.set_xlabel(xLabel,fontsize=20)
             residualsPlot.axes.set_ylabel(residYlabel,fontsize=20)
             fitPlot.xaxis.set_ticklabels([])#this is just a hack way of killing the tick labels
-            fitPlot.axes.set_ylabel(fitYlabel+unitStr,fontsize=20)
+            fitPlot.axes.set_ylabel(fitYlabel,fontsize=20)
             
             ## real-model=residual, then plot it
             residualData = copy.deepcopy(realDataRV)
@@ -923,7 +915,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
             
             ## add real data to plots
             residualsPlot = addRVdataToPlot(residualsPlot,phasesReal,residualData[:,5]*kmConversion,residualData[:,6]*kmConversion,datasetInts=residualData[:,7],alf=0.1,color='k',plotErrorBars=True)
-            fitPlot = addRVdataToPlot(fitPlot,phasesReal,zeroedRealDataRV[:,5]*kmConversion,zeroedRealDataRV[:,6]*kmConversion,datasetInts=residualData[:,7],alf=0.2,color='k',plotErrorBars=True)
+            fitPlot = addRVdataToPlot(fitPlot,phasesReal,zeroedRealDataRV[:,5]*kmConversion,zeroedRealDataRV[:,6]*kmConversion,datasetInts=residualData[:,7],alf=0.2,color='k',plotErrorBars=False)
             ##plot fit epochsORphases,RVs,RVerrs
             fitPlot.plot(phasesFit,fitDataRV[:,2]*kmConversion,c='Blue',linewidth=1.0,alpha=1.0)
             

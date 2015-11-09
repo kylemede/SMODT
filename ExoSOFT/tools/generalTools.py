@@ -638,7 +638,10 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
     Make a txt file that summarizes the results nicely.
     """
     summaryFname = os.path.join(settingsDict['finalFolder'],'RESULTS.txt')
-    f = open(summaryFname,'w')
+    if os.path.exists(summaryFname):
+        f = open(summaryFname,'a')
+    else:
+        f = open(summaryFname,'w')
     (head,data) = loadFits(finalFits)
     totalSamps = head['NSAMPLES']
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
@@ -727,7 +730,10 @@ def summaryFilePart2(settingsDict,effPtsStr,allTime,postTime):
     steps that can take along time.
     """
     summaryFname = os.path.join(settingsDict['finalFolder'],'RESULTS.txt')
-    f = open(summaryFname,'a')
+    if os.path.exists(summaryFname):
+        f = open(summaryFname,'a')
+    else:
+        f = open(summaryFname,'w')
     f.write('\n\nPost-Processing took: '+timeStrMaker(postTime)+'\n')
     f.write('Total simulation took: '+timeStrMaker(allTime)+'\n')
     f.write('\n'+effPtsStr+'\n\nEND OF RESULTS :-D')

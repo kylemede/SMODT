@@ -633,7 +633,7 @@ def combineFits(filenames,outFname):
     hdulist.close()
     log.info("output file written to:below\n"+outFname)
     
-def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr):
+def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,effPtsStr,allTime,postTime):
     """
     Make a txt file that summarizes the results nicely.
     """
@@ -657,14 +657,12 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
         stgNsampStrDict = {"MC":"nSamples","SA":"nSAsamp","ST":"nSTsamp","MCMC":"nSamples"}
         numFilesStr = '\nTotal # of files that finished each stage were:\n'
         chiSquaredsStr = '\nBest Reduced Chi Squareds for each stage were:\n'
-        log.debug('ln680:summaryFilePart1')  #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         for stage in stageList:
             fnames = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits")))
             if (stage=="MCMC")and settingsDict["rmBurn"][0]:
                 fnames = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*BIstripped.fits")))
             numFilesStr+=stage+' = '+str(len(fnames))+", each with "+str(settingsDict[stgNsampStrDict[stage]][0])+" samples\n"
             if len(fnames)>0:
-                log.debug('len(fnames) = '+repr(len(fnames)))#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 chiSquaredsStr+=stage+" = ["
                 for fname in fnames: 
                     try:
@@ -673,12 +671,10 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
                     except:
                         log.error("A problem occurred while trying to find best fit of:\n"+fname)
                 chiSquaredsStr = chiSquaredsStr[:-2]+']\n'
-        log.debug('ln696:summaryFilePart1')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         numFilesStr+="\n"+"*"*65+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*65+'\n'
         f.write(numFilesStr)
         f.write(chiSquaredsStr)
         bestStr = '\n'+'-'*21+'\nBest fit values were:\n'+'-'*21+'\n'
-        log.debug('ln701:summaryFilePart1')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         ############################################
         ## calculate chi squareds for the best fit #
         ############################################
@@ -702,7 +698,6 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
                 bestStr+=paramStrs[2]+" = "+str(bestFit[2])
                 if (bestFit[2]!=0):
                     bestStr+=", OR  "+str(1.0/(bestFit[2]/1000.0))+'[PC]\n'
-                    #print 'bestStr '+bestStr#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
                 else:
                     bestStr+='\n'
             elif i==1:
@@ -715,30 +710,17 @@ def summaryFilePart1(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,gr
                 bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
         bestStr+='\n'+'*'*100+'\nBEST REDUCED CHISQUAREDS: [total,DI,RV] = ['+str(reduced3D)+", "+str(reducedDI)+", "+str(reducedRV)+"]\n"+'*'*100
         f.write(bestStr)
-        log.debug('ln714:summaryFilePart1')#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     except:
         log.critical("A problem occured while trying to produce advanced summary strings.")
     f.write('\n'+clStr)
     f.write('\n'+burnInStr)
     f.write('\n'+grStr)
-    f.close()
-    log.info("Summary file written to:\n"+summaryFname)  
-
-def summaryFilePart2(settingsDict,effPtsStr,allTime,postTime):
-    """
-    Finish writting the important summary information for the post-processing 
-    steps that can take along time.
-    """
-    summaryFname = os.path.join(settingsDict['finalFolder'],'RESULTS.txt')
-    if os.path.exists(summaryFname):
-        f = open(summaryFname,'a')
-    else:
-        f = open(summaryFname,'w')
+    f.write('\n'+effPtsStr)
     f.write('\n\nPost-Processing took: '+timeStrMaker(postTime)+'\n')
     f.write('Total simulation took: '+timeStrMaker(allTime)+'\n')
-    f.write('\n'+effPtsStr+'\n\nEND OF RESULTS :-D')
+    f.write('\n\nEND OF RESULTS :-D')
     f.close()
-    log.info("Summary file written to:\n"+summaryFname)
+    log.info("Summary file written to:\n"+summaryFname)  
     
 def keplersThird(p=0,atot=0,mtot=0):
     """

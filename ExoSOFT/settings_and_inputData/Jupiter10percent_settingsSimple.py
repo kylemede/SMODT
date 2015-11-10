@@ -5,7 +5,7 @@ simpleSettingsDict={
 'nSamples' : (70000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (8,"Number of chains"),
+'nChains' : (7,"Number of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # Directory on an SSD for fast reading/writting of temp data files to save on RAM usage.
@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "JUPITER2-3D-MCMC-10percent-lowEcc-OctPriors-gaussPara-strtAtEnd-long3",
+'outRoot' : "JUPITER2-3D-MCMC-10percent-lowEcc-PDMFm1m2-newParaPrior-long",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),

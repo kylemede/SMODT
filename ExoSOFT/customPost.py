@@ -82,7 +82,7 @@ def customPost():
     clStr=''
     if False:
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-5')
-        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True)
         #for fake jupiter
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.01],[0.5,1.7],[-0.00,0.1],[39,56]],bestVals=[1.0,1.0,0.048,45.0],stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
         #for HIP10321
@@ -91,7 +91,7 @@ def customPost():
         plotFilename = os.path.join(settingsDict['finalFolder'],'densityPlot')
         #ranges=[[xMin,xMax],[yMin,yMax]]
         #tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.098,0.274],ranges=[[0.88,1.45],[0.19,0.43]])
-        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.156,0.287],ranges=[[0.6,1.55],[0.17,0.7]])
+        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.1086,0.266],ranges=[[0.55,1.5],[0.17,0.72]])
         #plotFilename = os.path.join(settingsDict['finalFolder'],'cornerPlot-6-gaussFiltered-newSigmaLevels')
         #tools.cornerPlotter(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[1.098,0.274])
         
@@ -145,11 +145,11 @@ def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
     
     #outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-20percent-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-10percent-lowEcc-OctPriors-gaussPara-long3/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-5percent-lowEcc-OctPriors-gaussPara-long3/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-1percent-lowEcc-OctPriors-gaussPara-long3/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-10percent-lowEcc-PDMFm1m2-newParaPrior-long/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-5percent-lowEcc-PDMFm1m2-newParaPrior-long/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-1percent-lowEcc-PDMFm1m2-newParaPrior-long/combined-BIstripped-MCMCdata.fits')
     
-    plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosterior-lowEccTrue-centers-151101')
+    plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosterior-lowEccTrue-151110')
     tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[1,4,8],xLims=[[0.65,1.5],[0.00,0.10],[30.0,60]],centersOnly=True)
     #tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[])
     #print 'Final stacked plot file written to:\n'+plotFilename
@@ -229,8 +229,8 @@ def paramConverterTest():
         print 'after: e= '+str(params[4])+', omega= '+str(params[9])
     
 if __name__ == '__main__':
-    customPost()
-    #stackedPosteriorsPlotterHackStarter()
+    #customPost()
+    stackedPosteriorsPlotterHackStarter()
     #paramConverterTest()
     #latexMatplotlibTest()
     

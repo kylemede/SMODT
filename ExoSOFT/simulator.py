@@ -352,7 +352,7 @@ class Simulator(object):
         """
         paramsOut = copy.deepcopy(pars)
         ## Calculate chi squareds for 3D,DI,RV and update bestPars and bestSumStr if this is better than the best
-        (raw3D, reducedDI, reducedRV, reduced3D) = tools.chiSquaredCalc3D(self.realData,modelData,self.nuDI,self.nuRV,self.nu,sapa=self.dictVal('sapa'))
+        (raw3D, reducedDI, reducedRV, reduced3D) = tools.chiSquaredCalc3D(self.realData,modelData,self.nuDI,self.nuRV,self.nu,pasa=self.dictVal('pasa'))
         paramsOut[11] = raw3D
         if self.bestSumStr=='':
             self.bestSumStr = stage+" chain #"+str(self.chainNum)+' Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))

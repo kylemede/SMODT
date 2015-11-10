@@ -795,7 +795,7 @@ def predictLocation(orbParams,settingsDict,epochs=[]):
     Orbit.calculate(predictedData,params)
     print "predicted epochs data are:\n"+repr(predictedData)
     
-def chiSquaredCalc3D(realData,modelData,nuDI,nuRV,nu3D,sapa=False): 
+def chiSquaredCalc3D(realData,modelData,nuDI,nuRV,nu3D,pasa=False): 
     """
     Based on definition, chiSquared=sum((modelVal_i-dataVal_i)^2/(dataError_i^2)) over all values of 'i'.
     This function will do so for DI, RV and 3D sets of data and provide the reduced chi squared for each.
@@ -806,7 +806,7 @@ def chiSquaredCalc3D(realData,modelData,nuDI,nuRV,nu3D,sapa=False):
     returned (raw3D, reducedDI, reducedRV, reduced3D)
     """   
     ## convert E,N to SA,PA?
-    if sapa:
+    if pasa:
         (PA,PA_error,SA,SA_error) = ENtoPASA(modelData[:,0], 0, modelData[:,1], 0)
         modelData[:,0] = PA
         modelData[:,1] = SA

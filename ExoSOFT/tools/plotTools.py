@@ -238,7 +238,7 @@ def addRVdataToPlot(subPlot,epochsORphases,RVs,RVerrs,datasetInts=[],alf=1.0,col
             subPlot.plot(epochsORphases[i],RVs[i],c=clr,marker='.',markersize=9)
     return subPlot
 
-def addDIdataToPlot(subPlot,realData,asConversion,errMult=1.0,thkns=1.0):
+def addDIdataToPlot(subPlot,realData,asConversion,errMult=1.0,thkns=1.0,pasa=False):
     """
     To plot a '+' for each data point with width and height matching the errors converted 
     to x,y coords.
@@ -249,23 +249,42 @@ def addDIdataToPlot(subPlot,realData,asConversion,errMult=1.0,thkns=1.0):
     ## copy realData and kill off parts where DI errors are 1e6
     diData = copy.deepcopy(realData)
     diData = diData[np.where(diData[:,2]<1e6)[0],:]
-    xmin = np.min(diData[:,1]-diData[:,2])*asConversion
-    xmax = np.max(diData[:,1]+diData[:,2])*asConversion
-    ymin = np.min(diData[:,3]-diData[:,4])*asConversion
-    ymax = np.max(diData[:,3]+diData[:,4])*asConversion
-    if errMult>0.0:
-        for i in range(0,diData.shape[0]):
-            xCent = diData[i,1]*asConversion
-            yCent = diData[i,3]*asConversion
-            #print 'data [x,y] = ['+str(xCent/asConversion)+', '+str(yCent/asConversion)+']'#$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            left = xCent-diData[i,2]*asConversion
-            right = xCent+diData[i,2]*asConversion
-            top = yCent+diData[i,4]*asConversion
-            btm = yCent-diData[i,4]*asConversion
-            hfWdth = abs(right-left)*errMult*0.5
-            hfHgt = abs(top-btm)*errMult*0.5
-            subPlot.plot([left-hfWdth,right+hfWdth],[yCent,yCent],linewidth=thkns,color='k',alpha=1.0)
-            subPlot.plot([xCent,xCent],[btm-hfHgt,top+hfHgt],linewidth=thkns,color='k',alpha=1.0)
+    ## plot a cross for either DI data format
+    if pasa:
+        ## convert PASA data and errors into EN versions, calc max and then plot if errMult>0
+        (xcenters, E_error, ycenters, N_error)=PASAtoEN(realData[:,0],0,realData[:,3],0)
+        (xas, E_error, yas, N_error)=PASAtoEN(realData[:,0]-realData[:,1]*errMult,0,realData[:,3],0)
+        (xbx, E_error, ybs, N_error)=PASAtoEN(realData[:,0]+realData[:,1]*errMult,0,realData[:,3],0)
+        (xcs, E_error, ycs, N_error)=PASAtoEN(realData[:,0],0,realData[:,3]-realData[:,4]*errMult,0)
+        (xds, E_error, yds, N_error)=PASAtoEN(realData[:,0],0,realData[:,3]+realData[:,4]*errMult,0)
+        xALL = np.concatenate((xcenters,xas,xbs,xcs,xds))
+        yALL = np.concatenate((ycenters,yas,ybs,ycs,yds))
+        xmin = np.min(xALL)*asConversion
+        xmax = np.max(xALL)*asConversion
+        ymin = np.min(yALL)*asConversion
+        ymax = np.max(yALL)*asConversion
+        if errMult>0.0:
+            for i in range(0,len(xas)):
+                subPlot.plot([xas[i]*asConversion,xbs[i]*asConversion],[yas[i]*asConversion,ybs[i]*asConversion],linewidth=thkns,color='k',alpha=1.0)
+                subPlot.plot([xcs[i]*asConversion,xds[i]*asConversion],[ycs[i]*asConversion,yds[i]*asConversion],linewidth=thkns,color='k',alpha=1.0)
+    else:
+        xmin = np.min(diData[:,1]-diData[:,2])*asConversion
+        xmax = np.max(diData[:,1]+diData[:,2])*asConversion
+        ymin = np.min(diData[:,3]-diData[:,4])*asConversion
+        ymax = np.max(diData[:,3]+diData[:,4])*asConversion
+        if errMult>0.0:
+            for i in range(0,diData.shape[0]):
+                xCent = diData[i,1]*asConversion
+                yCent = diData[i,3]*asConversion
+                #print 'data [x,y] = ['+str(xCent/asConversion)+', '+str(yCent/asConversion)+']'#$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                left = xCent-diData[i,2]*asConversion
+                right = xCent+diData[i,2]*asConversion
+                top = yCent+diData[i,4]*asConversion
+                btm = yCent-diData[i,4]*asConversion
+                hfWdth = abs(right-left)*errMult*0.5
+                hfHgt = abs(top-btm)*errMult*0.5
+                subPlot.plot([left-hfWdth,right+hfWdth],[yCent,yCent],linewidth=thkns,color='k',alpha=1.0)
+                subPlot.plot([xCent,xCent],[btm-hfHgt,top+hfHgt],linewidth=thkns,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])
 
 def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[],stage='MCMC',centersOnly=False):
@@ -704,8 +723,8 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         Orbit.calculate(tmpData,paramsDI)
         lonXYs = tmpData[:,:2]#[[tmpData[0,0],tmpData[0,1]]]
         
-        ##load resulting data to file for re-plotting by others
-        #real [x,xerr,y,yerr]
+        ##load resulting data to file for re-plotting by others, along with calculating and storing O-C values
+        #real [x,xerr,y,yerr] OR [PA,PAerr,SA,SAerr] depending on 'pasa' bool in settings dict.
         outDIdataReal = realDataDI[:,1:5]
         #fit [x,y]
         outDIdataFit = []
@@ -718,7 +737,17 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         np.savetxt(fnameBase+'-real.dat',outDIdataReal)
         np.savetxt(fnameBase+'-predicted.dat',outPredictedDIdata)
         np.savetxt(fnameBase+'-fit.dat',outDIdataFit)
-
+        residualDIdata = []
+        if settingsDict["pasa"][0]:
+            (xcenters, E_error, ycenters, N_error)=PASAtoEN(realDataDI[:,1],0,realDataDI[:,3],0)
+            for i in range(0,len(predictedDataDI)):
+                residualDIdata.append([xcenters[i]-predictedDataDI[i,0],ycenters[i]-predictedDataDI[i,1]])
+        else:
+            for i in range(0,len(predictedDataDI)):
+                residualDIdata.append([realDataDI[i,1]-predictedDataDI[i,0],realDataDI[i,3]-predictedDataDI[i,1]])
+        #O-C [RAo-c,DECo-c]
+        np.savetxt(fnameBase+'-O-C.dat',residualDIdata)
+            
         diFig = plt.figure(2,figsize=(10,9))
         main = diFig.add_subplot(111)
         #determine if to plot [mas] or ["]
@@ -743,7 +772,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
                 main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=diLnThk*5)#$$$$$$$$ Place for custimization
                 #print 'plotted point ['+str(predictedDataDI[i,0]*asConversion)+', '+str(predictedDataDI[i,1]*asConversion)+']'
         ## Add DI data to plot
-        (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realDataDI,asConversion,errMult=diErrMult,thkns=diLnThk)#$$$$$$$$ Place for custimization
+        (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realDataDI,asConversion,errMult=diErrMult,thkns=diLnThk,pasa=settingsDict["pasa"][0])#$$$$$$$$ Place for custimization
         ## set limits and other basics of plot looks
         xLims = (np.min([xmin,np.min(fitDataDI[:,0]*asConversion)]),np.max([xmax,np.max(fitDataDI[:,0]*asConversion)]))
         yLims = (np.min([ymin,np.min(fitDataDI[:,1]*asConversion)]),np.max([ymax,np.max(fitDataDI[:,1]*asConversion)]))

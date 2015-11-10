@@ -18,6 +18,7 @@ def ePriorRatio(eProposed,eLast):
             return 1.0
     else:
         return 1.0
+    
 def pPriorRatio(Pproposed,Plast):
     if simpleSettingsDict['PMAX']!=0:
         if Pproposed!=0:
@@ -26,6 +27,7 @@ def pPriorRatio(Pproposed,Plast):
             return 1.0
     else:
         return 1.0
+    
 def incPriorRatio(incProposed,incLast):
     if simpleSettingsDict['incMAX']!=0:
         if (incLast%90.0)!=0:
@@ -35,64 +37,57 @@ def incPriorRatio(incProposed,incLast):
     else:
         return 1.0
     
-def mass1PriorRatio(M1Proposed,M1Last):
-    #we are assuming M1>70Mj
+def mass1PriorRatio(MProposed,MLast):
     if (simpleSettingsDict['mass1MAX']!=0)and True:
-        if M1Proposed!=M1Last!=0:
-            if True:#simpleSettingsDict['mass1MIN']>=0.5:
-                #From Table 1 of Chabrier2003
-                return (M1Proposed**(-2.3))/(M1Last**(-2.3))
-            #elif (simpleSettingsDict['mass1MIN']>=0.07)and(simpleSettingsDict['mass1MAX']<=0.5):
-            #    return (M1Proposed**(-1.3))/(M1Last**(-1.3))
-            else:
-                return 1.0
+        if MProposed!=MLast!=0:
+            prop = chabrierPrior(MProposed,IMF=False)
+            lst = chabrierPrior(MLast,IMF=False)
+            return prop/lst
         else:
             return 1.0
     else:
         return 1.0
-#     if mass!=0:
-#         if simpleSettingsDict['mass1MIN']!=simpleSettingsDict['mass1MAX']!=0:
-#             return gaussian(mass, advancedDict['mass1Est'][0], advancedDict['mass1Err'][0])
-#         else:
-#             return 1.0
-#    else:
-#         return 1.0
-def mass2PriorRatio(M2Proposed,M2Last,aProposed,aLast):
+    
+def mass2PriorRatio(MProposed,MLast):
     if (simpleSettingsDict['mass2MAX']!=0)and True:
-        if M2Proposed!=M2Last!=0:
-            if True:#simpleSettingsDict['mass2MIN']>=0.5:
-                #From Table 1 of Chabrier2003
-                return (M2Proposed**(-2.3))/(M2Last**(-2.3))
-            #elif (simpleSettingsDict['mass2MIN']>=0.07)and(simpleSettingsDict['mass2MAX']<=0.5):
-            #    return (M2Proposed**(-1.3))/(M2Last**(-1.3))
-            #elif (simpleSettingsDict['mass2MIN']>=0.005)and(simpleSettingsDict['mass2MAX']<=0.07):
-            #    if aProposed!=aLast!=0:
-            #        return ((M2Proposed**(-0.65))*(aProposed**(-0.85)))/((M2Last**(-0.65))*(aLast**(-0.85)))
-            #    else:
-            #        return 1.0
-            else:
-                return 1.0
+        if MProposed!=MLast!=0:
+            prop = chabrierPrior(MProposed,IMF=False)
+            lst = chabrierPrior(MLast,IMF=False)
+            return prop/lst
         else:
             return 1.0
     else:
         return 1.0
-#     if simpleSettingsDict['mass2MIN']!=simpleSettingsDict['mass2MAX']!=0:
-#         return gaussian(mass, advancedDict['mass2Est'][0], advancedDict['mass2Err'][0])
-#     else:
-#         return 1.0
+    
 def paraPriorRatio(paraProposed,paraLast):
     if paraProposed!=paraLast!=simpleSettingsDict['paraMAX']!=0:
-        if False:
-            return (paraLast**2.0)/(paraProposed**2.0)
-        elif True:
+        ratioA = (paraLast**4.0)/(paraProposed**4.0)
+        ratioB = 1.0
+        if advancedDict['paraEst'][0]!=0:
             ## a Gaussian prior centered on hipparcos and width of hipparcos estimated error
             top = gaussian(paraProposed, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
             btm = gaussian(paraLast, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
-            return top/btm
-        else:
-            return 1.0
+            ratioB = top/btm
+        return ratioA*ratioB
     else:
         return 1.0
+    
+def chabrierPrior(m,IMF=False):
+    if IMF==False:
+        if m<1.0:
+            d = (0.068618528140713786/m)*np.exp((-(np.log10(m)+1.1023729087095586)**2)/0.9521999999999998)
+        elif m<3.47:
+            d = 0.019108957203743077*(m**(-5.37))
+        elif m<18.20:
+            d = 0.0065144172285487769*(m**(-4.53))
+        else:
+            d = 0.00010857362047581295*(m**(-3.11))
+    else:
+        if m<1.0:
+            d = (0.068618528140713786/m)*np.exp((-(np.log10(m)+1.1023729087095586)**2)/0.9521999999999998)
+        else:
+            d = 0.019239245548314052*(m**(-2.3))
+    return d
 
 
 advancedDict = {
@@ -191,8 +186,10 @@ advancedDict = {
 'omegaPrv' : (0.0,"Custom fixed val added to RV omega in model"),
 ##################################################
 ## Special settings DI model:
-# force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
+# force adding a value in degrees to argument of periapsis used in DI orbit fit [double]
 'omegaPdi' : (0.0,"Custom fixed val added to DI omega in model"),
+# Is the data in the DIdata.dat in SA,PA format? else, it is in E,N (x,y) format [bool]
+'sapa'     : (False,"Is astrometry data in SA,PA format?"),
 ######################
 # System Information #
 ######################

@@ -645,7 +645,7 @@ def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,e
     (head,data) = loadFits(finalFits)
     totalSamps = head['NSAMPLES']
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
-    f.write("\n"+"*"*65+"\noutRoot:  "+settingsDict['outRoot']+"\n"+"*"*65+"\n")
+    f.write("\n"+"*"*80+"\noutRoot:  "+settingsDict['outRoot']+"\n"+"*"*80+"\n")
     f.write('\n'+'-'*7+'\nBasics:\n'+'-'*7)
     f.write('\nparamList:\n'+repr(paramList))
     f.write('\nparamStrs:\n'+repr(paramStrs))
@@ -795,7 +795,7 @@ def predictLocation(orbParams,settingsDict,epochs=[]):
     Orbit.calculate(predictedData,params)
     print "predicted epochs data are:\n"+repr(predictedData)
     
-def chiSquaredCalc3D(realData,modelData,nuDI,nuRV,nu3D): 
+def chiSquaredCalc3D(realData,modelData,nuDI,nuRV,nu3D,sapa=False): 
     """
     Based on definition, chiSquared=sum((modelVal_i-dataVal_i)^2/(dataError_i^2)) over all values of 'i'.
     This function will do so for DI, RV and 3D sets of data and provide the reduced chi squared for each.
@@ -805,6 +805,11 @@ def chiSquaredCalc3D(realData,modelData,nuDI,nuRV,nu3D):
            
     returned (raw3D, reducedDI, reducedRV, reduced3D)
     """   
+    ## convert E,N to SA,PA?
+    if sapa:
+        (PA,PA_error,SA,SA_error) = ENtoPASA(modelData[:,0], 0, modelData[:,1], 0)
+        modelData[:,0] = PA
+        modelData[:,1] = SA
     diffs = np.concatenate(((realData[:,1]-modelData[:,0]),(realData[:,3]-modelData[:,1]),(realData[:,5]-modelData[:,2])))
     errors = np.concatenate((realData[:,2],realData[:,4],realData[:,6]))
     raw3D = np.sum((diffs**2)/(errors**2))
@@ -1057,7 +1062,8 @@ def ENtoPASA(E, E_error, N, N_error):
     
     SA = np.sqrt(E**2.0 + N**2.0)
     
-    PA_error=SA_error=0
+    PA_error=0
+    SA_error=0
     if (E_error==0)or(N_error==0):
         if False:
             print "either the E or N error value was zero, so setting the PA and SA return errors to zero!!"
@@ -1090,7 +1096,8 @@ def PASAtoEN(PA,PA_error,SA,SA_error):
     N = SA*np.cos(np.radians(PA))
     E = SA*np.sin(np.radians(PA))
     
-    E_error=N_error=0
+    E_error=0
+    N_error=0
     if (SA_error==0)or(PA_error==0):
         if verbose:
             print "either the PA and SA error value was zero, so setting the E or N return errors to zero!!"
@@ -1099,7 +1106,7 @@ def PASAtoEN(PA,PA_error,SA,SA_error):
         tempB = ((np.cos(np.radians(PA+PA_error))-np.cos(np.radians(PA))) / np.cos(np.radians(PA)))**2.0
         N_error = abs(N*np.sqrt(tempA+tempB))
         
-        # Another way to calculate the error, but the one above is belived to be more currect 
+        # Another way to calculate the error, but the one above is belived to be more correct 
         tempA2 = (SA_error*np.cos(np.radians(PA)))**2.0
         tempB2 = (SA*np.sin(np.radians(PA))*np.radians(PA_error))**2.0
         N_error2 = np.sqrt(tempA2+tempB2)
@@ -1108,7 +1115,7 @@ def PASAtoEN(PA,PA_error,SA,SA_error):
         tempD = ((np.sin(np.radians(PA+PA_error))-np.sin(np.radians(PA))) / np.sin(np.radians(PA)))**2.0
         E_error = abs(E*np.sqrt(tempC+tempD))
         
-        # Another way to calculate the error, but the one above is belived to be more currect 
+        # Another way to calculate the error, but the one above is belived to be more correct 
         tempC2 = (SA_error*np.sin(np.radians(PA)))**2.0
         tempD2 = (SA*np.cos(np.radians(PA))*np.radians(PA_error))**2.0
         E_error2 = np.sqrt(tempC2+tempD2)

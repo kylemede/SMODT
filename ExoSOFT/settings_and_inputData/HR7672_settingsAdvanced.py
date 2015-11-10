@@ -18,6 +18,7 @@ def ePriorRatio(eProposed,eLast):
             return 1.0
     else:
         return 1.0
+    
 def pPriorRatio(Pproposed,Plast):
     if simpleSettingsDict['PMAX']!=0:
         if Pproposed!=0:
@@ -26,6 +27,7 @@ def pPriorRatio(Pproposed,Plast):
             return 1.0
     else:
         return 1.0
+    
 def incPriorRatio(incProposed,incLast):
     if simpleSettingsDict['incMAX']!=0:
         if (incLast%90.0)!=0:
@@ -56,17 +58,17 @@ def mass2PriorRatio(MProposed,MLast):
             return 1.0
     else:
         return 1.0
+    
 def paraPriorRatio(paraProposed,paraLast):
     if paraProposed!=paraLast!=simpleSettingsDict['paraMAX']!=0:
-        if False:
-            return (paraLast**2.0)/(paraProposed**2.0)
-        elif True:
+        ratioA = (paraLast**4.0)/(paraProposed**4.0)
+        ratioB = 1.0
+        if advancedDict['paraEst'][0]!=0:
             ## a Gaussian prior centered on hipparcos and width of hipparcos estimated error
             top = gaussian(paraProposed, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
             btm = gaussian(paraLast, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
-            return top/btm
-        else:
-            return 1.0
+            ratioB = top/btm
+        return ratioA*ratioB
     else:
         return 1.0
     
@@ -86,7 +88,6 @@ def chabrierPrior(m,IMF=False):
         else:
             d = 0.019239245548314052*(m**(-2.3))
     return d
-
 
 
 advancedDict = {
@@ -185,8 +186,10 @@ advancedDict = {
 'omegaPrv' : (0.0,"Custom fixed val added to RV omega in model"),
 ##################################################
 ## Special settings DI model:
-# force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
+# force adding a value in degrees to argument of periapsis used in DI orbit fit [double]
 'omegaPdi' : (0.0,"Custom fixed val added to DI omega in model"),
+# Is the data in the DIdata.dat in SA,PA format? else, it is in E,N (x,y) format [bool]
+'sapa'     : (False,"Is astrometry data in SA,PA format?"),
 ######################
 # System Information #
 ######################

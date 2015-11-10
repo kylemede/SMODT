@@ -10,7 +10,7 @@ double testFunc(double t){
 void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
 	//------------------
 	//Calculate TA and E
-	//Remember that in RV, there is a shift due to the Tc!=T, that doesn't exist in DI.
+	//Remember that in RV, there is a phase shift due to the Tc!=T, that doesn't exist in DI.
 	//------------------
 	//std::cout<<"\necc = "<<ecc<<", T = "<<T<<", Tc = "<<Tc<<", P = "<<P<<", epoch = "<<epoch<<std::endl;
 	thetaRV=0;

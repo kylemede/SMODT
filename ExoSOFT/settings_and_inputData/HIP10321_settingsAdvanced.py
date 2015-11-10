@@ -186,8 +186,10 @@ advancedDict = {
 'omegaPrv' : (0.0,"Custom fixed val added to RV omega in model"),
 ##################################################
 ## Special settings DI model:
-# force adding a value in degrees to argument of periapsis used in RV orbit fit [double]
+# force adding a value in degrees to argument of periapsis used in DI orbit fit [double]
 'omegaPdi' : (0.0,"Custom fixed val added to DI omega in model"),
+# Is the data in the DIdata.dat in SA,PA format? else, it is in E,N (x,y) format [bool]
+'sapa'     : (False,"Is astrometry data in SA,PA format?"),
 ######################
 # System Information #
 ######################

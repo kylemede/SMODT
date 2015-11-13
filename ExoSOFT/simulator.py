@@ -36,7 +36,7 @@ class Simulator(object):
         self.realData = tools.loadRealData(os.path.join(self.dictVal('settingsDir'),self.dictVal('prepend')),dataMode=self.dictVal('dataMode'))
         (self.rangeMaxsRaw,self.rangeMinsRaw,self.rangeMaxs,self.rangeMins,self.starterSigmas,self.paramInts,self.nu,self.nuDI,self.nuRV) = self.starter() 
         self.Orbit = tools.cppTools.Orbit()
-        self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'),self.dictVal('lowEcc'))
+        self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'),self.dictVal('lowEcc'),self.dictVal('pasa'))
         self.Orbit.loadRealData(self.realData)
         self.Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
         #Just initial seed val, reset in resetTracked() to be unique for each chain.
@@ -132,15 +132,6 @@ class Simulator(object):
             rangeMaxsRaw[4] = fourMax
             rangeMinsRaw[9] = nineMin
             rangeMinsRaw[4] = fourMin
-            #print 'rangeMins[4] = '+str(rangeMins[4])+", rangeMaxs[4] = "+str(rangeMaxs[4])
-            #print 'rangeMins[9] = '+str(rangeMins[9])+", rangeMaxs[9] = "+str(rangeMaxs[9])
-            #print a
-            #print b
-            #print c
-            #print d
-            #print 'rangeMinsRaw[4] = '+str(rangeMinsRaw[4])+", rangeMaxsRaw[4] = "+str(rangeMaxsRaw[4])
-            #print 'rangeMinsRaw[9] = '+str(rangeMinsRaw[9])+", rangeMaxsRaw[9] = "+str(rangeMaxsRaw[9])
-            #sys.exit(0)
         ##figure out which parameters are varying in this run.
         ##don't vary atot or chiSquared ever, 
         ##and take care of TcEqualT and Kdirect cases
@@ -274,10 +265,13 @@ class Simulator(object):
         This will handle the values that are tuples and not
         returning the value.
         """
-        if type(self.settingsDict[key])==tuple:
-            return self.settingsDict[key][0]
-        else:
-            return self.settingsDict[key]
+        try:
+            if type(self.settingsDict[key])==tuple:
+                return self.settingsDict[key][0]
+            else:
+                return self.settingsDict[key]
+        except:
+            return False
     
     def increment(self,pars=[],sigs=[],stage=''):
         """
@@ -352,7 +346,7 @@ class Simulator(object):
         """
         paramsOut = copy.deepcopy(pars)
         ## Calculate chi squareds for 3D,DI,RV and update bestPars and bestSumStr if this is better than the best
-        (raw3D, reducedDI, reducedRV, reduced3D) = tools.chiSquaredCalc3D(self.realData,modelData,self.nuDI,self.nuRV,self.nu,pasa=self.dictVal('pasa'))
+        (raw3D, reducedDI, reducedRV, reduced3D) = tools.chiSquaredCalc3D(self.realData,modelData,self.nuDI,self.nuRV,self.nu)
         paramsOut[11] = raw3D
         if self.bestSumStr=='':
             self.bestSumStr = stage+" chain #"+str(self.chainNum)+' Nothing accepted yet below chi squared max = '+str(self.dictVal('chiMAX'))

@@ -682,7 +682,11 @@ def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,e
         realData = loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
         ## Make Orbit cpp obj
         Orbit = cppTools.Orbit()
-        Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0],settingsDict['lowEcc'][0])
+        try:
+            pasa = settingsDict["pasa"][0]
+        except:
+            pasa = False
+        Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0],settingsDict['lowEcc'][0],pasa)
         Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
         ## ensure bestFit are in required format for Orbit
         params = []
@@ -759,7 +763,11 @@ def recheckFit3D(orbParams,settingsDict,finalFits='',nus=[]):
     realData = loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
     ## Make Orbit cpp obj
     Orbit = cppTools.Orbit()
-    Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0],settingsDict['lowEcc'][0])
+    try:
+        pasa = settingsDict["pasa"][0]
+    except:
+        pasa = False
+    Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0],settingsDict['lowEcc'][0],pasa)
     Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
     ## ensure orbParams are in required format for Orbit
     params = []
@@ -779,7 +787,11 @@ def predictLocation(orbParams,settingsDict,epochs=[]):
     realData = loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
     ## Make Orbit cpp obj
     Orbit = cppTools.Orbit()
-    Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0],settingsDict['lowEcc'][0])
+    try:
+        pasa = settingsDict["pasa"][0]
+    except:
+        pasa = False
+    Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0],settingsDict['lowEcc'][0],pasa)
     Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
     ## ensure orbParams are in required format for Orbit
     params = []

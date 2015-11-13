@@ -27,16 +27,16 @@ public:
 	double* params;
 	int params_n;
     //Declare all doubles used inside Orbit class.
-    double M, E, Eprime,EDI,K,theta,thetaPrime,thetaRV,A,B,F,G,X,Y,atot;
+    double M, E, Eprime,EDI,K,theta,thetaPrime,thetaRV,A,B,F,G,X,Y,atot,RA,Dec,PA,SA;
     //Declare static global constants
     double Grav,pi,KGperMsun,daysPerYear,secPerYear,MperAU;
     //For sqrt(e)sin(omega),sqrt(e)cos(omega) case
-    bool lowEcc;
+    bool lowEcc,PASA;
     double e,omega;
     
     //funcs
     //for passing in a STATIC 2D data array of Real data into the object
-    void loadStaticVars(double omegaoffsetDI,double omegaoffsetRV,bool lowEcc_in);
+    void loadStaticVars(double omegaoffsetDI,double omegaoffsetRV,bool lowEcc_in,bool PASA_in);
     void loadRealData(double *xx, int xx_nx, int xx_ny);
     //For loading in the global constants
     void loadConstants(double Grav_in,double pi_in,double KGperMsun_in, double daysPerYear_in,double secPerYear_in,double MperAU_in);

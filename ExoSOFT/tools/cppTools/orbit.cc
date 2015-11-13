@@ -79,10 +79,11 @@ void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
 	//std::cout<<"\nin anomaly calc: EDI = "<<EDI<<", thetaRV = "<<thetaRV<<std::endl;//$$$$$$$$$$$$$$$$$$
 };
 
-void Orbit::loadStaticVars(double omegaoffsetDI,double omegaoffsetRV,bool lowEcc_in){
+void Orbit::loadStaticVars(double omegaoffsetDI,double omegaoffsetRV,bool lowEcc_in,bool PASA_in){
 	omegaOffsetDI = omegaoffsetDI;
 	omegaOffsetRV = omegaoffsetRV;
 	lowEcc = lowEcc_in;
+	PASA = PASA_in;
 //	if (lowEcc)
 //		std::cout<<"lowEcc is true"<<std::endl;
 //	if (lowEcc==false)
@@ -233,7 +234,7 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *p, int p_n){
 			std::cout<<"RV = "<<dataModelAry[2+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		}//$$$$$$$$$$$$$$$$$$$$$$$$$
 		//--------------------------
-		//Calculate x,y
+		//Calculate x,y or PA,SA
 		//--------------------------
 		if ((dataRealAry[2+i*dataRealAry_ny]<1e6)&&(dataRealAry[4+i*dataRealAry_ny]<1e6)){
 			// calculate all the Thiele-Innes constants in ["]
@@ -244,12 +245,24 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *p, int p_n){
 			// The coordinates of the unit orbital ellipse in the true plane (Binnendijk)
 			X = cos(EDI)-params[4];
 			Y = sqrt(1.0-params[4]*params[4])*sin(EDI);
-			// Calculate the predicted x&y in ["]
-			//KEY NOTE: x_TH-I = y_plot = North
-			//          y_TH-I = x_plot = East
-			//THUS, store x=y_TH-I, y=x_TH-I !!!
-			dataModelAry[0+i*dataModelAry_ny] = B*X +G*Y;
-			dataModelAry[1+i*dataModelAry_ny] = A*X +F*Y;
+			// Calculate the predicted x&y in ["], or PA[deg], SA["]
+			//KEY NOTE: x_TH-I = y_plot = North = Dec = A*X +F*Y
+			//          y_TH-I = x_plot = East = RA = B*X +G*Y
+			RA = B*X +G*Y;
+			Dec = A*X +F*Y;
+			//check which and then store RA/Dec or PA/SA accordingly
+			if (PASA){
+				PA = atan2(RA,Dec);
+				if (PA<0.0)
+					PA+=2.0*pi;
+				SA = sqrt(RA*RA+Dec*Dec);
+				dataModelAry[0+i*dataModelAry_ny] = PA*(180.0/pi);
+				dataModelAry[1+i*dataModelAry_ny] = SA;
+			}
+			else{
+				dataModelAry[0+i*dataModelAry_ny] = RA;
+				dataModelAry[1+i*dataModelAry_ny] = Dec;
+			}
 		}
 		else{
 			//std::cout<<"x real = "<< dataRealAry[1+i*dataRealAry_nx]<<", y real = "<< dataRealAry[3+i*dataRealAry_nx]<<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$

@@ -670,7 +670,11 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
     realData = genTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
     ## Make Orbit cpp obj
     Orbit = cppTools.Orbit()
-    Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0],settingsDict['lowEcc'][0])
+    try:
+        pasa = settingsDict["pasa"][0]
+    except:
+        pasa = False
+    Orbit.loadStaticVars(settingsDict['omegaFdi'][0],settingsDict['omegaFrv'][0],settingsDict['lowEcc'][0],False)
     Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
     ## ensure orbParams are in required format for Orbit
     params = []
@@ -686,7 +690,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         realDataDI = copy.deepcopy(realData)
         realDataDI = realDataDI[np.where(realDataDI[:,2]<1e6)[0],:]
         ##Make model data for 100~1000 points for plotting fit
-        nPts = 3000
+        nPts = 1000
         fakeRealData = np.zeros((nPts,8),dtype=np.dtype('d'),order='C')
         fakeRealData[:,1:5]=1.0
         fakeRealData[:,6]=1e6
@@ -740,7 +744,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         np.savetxt(fnameBase+'-predicted.dat',outPredictedDIdata)
         np.savetxt(fnameBase+'-fit.dat',outDIdataFit)
         residualDIdata = []
-        if settingsDict["pasa"][0]:
+        if pasa:
             (xcenters, E_error, ycenters, N_error)=genTools.PASAtoEN(realDataDI[:,1],0,realDataDI[:,3],0)
             for i in range(0,len(predictedDataDI)):
                 residualDIdata.append([xcenters[i]-predictedDataDI[i,0],ycenters[i]-predictedDataDI[i,1]])
@@ -774,7 +778,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
                 main.plot(predictedDataDI[i,0]*asConversion,predictedDataDI[i,1]*asConversion,c='red',marker='.',markersize=diLnThk*5)#$$$$$$$$ Place for custimization
                 #print 'plotted point ['+str(predictedDataDI[i,0]*asConversion)+', '+str(predictedDataDI[i,1]*asConversion)+']'
         ## Add DI data to plot
-        (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realDataDI,asConversion,errMult=diErrMult,thkns=diLnThk,pasa=settingsDict["pasa"][0])#$$$$$$$$ Place for custimization
+        (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realDataDI,asConversion,errMult=diErrMult,thkns=diLnThk,pasa=pasa)#$$$$$$$$ Place for custimization
         ## set limits and other basics of plot looks
         xLims = (np.min([xmin,np.min(fitDataDI[:,0]*asConversion)]),np.max([xmax,np.max(fitDataDI[:,0]*asConversion)]))
         yLims = (np.min([ymin,np.min(fitDataDI[:,1]*asConversion)]),np.max([ymax,np.max(fitDataDI[:,1]*asConversion)]))

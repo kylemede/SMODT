@@ -72,12 +72,12 @@ def customPost():
         #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-0mult-1thk-')
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.5],[-0.8,0.8],[-0.515,0.515]],diErrMult=0,diLnThk=1)
-        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-7-1mult-1thk-')
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.5],[-0.8,0.8],[-0.515,0.515]],diErrMult=1,diLnThk=1)
-        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-0mult-3thk-')
-        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=3)
-        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-0mult-3thk-')
-        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=3)
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-8-1mult-1thk-')
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=1,diLnThk=1)
+        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-8-0mult-1thk-')
+        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=1)
+        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-8-1mult-3thk-')
+        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=1,diLnThk=3)
         
     clStr=''
     if False:
@@ -203,7 +203,7 @@ def paramConverterTest():
     
     ## Make Orbit cpp obj
     Orbit = tools.cppTools.Orbit()
-    Orbit.loadStaticVars(0,0,True)
+    Orbit.loadStaticVars(0,0,True,False)
     Orbit.loadConstants(const.Grav,const.pi,const.KGperMsun, const.daysPerYear,const.secPerYear,const.MperAU)
     bestFit = np.array([ 1.08040127e+00,   9.60493873e-04,   5.02111885e+01,
           1.00808667e+02,   6.29123973e-02,   2.45151739e+06,

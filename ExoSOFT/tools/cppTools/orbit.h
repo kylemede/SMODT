@@ -15,7 +15,7 @@ public:
 	bool verbose;
 	int newtonCount,i,j;
     //for T <-> Tc calc
-    double ta,halfE,mTTc,deltaT;
+    double ta,halfE,mTTc,deltaT,multiples;
     //to handle omega offsets
     double omegaOffsetDI,omegaOffsetRV,omegaDI,omegaRV;
     //declare REAL static data array

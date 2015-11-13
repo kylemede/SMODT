@@ -111,7 +111,7 @@ advancedDict = {
 # make plots of RV and DI/AM orbit fits [bool]
 'pltOrbit' :True,
 # Delete chain files after simulation is complete? [bool]
-'delChains' :False,
+'delChains' :True,
 # Delete combined data files after simulation is complete? [bool]
 'delCombined' :False,
 # run 'make' on C++/SWIG code to make sure it is up-to-date [bool]

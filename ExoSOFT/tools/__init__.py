@@ -15,8 +15,7 @@ from generalTools import writeFits
 from generalTools import combineFits
 from generalTools import findBestOrbit
 from generalTools import mcmcEffPtsCalc
-from generalTools import summaryFilePart1
-from generalTools import summaryFilePart2
+from generalTools import summaryFile
 from generalTools import gelmanRubinCalc
 from generalTools import cleanUp
 from generalTools import burnInCalc

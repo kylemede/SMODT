@@ -1054,11 +1054,16 @@ def ENtoPASA(E, E_error, N, N_error):
     :returns: (PA,PA_error,SA,SA_error)
     """
     verbose = False
-    PA = np.degrees(np.atan2(E,N))
-    #NOTE: both np.atan2 and np.arctan2 tried with same results, both produce negatives rather than continuous 0-360 
+    PA = np.degrees(np.arctan2(E,N))
+    #NOTE: both math.atan2 and np.arctan2 tried with same results, both produce negatives rather than continuous 0-360 
     #thus, must correct for negative outputs
-    if PA<0:
-        PA = PA+360.0
+    if type(PA)!=np.ndarray:
+        if PA<0:
+            PA = PA+360.0
+    else:
+        for i in range(0,len(PA)):
+            if PA[i]<0:
+                PA[i]=PA[i]+360.0
     
     SA = np.sqrt(E**2.0 + N**2.0)
     

@@ -252,11 +252,11 @@ def addDIdataToPlot(subPlot,realData,asConversion,errMult=1.0,thkns=1.0,pasa=Fal
     ## plot a cross for either DI data format
     if pasa:
         ## convert PASA data and errors into EN versions, calc max and then plot if errMult>0
-        (xcenters, E_error, ycenters, N_error)=PASAtoEN(realData[:,0],0,realData[:,3],0)
-        (xas, E_error, yas, N_error)=PASAtoEN(realData[:,0]-realData[:,1]*errMult,0,realData[:,3],0)
-        (xbx, E_error, ybs, N_error)=PASAtoEN(realData[:,0]+realData[:,1]*errMult,0,realData[:,3],0)
-        (xcs, E_error, ycs, N_error)=PASAtoEN(realData[:,0],0,realData[:,3]-realData[:,4]*errMult,0)
-        (xds, E_error, yds, N_error)=PASAtoEN(realData[:,0],0,realData[:,3]+realData[:,4]*errMult,0)
+        (xcenters, E_error, ycenters, N_error)=genTools.PASAtoEN(diData[:,1],0,diData[:,3],0)
+        (xas, E_error, yas, N_error)=genTools.PASAtoEN(diData[:,1]-diData[:,2]*errMult,0,diData[:,3],0)
+        (xbs, E_error, ybs, N_error)=genTools.PASAtoEN(diData[:,1]+diData[:,2]*errMult,0,diData[:,3],0)
+        (xcs, E_error, ycs, N_error)=genTools.PASAtoEN(diData[:,1],0,diData[:,3]-diData[:,4]*errMult,0)
+        (xds, E_error, yds, N_error)=genTools.PASAtoEN(diData[:,1],0,diData[:,3]+diData[:,4]*errMult,0)
         xALL = np.concatenate((xcenters,xas,xbs,xcs,xds))
         yALL = np.concatenate((ycenters,yas,ybs,ycs,yds))
         xmin = np.min(xALL)*asConversion
@@ -265,7 +265,9 @@ def addDIdataToPlot(subPlot,realData,asConversion,errMult=1.0,thkns=1.0,pasa=Fal
         ymax = np.max(yALL)*asConversion
         if errMult>0.0:
             for i in range(0,len(xas)):
+                #print 'plotting DI line1: xs '+repr([xas[i]*asConversion,xbs[i]*asConversion])+', ys '+repr([yas[i]*asConversion,ybs[i]*asConversion])
                 subPlot.plot([xas[i]*asConversion,xbs[i]*asConversion],[yas[i]*asConversion,ybs[i]*asConversion],linewidth=thkns,color='k',alpha=1.0)
+                #print 'plotting DI line2: xs '+repr([xcs[i]*asConversion,xds[i]*asConversion])+', ys '+repr([ycs[i]*asConversion,yds[i]*asConversion])
                 subPlot.plot([xcs[i]*asConversion,xds[i]*asConversion],[ycs[i]*asConversion,yds[i]*asConversion],linewidth=thkns,color='k',alpha=1.0)
     else:
         xmin = np.min(diData[:,1]-diData[:,2])*asConversion
@@ -634,7 +636,7 @@ def epochsToPhases(epochs,Tc,P_yrs, halfOrbit=False):
             print 'phase = ',phase        
     return phases
 
-def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],RVlims=[],diErrMult=0,diLnThk=1.0):
+def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],RVlims=[],diErrMult=1,diLnThk=1.0):
     """
     Make both the DI and RV plots.
     '-DI.png' and/or '-RV.png' will be added to end of plotFnameBase 
@@ -739,7 +741,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         np.savetxt(fnameBase+'-fit.dat',outDIdataFit)
         residualDIdata = []
         if settingsDict["pasa"][0]:
-            (xcenters, E_error, ycenters, N_error)=PASAtoEN(realDataDI[:,1],0,realDataDI[:,3],0)
+            (xcenters, E_error, ycenters, N_error)=genTools.PASAtoEN(realDataDI[:,1],0,realDataDI[:,3],0)
             for i in range(0,len(predictedDataDI)):
                 residualDIdata.append([xcenters[i]-predictedDataDI[i,0],ycenters[i]-predictedDataDI[i,1]])
         else:

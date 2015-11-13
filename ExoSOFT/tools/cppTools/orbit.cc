@@ -17,7 +17,8 @@ void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
 	E=0;
 	//for RV
 	M = (2.0*pi*(epoch-2.0*T+Tc))/(P*daysPerYear);
-	M -= (int)(M/(2.0*pi))*(2.0*pi);//shift into [-360,360]
+	multiples = (double)((int)(M/(2.0*pi)));
+	M -= multiples*(2.0*pi);//shift into [-360,360]
 	if (M<0)
 		M+=2.0*pi;//shift into [0,360]
 	if ((M!=0)and(M!=(2.0*pi))){
@@ -50,7 +51,8 @@ void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
 	//for DI
 	if (T!=Tc){
 		M = (2.0*pi*(epoch-T))/(P*daysPerYear);
-		M -= (int)(M/(2.0*pi))*(2.0*pi);//shift into [-360,360]
+		multiples = (double)((int)(M/(2.0*pi)));
+		M -= multiples*(2.0*pi);//shift into [-360,360]
 		if ((M!=0)and(M!=(2.0*pi))){
 			Eprime = M+ecc*sin(M)+((ecc*ecc)/(2.0*M))*sin(2.0*M);
 			newtonCount = 0;

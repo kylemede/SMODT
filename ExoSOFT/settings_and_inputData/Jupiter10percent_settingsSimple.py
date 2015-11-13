@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (90000000,"Number of MCMC or MC samples"),
+'nSamples' : (120000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "JUPITER2-3D-MCMC-10percent-lowEcc-PDMFm1m2-newParaPrior-Long",
+'outRoot' : "JUPITER2-3D-MCMC-10percent-lowEcc-PDMFm1m2-newParaPrior-LONG2",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -24,32 +24,32 @@ simpleSettingsDict={
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
 # NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
-'mass1MIN' : 0.4,
-'mass1MAX' : 2.35,
+'mass1MIN' : 0.35,
+'mass1MAX' : 2.7,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.00045,
-'mass2MAX' : 0.002,
+'mass2MAX' : 0.0025,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 37.50,
+'paraMIN' : 36.0,
 'paraMAX' : 63.50,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 85.0,
 'OmegaMAX' : 115.0,
 # Minimum/Maximum allowed value for the Eccentricity [double]
-'eMIN' : 0.000005,
+'eMIN' : 0.000000005,
 'eMAX' : 0.18,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2449300,
-'TMAX' : 2452800,
+'TMIN' : 2448900,
+'TMAX' : 2453000,
 # Minimum/Maximum allowed value for the Period [double][yrs]
 'PMIN' : 10,
 'PMAX' : 14.5,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 20,
-'incMAX' : 70.0,
+'incMIN' : 23,
+'incMAX' : 65,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : -100,
+'omegaMIN' : -130,
 'omegaMAX' : 190,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,

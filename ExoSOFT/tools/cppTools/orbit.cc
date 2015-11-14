@@ -269,8 +269,8 @@ void Orbit::calculate(double *yy, int yy_nx, int yy_ny, double *p, int p_n){
 			dataModelAry[0+i*dataModelAry_ny] = dataModelAry[1+i*dataModelAry_ny] = 0.0;
 		}
 		if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$
-			std::cout<<"x = "<<dataModelAry[0+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
-			std::cout<<"y = "<<dataModelAry[1+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+			std::cout<<"x (or PA) = "<<dataModelAry[0+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
+			std::cout<<"y (or SA) = "<<dataModelAry[1+i*dataModelAry_ny] <<std::endl;//$$$$$$$$$$$$$$$$$$$$$$$$$
 		}//$$$$$$$$$$$$$$$$$$$$$$$$$
 	}
 	if (verbose){//$$$$$$$$$$$$$$$$$$$$$$$$$

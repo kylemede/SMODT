@@ -188,11 +188,11 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     plot.axes.set_ylim([0.0,1.02])
     if bestVal is not False:
         try:
-            plot.plot([bestVal,bestVal],[0.0,1.02],color='blue',linewidth=1.5)
+            plot.plot([bestVal-minSub,bestVal-minSub],[0.0,1.02],color='blue',linewidth=1.5)
         except:
             log.error("Tried to plot a line on the shaded histogram for the best val, but failed")
     if xLims!=False:
-        plot.axes.set_xlim(xLims)
+        plot.axes.set_xlim((xLims[0]-minSub,xLims[1]-minSub))
     plot.locator_params(axis='x',nbins=3) # maximum number of x labels
     plot.locator_params(axis='y',nbins=5) # maximum number of y labels
     plot.tick_params(axis='x',which='major',width=0.5,length=3,pad=3,direction='in',labelsize=20)
@@ -460,7 +460,6 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
     (head,data) = genTools.loadFits(outputDataFilename)
     if head!=False:  
         log.debug(' Inside summaryPlotter')
-         
         s= '\nCreating summary plot for file:\n'+outputDataFilename
         s=s+ '\nInput plotfilename:\n'+plotFilename
         log.info(s)
@@ -478,7 +477,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
         ## modify x labels to account for DI only situations where M1=Mtotal
         if np.var(data[:,1])==0:
             paramStrs2[0] = 'm total [Msun]'
-            paramStrs[0] = '$m_{total}$ [$M_{\odot}$]'
+            paramStrs[0] = r'$m_{\rm total}$ [$M_{\odot}$]'
             paramFileStrs[0] = 'm-total'
         
         ## check if a subset is to be plotted or the whole set
@@ -488,15 +487,18 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
             paramStrsUse = []
             paramFileStrsUse = []
             paramListUse = []
+            bestValsUse = []
             for par in paramsToPlot:
                 paramStrs2Use.append(paramStrs2[par])
                 paramStrsUse.append(paramStrs[par])
                 paramFileStrsUse.append(paramFileStrs[par])
                 paramListUse.append(par)
+                bestValsUse.append(bestVals[par])
             paramStrs2 = paramStrs2Use
             paramStrs = paramStrsUse
             paramFileStrs = paramFileStrsUse 
             paramList = paramListUse
+            bestVals = bestValsUse
         ## determine appropriate figure size for number of params to plot
         figSizes =  [(5.5,7),(8,7),(9,7),(10,3.5),(11,8),(11,11),(11,14),(11,16)]
         gridSizes = [(1,1),(1,2),(1,3),(1,4),(2,4),(3,4),(4,4),(5,4)]
@@ -532,31 +534,32 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
         for i in range(0,len(paramStrs2)):
             if (os.path.exists(os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
                 log.debug('Checking parameter has useful data '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
-                (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,i, returnData=True, returnChiSquareds=False, returnBestDataVal=True)
+                (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True)
                 if bestDataVal!=0:
                     completeCLstr+=paramStrs2[i]+clStr+'\n'+'-'*75+'\n'
                     log.debug('Making hist file for parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
-                    histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i])
+                    histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')
                     #print 'histDataBaseName = '+histDataBaseName
                     histMakeAndDump([],data,outFilename=histDataBaseName,weight=False, normed=False, nu=1)
                     if (os.path.exists(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
                         np.savetxt(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'),CLevels)
-                        log.debug('confidence levels data stored to:\n'+os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+str(i)+'.dat'))
+                        log.debug('confidence levels data stored to:\n'+os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))
                 else:
-                    log.debug("Nope! no useful data for "+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", in file:\n"+outputDataFilename)
+                    log.debug("Nope! no useful data for "+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i])#+", in file:\n"+outputDataFilename)
        
         ## Create empty figure to be filled up with plots
         sumFig = plt.figure(figsize=figSizes[sz])       
         ## make shaded posterior for each param
         for i in range(0,len(paramStrs2)):
-            histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i])
+            histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')
             if os.path.exists(os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
-                histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i])
-            if os.path.exists(histDataBaseName+'.dat'):
+                histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')
+            if os.path.exists(histDataBaseName):
                 log.debug('Starting to plot shaded hist for '+paramStrs2[i])
                 #print 'gs[i] = '+repr(gs[0,i])+'\n\n'
                 subPlot = plt.subplot(gridSizes[sz][0],gridSizes[sz][1],i+1)#gs[i])
-                log.debug('Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i])#+" for file:\n"+outputDataFilename
+                #print '\nLoading and re-plotting parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]
+                log.debug('Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i])#+" for file:\n"+outputDataFilename)
                 CLevels=False
                 xLim=False
                 bestVal = False
@@ -569,6 +572,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
                     if os.path.exists(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')):
                         clFile = os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
                     CLevels=np.loadtxt(clFile)
+                    #print 'CLevels = '+repr(CLevels)
                 showYlabel=False
                 if i in [0,4,8,12]:
                     showYlabel = True
@@ -577,6 +581,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
                     par = paramList[i]
                 except:
                     log.debug("Parameter "+str(i)+" not in paramList: \n"+repr(paramList))
+                #print 'about to make hist plot for file base '+histDataBaseName
                 subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[i],xLims=xLim,bestVal=bestVal,latex=latex,showYlabel=showYlabel,parInt=par)         
             else:
                 log.debug("Not plotting shaded hist for "+paramStrs2[i]+" as its hist file doesn't exist:\n"+histDataBaseName)
@@ -780,42 +785,47 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         ## Add DI data to plot
         (main,[xmin,xmax,ymin,ymax]) =  addDIdataToPlot(main,realDataDI,asConversion,errMult=diErrMult,thkns=diLnThk,pasa=pasa)#$$$$$$$$ Place for custimization
         ## set limits and other basics of plot looks
-        xLims = (np.min([xmin,np.min(fitDataDI[:,0]*asConversion)]),np.max([xmax,np.max(fitDataDI[:,0]*asConversion)]))
-        yLims = (np.min([ymin,np.min(fitDataDI[:,1]*asConversion)]),np.max([ymax,np.max(fitDataDI[:,1]*asConversion)]))
-        #force these to be square
-        xR = xLims[1]-xLims[0]
-        yR = yLims[1]-yLims[0]
-        if xR>yR:
-            yLims = (yLims[0]-0.5*abs(xR-yR),yLims[1]+0.5*abs(xR-yR))
-        elif xR<yR:
-            xLims = (xLims[0]-0.5*abs(xR-yR),xLims[1]+0.5*abs(xR-yR))
-        #pad by 5%
-        xLimsFull = (xLims[0]-(xLims[1]-xLims[0])*0.05,xLims[1]+(xLims[1]-xLims[0])*0.05)
-        yLimsFull = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)     
-        #print 'Full DI plot ranges: '+repr(xLimsFull[1]-xLimsFull[0])+' X '+repr(yLimsFull[1]-yLimsFull[0])
-        xLims = (xmin,xmax)
-        yLims = (ymin,ymax)
-        #force these to be square
-        xR = xLims[1]-xLims[0]
-        yR = yLims[1]-yLims[0]
-        if xR>yR:
-            yLims = (yLims[0]-0.5*abs(xR-yR),yLims[1]+0.5*abs(xR-yR))
-        elif xR<yR:
-            xLims = (xLims[0]-0.5*abs(xR-yR),xLims[1]+0.5*abs(xR-yR))
-        #pad by 5%
-        xLimsCrop = (xLims[0]-(xLims[1]-xLims[0])*0.05,xLims[1]+(xLims[1]-xLims[0])*0.05)
-        yLimsCrop = (yLims[0]-(yLims[1]-yLims[0])*0.05,yLims[1]+(yLims[1]-yLims[0])*0.05)
-        #print 'cropped DI plot ranges: '+repr(xLimsCrop[1]-xLimsCrop[0])+' X '+repr(yLimsCrop[1]-yLimsCrop[0])
-        ## FLIP X-AXIS to match backawards Right Ascension definition
-        a = main.axis()
-        main.axis([a[1],a[0],a[2],a[3]])
+        
         ## update lims with custom values if provided
         if len(DIlims)>0:
             #DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]
-            xLimsFull=(DIlims[0][0][0],DIlims[0][0][1])
-            yLimsFull=(DIlims[0][1][0],DIlims[0][1][1])
-            xLimsCrop=(DIlims[1][0][0],DIlims[1][0][1])
-            yLimsCrop=(DIlims[1][1][0],DIlims[1][1][1])
+            xLimsF=(DIlims[0][0][0],DIlims[0][0][1])
+            yLimsF=(DIlims[0][1][0],DIlims[0][1][1])
+            xLimsC=(DIlims[1][0][0],DIlims[1][0][1])
+            yLimsC=(DIlims[1][1][0],DIlims[1][1][1])
+        else:
+            xLimsF = (np.min([xmin,np.min(fitDataDI[:,0]*asConversion)]),np.max([xmax,np.max(fitDataDI[:,0]*asConversion)]))
+            yLimsF = (np.min([ymin,np.min(fitDataDI[:,1]*asConversion)]),np.max([ymax,np.max(fitDataDI[:,1]*asConversion)]))
+            xLimsC = (xmin,xmax)
+            yLimsC = (ymin,ymax)
+        ##fix FULL limits
+        #force these to be square
+        xR = xLimsF[1]-xLimsF[0]
+        yR = yLimsF[1]-yLimsF[0]
+        if xR>yR:
+            yLimsF = (yLimsF[0]-0.5*abs(xR-yR),yLimsF[1]+0.5*abs(xR-yR))
+        elif xR<yR:
+            xLimsF = (xLimsF[0]-0.5*abs(xR-yR),xLimsF[1]+0.5*abs(xR-yR))
+        #pad by 5%
+        xLimsFull = (xLimsF[0]-(xLimsF[1]-xLimsF[0])*0.05,xLimsF[1]+(xLimsF[1]-xLimsF[0])*0.05)
+        yLimsFull = (yLimsF[0]-(yLimsF[1]-yLimsF[0])*0.05,yLimsF[1]+(yLimsF[1]-yLimsF[0])*0.05)     
+        #print 'Full DI plot ranges: '+repr(xLimsFull[1]-xLimsFull[0])+' X '+repr(yLimsFull[1]-yLimsFull[0])
+        ##fix CROPPED limits
+        #force these to be square
+        xR = xLimsC[1]-xLimsC[0]
+        yR = yLimsC[1]-yLimsC[0]
+        if xR>yR:
+            yLimsC = (yLimsC[0]-0.5*abs(xR-yR),yLimsC[1]+0.5*abs(xR-yR))
+        elif xR<yR:
+            xLimsC = (xLimsC[0]-0.5*abs(xR-yR),xLimsC[1]+0.5*abs(xR-yR))
+        #pad by 5%
+        xLimsCrop = (xLimsC[0]-(xLimsC[1]-xLimsC[0])*0.05,xLimsC[1]+(xLimsC[1]-xLimsC[0])*0.05)
+        yLimsCrop = (yLimsC[0]-(yLimsC[1]-yLimsC[0])*0.05,yLimsC[1]+(yLimsC[1]-yLimsC[0])*0.05)     
+        #print 'cropped DI plot ranges: '+repr(xLimsCrop[1]-xLimsCrop[0])+' X '+repr(yLimsCrop[1]-yLimsCrop[0])
+        
+        ## FLIP X-AXIS to match backawards Right Ascension definition
+        a = main.axis()
+        main.axis([a[1],a[0],a[2],a[3]])
         plt.minorticks_on()
         main.tick_params(axis='both',which='major',width=1,length=5,pad=10,direction='in',labelsize=25)
         main.tick_params(axis='both',which='minor',width=1,length=2,pad=10,direction='in')
@@ -1152,8 +1162,8 @@ def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
             contour = ax.plot([X.min(),X.max()], [bests[1],bests[1]],linewidth=3,color='blue')
             contour = ax.plot([bests[0],bests[0]],[Y.min(),Y.max()],linewidth=3,color='blue')
         if True:
-            print 'np.median(xdata) = '+repr(np.median(xdata))
-            print 'np.median(ydata) = '+repr(np.median(ydata))
+            #print 'np.median(xdata) = '+repr(np.median(xdata))
+            #print 'np.median(ydata) = '+repr(np.median(ydata))
             contour = ax.plot([X.min(),X.max()], [np.median(ydata),np.median(ydata)],linewidth=3,color='red')
             contour = ax.plot([np.median(xdata),np.median(xdata)],[Y.min(),Y.max()],linewidth=3,color='red')
     return contour 
@@ -1163,6 +1173,7 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
     Will create a 2D density contour plot.
     Must pass in ONLY 2 params to plot.
     """    
+    scatterTest = False
     latex=True
     plotFormat='eps'
     plt.rcParams['ps.useafm']= True
@@ -1206,65 +1217,88 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
             xdata = data[:,paramsToPlot[0]]
             ydata = data[:,paramsToPlot[1]]
             nbins=50
-            fig = plt.figure(figsize=(8,7.8))
-            subPlot = plt.subplot(111)
-            xLabel = paramStrs[paramsToPlot[0]]
-            yLabel = paramStrs[paramsToPlot[1]]
-            ## Tweak plot axis and labels to look nice
-            subPlot.locator_params(axis='x',nbins=7) # maximum number of x labels
-            subPlot.locator_params(axis='y',nbins=7) # maximum number of y labels
-            subPlot.tick_params(axis='x',which='major',width=0.5,length=3,pad=4,direction='in',labelsize=25)
-            subPlot.tick_params(axis='y',which='major',width=0.5,length=3,pad=4,direction='in',labelsize=25)
-            subPlot.spines['right'].set_linewidth(0.7)
-            subPlot.spines['bottom'].set_linewidth(0.7)
-            subPlot.spines['top'].set_linewidth(0.7)
-            subPlot.spines['left'].set_linewidth(0.7)
-            subPlot.set_position([0.17,0.14,0.80,0.80])
-            # add axes labels
-            fsize=34
-            fsizeY = fsize
-            fsizeX = fsize
-            if xLabel in ['e','$e$']:
-                fsizeX =fsize+10
-            elif yLabel in ['e','$e$']:
-                fsizeY =fsize+10
-            if latex:
-                subPlot.axes.set_xlabel(xLabel,fontsize=fsizeX)
-                subPlot.axes.set_ylabel(yLabel,fontsize=fsizeY)
+            ## update lims with custom values if provided
+            if len(ranges)>0:
+                #DIlims=[[xMin,xMax],[yMin,yMax]]
+                xLims=ranges[0]
+                yLims=ranges[1]
             else:
-                subPlot.axes.set_xlabel(xLabel,fontsize=fsizeX)
-                subPlot.axes.set_ylabel(yLabel,fontsize=fsizeY)
-            ## call densityContour func to fill up subplot with density/contour plot
-            if True:
-                subPlot = densityContourFunc(xdata, ydata, nbins, ax=subPlot,ranges=ranges,bests=bestVals)
-            ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            ##$$$$$$$$$$$$$$$$$$$$$$$ sanity check with a 1/1000 scatter plot $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            if False:
-                subPlot.scatter(xdata[::1000],ydata[::1000],c='green',edgecolors='k')
-                print 'np.median(xdata) = '+repr(np.median(xdata))
-                print 'np.median(ydata) = '+repr(np.median(ydata))
-                subPlot.plot([ranges[0][0],ranges[0][1]], [np.median(ydata),np.median(ydata)],linewidth=3,color='red')
-                subPlot.plot([np.median(xdata),np.median(xdata)],[ranges[1][0],ranges[1][1]],linewidth=3,color='red')
-                subPlot.plot([ranges[0][0],ranges[0][1]], [bestVals[1],bestVals[1]],linewidth=3,color='blue')
-                subPlot.plot([bestVals[0],bestVals[0]],[ranges[1][0],ranges[1][1]],linewidth=3,color='blue')
-                subPlot.axes.set_xlim((ranges[0][0],ranges[0][1]))
-                subPlot.axes.set_ylim((ranges[1][0],ranges[1][1]))
-            ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-            
-            ## Save file if requested.
-            log.debug('\nStarting to save density contour figure:')
-            if plotFilename!='':
-                plt.savefig(plotFilename,format=plotFormat)
-                s= 'density contour plot saved to: '+plotFilename
-                log.info(s)
-            plt.close()
-            if (plotFormat=='eps') and True:
-                log.debug('converting to PDF as well')
-                try:
-                    os.system("epstopdf "+plotFilename)
-                except:
-                    log.warning("Seems epstopdf failed.  Check if it is installed properly.")
+                xLims = [np.min(xdata),np.max(xdata)]
+                yLims = [np.min(ydata),np.max(ydata)]
+            rangesOrig=[xLims,yLims]
+            #force ranges to be square
+            xR = xLims[1]-xLims[0]
+            yR = yLims[1]-yLims[0]
+            if xR>yR:
+                yLims = [yLims[0]-0.5*abs(xR-yR),yLims[1]+0.5*abs(xR-yR)]
+            elif xR<yR:
+                xLims = [xLims[0]-0.5*abs(xR-yR),xLims[1]+0.5*abs(xR-yR)]
+            rangesSqr=[xLims,yLims]
+            sqBools=[True,False]
+            for sqBool in sqBools:
+                fig = plt.figure(figsize=(8,7.8))
+                subPlot = plt.subplot(111)
+                xLabel = paramStrs[paramsToPlot[0]]
+                yLabel = paramStrs[paramsToPlot[1]]
+                ## Tweak plot axis and labels to look nice
+                subPlot.locator_params(axis='x',nbins=7) # maximum number of x labels
+                subPlot.locator_params(axis='y',nbins=7) # maximum number of y labels
+                subPlot.tick_params(axis='x',which='major',width=0.5,length=3,pad=4,direction='in',labelsize=25)
+                subPlot.tick_params(axis='y',which='major',width=0.5,length=3,pad=4,direction='in',labelsize=25)
+                subPlot.spines['right'].set_linewidth(0.7)
+                subPlot.spines['bottom'].set_linewidth(0.7)
+                subPlot.spines['top'].set_linewidth(0.7)
+                subPlot.spines['left'].set_linewidth(0.7)
+                subPlot.set_position([0.17,0.14,0.80,0.80])
+                # add axes labels
+                fsize=34
+                fsizeY = fsize
+                fsizeX = fsize
+                if xLabel in ['e','$e$']:
+                    fsizeX =fsize+10
+                elif yLabel in ['e','$e$']:
+                    fsizeY =fsize+10
+                if latex:
+                    subPlot.axes.set_xlabel(xLabel,fontsize=fsizeX)
+                    subPlot.axes.set_ylabel(yLabel,fontsize=fsizeY)
+                else:
+                    subPlot.axes.set_xlabel(xLabel,fontsize=fsizeX)
+                    subPlot.axes.set_ylabel(yLabel,fontsize=fsizeY)
+                
+                ranges = rangesOrig
+                if sqBool:
+                    ranges = rangesSqr
+                ## call densityContour func to fill up subplot with density/contour plot
+                if scatterTest==False:
+                    subPlot = densityContourFunc(xdata, ydata, nbins, ax=subPlot,ranges=ranges,bests=bestVals)
+                ##$$$$$$$$$$$$$$$$$$$$$$$ sanity check with a 1/1000 scatter plot $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                if scatterTest:
+                    subPlot.scatter(xdata[::1000],ydata[::1000],c='green',edgecolors='k')
+                    #print 'np.median(xdata) = '+repr(np.median(xdata))
+                    #print 'np.median(ydata) = '+repr(np.median(ydata))
+                    subPlot.plot([ranges[0][0],ranges[0][1]], [np.median(ydata),np.median(ydata)],linewidth=3,color='red')
+                    subPlot.plot([np.median(xdata),np.median(xdata)],[ranges[1][0],ranges[1][1]],linewidth=3,color='red')
+                    subPlot.plot([ranges[0][0],ranges[0][1]], [bestVals[1],bestVals[1]],linewidth=3,color='blue')
+                    subPlot.plot([bestVals[0],bestVals[0]],[ranges[1][0],ranges[1][1]],linewidth=3,color='blue')
+                    subPlot.axes.set_xlim((ranges[0][0],ranges[0][1]))
+                    subPlot.axes.set_ylim((ranges[1][0],ranges[1][1]))
+                ##$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+                ## Save file if requested.
+                log.debug('\nStarting to save density contour figure:')
+                if plotFilename!='':
+                    plotnm = plotFilename
+                    if sqBool:
+                        plotnm = plotFilename[:-4]+'-squareRanges.eps'
+                    plt.savefig(plotnm,format=plotFormat)
+                    s= 'density contour plot saved to: '+plotnm
+                    log.info(s)
+                plt.close()
+                if (plotFormat=='eps') and True:
+                    log.debug('converting to PDF as well')
+                    try:
+                        os.system("epstopdf "+plotnm)
+                    except:
+                        log.warning("Seems epstopdf failed.  Check if it is installed properly.")
     else:
         log.critical(repr(len(paramsToPlot))+" params requested to be plotted, yet only 2 is acceptable.")
     

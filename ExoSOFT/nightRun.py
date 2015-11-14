@@ -9,7 +9,7 @@ def nightRun():
                #"python ExoSOFT.py HR7672-1_",
                #"python ExoSOFT.py HIP10321_",
                #"python customPost.py HIP10321_",
-               "python ExoSOFT.py HIP10321-1_",
+               #"python ExoSOFT.py HIP10321-1_",
                #"python customPost.py HIP10321-1_",
                #"python ExoSOFT.py HIP10321-2_",
                "python ExoSOFT.py Jupiter1percent_",

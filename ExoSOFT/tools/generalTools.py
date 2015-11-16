@@ -42,10 +42,10 @@ def mcmcEffPtsCalc(outputDataFilename):
         completeStr+= '\n'+'-'*45+'\nThe mean correlation lengths of all params are:\n'+'-'*45+'\nparam #, param name, mean correlation length'
         completeStr+= ' -> total # of steps/mean correlation length = number of effective points\n'
         for i in range(0,len(paramList)):
-            log.debug( "*"*60+"\n"+'starting to mean calculate corr length for '+paramStrs[paramList[i]]+' with CPP')
+            log.debug( "*"*60+"\n"+'starting to mean calculate corr length for '+paramStrs[i]+' with CPP')
             #Call CPP tool to calculate average correlation length.
             meanCorrLength = PostCTools.corrLenCalc(paramList[i])
-            currParamStr = str(paramList[i])+', '+paramStrs[paramList[i]]+", "+str(meanCorrLength)
+            currParamStr = str(paramList[i])+', '+paramStrs[i]+", "+str(meanCorrLength)
             currParamStr+=    ' -> '+str(numSteps)+'/'+str(meanCorrLength)+' = '+str(numSteps/meanCorrLength)+'\n'
             completeStr+=currParamStr
             log.debug(currParamStr)
@@ -150,15 +150,6 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
             ###########################################################
             (head,data) = loadFits(mcmcFileList[0])
             (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
-            ##clean list, maybe figure out a better way later#$$$$$
-            if len(paramStrs)>len(paramList):
-                paramStrsUse = []
-                paramListUse = []
-                for par in paramList:
-                    paramStrsUse.append(paramStrs[par])
-                    paramListUse.append(par)
-                paramStrs = paramStrsUse 
-                paramList = paramListUse
             
             Nc = len(mcmcFileList)
             ##start stage 1
@@ -233,16 +224,18 @@ def timeStrMaker(deltaT):
         timeStr = str(int(deltaT))+' seconds'
     return timeStr
 
-def getParStrs(head,latex=True):
+def getParStrs(head,latex=True,getALLpars=False):
     """
     Return matching paramList, paramStrs, paramFileStrs for provided header.
+    
+    latex=True will return latex formated strs for use in Python code.
+    getALLpars=True will signal to get all params, not just the ones that were varying.
     """
     paramList = getParInts(head)    
     paramFileStrs = ['m1','m2','parallax','Omega','e','To', 'Tc','P','i','omega','a_total','chiSquared','K']
     paramStrs = ['m1 [Msun]','m2 [Msun]','Parallax [mas]','Omega [deg]','e','To [JD]', 'Tc [JD]','P [Yrs]','i [deg]','omega [deg]','a_total [AU]','chiSquared','K [m/s]']
     if latex:
         paramStrs = [r'$m_1{\rm [M}_{\odot}{\rm ]}$',r'$m_2{\rm [M}_{\odot}{\rm ]}$',r'$\varpi{\rm [mas]}$',r'$\Omega{\rm [deg]}$',r'$e$',r'$T_o{\rm  [JD]}$', r'$T_c{\rm  [JD]}$',r'$P{\rm  [Yrs]}$',r'$i{\rm  [deg]}$',r'$\omega{\rm  [deg]}$',r'$a_{{\rm total}} {\rm [AU]}$',r'$\chi^2$',r'$K{\rm  [m/s]}$']
-
     if head["nRVdsets"]>0:
         for dataset in range(1,head["nRVdsets"]+1):
             paramFileStrs.append('offset_'+str(dataset))
@@ -250,6 +243,18 @@ def getParStrs(head,latex=True):
                 paramStrs.append(r"$\gamma_{{\rm "+str(dataset)+"}}{\\rm [m/s]}$")
             else:
                 paramStrs.append('offset '+str(dataset)+' [m/s]')        
+    ## clean up lists if not returning ALL   
+    ## else set paramList to contain its for ALL params
+    if (len(paramFileStrs)>len(paramList))and(getALLpars==False):
+            paramStrsUse = []
+            paramFileStrsUse = []
+            for par in paramList:
+                paramStrsUse.append(paramStrs[par])
+                paramFileStrsUse.append(paramFileStrs[par])
+            paramStrs = paramStrsUse
+            paramFileStrs = paramFileStrsUse 
+    elif getALLpars:
+        paramList=np.arange(0,len(paramStrs))
     return (paramList,paramStrs,paramFileStrs)
 
 def loadDIdata(filename):
@@ -657,12 +662,13 @@ def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,e
         f = open(summaryFname,'w')
     (head,data) = loadFits(finalFits)
     totalSamps = head['NSAMPLES']
-    (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
+    (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False,getALLpars=True)
+    (paramListCleaned,paramStrsCleaned,paramFileStrsCleaned) = getParStrs(head,latex=False)
     f.write("\n"+"*"*80+"\noutRoot:  "+settingsDict['outRoot']+"\n"+"*"*80+"\n")
     f.write('\n'+'-'*7+'\nBasics:\n'+'-'*7)
-    f.write('\nparamList:\n'+repr(paramList))
-    f.write('\nparamStrs:\n'+repr(paramStrs))
-    f.write('\nparamFileStrs:\n'+repr(paramFileStrs))
+    f.write('\nparamList:\n'+repr(paramListCleaned))
+    f.write('\nparamStrs:\n'+repr(paramStrsCleaned))
+    f.write('\nparamFileStrs:\n'+repr(paramFileStrsCleaned))
     try:
         ## try to make and write the more advanced summary strings to the file
         nusStr = "\nnu values were: [total,DI,RV] = ["+str(head['NU'])+", "+str(head['NUDI'])+", "+str(head['NURV'])+"]\n"

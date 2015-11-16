@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "JUPITER2-3D-MCMC-1percent-lowEcc-PDMFm1m2-newParaPrior-LONG2",
+'outRoot' : "JUPITER2-3D-MCMC-1percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),

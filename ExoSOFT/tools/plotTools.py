@@ -430,7 +430,7 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
             except:
                 log.warning("Seems epstopdf failed.  Check if it is installed properly.")
         
-def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],bestVals=[],stage='MCMC',shadeConfLevels=True,forceRecalc=True):
+def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],bestVals=[],stage='MCMC',shadeConfLevels=True,forceRecalc=True,plotALLpars=False):
     """
     This advanced plotting function will plot all the data in a grid on a single figure.  The data will be plotted
     in histograms that will be normalized to a max of 1.0.  The 
@@ -472,51 +472,46 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
         else:
             plotFilename = plotFilename
                 
-        (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex)
-        (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False)
-        
-        ## modify x labels to account for DI only situations where M1=Mtotal
-        if np.var(data[:,1])==0:
+        ## get parameter lists and filter accordingly
+        (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex,getALLpars=plotALLpars)
+        (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False,getALLpars=plotALLpars)
+        # modify x labels to account for DI only situations where M1=Mtotal
+        if (np.var(data[:,1])==0)and (0 in paramList):
             paramStrs2[0] = 'm total [Msun]'
             paramStrs[0] = r'$m_{\rm total}$ [$M_{\odot}$]'
             paramFileStrs[0] = 'm-total'
-        
-        ## check if a subset is to be plotted or the whole set
-        ## remake lists of params to match subset.
-        ##clean list, maybe figure out a better way later#$$$$$
+        # check if a subset is to be plotted or the whole set
+        # remake lists of params to match subset.
         if len(paramsToPlot)!=0:
-            paramStrs2Use = []
-            paramStrsUse = []
-            paramFileStrsUse = []
-            paramListUse = []
-            bestValsUse = []
-            for par in paramsToPlot:
-                paramStrs2Use.append(paramStrs2[par])
-                paramStrsUse.append(paramStrs[par])
-                paramFileStrsUse.append(paramFileStrs[par])
-                paramListUse.append(par)
-                bestValsUse.append(bestVals[par])
-            paramStrs2 = paramStrs2Use
-            paramStrs = paramStrsUse
-            paramFileStrs = paramFileStrsUse 
-            paramList = paramListUse
-            bestVals = bestValsUse
+            if plotALLpars==False:
+                (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex,getALLpars=True)
+                (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False,getALLpars=True)
+                paramStrs2Use = []
+                paramStrsUse = []
+                paramFileStrsUse = []
+                paramListUse = []
+                bestValsUse = []
+                for par in paramsToPlot:
+                    paramStrs2Use.append(paramStrs2[par])
+                    paramStrsUse.append(paramStrs[par])
+                    paramFileStrsUse.append(paramFileStrs[par])
+                    paramListUse.append(par)
+                    bestValsUse.append(bestVals[par])
+                paramStrs2 = paramStrs2Use
+                paramStrs = paramStrsUse
+                paramFileStrs = paramFileStrsUse 
+                paramList = paramListUse
+                bestVals = bestValsUse
+            else:
+                s = "\nSpecific params to plot were provided, yet the plotALLpars flag was set True."
+                s+="\nPlease set it to False if you do not want to plot ALL params."
+                s+="\nALL params will be plotted."
+                log.critical(s)
+        # just the varying params are to be plotted, so clean the bestVals list to match
         elif len(bestVals)>len(paramList):
-            paramStrs2Use = []
-            paramStrsUse = []
-            paramFileStrsUse = []
-            paramListUse = []
             bestValsUse = []
             for par in paramList:
-                paramStrs2Use.append(paramStrs2[par])
-                paramStrsUse.append(paramStrs[par])
-                paramFileStrsUse.append(paramFileStrs[par])
-                paramListUse.append(par)
                 bestValsUse.append(bestVals[par])
-            paramStrs2 = paramStrs2Use
-            paramStrs = paramStrsUse
-            paramFileStrs = paramFileStrsUse 
-            paramList = paramListUse
             bestVals = bestValsUse
                 
         ## determine appropriate figure size for number of params to plot
@@ -572,7 +567,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
         ## make shaded posterior for each param
         for i in range(0,len(paramStrs2)):
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')
-            print '\n\n'+os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')+'\n'
+            #print '\n\n'+os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')+'\n'
             if os.path.exists(os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
                 histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')
             if os.path.exists(histDataBaseName):
@@ -1223,7 +1218,7 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
             else:
                 plotFilename = plotFilename
             ## Get strings representing axes titles and plot filenames in latex and standard formats
-            (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex)
+            (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex,getALLpars=True)
             ## modify x labels to account for DI only situations where M1=Mtotal
             if np.var(data[:,1])==0:
                 paramStrs[0] = r'$m_{total}$ [$M_{\odot}$]'
@@ -1260,8 +1255,8 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
             for sqBool in sqBools:
                 fig = plt.figure(figsize=(8,7.8))
                 subPlot = plt.subplot(111)
-                xLabel = paramStrs[paramsToPlot[0]]
-                yLabel = paramStrs[paramsToPlot[1]]
+                xLabel = paramStrs[0]
+                yLabel = paramStrs[1]
                 ## Tweak plot axis and labels to look nice
                 subPlot.locator_params(axis='x',nbins=7) # maximum number of x labels
                 subPlot.locator_params(axis='y',nbins=7) # maximum number of y labels
@@ -1329,7 +1324,7 @@ def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],sm
     make a triangle/corner plot using the same tool in EMCEE.
     NOTE: the contours of the density plots in here are [ 0.1175031 ,  0.39346934,  0.67534753,  0.86466472]
     """
-    from triangle import corner
+    from corner import corner
     
     latex=True
     plotFormat='eps'
@@ -1359,41 +1354,46 @@ def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],sm
         else:
             plotFilename = plotFilename
                 
-        (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex)
-        (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False)
-        
-        ## modify x labels to account for DI only situations where M1=Mtotal
-        if np.var(data[:,1])==0:
+        ## get parameter lists and filter accordingly
+        (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex,getALLpars=True)
+        (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False,getALLpars=True)
+        # modify x labels to account for DI only situations where M1=Mtotal
+        if (np.var(data[:,1])==0)and (0 in paramList):
             paramStrs2[0] = 'm total [Msun]'
-            paramStrs[0] = r'$m_{total}$ [$M_{\odot}$]'
+            paramStrs[0] = r'$m_{\rm total}$ [$M_{\odot}$]'
             paramFileStrs[0] = 'm-total'
-        ## check if a subset is to be plotted or the whole set
-        ## remake lists of params to match subset.
+        # check if a subset is to be plotted or the whole set
+        # remake lists of params to match subset.
+        dataUse = data
         if len(paramsToPlot)!=0:
+            dataUse = data[:,paramsToPlot]
             paramStrs2Use = []
             paramStrsUse = []
             paramFileStrsUse = []
             paramListUse = []
+            bestValsUse = []
             for par in paramsToPlot:
                 paramStrs2Use.append(paramStrs2[par])
                 paramStrsUse.append(paramStrs[par])
                 paramFileStrsUse.append(paramFileStrs[par])
                 paramListUse.append(par)
+                bestValsUse.append(bestVals[par])
             paramStrs2 = paramStrs2Use
             paramStrs = paramStrsUse
             paramFileStrs = paramFileStrsUse 
             paramList = paramListUse
-    
-        if len(paramsToPlot)>0:   
-            dataUse = data[:,paramsToPlot]
-        else:
-            dataUse = data
+            bestVals = bestValsUse
+            
         log.info("will try to make a triangle plot for data of shape: "+repr(dataUse.shape))
         
         bests=None
         if len(bestVals)==len(paramsToPlot)!=0:
             bests = bestVals
+        if latex:
+            paramStrs = paramStrs2
+        ##########################################################    
         ##call triangle plot function corner to make the figure
+        ##########################################################   
         log.debug('About to call corner func')
         tic=timeit.default_timer()
         ## Create empty figure to be filled up with plots

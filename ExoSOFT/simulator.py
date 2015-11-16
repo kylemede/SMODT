@@ -528,6 +528,7 @@ class Simulator(object):
         modelData = np.zeros((len(self.realData),3))
         acceptedParams = []
         temp = 1.0
+        self.settingsDict['curStg']=(stage,'Current stage either [SA,ST,MCMC or MC]')
         if (stage=='SA')or(stage=='MC'):
             ## get starting params and sigmas as these two stages start at a random point
             sigmas = copy.deepcopy(self.starterSigmas)

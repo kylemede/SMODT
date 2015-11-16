@@ -89,7 +89,7 @@ def customPost():
     clStr=''
     if True:
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL')
-        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True)
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
         #for fake jupiter
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.01],[0.5,1.7],[-0.00,0.1],[39,56]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True)
         #for HIP10321

@@ -151,7 +151,7 @@ def exoSOFT():
     clStr = ''
     if settingsDict['pltDists'] and os.path.exists(allFname):
         plotFilename = os.path.join(os.path.dirname(allFname),'summaryPlot'+settingsDict['symMode'][0])
-        clStr = tools.summaryPlotter(allFname, plotFilename,stage=settingsDict['symMode'][0], shadeConfLevels=True)
+        clStr = tools.summaryPlotter(allFname, plotFilename,bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,plotALLpars=True)
     
     ##calc R?
     grStr = ''

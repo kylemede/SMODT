@@ -150,6 +150,16 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
             ###########################################################
             (head,data) = loadFits(mcmcFileList[0])
             (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
+            ##clean list, maybe figure out a better way later#$$$$$
+            if len(paramStrs)>len(paramList):
+                paramStrsUse = []
+                paramListUse = []
+                for par in paramList:
+                    paramStrsUse.append(paramStrs[par])
+                    paramListUse.append(par)
+                paramStrs = paramStrsUse 
+                paramList = paramListUse
+            
             Nc = len(mcmcFileList)
             ##start stage 1
             allStg1vals=np.zeros((Nc,len(paramList),3))
@@ -167,35 +177,38 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
             rHighStr = ''
             tLowStr = ''
             for j in range(0,len(paramList)):
-                log.debug("Starting stage 2 for param: "+paramStrs[paramList[j]])
-                Ncfloat = float(Nc)
-                ##calc R
-                W = 0
-                for i in range(0,Nc):
-                    #Lcfloat = float(allStg1vals[i,j,2])
-                    W+=(Lcfloat/(Lcfloat-1.0))*allStg1vals[i,j,1]
-                W=W/Ncfloat
-                V = np.mean(allStg1vals[:,j,1])+(Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0])
-                R=np.NaN
-                if W!=0:
-                    R = np.sqrt(V/W)
-                GRs.append(R)
-                ##calc T
-                #B = (Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0]*allStg1vals[:,j,2])
-                B = (Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0])*Lcfloat
-                #Uses the mean of Lc values
-                T = np.NAN
-                if B!=0:
-                    #T = np.mean(allStg1vals[:,j,2])*Ncfloat*np.min([(V/B),1.0])
-                    T = Lcfloat*Ncfloat*np.min([(V/B),1.0])
-                Ts.append(T)       
-                grStr+=paramStrs[paramList[j]]+" had R = "+str(R)+", T = "+str(T)+'\n'
-                if T<tLowest:
-                    tLowest=T
-                    tLowStr="Lowest T = "+str(T)+' for '+paramStrs[paramList[j]]+'\n'
-                if R>rHighest:
-                    rHighest=R
-                    rHighStr="Highest R = "+str(R)+' for '+paramStrs[paramList[j]]+'\n'
+                try:
+                    log.debug("Starting stage 2 for param: ("+str(paramList[j])+"/"+str(len(paramList))+"), "+paramStrs[paramList[j]])
+                    Ncfloat = float(Nc)
+                    ##calc R
+                    W = 0
+                    for i in range(0,Nc):
+                        #Lcfloat = float(allStg1vals[i,j,2])
+                        W+=(Lcfloat/(Lcfloat-1.0))*allStg1vals[i,j,1]
+                    W=W/Ncfloat
+                    V = np.mean(allStg1vals[:,j,1])+(Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0])
+                    R=np.NaN
+                    if W!=0:
+                        R = np.sqrt(V/W)
+                    GRs.append(R)
+                    ##calc T
+                    #B = (Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0]*allStg1vals[:,j,2])
+                    B = (Ncfloat/(Ncfloat-1.0))*np.var(allStg1vals[:,j,0])*Lcfloat
+                    #Uses the mean of Lc values
+                    T = np.NAN
+                    if B!=0:
+                        #T = np.mean(allStg1vals[:,j,2])*Ncfloat*np.min([(V/B),1.0])
+                        T = Lcfloat*Ncfloat*np.min([(V/B),1.0])
+                    Ts.append(T)       
+                    grStr+=paramStrs[paramList[j]]+" had R = "+str(R)+", T = "+str(T)+'\n'
+                    if T<tLowest:
+                        tLowest=T
+                        tLowStr="Lowest T = "+str(T)+' for '+paramStrs[paramList[j]]+'\n'
+                    if R>rHighest:
+                        rHighest=R
+                        rHighStr="Highest R = "+str(R)+' for '+paramStrs[paramList[j]]+'\n'
+                except:
+                    log.critical("an error occured while performing stage 2 of GR calc for param "+paramStrs[paramList[j]])
             grStr+='\nWorst R&T values were:\n'+rHighStr+tLowStr+'\n'
         else:
             log.critical("Gelman-Rubin stat can NOT be calculated as file does not exist!!:\n"+chainDataFileList[0])
@@ -236,7 +249,7 @@ def getParStrs(head,latex=True):
             if latex:
                 paramStrs.append(r"$\gamma_{{\rm "+str(dataset)+"}}{\\rm [m/s]}$")
             else:
-                paramStrs.append('offset '+str(dataset)+' [m/s]')
+                paramStrs.append('offset '+str(dataset)+' [m/s]')        
     return (paramList,paramStrs,paramFileStrs)
 
 def loadDIdata(filename):
@@ -390,7 +403,7 @@ def loadSettingsDict(filenameRoot):
     ex. '/run/..../ExoSOFT/settings_and_inputData/FakeData_'
     """
     ## A BIT HACKY FOR NOW, NEED TO FIND A CLEANER WAY TO DO THIS!?!?! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    cwd = os.getcwd()
+    cwd = os.getenv('PWD')
     ExoSOFTHeadDir = filenameRoot.split("ExoSOFT")[0]
     try:
         os.remove(os.path.join(ExoSOFTHeadDir,'ExoSOFT/tools/temp/settingsSimple.py'))
@@ -666,8 +679,10 @@ def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,e
                 chiSquaredsStr+=stage+" = ["
                 for fname in fnames: 
                     try:
-                        bestFit2 = findBestOrbit(fname)
+                        bestFit2 = findBestOrbit(fname,bestToFile=False,findAgain=True)
                         chiSquaredsStr+=str(bestFit2[11]/float(head['NU']))+', '
+                        #print fname
+                        #print str(bestFit2[11])+"/"+str(float(head['NU']))
                     except:
                         log.error("A problem occurred while trying to find best fit of:\n"+fname)
                 chiSquaredsStr = chiSquaredsStr[:-2]+']\n'

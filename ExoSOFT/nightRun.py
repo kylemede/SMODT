@@ -14,8 +14,8 @@ def nightRun():
                #"python ExoSOFT.py HIP10321-2_",
                "python ExoSOFT.py Jupiter1percent_",
                "python ExoSOFT.py Jupiter5percent_",
-               "python ExoSOFT.py Jupiter10percent_",
-               "python customPost.py"
+               #"python ExoSOFT.py Jupiter10percent_",
+               #"python customPost.py"
                ]
     for runCmd in cmdList:
         print "About to send command to system:\n"+runCmd

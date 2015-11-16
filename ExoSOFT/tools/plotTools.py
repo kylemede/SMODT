@@ -31,7 +31,7 @@ def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, norme
     
     This function is designed to work with a follow up like histLoadAndPlot_** to produce publication worthy plots.
     """
-    if outFilename[-4]!='.dat':
+    if outFilename[-4:]!='.dat':
         outFilename=outFilename+'.dat'
     if weight:
         ## use the likelihoods as the weights
@@ -60,7 +60,7 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
     It is foreseen that many versions of this function will exist for different specific publication ready plots.
     NOTE: this is extremely similar to histLoadAndPlot_ShadedPosteriors.  Re-factor to remove doubled code!!
     """
-    if outFilename[-4]!='.dat':
+    if outFilename[-4:]!='.dat':
         outFilename=outFilename+'.dat'
     histData = np.loadtxt(outFilename)  
     ys=[]
@@ -134,7 +134,7 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     
     It is foreseen that many versions of this function will exist for different specific publication ready plots.
     """
-    if outFilename[-4]!='.dat':
+    if outFilename[-4:]!='.dat':
         outFilename=outFilename+'.dat'
     histData = np.loadtxt(outFilename)
     ys=[]
@@ -146,6 +146,7 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
     if parInt==1:
         if np.max(histData[:,0])<0.02:
             histData[:,0]=histData[:,0]*(const.KGperMsun/const.KGperMjupiter)
+            bestVal = bestVal*(const.KGperMsun/const.KGperMjupiter)
             valRange = np.max(histData[:,0])-np.min(histData[:,0])
             xLabel='m2 [Mjupiter]'
             if latex:
@@ -482,6 +483,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
         
         ## check if a subset is to be plotted or the whole set
         ## remake lists of params to match subset.
+        ##clean list, maybe figure out a better way later#$$$$$
         if len(paramsToPlot)!=0:
             paramStrs2Use = []
             paramStrsUse = []
@@ -499,6 +501,24 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
             paramFileStrs = paramFileStrsUse 
             paramList = paramListUse
             bestVals = bestValsUse
+        elif len(bestVals)>len(paramList):
+            paramStrs2Use = []
+            paramStrsUse = []
+            paramFileStrsUse = []
+            paramListUse = []
+            bestValsUse = []
+            for par in paramList:
+                paramStrs2Use.append(paramStrs2[par])
+                paramStrsUse.append(paramStrs[par])
+                paramFileStrsUse.append(paramFileStrs[par])
+                paramListUse.append(par)
+                bestValsUse.append(bestVals[par])
+            paramStrs2 = paramStrs2Use
+            paramStrs = paramStrsUse
+            paramFileStrs = paramFileStrsUse 
+            paramList = paramListUse
+            bestVals = bestValsUse
+                
         ## determine appropriate figure size for number of params to plot
         figSizes =  [(5.5,7),(8,7),(9,7),(10,3.5),(11,8),(11,11),(11,14),(11,16)]
         gridSizes = [(1,1),(1,2),(1,3),(1,4),(2,4),(3,4),(4,4),(5,4)]
@@ -531,7 +551,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
         
         ## run through all the data files and parameters requested and make histogram files
         completeCLstr = '-'*22+'\nConfidence Levels are:\n'+'-'*75+'\n'
-        for i in range(0,len(paramStrs2)):
+        for i in range(0,len(paramList)):
             if (os.path.exists(os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
                 log.debug('Checking parameter has useful data '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
                 (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True)
@@ -552,6 +572,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
         ## make shaded posterior for each param
         for i in range(0,len(paramStrs2)):
             histDataBaseName = os.path.join(os.path.dirname(outputDataFilename),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')
+            print '\n\n'+os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')+'\n'
             if os.path.exists(os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')):
                 histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')
             if os.path.exists(histDataBaseName):
@@ -562,10 +583,10 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
                 log.debug('Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i])#+" for file:\n"+outputDataFilename)
                 CLevels=False
                 xLim=False
+                if len(xLims)>0:
+                    xLim = xLims[i]   
                 bestVal = False
-                if len(paramsToPlot)!=0:
-                    xLim=xLims[i]
-                    if len(bestVals)>0:
+                if len(bestVals)>0:
                         bestVal = bestVals[i]                        
                 if shadeConfLevels:
                     clFile = os.path.join(os.path.dirname(outputDataFilename),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat')
@@ -1218,10 +1239,11 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
             ydata = data[:,paramsToPlot[1]]
             nbins=50
             ## update lims with custom values if provided
-            if len(ranges)>0:
-                #DIlims=[[xMin,xMax],[yMin,yMax]]
-                xLims=ranges[0]
-                yLims=ranges[1]
+            if ranges!=None:
+                if len(ranges)>0:
+                    #ranges=[[xMin,xMax],[yMin,yMax]]
+                    xLims=ranges[0]
+                    yLims=ranges[1]
             else:
                 xLims = [np.min(xdata),np.max(xdata)]
                 yLims = [np.min(ydata),np.max(ydata)]

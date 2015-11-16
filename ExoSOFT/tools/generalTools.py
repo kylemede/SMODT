@@ -178,7 +178,7 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
             tLowStr = ''
             for j in range(0,len(paramList)):
                 try:
-                    log.debug("Starting stage 2 for param: ("+str(paramList[j])+"/"+str(len(paramList))+"), "+paramStrs[paramList[j]])
+                    log.debug("Starting stage 2 for param: ("+str(paramList[j])+"/"+str(len(paramList))+"), "+paramStrs[j])
                     Ncfloat = float(Nc)
                     ##calc R
                     W = 0
@@ -200,15 +200,15 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
                         #T = np.mean(allStg1vals[:,j,2])*Ncfloat*np.min([(V/B),1.0])
                         T = Lcfloat*Ncfloat*np.min([(V/B),1.0])
                     Ts.append(T)       
-                    grStr+=paramStrs[paramList[j]]+" had R = "+str(R)+", T = "+str(T)+'\n'
+                    grStr+=paramStrs[j]+" had R = "+str(R)+", T = "+str(T)+'\n'
                     if T<tLowest:
                         tLowest=T
-                        tLowStr="Lowest T = "+str(T)+' for '+paramStrs[paramList[j]]+'\n'
+                        tLowStr="Lowest T = "+str(T)+' for '+paramStrs[j]+'\n'
                     if R>rHighest:
                         rHighest=R
-                        rHighStr="Highest R = "+str(R)+' for '+paramStrs[paramList[j]]+'\n'
+                        rHighStr="Highest R = "+str(R)+' for '+paramStrs[j]+'\n'
                 except:
-                    log.critical("an error occured while performing stage 2 of GR calc for param "+paramStrs[paramList[j]])
+                    log.critical("an error occured while performing stage 2 of GR calc for param "+paramStrs[j])
             grStr+='\nWorst R&T values were:\n'+rHighStr+tLowStr+'\n'
         else:
             log.critical("Gelman-Rubin stat can NOT be calculated as file does not exist!!:\n"+chainDataFileList[0])
@@ -1024,7 +1024,7 @@ def findBestOrbit(filename,bestToFile=True,findAgain=False):
     """             
     bestFname = os.path.join(os.path.dirname(filename),'bestOrbitParams.txt')  
     gotIt = False
-    if os.path.exists(bestFname):
+    if os.path.exists(bestFname)and(findAgain==False):
         try:
             orbBest = np.loadtxt(bestFname,delimiter=',')
             log.debug("Using previously found best orbit in file:\n"+bestFname)   

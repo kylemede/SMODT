@@ -1,6 +1,25 @@
 # -*- coding: utf-8 -*-
 ##KM: I got this from Dan Foreman-Mackey's Git at https://github.com/dfm/corner.py/blob/master/corner.py
 ##    And I might use it in our plotting tools.
+"""
+The bibtex citation for that package:
+@misc{dan_foreman_mackey_2014_11020,
+  author       = {Dan Foreman-Mackey and
+                  Adrian Price-Whelan and
+                  Geoffrey Ryan and
+                  Emily and
+                  Michael Smith and
+                  Kyle Barbary and
+                  David W. Hogg and
+                  Brendon J. Brewer},
+  title        = {triangle.py v0.1.1},
+  month        = jul,
+  year         = 2014,
+  doi          = {10.5281/zenodo.11020},
+  url          = {http://dx.doi.org/10.5281/zenodo.11020}
+}
+"""
+
 from __future__ import print_function, absolute_import, unicode_literals
 
 __all__ = ["corner", "hist2d"]
@@ -399,8 +418,8 @@ def hist2d(x, y, bins=50, range=None, weights=None, levels=None, smooth=None,
 
     # Choose the default "sigma" contour levels.
     if levels is None:
-        #levels = 1.0 - np.exp(-0.5 * np.arange(0.5, 2.1, 0.5) ** 2)
-        levels = [0.683,0.955,0.997]
+        levels = 1.0 - np.exp(-0.5 * np.arange(0.5, 2.1, 0.5) ** 2)
+        #levels = [0.683,0.955,0.997]
 
     # This is the color map for the density plot, over-plotted to indicate the
     # density of the points near the center.

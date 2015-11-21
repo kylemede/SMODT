@@ -290,7 +290,7 @@ def addDIdataToPlot(subPlot,realData,asConversion,errMult=1.0,thkns=1.0,pasa=Fal
                 subPlot.plot([xCent,xCent],[btm-hfHgt,top+hfHgt],linewidth=thkns,color='k',alpha=1.0)
     return (subPlot,[xmin,xmax,ymin,ymax])
 
-def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[],stage='MCMC',centersOnly=False):
+def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[],stage='MCMC',centersOnly=False,plotALLpars=False):
     """
     This will plot a simple posterior distribution for each parameter in the data files
     stacked ontop of each other for comparison between different runs.
@@ -333,29 +333,39 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
         
         ## load first data file to get param lists 
         (head,data) = genTools.loadFits(outputDataFilenames[0])
-        (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex)
-        (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False)
-        ## modify x labels to account for DI only situations where M1=Mtotal
-        if np.var(data[:,1])==0:
+        ## get parameter lists and filter accordingly
+        (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex,getALLpars=plotALLpars)
+        (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False,getALLpars=plotALLpars)
+        # modify x labels to account for DI only situations where M1=Mtotal
+        if (np.var(data[:,1])==0)and (0 in paramList):
             paramStrs2[0] = 'm total [Msun]'
-            paramStrs[0] = r'$m_{total}$ [$M_{\odot}$]'
+            paramStrs[0] = r'$m_{\rm total}$ [$M_{\odot}$]'
             paramFileStrs[0] = 'm-total'
-        ## check if a subset is to be plotted or the whole set
-        ## remake lists of params to match subset.
+        # check if a subset is to be plotted or the whole set
+        # remake lists of params to match subset.
         if len(paramsToPlot)!=0:
-            paramStrs2Use = []
-            paramStrsUse = []
-            paramFileStrsUse = []
-            paramListUse = []
-            for par in paramsToPlot:
-                paramStrs2Use.append(paramStrs2[par])
-                paramStrsUse.append(paramStrs[par])
-                paramFileStrsUse.append(paramFileStrs[par])
-                paramListUse.append(par)
-            paramStrs2 = paramStrs2Use
-            paramStrs = paramStrsUse
-            paramFileStrs = paramFileStrsUse 
-            paramList = paramListUse
+            if plotALLpars==False:
+                (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex,getALLpars=True)
+                (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False,getALLpars=True)
+                paramStrs2Use = []
+                paramStrsUse = []
+                paramFileStrsUse = []
+                paramListUse = []
+                for par in paramsToPlot:
+                    paramStrs2Use.append(paramStrs2[par])
+                    paramStrsUse.append(paramStrs[par])
+                    paramFileStrsUse.append(paramFileStrs[par])
+                    paramListUse.append(par)
+                paramStrs2 = paramStrs2Use
+                paramStrs = paramStrsUse
+                paramFileStrs = paramFileStrsUse 
+                paramList = paramListUse
+            else:
+                s = "\nSpecific params to plot were provided, yet the plotALLpars flag was set True."
+                s+="\nPlease set it to False if you do not want to plot ALL params."
+                s+="\nALL params will be plotted."
+                log.critical(s)
+        
         ## determine appropriate figure size for number of params to plot
         figSizes =  [(7,4),(8,4),(9,4),(10,4), (12,8),(12,11),(12,13),(12,15)]
         gridSizes = [(1,1),(1,2),(1,3),(1,4),  (2,4),(3,4),(4,4),(5,4)]
@@ -849,6 +859,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         main.spines['bottom'].set_linewidth(1.0)
         main.spines['top'].set_linewidth(1.0)
         main.spines['left'].set_linewidth(1.0)
+        #[left,btm,width,height]
         main.set_position([0.15,0.115,0.80,0.84])
         xLabel = 'Relative RA '+unitStr
         yLabel = 'Relative Dec '+unitStr
@@ -1144,26 +1155,34 @@ def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
     #ptone_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.080))
     #oneQuarter_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.197))
     #oneHalf_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.383))
-    one_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.68))
-    two_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.95))
-    three_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.997))
-    four_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.99994))
+    #one_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.68))
+    one_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, (1-np.exp(-0.5*(1.0**2)))))
+    #two_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.95))
+    two_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, (1-np.exp(-0.5*(2.0**2)))))
+    #three_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.997))
+    three_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, (1-np.exp(-0.5*(3.0**2)))))
+    #four_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.99994))
+    four_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, (1-np.exp(-0.5*(4.0**2)))))
     #five_sigma = so.brentq(densConfInt, 0., 1., args=(pdf, 0.999999426))
     levels3sigs = [three_sigma,two_sigma,one_sigma]
     #levels7lvls = [four_sigma,three_sigma, two_sigma, one_sigma, oneHalf_sigma, oneQuarter_sigma, ptone_sigma]
     c = []
+    c2 = []
     for i in range(len(levels3sigs)+1):
         c.append('k')
+        c2.append('g')
     (black_cmap,n) = from_levels_and_colors(levels3sigs,c,extend='both')
+    (solidColor_cmap,n) = from_levels_and_colors(levels3sigs,c2,extend='both')
 
     X, Y, Z = 0.5*(xedges[1:]+xedges[:-1]), 0.5*(yedges[1:]+yedges[:-1]), pdf.T
     if ax == None:
         # Lots of color map choices at (http://matplotlib.org/users/colormaps.html) and note that most have a reversed version by adding '_r' to the end.
+        # this is because we flipped the levels, so the colors needed to also be flipped.
         #possible choices suitable here are: YlGnBu, Blues, PuBuGn, PuBu, afmhot_r, copper_r
         #main contour
         contour = plt.contourf(X, Y, np.log(Z+1e-10),levels=np.linspace(np.log(four_sigma),np.log(tiny_sigma),50),origin="lower",cmap=cm.afmhot_r)
         #add lines for 1-2-3sigmas
-        contour = plt.contour(X, Y, Z, levels=levels3sigs, origin="lower", cmap=black_cmap,linewidths=3,linestyles='dashed')
+        contour = plt.contour(X, Y, Z, levels=levels3sigs, origin="lower", cmap=solidColor_cmap,linewidths=3,linestyles='dashed')
         #Plot lines for best values
         if bests!=None:
             contour = plt.plot([X.min(),X.max()], [bests[0],bests[0]],linewidth=3,color='blue')
@@ -1172,7 +1191,7 @@ def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
         #main contour
         contour = ax.contourf(X, Y, np.log(Z+1e-10),levels=np.linspace(np.log(four_sigma),np.log(tiny_sigma),50),origin="lower",cmap=cm.afmhot_r)
         #add lines for 1-2-3sigmas
-        contour = ax.contour(X, Y, Z, levels=levels3sigs, origin="lower", cmap=black_cmap,linewidths=3,linestyles='dashed')
+        contour = ax.contour(X, Y, Z, levels=levels3sigs, origin="lower", cmap=solidColor_cmap,linewidths=3,linestyles='dashed')
         #Plot lines for best values
         if bests!=None:
             contour = ax.plot([X.min(),X.max()], [bests[1],bests[1]],linewidth=3,color='blue')
@@ -1190,6 +1209,7 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
     Must pass in ONLY 2 params to plot.
     """    
     scatterTest = False
+    rectanglePlot=True
     latex=True
     plotFormat='eps'
     plt.rcParams['ps.useafm']= True
@@ -1253,7 +1273,17 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
             rangesSqr=[xLims,yLims]
             sqBools=[True,False]
             for sqBool in sqBools:
-                fig = plt.figure(figsize=(8,7.8))
+                x = 10.0
+                y = 10.0
+                if rectanglePlot and (sqBool==False): 
+                    xR = rangesOrig[0][1]-rangesOrig[0][0]
+                    yR = rangesOrig[1][1]-rangesOrig[1][0]
+                    if xR>yR:
+                        y=(yR/xR)*y
+                    elif xR<yR:
+                        x=(xR/yR)*x
+                #print 'Figure size is ('+str(x)+', '+str(y)+")"
+                fig = plt.figure(figsize=(x,y))
                 subPlot = plt.subplot(111)
                 xLabel = paramStrs[0]
                 yLabel = paramStrs[1]
@@ -1265,8 +1295,13 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
                 subPlot.spines['right'].set_linewidth(0.7)
                 subPlot.spines['bottom'].set_linewidth(0.7)
                 subPlot.spines['top'].set_linewidth(0.7)
-                subPlot.spines['left'].set_linewidth(0.7)
-                subPlot.set_position([0.17,0.14,0.80,0.80])
+                subPlot.spines['left'].set_linewidth(0.7)                        
+                if rectanglePlot and (sqBool==False): 
+                    #[left,btm,width,height]
+                    subPlot.set_position([0.17,0.18,0.80,0.80])
+                else:
+                    #[left,btm,width,height]
+                    subPlot.set_position([0.17,0.14,0.80,0.80])
                 # add axes labels
                 fsize=34
                 fsizeY = fsize
@@ -1304,7 +1339,9 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
                 log.debug('\nStarting to save density contour figure:')
                 if plotFilename!='':
                     plotnm = plotFilename
-                    if sqBool:
+                    if rectanglePlot and (sqBool==False): 
+                        plotnm = plotFilename[:-4]+'-rectangular.eps'
+                    elif sqBool:
                         plotnm = plotFilename[:-4]+'-squareRanges.eps'
                     plt.savefig(plotnm,format=plotFormat)
                     s= 'density contour plot saved to: '+plotnm

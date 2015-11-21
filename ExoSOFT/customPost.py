@@ -58,7 +58,7 @@ def customPost():
     ## find best fit
     if True:
         if os.path.exists(allFname):
-            bestFit = tools.findBestOrbit(allFname,bestToFile=False,findAgain=True)
+            bestFit = tools.findBestOrbit(allFname,bestToFile=False,findAgain=False)
     else:
         bestFit = np.array([  1.08516940e+00,   9.86617236e-04,   4.85701122e+01,
                      1.01827347e+02,   4.10252219e-02,   2.45073957e+06,
@@ -87,7 +87,7 @@ def customPost():
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=2)
         
     clStr=''
-    if True:
+    if False:
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL')
         clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
         #for fake jupiter
@@ -95,11 +95,11 @@ def customPost():
         #for HIP10321
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,5,13,14,15],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5],[35,40],[150,172],[242,248],[348,353],[2452295,2452399],[6150,6250],[350,450],[6291,6360]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
     if True: 
-        plotFilename = os.path.join(settingsDict['finalFolder'],'densityPlot')
+        plotFilename = os.path.join(settingsDict['finalFolder'],'densityPlot-2')
         #ranges=[[xMin,xMax],[yMin,yMax]]
-        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]])
-        #tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]],ranges=[[0.67,1.5],[0.17,0.64]])
-        #plotFilename = os.path.join(settingsDict['finalFolder'],'cornerPlot-6-gaussFiltered-newSigmaLevels')
+        #tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]])
+        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]],ranges=[[0.69,1.48],[0.17,0.61]])
+        #plotFilename = os.path.join(settingsDict['finalFolder'],'cornerPlot-2')
         #tools.cornerPlotter(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]])
         
     if False:
@@ -115,7 +115,7 @@ def customPost():
                         print 'could not make plot for proc# '+str(procNum)+', and par# '+str(parNum)
     ##calc R?
     grStr = ''
-    if True:
+    if False:
         if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
             (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
         
@@ -130,13 +130,13 @@ def customPost():
     
     ## calc correlation length & number effective points? 
     effPtsStr = ''
-    if True:
+    if False:
         if ((len(outFiles)>1)and(settingsDict['symMode'][0]=='MCMC'))and (settingsDict['calcCL'] and os.path.exists(allFname)):
             effPtsStr = tools.mcmcEffPtsCalc(allFname)
     
     ## following post-processing stages can take a long time, so write the current
     ## summary information to the summary file and add the rest later
-    if True:
+    if False:
         if os.path.exists(allFname):
             tools.summaryFile(settingsDict,stageList,allFname,clStr,burnInStr,bestFit,grStr,effPtsStr,1,1)
             
@@ -151,11 +151,11 @@ def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
     
     #outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-20percent-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-10percent-lowEcc-PDMFm1m2-newParaPrior-LONG2/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-5percent-lowEcc-PDMFm1m2-newParaPrior-LONG2/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-1percent-lowEcc-PDMFm1m2-newParaPrior-LONG2/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-10percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-5percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-1percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong/combined-BIstripped-MCMCdata.fits')
     
-    plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosterior-lowEccTrue-151115')
+    plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosterior-lowEccTrue-151118')
     tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[1,4,8],xLims=[[0.65,1.5],[0.00,0.10],[30.0,60]],centersOnly=True)
     #tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],xLims=[])
     #print 'Final stacked plot file written to:\n'+plotFilename

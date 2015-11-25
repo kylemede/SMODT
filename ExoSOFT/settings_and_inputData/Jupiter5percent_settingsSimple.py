@@ -2,7 +2,7 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (240000000,"Number of MCMC or MC samples"),
+'nSamples' : (500000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nChains' : (7,"Number of chains"),
@@ -13,7 +13,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "JUPITER2-3D-MCMC-5percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong3",
+'outRoot' : "JUPITER2-3D-MCMC-5percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong3-tst3",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -30,27 +30,27 @@ simpleSettingsDict={
 'mass2MIN' : 0.0002,
 'mass2MAX' : 0.0021,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 36.50,
-'paraMAX' : 64.50,
+'paraMIN' : 36.0,
+'paraMAX' : 65.0,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-'OmegaMIN' : 94.0,
-'OmegaMAX' : 110.0,
+'OmegaMIN' : 90.0,
+'OmegaMAX' : 120.0,
 # Minimum/Maximum allowed value for the Eccentricity [double]
 'eMIN' : 0.00000001,
-'eMAX' : 0.11,
+'eMAX' : 0.13,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
 'TMIN' : 2449550,
 'TMAX' : 2452400,
 # Minimum/Maximum allowed value for the Period [double][yrs]
-'PMIN' : 10.5,
-'PMAX' : 14,
+'PMIN' : 10.0,
+'PMAX' : 16.0,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
 'incMIN' : 33,
 'incMAX' : 56.5,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : -70,
-'omegaMAX' : 160,
+'omegaMAX' : 170,
 # Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
 'KMIN' : 0,
 'KMAX' : 0,

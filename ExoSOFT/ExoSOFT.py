@@ -8,6 +8,7 @@ import os
 import timeit
 import numpy as np
 from multiprocessing import Process
+import pickle
 
 
 """
@@ -57,7 +58,8 @@ class singleProc(Process):
                     self.log.warning('chain #'+str(self.chainNum)+" made it to the ST stage, with bestRedChiSqrSA = "+str(bestRedChiSqrSA)+" :-)\n")
                     (paramsST,sigmasST,bestRedChiSqrST) = self.Sim.simulatorFunc('ST',self.chainNum,paramsSA,sigmasSA)
                 if bestRedChiSqrST<self.settingsDict['cMaxMCMC'][0]:
-                    if 'MCMC' in self.stageList:
+                    print '\after: numMCMCchains = '+str(numMCMCchains)+", maxNumMCMCchains = "+str(maxNumMCMCchains)
+                    if ('MCMC' in self.stageList):
                         self.log.warning('chain #'+str(self.chainNum)+" made it to the MCMC stage, with bestRedChiSqrST = "+str(bestRedChiSqrST)+" :-D\n")
                         outMCMCFname = self.Sim.simulatorFunc('MCMC',self.chainNum,paramsST,sigmasST)
                         self.log.info('chain #'+str(self.chainNum)+' MCMC OUTFILE :\n'+outMCMCFname)
@@ -66,8 +68,67 @@ class singleProc(Process):
                                       " WAS FOUND FOR CHAIN #"+str(self.chainNum)+'\n')  
             else:
                 self.log.info("NO SA SOLUTION WITH A REDUCED CHISQUARED < "+str(self.settingsDict['chiMaxST'][0])+\
-                                  " WAS FOUND FOR CHAIN #"+str(self.chainNum)+'\n')  
-               
+                                  " WAS FOUND FOR CHAIN #"+str(self.chainNum)+'\n')     
+
+class singleProc2(Process):
+    """
+    This is the Manager object that controls the a single processes for a 
+    ExoSOFT simulation run.  It is called by the multiProcessStarter once for 
+    each chain/process requested by the user through the simulation settings 
+    file.
+    
+    :param str settingsDict: settings Dictionary
+    :param str fNameBase: File name, including the full path, for the output 
+        data files.
+    :param list stageList: List of stages to run ex.['MC','SA','ST','MCMC'] 
+        lives.
+    :param int chainNum: number of this chain
+    """
+    def __init__(self, settingsDict, SimObj, stage, chainNum, pklFilename = '', params=[],sigmas=[]):
+        Process.__init__(self)
+        self.chainNum = chainNum
+        self.log = tools.getLogger('main.singleProcess',lvl=100,addFH=False)
+        self.settingsDict = settingsDict 
+        self.stage = stage
+        self.params = params
+        self.sigmas = sigmas
+        self.Sim = SimObj
+        self.pklFilename = pklFilename
+        
+    def run(self):        
+        ## run each requested stage
+        self.log.debug('Starting to run process #'+str(self.chainNum))
+        (outFname,params,sigmas,bestRedChiSqr) = self.Sim.simulatorFunc(self.stage,self.chainNum,self.params,self.sigmas)
+        self.log.debug('chain #'+str(self.chainNum)+self.stage+'  OUTFILE :\n'+outFname)
+        pickle.dump([outFname,params,sigmas,bestRedChiSqr], open(self.pklFilename,'wb'))
+        
+def multiProc(settingsDict,Sim,stage,numProcs,params=[],sigmas=[]):
+    log = tools.getLogger('main.multiProc',lvl=100,addFH=False)
+    if stage in ['ST','MCMC']:
+        if len(params)==0:
+            log.error("params and sigmas parameter inputs to multiproc must have a set of values for each requested proc to start for ST and MCMC modes!")
+    else:
+        #load up basically empty arrays for params and sigmas for MC and SA cases
+        sigmas = params = range(numProcs)
+    master = []
+    tic=timeit.default_timer()
+    log.warning("Going to start "+str(numProcs)+" chains for the  "+stage+" stage")
+    for procNumber in range(numProcs):
+        pklFilename = os.path.join(settingsDict['finalFolder'],'pklTemp'+"-"+stage+'-'+str(procNumber)+".p")
+        master.append(singleProc2(settingsDict,Sim,stage,procNumber,pklFilename=pklFilename,params=params[procNumber],sigmas=sigmas[procNumber]))
+        master[procNumber].start()
+    for procNumber in range(numProcs):
+        master[procNumber].join()    
+    toc=timeit.default_timer()
+    tools.timeStrMaker(int(toc-tic))
+    log.warning("ALL "+stage+" chains took a total of "+tools.timeStrMaker(int(toc-tic)))
+    rets = [[],[],[],[]]
+    for procNumber in range(numProcs):
+        ret = pickle.load(open(master[procNumber].pklFilename,'rb'))
+        for i in range(4):
+            rets[i].append(ret[i])
+    return rets
+
 def exoSOFT():
     """
     'main'
@@ -88,35 +149,78 @@ def exoSOFT():
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     tic=timeit.default_timer()
     ##make list of stages to run
-    stageList = []
-    if settingsDict['symMode'][0]=='MC':
-        stageList = ['MC']
-    elif settingsDict['symMode'][0]=='SA':
-        stageList = ['SA']
-    elif settingsDict['symMode'][0]=='MCMC':
-        stageList = ['SA','ST','MCMC']
+    stgLstDict = {'MC':['MC'],'SA':['SA'],'MCMC':['SA','ST','MCMC']}
+    stageList = stgLstDict[settingsDict['symMode'][0]]
     ## Start the number of processes/chains requested
-    master = []
-    log.info("Going to start "+str(settingsDict['nChains'][0])+" chains, with each running these stages: "+repr(stageList))
-    for procNumber in range(settingsDict['nChains'][0]):
-        master.append(singleProc(settingsDict,Sim,stageList,procNumber))
-        master[procNumber].start()
-    for procNumber in range(settingsDict['nChains'][0]):
-        master[procNumber].join()    
+#     master = []
+#     log.info("Going to start "+str(settingsDict['nChains'][0])+" chains, with each running these stages: "+repr(stageList))
+#     for procNumber in range(settingsDict['nChains'][0]):
+#         master.append(singleProc(settingsDict,Sim,stageList,procNumber))
+#         master[procNumber].start()
+#     for procNumber in range(settingsDict['nChains'][0]):
+#         master[procNumber].join()    
+#     toc=timeit.default_timer()
+#     log.info("ALL stages took a total of "+tools.timeStrMaker(int(toc-tic)))
+    
+    ###-------------------------------------------------------
+    ###-------------------------------------------------------
+    returnsSA = []
+    returnsST = []
+    tic=timeit.default_timer()
+    maxNumMCMCprocs = settingsDict['nMCMCcns'][0]
+    if 'MC' in stageList:
+        returns = returnsMC = multiProc(settingsDict,Sim,'MC',settingsDict['nChains'][0])
+    if 'SA' in stageList:
+        returns = returnsSA = multiProc(settingsDict,Sim,'SA',settingsDict['nChains'][0])
+    if ('ST' in stageList)and(len(returnsSA)>0):
+        startParams = []
+        startSigmas = []
+        #print 'returnsSA = '+repr(returnsSA)
+        for i in range(len(returnsSA[0])):
+            #[outFname,params,sigmas,bestRedChiSqr]
+            if returnsSA[3][i]<settingsDict['chiMaxST'][0]:
+                startParams.append(returnsSA[1][i])
+                startSigmas.append(returnsSA[2][i])
+        if len(startSigmas)>0:
+            returns = returnsST = multiProc(settingsDict,Sim,'ST',len(startSigmas),startParams,startSigmas)
+    else:
+        log.critical("No SA results available to start the ST chains with.")
+    if ('MCMC' in stageList)and(len(returnsST)>0):
+        startParams = []
+        startSigmas = []
+        #Filter inputs if more than max num MCMC proc available to use the best ones
+        chisSorted = np.sort(returnsST[3])
+        #print "# orig chisSorted = "+repr(len(chisSorted))
+        chisSorted = chisSorted[np.where(chisSorted<settingsDict['cMaxMCMC'][0])]
+        #print "# trimmed chisSorted = "+repr(len(chisSorted))
+        if len(chisSorted)>maxNumMCMCprocs:
+            chisSorted = chisSorted[:maxNumMCMCprocs]
+        #print "# using chisSorted = "+repr(len(chisSorted))
+        for i in range(len(returnsST[0])):
+            if returnsST[3][i] in chisSorted:
+                startParams.append(returnsST[1][i])
+                startSigmas.append(returnsST[2][i])
+        if len(chisSorted)>0:
+            returns = returnsMCMC = multiProc(settingsDict,Sim,'MCMC',len(chisSorted),startParams,startSigmas)
+    else:
+        log.critical("No ST results available to start the MCMC chains with.")
+    outFiles = returns[0]
     toc=timeit.default_timer()
-    log.info("ALL stages took a total of "+str(int(toc-tic))+' seconds')
+    log.info("ALL stages took a total of "+tools.timeStrMaker(int(toc-tic)))
+    ###-------------------------------------------------------
+    ###-------------------------------------------------------
     
     ###################
     # Post-processing # 
     ###################
     log.warning("Starting Post-Processing")
-    ## load up list of output files
     tic2=timeit.default_timer()
-    outFiles = []
-    for procNumber in range(settingsDict['nChains'][0]):
-        fname = os.path.join(settingsDict['finalFolder'],'outputData'+settingsDict['symMode'][0]+str(procNumber)+'.fits')
-        if os.path.exists(fname):
-            outFiles.append(fname)      
+    ## load up list of output files
+#     outFiles = []
+#     for procNumber in range(settingsDict['nChains'][0]):
+#         fname = os.path.join(settingsDict['finalFolder'],'outputData'+settingsDict['symMode'][0]+str(procNumber)+'.fits')
+#         if os.path.exists(fname):
+#             outFiles.append(fname)      
     
     ## combine the data files
     allFname = ''
@@ -151,7 +255,7 @@ def exoSOFT():
     clStr = ''
     if settingsDict['pltDists'] and os.path.exists(allFname):
         plotFilename = os.path.join(os.path.dirname(allFname),'summaryPlot'+settingsDict['symMode'][0])
-        clStr = tools.summaryPlotter(allFname, plotFilename,bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,plotALLpars=True)
+        clStr = tools.summaryPlotter(allFname,plotFilename,bestVals=bestFit,stage=settingsDict['symMode'][0],shadeConfLevels=True,plotALLpars=True)
     
     ##calc R?
     grStr = ''

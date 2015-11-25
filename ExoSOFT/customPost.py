@@ -41,7 +41,7 @@ def customPost():
     
     ## calc and strip burn-in?
     burnInStr = ''
-    if True:
+    if False:
         if skipBurnInStrip==False:
             if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
                 (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
@@ -81,24 +81,27 @@ def customPost():
         #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-1mult-3thk-crop3')
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[[[-210,425],[-310,325]],[[413.3,421.1],[124.7,139.6]]],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=1,diLnThk=3)
         
-        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-1mult-2thk-')
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=1,diLnThk=2)
-        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-0mult-2thk-')
-        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=0,diLnThk=2)
+        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-1mult-2thk-')
+        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=1,diLnThk=2)
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5mult-2thk-')
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=5,diLnThk=2)
         
     clStr=''
-    if False:
-        plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL')
-        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
+    if True:
+        plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-simple')
+        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
         #for fake jupiter
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.01],[0.5,1.7],[-0.00,0.1],[39,56]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True)
         #for HIP10321
-        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,5,13,14,15],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5],[35,40],[150,172],[242,248],[348,353],[2452295,2452399],[6150,6250],[350,450],[6291,6360]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
-    if True: 
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,5,13,14,15],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5],[35,40],[150,172],[242,248],[348,353],[2452295,2452399],[6150,6250],[350,450],[6291,6360]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+        #for HIP10321-SIMPLE
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+    
+    if False: 
         plotFilename = os.path.join(settingsDict['finalFolder'],'densityPlot-2')
         #ranges=[[xMin,xMax],[yMin,yMax]]
         #tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]])
-        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]],ranges=[[0.69,1.48],[0.17,0.61]])
+        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]],ranges=[[0.60,1.48],[0.16,0.74]])
         #plotFilename = os.path.join(settingsDict['finalFolder'],'cornerPlot-2')
         #tools.cornerPlotter(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]])
         
@@ -151,9 +154,9 @@ def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []
     
     #outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/SMODT2-SyntheticJUPITER-3D-20percent-startAtBest-lowEccTrue/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-10percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-5percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong/combined-BIstripped-MCMCdata.fits')
-    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-1percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-10percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong2/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-5percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong2/combined-BIstripped-MCMCdata.fits')
+    outputDataFilenames.append('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/JUPITER2-3D-MCMC-1percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong2/combined-BIstripped-MCMCdata.fits')
     
     plotFilename = os.path.join(os.path.abspath('/run/media/kmede/Data1/Todai_Work/Data/data_SMODT'),'stackedPosterior-lowEccTrue-151118')
     tools.stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[1,4,8],xLims=[[0.65,1.5],[0.00,0.10],[30.0,60]],centersOnly=True)
@@ -235,8 +238,8 @@ def paramConverterTest():
         print 'after: e= '+str(params[4])+', omega= '+str(params[9])
     
 if __name__ == '__main__':
-    customPost()
-    #stackedPosteriorsPlotterHackStarter()
+    #customPost()
+    stackedPosteriorsPlotterHackStarter()
     #paramConverterTest()
     #latexMatplotlibTest()
     

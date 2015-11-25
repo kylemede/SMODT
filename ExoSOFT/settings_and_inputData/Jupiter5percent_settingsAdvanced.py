@@ -96,7 +96,7 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (300.0,"Max reduced chiSquared during MC"),
+'chiMAX' : (500.0,"Max reduced chiSquared during MC"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(5,'Max reduced chiSquared to enter ST.'),
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
@@ -135,7 +135,7 @@ advancedDict = {
 # number of samples to draw for simulated annealing stage [int] 
 'nSAsamp' :(1000000,"Num SA samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (300.0,"SA start temp."),
+'strtTemp' : (10.0,"SA start temp."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
 'strtSig' : (0.08,"start percent param range for SA"),
@@ -143,7 +143,7 @@ advancedDict = {
 # Allowed vals [1,nSAsamp), Ideal is ~50.
 'tempInt'  : (50,"Num steps till temp drops in SA."),
 # number of samples to draw for sigma tuning stage [int].
-'nSTsamp' :(500000,"Num ST samples"),
+'nSTsamp' :(100000,"Num ST samples"),
 # number of steps per varying parameter until calculating the acceptance rate and tuning sigmas. [int]
 # Allowed vals [1,nSTsamp), testing shows a value of ~200 works well.
 'sigInt': (200,"Num steps/par till calc acc rate/tune sigs."),

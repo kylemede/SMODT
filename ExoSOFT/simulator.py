@@ -589,15 +589,8 @@ class Simulator(object):
         self.endSummary(temp,sigmas,stage)
         tools.periodicDataDump(self.tmpDataFile,np.array(acceptedParams))
         outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',self.tmpDataFile,self.settingsDict)
-        if stage=='ST':
-            ##start MCMC at best or end of ST?
-            if self.dictVal('strBest'):
-                return (self.paramsBest,sigmas,self.bestRedChiSqr)
-            else:
-                return (latestParsRaw,sigmas,self.bestRedChiSqr)
-        elif stage=='SA':
+        if stage=='SA':
             ##start ST at the best location with tight sigmas, and it will tune to ideal sigmas
-            return (self.paramsBest,np.ones(np.array(sigmas).shape)*0.01,self.bestRedChiSqr)
-        elif(stage=='MC')or(stage=='MCMC'):
-            return outFname
+            sigmas = np.ones(np.array(sigmas).shape)*0.01        
+        return (outFname,self.paramsBest,sigmas,self.bestRedChiSqr)
 #END OF FILE      

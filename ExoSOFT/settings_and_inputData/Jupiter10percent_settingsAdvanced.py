@@ -105,7 +105,7 @@ advancedDict = {
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
 'logLevel' : 30,
 #number of times to produce a summary log msg during a stage's progress [int]
-'nSumry'  :20,
+'nSumry'  :10,
 # make plot of posterior distributions? [bool]
 'pltDists' :True,
 # make plots of RV and DI/AM orbit fits [bool]
@@ -133,9 +133,9 @@ advancedDict = {
 # NOTE: CAUTION, can take a long time for long runs.  Still needs to be sped up somehow.
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(2000000,"Num SA samples"),
+'nSAsamp' :(3000000,"Num SA samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (300.0,"SA start temp."),
+'strtTemp' : (50.0,"SA start temp."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
 'strtSig' : (0.08,"start percent param range for SA"),
@@ -143,7 +143,7 @@ advancedDict = {
 # Allowed vals [1,nSAsamp), Ideal is ~50.
 'tempInt'  : (50,"Num steps till temp drops in SA."),
 # number of samples to draw for sigma tuning stage [int].
-'nSTsamp' :(500000,"Num ST samples"),
+'nSTsamp' :(1000000,"Num ST samples"),
 # number of steps per varying parameter until calculating the acceptance rate and tuning sigmas. [int]
 # Allowed vals [1,nSTsamp), testing shows a value of ~200 works well.
 'sigInt': (200,"Num steps/par till calc acc rate/tune sigs."),

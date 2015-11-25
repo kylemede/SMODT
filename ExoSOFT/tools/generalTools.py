@@ -528,6 +528,10 @@ def cleanUp(settingsDict,stageList,allFname):
     #os.mkdir(settingsDict['finalFolder'])
     
     delFiles = []
+    
+    fnames = glob.glob(os.path.join(settingsDict['finalFolder'],"pklTemp-*"))
+    for i in range(0,len(fnames)):
+        delFiles.append(fnames[i])
     ##get chain data filenames to delete
     if settingsDict["delChains"]:
         for stage in stageList:
@@ -976,7 +980,7 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
         elif (returnData and returnChiSquareds and returnBestDataVal):
             if verboseInternal:
                 print 'returning all 4'
-            returnList =   ([conf68Vals,conf95Vals],dataAry, chiSquareds, bestDataVal)
+            returnList =   ([conf68Vals,conf95Vals],dataAry, chiSquareds, bestDataVal,outStr) ##MODIFIED
         elif (returnData and (returnChiSquareds==False)and (returnBestDataVal==False)):
             if verboseInternal:
                 print 'returning data only'

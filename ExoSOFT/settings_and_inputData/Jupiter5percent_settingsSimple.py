@@ -2,11 +2,11 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (1000000,"Number of MCMC or MC samples"),
+'nSamples' : (150000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 # For MCMC mode this is the number of SA and ST chains.
-'nChains' : (15,"Number MC/SA/ST of chains"),
+'nChains' : (20,"Number MC/SA/ST of chains"),
 # Number of MCMC chains to run in parallel. ONLY available in 'MCMC' mode. [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
 'nMCMCcns' : (7,"Number MCMC of chains"),
@@ -17,7 +17,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "JUPITER2-3D-MCMC-5percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong3-tst4",
+'outRoot' : "JUPITER2-3D-MCMC-5percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong3",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -32,10 +32,10 @@ simpleSettingsDict={
 'mass1MAX' : 2.35,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
 'mass2MIN' : 0.0001,
-'mass2MAX' : 0.0025,
+'mass2MAX' : 0.005,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 36.0,
-'paraMAX' : 65.0,
+'paraMIN' : 30.0,
+'paraMAX' : 70.0,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
 'OmegaMIN' : 80.0,
 'OmegaMAX' : 130.0,
@@ -47,11 +47,11 @@ simpleSettingsDict={
 'TMIN' : 2449550,
 'TMAX' : 2452400,
 # Minimum/Maximum allowed value for the Period [double][yrs]
-'PMIN' : 10.0,
+'PMIN' : 8.0,
 'PMAX' : 16.0,
 # Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 33,
-'incMAX' : 56.5,
+'incMIN' : 30,
+'incMAX' : 65,
 # Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
 'omegaMIN' : -70,
 'omegaMAX' : 170,
@@ -60,8 +60,8 @@ simpleSettingsDict={
 'KMAX' : 0,
 # Minimum/Maximum values of Radial Velocity Offsets.  
 # Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-'vMINs' :[-1.5],
-'vMAXs' :[1],
+'vMINs' :[-3],
+'vMAXs' :[3],
 }
 
 

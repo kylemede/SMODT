@@ -465,14 +465,14 @@ class Simulator(object):
         self.nSavedPeriodic = 0
         self.acceptBoolAry = []
         self.parIntVaryAry = []
-        if (stage=="MC")or(stage=="SA"):
-            # make a very random seed value to ensure each chain is different.  
-            # Should we make this value an optional input and pass on as a return value to keep a process number using the same seed?? $$$
-            t = np.random.uniform(1,1e6)
-            self.seed = int((timeit.default_timer()/(self.chainNum+1))/t)
-            self.log.debug("Chain# "+str(self.chainNum)+" has random number seed = "+str(self.seed))
-            self.settingsDict['chainNum'] = (self.chainNum,"chain number")
-            np.random.seed(self.seed)
+        self.settingsDict['chainNum'] = (self.chainNum,"chain number")
+        # make a very random seed value to ensure each chain is different.  
+        # Should we make this value an optional input and pass on as a return value to keep a process number using the same seed?? $$$
+        # if so, it needs to be pushed into the results file as well.
+        t = np.random.uniform(1,1e6)
+        self.seed = int((timeit.default_timer()/(self.chainNum+1))/t)
+        self.log.debug("Chain# "+str(self.chainNum)+" has random number seed = "+str(self.seed))
+        np.random.seed(self.seed)
         self.tmpDataFile = os.path.join(self.dictVal('tmpDir'),self.dictVal('outRoot')+"-"+str(self.chainNum)+".npy")
         if os.path.exists(self.tmpDataFile):
             os.remove(self.tmpDataFile)

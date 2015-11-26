@@ -66,7 +66,7 @@ def multiProc(settingsDict,Sim,stage,numProcs,params=[],sigmas=[]):
     for procNumber in range(numProcs):
         master[procNumber].join()    
     toc=timeit.default_timer()
-    s = "ALL "+str(numProcs)+" chains of the "+stage+" took a total of "+tools.timeStrMaker(int(toc-tic))
+    s = "ALL "+str(numProcs)+" chains of the "+stage+" stage took a total of "+tools.timeStrMaker(int(toc-tic))
     retStr =s+"\n"
     log.warning(s)
     retAry = [[],[],[],[]]
@@ -100,10 +100,10 @@ def exoSOFT():
     maxNumMCMCprocs = settingsDict['nMCMCcns'][0]
     durationStrings = ''
     if 'MC' in stageList:
-        (returns,durStr) = (returnsMC,durStr) = multiProc(settingsDict,Sim,'MC',settingsDict['nChains'][0])
+        (returns,b) = (returnsMC,durStr) = multiProc(settingsDict,Sim,'MC',settingsDict['nChains'][0])
         durationStrings+=durStr
     if 'SA' in stageList:
-        (returns,durStr) = (returnsSA,durStr) = multiProc(settingsDict,Sim,'SA',settingsDict['nChains'][0])
+        (returns,b) = (returnsSA,durStr) = multiProc(settingsDict,Sim,'SA',settingsDict['nChains'][0])
         durationStrings+=durStr
     if ('ST' in stageList)and(len(returnsSA)>0):
         startParams = []
@@ -113,7 +113,7 @@ def exoSOFT():
                 startParams.append(returnsSA[1][i])
                 startSigmas.append(returnsSA[2][i])
         if len(startSigmas)>0:
-            (returns,durStr) = (returnsST,durStr) = multiProc(settingsDict,Sim,'ST',len(startSigmas),startParams,startSigmas)
+            (returns,b) = (returnsST,durStr) = multiProc(settingsDict,Sim,'ST',len(startSigmas),startParams,startSigmas)
             durationStrings+=durStr
     else:
         log.critical("No SA results available to start the ST chains with.")
@@ -130,7 +130,7 @@ def exoSOFT():
                 startParams.append(returnsST[1][i])
                 startSigmas.append(returnsST[2][i])
         if len(chisSorted)>0:
-            (returns,durStr) = (returnsMCMC,durStr) = multiProc(settingsDict,Sim,'MCMC',len(chisSorted),startParams,startSigmas)
+            (returns,b) = (returnsMCMC,durStr) = multiProc(settingsDict,Sim,'MCMC',len(chisSorted),startParams,startSigmas)
             durationStrings+=durStr
     else:
         log.critical("No ST results available to start the MCMC chains with.")

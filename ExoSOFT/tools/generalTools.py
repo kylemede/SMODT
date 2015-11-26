@@ -80,7 +80,8 @@ def burnInCalc(mcmcFnames,combinedFname):
     log.debug("likelihoodsALL max = "+repr(np.max(likelihoodsALL)))
     medainALL = np.median(likelihoodsALL)         
     log.debug("medainALL = "+str(medainALL))
-    s = '\nmedian value for all chains = '+str(medainALL)
+    s =21*'-'+'\nBurn-In lengths were:\n'+21*'-'
+    s+='\nmedian value for all chains = '+str(medainALL)
     ## calculate location of medianALL in each chain
     for filename in mcmcFnames:
         if os.path.exists(filename):
@@ -744,8 +745,8 @@ def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,e
     f.write('\n'+clStr)
     f.write('\n'+burnInStr)
     f.write('\n'+grStr)
-    f.write('\n'+effPtsStr)
-    f.write('\n'+durationStrings)
+    f.write(effPtsStr)
+    f.write('\n\n'+'-'*24+'\nDurations of each stage:\n'+'-'*24+'\n'+durationStrings)
     f.write('\nPost-Processing took: '+timeStrMaker(postTime)+'\n')
     f.write('Total simulation took: '+timeStrMaker(allTime)+'\n')
     f.write('\n\nEND OF RESULTS :-D')

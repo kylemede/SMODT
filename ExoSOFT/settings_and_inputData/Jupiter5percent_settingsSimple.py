@@ -2,10 +2,14 @@
 
 simpleSettingsDict={
 # The number of samples orbital parameters to try/draw [int]
-'nSamples' : (500000,"Number of MCMC or MC samples"),
+'nSamples' : (1000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (7,"Number of chains"),
+# For MCMC mode this is the number of SA and ST chains.
+'nChains' : (15,"Number MC/SA/ST of chains"),
+# Number of MCMC chains to run in parallel. ONLY available in 'MCMC' mode. [1,100] [int].  
+# NOTE: greater than numCores-1 causes system to slow down!
+'nMCMCcns' : (7,"Number MCMC of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # Directory on an SSD for fast reading/writting of temp data files to save on RAM usage.
@@ -13,7 +17,7 @@ simpleSettingsDict={
 'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
-'outRoot' : "JUPITER2-3D-MCMC-5percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong3-tst3",
+'outRoot' : "JUPITER2-3D-MCMC-5percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong3-tst4",
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
@@ -24,20 +28,20 @@ simpleSettingsDict={
 ###################################################
 # Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
 # NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
-'mass1MIN' : 0.4,
+'mass1MIN' : 0.2,
 'mass1MAX' : 2.35,
 # Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.0002,
-'mass2MAX' : 0.0021,
+'mass2MIN' : 0.0001,
+'mass2MAX' : 0.0025,
 # Minimum/Maximum allowed value for the Parallax [double][mas]
 'paraMIN' : 36.0,
 'paraMAX' : 65.0,
 # Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-'OmegaMIN' : 90.0,
-'OmegaMAX' : 120.0,
+'OmegaMIN' : 80.0,
+'OmegaMAX' : 130.0,
 # Minimum/Maximum allowed value for the Eccentricity [double]
 'eMIN' : 0.00000001,
-'eMAX' : 0.13,
+'eMAX' : 0.15,
 # Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
 #(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
 'TMIN' : 2449550,

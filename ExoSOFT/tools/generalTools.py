@@ -655,7 +655,7 @@ def combineFits(filenames,outFname):
     hdulist.close()
     log.info("output file written to:below\n"+outFname)
     
-def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,effPtsStr,allTime,postTime):
+def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,effPtsStr,allTime,postTime,durationStrings):
     """
     Make a txt file that summarizes the results nicely.
     """
@@ -745,7 +745,8 @@ def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,e
     f.write('\n'+burnInStr)
     f.write('\n'+grStr)
     f.write('\n'+effPtsStr)
-    f.write('\n\nPost-Processing took: '+timeStrMaker(postTime)+'\n')
+    f.write('\n'+durationStrings)
+    f.write('\nPost-Processing took: '+timeStrMaker(postTime)+'\n')
     f.write('Total simulation took: '+timeStrMaker(allTime)+'\n')
     f.write('\n\nEND OF RESULTS :-D')
     f.close()

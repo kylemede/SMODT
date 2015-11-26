@@ -154,9 +154,6 @@ advancedDict = {
 # Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
 'saveInt' : (10,"Int between saving params, for all but MC."),
 # Interval of saved values before write/dump the data to disk to avoid consuming too much RAM during long runs. They take 11MB/100000.
-'dmpInt'   : 100000,
-# Start MCMC at the best params from the ST stage? [bool]
-'strBest' : (True,"Start MCMC at best fit params from ST"),
 ## NOTE: progress plots have no code yet, so MUST be False!!!
 # Make plots of MCMC progress plots? [bool]
 'pltMCMCprog' :False,

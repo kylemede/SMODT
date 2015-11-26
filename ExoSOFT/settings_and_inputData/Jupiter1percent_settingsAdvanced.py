@@ -103,7 +103,7 @@ advancedDict = {
 'cMaxMCMC':(5,'Max reduced chiSquared to enter MCMC.'),
 # set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
 # choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 40,
+'logLevel' : 30,
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :20,
 # make plot of posterior distributions? [bool]
@@ -133,7 +133,7 @@ advancedDict = {
 # NOTE: CAUTION, can take a long time for long runs.  Still needs to be sped up somehow.
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(1000000,"Num SA samples"),
+'nSAsamp' :(3000000,"Num SA samples"),
 # Simulated Annealing starting temperature [double]
 'strtTemp' : (100.0,"SA start temp."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
@@ -156,8 +156,6 @@ advancedDict = {
 'saveInt' : (10,"Int between saving params, for all but MC."),
 # Interval of saved values before write/dump the data to disk to avoid consuming too much RAM during long runs. They take 11MB/100000.
 'dmpInt'   : 100000,
-# Start MCMC at the best params from the ST stage? [bool]
-'strBest' : (True,"Start MCMC at best fit params from ST"),
 ## NOTE: progress plots have no code yet, so MUST be False!!!
 # Make plots of MCMC progress plots? [bool]  
 'pltMCMCprog' :False,

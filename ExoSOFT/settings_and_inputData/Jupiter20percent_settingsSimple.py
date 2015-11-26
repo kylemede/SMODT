@@ -5,7 +5,11 @@ simpleSettingsDict={
 'nSamples' : (40000000,"Number of MCMC or MC samples"),
 # Number of simulation chains to run in parallel, [1,100] [int].  
 # NOTE: greater than numCores-1 causes system to slow down!
-'nChains' : (7,"Number of chains"),
+# For MCMC mode this is the number of SA and ST chains.
+'nChains' : (7,"Number MC/SA/ST of chains"),
+# Number of MCMC chains to run in parallel. ONLY available in 'MCMC' mode. [1,100] [int].  
+# NOTE: greater than numCores-1 causes system to slow down!
+'nMCMCcns' : (7,"Number MCMC of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
 # Directory on an SSD for fast reading/writting of temp data files to save on RAM usage.

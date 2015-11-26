@@ -118,16 +118,12 @@ class Simulator(object):
                     nine = np.sqrt(ecc)*np.cos((np.pi/180.0)*omega)
                     if four>fourMax:
                         fourMax = four
-                        #a= 'fourMax: e = '+str(ecc)+', omega = '+str(omega)
                     if four<fourMin:
                         fourMin = four
-                        #b= 'fourMin: e = '+str(ecc)+', omega = '+str(omega)
                     if nine>nineMax:
                         nineMax = nine
-                        #c= 'nineMax: e = '+str(ecc)+', omega = '+str(omega)
                     if nine<nineMin:
                         nineMin = nine
-                        #d= 'nineMin: e = '+str(ecc)+', omega = '+str(omega)
             rangeMaxsRaw[9] = nineMax
             rangeMaxsRaw[4] = fourMax
             rangeMinsRaw[9] = nineMin
@@ -227,32 +223,18 @@ class Simulator(object):
         """
         priorsRatio = 1.0
         try:
-            #print 'about to try and calc priors'
             if self.dictVal('ePrior'):
                 priorsRatio*=self.settingsDict['ePrior'][2](parsCurr[4],parsLast[4])
-                #priorsRatio*=(self.settingsDict['ePrior'][2](parsCurr[4],parsCurr[7])/self.settingsDict['ePrior'][2](parsLast[4],parsLast[7]))
-                #print 'priorsRatio after e: '+repr(priorsRatio)
             if self.dictVal('pPrior'):
                 priorsRatio*=self.settingsDict['pPrior'][2](parsCurr[7],parsLast[7])
-                #priorsRatio*=(self.settingsDict['pPrior'][2](parsCurr[7])/self.settingsDict['pPrior'][2](parsLast[7]))
-                #print 'priorsRatio after period: '+repr(priorsRatio)
             if self.dictVal('incPrior'):
                 priorsRatio*=self.settingsDict['incPrior'][2](parsCurr[8],parsLast[8])
-                #priorsRatio*=(self.settingsDict['incPrior'][2](parsCurr[8])/self.settingsDict['incPrior'][2](parsLast[8]))
-                #print 'priorsRatio after inclination: '+repr(priorsRatio)
             if self.dictVal('M1Prior'):
                 priorsRatio*=self.settingsDict['M1Prior'][2](parsCurr[0],parsLast[0])
-                #priorsRatio*=(self.settingsDict['M1Prior'][2](parsCurr[0])/self.settingsDict['M1Prior'][2](parsLast[0]))
-                #print 'priorsRatio after M1: '+repr(priorsRatio)
             if self.dictVal('M2Prior'):
                 priorsRatio*=self.settingsDict['M2Prior'][2](parsCurr[1],parsLast[1])
-                #priorsRatio*=(self.settingsDict['M2Prior'][2](parsCurr[1])/self.settingsDict['M2Prior'][2](parsLast[1]))
-                #print 'priorsRatio after M2: '+repr(priorsRatio)
             if self.dictVal('parPrior'):
                 priorsRatio*=self.settingsDict['parPrior'][2](parsCurr[2],parsLast[2])
-                #priorsRatio*=(self.settingsDict['parPrior'][2](parsCurr[2])/self.settingsDict['parPrior'][2](parsLast[2]))
-                #print 'priorsRatio after parallax: '+repr(priorsRatio)
-            #print 'priorsRatio final: '+repr(priorsRatio)
             if test==False:
                 return priorsRatio
         except:
@@ -329,7 +311,6 @@ class Simulator(object):
             paramsOut = self.increment(pars,np.zeros(pars.shape),stage='MC')
             ## convert from Raw form if in lowEcc mode
             self.Orbit.convertParsFromRaw(paramsOut)
-            #self.log.debug("Chain #"+str(self.chainNum)+" Nothing accepted yet, so jumping to new starting position.")
             inRange=True
         return (paramsOut,inRange)
     
@@ -368,8 +349,6 @@ class Simulator(object):
         else:
             ## For SA after first sample, MCMC, and ST
             try:
-                #print 'self.paramsLast[11] = '+str(self.paramsLast[11])
-                #print 'paramsOut[11] = '+str(paramsOut[11])
                 likelihoodRatio = np.e**((self.paramsLast[11] - raw3D)/(2.0*temp))
                 priorsRatio = self.combinedPriors(paramsOut,self.paramsLast)
                 if np.random.uniform(0.0, 1.0)<=(priorsRatio*likelihoodRatio):
@@ -397,21 +376,17 @@ class Simulator(object):
                 str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
                 sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
                 self.log.debug(sumStr)
-                #print 'priorsRatio = '+repr(priorsRatio)
-                #print 'likelihood ratio = '+rerp(likelihoodRatio)
         return (paramsOut,accept)
     
     def tempDrop(self,sample,temp,stage=''):
         """
         Determine if it is time to drop the temp, and drop if it is.
-        Total temperature range is [strtTemp,0.1), so the minimum 
+        Total temperature range is [strtTemp,0.01), so the minimum 
         temperature is actually <1.0 meaning the last few temperature drops 
         will really push the currently found minimum towards its peak.
         There will be a fixed number of temperature steps = 'nTmpStps'.
         """
         if stage=='SA':
-            #if sample%(self.dictVal('nSAsamp')//self.dictVal('nTmpStps'))==0:
-            #    temp-=(self.dictVal('strtTemp')-0.01)*(1.0/self.dictVal('nTmpStps'))
             if sample%self.dictVal('tempInt')==0:
                 temp-=(self.dictVal('strtTemp')-0.01)*(float(self.dictVal('tempInt'))/float(self.dictVal('nSAsamp')))
         return temp
@@ -426,7 +401,6 @@ class Simulator(object):
         """
         sigmasOut = copy.deepcopy(sigs)
         if (stage=='ST')or(stage=='MCMC'):
-            #if (sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSigStps'))==0)and(self.acceptCount>1):
             if (sample%(len(self.paramInts)*self.dictVal('sigInt'))==0)and(self.acceptCount>1):
                 self.acceptStr = '\n'+stage+" chain #"+str(self.chainNum)+'\n'
                 self.shiftStr = ''
@@ -492,6 +466,8 @@ class Simulator(object):
         self.acceptBoolAry = []
         self.parIntVaryAry = []
         if (stage=="MC")or(stage=="SA"):
+            # make a very random seed value to ensure each chain is different.  
+            # Should we make this value an optional input and pass on as a return value to keep a process number using the same seed?? $$$
             t = np.random.uniform(1,1e6)
             self.seed = int((timeit.default_timer()/(self.chainNum+1))/t)
             self.log.debug("Chain# "+str(self.chainNum)+" has random number seed = "+str(self.seed))

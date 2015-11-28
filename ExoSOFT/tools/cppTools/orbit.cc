@@ -13,46 +13,16 @@ void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
 	//Remember that in RV, there is a phase shift due to the Tc!=T, that doesn't exist in DI.
 	//------------------
 	//std::cout<<"\necc = "<<ecc<<", T = "<<T<<", Tc = "<<Tc<<", P = "<<P<<", epoch = "<<epoch<<std::endl;
-	thetaRV=0;
-	E=0;
-	//for RV
 	M = (2.0*pi*(epoch-2.0*T+Tc))/(P*daysPerYear);
 	multiples = (double)((int)(M/(2.0*pi)));
 	M -= multiples*(2.0*pi);//shift into [-360,360]
 	if (M<0)
 		M+=2.0*pi;//shift into [0,360]
-	if ((M!=0)and(M!=(2.0*pi))){
-		Eprime = M+ecc*sin(M)+((ecc*ecc)/(2.0*M))*sin(2.0*M);
-		newtonCount = 0;
-		while ( (fabs(E-Eprime)>1.0e-10)&&(newtonCount<50) ){
-			E = Eprime;
-			Eprime = E-((E-ecc*sin(E)-M)/(1.0-ecc*cos(E)));
-			newtonCount +=1;
-		}
-		//double check it satisfies the original equation
-		if (fabs((E-ecc*sin(E))-M)>1.0e-5){
-			std::cout<<"PROBLEM!! resulting E from Newton's loop isn't within error limit!!!"<<std::endl;
-			if (true){
-				std::cout<<"M = "<<M <<std::endl;
-				std::cout<<"e = "<<ecc<<std::endl;
-				std::cout<<"T = "<<T<<std::endl;
-				std::cout<<"Tc = "<<Tc<<std::endl;
-				std::cout<<"P = "<<P<<std::endl;
-				std::cout<<"Eprime = "<<Eprime <<"\n" <<std::endl;
-			}
-		}
-		//std::cout<<"E RV [deg] = "<<E*(180.0/pi)<<std::endl;
-		thetaPrime = acos((cos(E)-ecc)/(1.0-ecc*cos(E)));
-		if (E>pi)
-			thetaPrime = 2.0*pi-thetaPrime;
-		thetaRV = thetaPrime;
-		//std::cout<<"theta RV [deg] = "<<thetaRV*(180.0/pi)<<std::endl;
-	}
-	//for DI
-	if (T!=Tc){
-		M = (2.0*pi*(epoch-T))/(P*daysPerYear);
-		multiples = (double)((int)(M/(2.0*pi)));
-		M -= multiples*(2.0*pi);//shift into [-360,360]
+	//If e=0 (circular), then theta and E are both equal to M.
+	thetaRV=M;
+	E=M;
+	if (ecc!=0){
+		//for RV
 		if ((M!=0)and(M!=(2.0*pi))){
 			Eprime = M+ecc*sin(M)+((ecc*ecc)/(2.0*M))*sin(2.0*M);
 			newtonCount = 0;
@@ -71,6 +41,39 @@ void Orbit::anomalyCalc(double ecc, double T, double Tc,double P, double epoch){
 					std::cout<<"Tc = "<<Tc<<std::endl;
 					std::cout<<"P = "<<P<<std::endl;
 					std::cout<<"Eprime = "<<Eprime <<"\n" <<std::endl;
+				}
+			}
+			//std::cout<<"E RV [deg] = "<<E*(180.0/pi)<<std::endl;
+			thetaPrime = acos((cos(E)-ecc)/(1.0-ecc*cos(E)));
+			if (E>pi)
+				thetaPrime = 2.0*pi-thetaPrime;
+			thetaRV = thetaPrime;
+			//std::cout<<"theta RV [deg] = "<<thetaRV*(180.0/pi)<<std::endl;
+		}
+		//for DI
+		if (T!=Tc){
+			M = (2.0*pi*(epoch-T))/(P*daysPerYear);
+			multiples = (double)((int)(M/(2.0*pi)));
+			M -= multiples*(2.0*pi);//shift into [-360,360]
+			if ((M!=0)and(M!=(2.0*pi))){
+				Eprime = M+ecc*sin(M)+((ecc*ecc)/(2.0*M))*sin(2.0*M);
+				newtonCount = 0;
+				while ( (fabs(E-Eprime)>1.0e-10)&&(newtonCount<50) ){
+					E = Eprime;
+					Eprime = E-((E-ecc*sin(E)-M)/(1.0-ecc*cos(E)));
+					newtonCount +=1;
+				}
+				//double check it satisfies the original equation
+				if (fabs((E-ecc*sin(E))-M)>1.0e-5){
+					std::cout<<"PROBLEM!! resulting E from Newton's loop isn't within error limit!!!"<<std::endl;
+					if (true){
+						std::cout<<"M = "<<M <<std::endl;
+						std::cout<<"e = "<<ecc<<std::endl;
+						std::cout<<"T = "<<T<<std::endl;
+						std::cout<<"Tc = "<<Tc<<std::endl;
+						std::cout<<"P = "<<P<<std::endl;
+						std::cout<<"Eprime = "<<Eprime <<"\n" <<std::endl;
+					}
 				}
 			}
 		}

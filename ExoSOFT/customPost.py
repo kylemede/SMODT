@@ -13,7 +13,7 @@ def customPost():
     if os.path.exists(allFname)==False:
         allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
         skipBurnInStrip=False
-    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=30)
+    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=10)
     ##make list of stages to run
     stageList = []
     if settingsDict['symMode'][0]=='MC':
@@ -41,7 +41,7 @@ def customPost():
     
     ## calc and strip burn-in?
     burnInStr = ''
-    if False:
+    if True:
         if skipBurnInStrip==False:
             if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
                 (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
@@ -88,14 +88,14 @@ def customPost():
         
     clStr=''
     if True:
-        plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-simple')
-        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
+        plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-full')
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
         #for fake jupiter
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.01],[0.5,1.7],[-0.00,0.1],[39,56]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True)
         #for HIP10321
-        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,5,13,14,15],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5],[35,40],[150,172],[242,248],[348,353],[2452295,2452399],[6150,6250],[350,450],[6291,6360]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,5,13,14,15],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5],[35,40],[150,172],[242,248],[348,353],[2452295,2452399],[6150,6250],[350,450],[6291,6360]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
         #for HIP10321-SIMPLE
-        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
     
     if False: 
         plotFilename = os.path.join(settingsDict['finalFolder'],'densityPlot-2')
@@ -118,7 +118,7 @@ def customPost():
                         print 'could not make plot for proc# '+str(procNum)+', and par# '+str(parNum)
     ##calc R?
     grStr = ''
-    if False:
+    if True:
         if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
             (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
         
@@ -139,9 +139,9 @@ def customPost():
     
     ## following post-processing stages can take a long time, so write the current
     ## summary information to the summary file and add the rest later
-    if False:
+    if True:
         if os.path.exists(allFname):
-            tools.summaryFile(settingsDict,stageList,allFname,clStr,burnInStr,bestFit,grStr,effPtsStr,1,1)
+            tools.summaryFile(settingsDict,stageList,allFname,clStr,burnInStr,bestFit,grStr,effPtsStr,1,1,'')
             
         
     ##clean up files (move to folders or delete them)
@@ -238,8 +238,8 @@ def paramConverterTest():
         print 'after: e= '+str(params[4])+', omega= '+str(params[9])
     
 if __name__ == '__main__':
-    #customPost()
-    stackedPosteriorsPlotterHackStarter()
+    customPost()
+    #stackedPosteriorsPlotterHackStarter()
     #paramConverterTest()
     #latexMatplotlibTest()
     

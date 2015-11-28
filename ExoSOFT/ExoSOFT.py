@@ -105,35 +105,37 @@ def exoSOFT():
     if 'SA' in stageList:
         (returns,b) = (returnsSA,durStr) = multiProc(settingsDict,Sim,'SA',settingsDict['nChains'][0])
         durationStrings+=durStr
-    if ('ST' in stageList)and(len(returnsSA)>0):
-        startParams = []
-        startSigmas = []
-        for i in range(len(returnsSA[0])):
-            if returnsSA[3][i]<settingsDict['chiMaxST'][0]:
-                startParams.append(returnsSA[1][i])
-                startSigmas.append(returnsSA[2][i])
-        if len(startSigmas)>0:
-            (returns,b) = (returnsST,durStr) = multiProc(settingsDict,Sim,'ST',len(startSigmas),startParams,startSigmas)
-            durationStrings+=durStr
-    else:
-        log.critical("No SA results available to start the ST chains with.")
-    if ('MCMC' in stageList)and(len(returnsST)>0):
-        startParams = []
-        startSigmas = []
-        #Filter inputs if more than max num MCMC proc available to use the best ones
-        chisSorted = np.sort(returnsST[3])
-        chisSorted = chisSorted[np.where(chisSorted<settingsDict['cMaxMCMC'][0])]
-        if len(chisSorted)>maxNumMCMCprocs:
-            chisSorted = chisSorted[:maxNumMCMCprocs]
-        for i in range(len(returnsST[0])):
-            if returnsST[3][i] in chisSorted:
-                startParams.append(returnsST[1][i])
-                startSigmas.append(returnsST[2][i])
-        if len(chisSorted)>0:
-            (returns,b) = (returnsMCMC,durStr) = multiProc(settingsDict,Sim,'MCMC',len(chisSorted),startParams,startSigmas)
-            durationStrings+=durStr
-    else:
-        log.critical("No ST results available to start the MCMC chains with.")
+    if 'ST' in stageList:
+        if len(returnsSA)>0:
+            startParams = []
+            startSigmas = []
+            for i in range(len(returnsSA[0])):
+                if returnsSA[3][i]<settingsDict['chiMaxST'][0]:
+                    startParams.append(returnsSA[1][i])
+                    startSigmas.append(returnsSA[2][i])
+            if len(startSigmas)>0:
+                (returns,b) = (returnsST,durStr) = multiProc(settingsDict,Sim,'ST',len(startSigmas),startParams,startSigmas)
+                durationStrings+=durStr
+        else:
+            log.critical("No SA results available to start the ST chains with.")
+    if 'MCMC' in stageList:
+        if len(returnsST)>0:
+            startParams = []
+            startSigmas = []
+            #Filter inputs if more than max num MCMC proc available to use the best ones
+            chisSorted = np.sort(returnsST[3])
+            chisSorted = chisSorted[np.where(chisSorted<settingsDict['cMaxMCMC'][0])]
+            if len(chisSorted)>maxNumMCMCprocs:
+                chisSorted = chisSorted[:maxNumMCMCprocs]
+            for i in range(len(returnsST[0])):
+                if returnsST[3][i] in chisSorted:
+                    startParams.append(returnsST[1][i])
+                    startSigmas.append(returnsST[2][i])
+            if len(chisSorted)>0:
+                (returns,b) = (returnsMCMC,durStr) = multiProc(settingsDict,Sim,'MCMC',len(chisSorted),startParams,startSigmas)
+                durationStrings+=durStr
+        else:
+            log.critical("No ST results available to start the MCMC chains with.")
     outFiles = returns[0]
     toc=timeit.default_timer()
     s = "ALL stages took a total of "+tools.timeStrMaker(int(toc-tic))

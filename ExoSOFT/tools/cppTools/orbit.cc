@@ -120,13 +120,16 @@ void Orbit::convertParsFromRaw(double *p, int p_n){
 	 Else, do nothing.
 	 */
 	if (lowEcc){
-		//std::cout<<"converting params to use forms"<<std::endl;
-		e = p[4]*p[4]+p[9]*p[9];
-		omega = (180.0/pi)*atan2(p[4],p[9]);
-		//if (omega<0)
-		//	omega+=360.0;
-		p[4] = e;
-		p[9] = omega;
+		//Only calc if non-circular
+		if ((p[4]!=0)and(p[9]!=0)){
+			//std::cout<<"converting params to use forms"<<std::endl;
+			e = p[4]*p[4]+p[9]*p[9];
+			omega = (180.0/pi)*atan2(p[4],p[9]);
+			//if (omega<0)
+			//	omega+=360.0;
+			p[4] = e;
+			p[9] = omega;
+		}
 	}
 };
 
@@ -139,8 +142,11 @@ void Orbit::convertParsToRaw(double *p, int p_n){
 		//std::cout<<"converting params to Raw forms"<<std::endl;
 		e = p[4];
 		omega = p[9];
-		p[4] = sqrt(e)*sin((pi/180.0)*omega);
-		p[9] = sqrt(e)*cos((pi/180.0)*omega);
+		//Only calc if non-circular
+		if (e!=0){
+			p[4] = sqrt(e)*sin((pi/180.0)*omega);
+			p[9] = sqrt(e)*cos((pi/180.0)*omega);
+		}
 	}
 };
 

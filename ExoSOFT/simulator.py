@@ -567,6 +567,6 @@ class Simulator(object):
         outFname = tools.writeFits('outputData'+stage+str(chainNum)+'.fits',self.tmpDataFile,self.settingsDict)
         if stage=='SA':
             ##start ST at the best location with tight sigmas, and it will tune to ideal sigmas
-            sigmas = np.ones(np.array(sigmas).shape)*0.01        
+            sigmas = np.ones(np.array(sigmas).shape)*self.dictVal('sigMin')   
         return (outFname,self.paramsBest,sigmas,self.bestRedChiSqr)
 #END OF FILE      

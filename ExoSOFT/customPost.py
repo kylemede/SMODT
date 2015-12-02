@@ -41,7 +41,7 @@ def customPost():
     
     ## calc and strip burn-in?
     burnInStr = ''
-    if True:
+    if False:
         if skipBurnInStrip==False:
             if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
                 (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
@@ -87,7 +87,7 @@ def customPost():
         tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=5,diLnThk=2)
         
     clStr=''
-    if True:
+    if False:
         plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-full')
         clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
         #for fake jupiter
@@ -118,16 +118,16 @@ def customPost():
                         print 'could not make plot for proc# '+str(procNum)+', and par# '+str(parNum)
     ##calc R?
     grStr = ''
-    if True:
+    if False:
         if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
             (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
         
     ## custom re check of the orbit fit     
-    if False: 
-        orbParams = [1.16679785333,0.263640913869,37.2109325013,245.327413195,0.374265026422,2452348.33995,2452348.33995,20.9645791913,158.909378023,350.3113539,8.57166434448,92.2373136221,868.357550689,6196.81653647,385.187801642,6318.18670944]
+    if True: 
+        orbParams = bestFit
         finalFits=''
-        nus = [70, 2, 66]
-        epochs=[2457259.0]
+        nus = [19, 19, 1]
+        epochs=[ 2457327.500]
         tools.predictLocation(orbParams,settingsDict,epochs)
         #tools.recheckFit3D(orbParams,settingsDict,finalFits,nus)
     
@@ -139,7 +139,7 @@ def customPost():
     
     ## following post-processing stages can take a long time, so write the current
     ## summary information to the summary file and add the rest later
-    if True:
+    if False:
         if os.path.exists(allFname):
             tools.summaryFile(settingsDict,stageList,allFname,clStr,burnInStr,bestFit,grStr,effPtsStr,1,1,'')
             

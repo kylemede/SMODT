@@ -99,6 +99,15 @@ def exoSOFT():
     tic=timeit.default_timer()
     maxNumMCMCprocs = settingsDict['nMCMCcns'][0]
     durationStrings = ''
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+    hackMCMCstart = True
+    hackStartPars = np.array([1.39970078801,0.0,25.6840766966,93.989062488,0.0,2448191.06493,2448191.06493,49.0169583215,27.8196611322,0.0,14.9814423332,4.72629199329,0.0,0.0])
+    hackSigs = np.array([ 0.009 ,  0.0001,  0.0091,  0.0097,  0.0001,  0.0105,  0.0001, 0.0099,  0.0085,  0.0001,  0.0001,  0.0001,  0.0001,  0.0001])
+    if hackMCMCstart:
+        stageList = ['ST']
+        returnsSA = range(0,2)
+        returnsST = range(0,2)
+    #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     if 'MC' in stageList:
         (returns,b) = (returnsMC,durStr) = multiProc(settingsDict,Sim,'MC',settingsDict['nChains'][0])
         durationStrings+=durStr
@@ -109,28 +118,59 @@ def exoSOFT():
         if len(returnsSA)>0:
             startParams = []
             startSigmas = []
-            for i in range(len(returnsSA[0])):
-                if returnsSA[3][i]<settingsDict['chiMaxST'][0]:
-                    startParams.append(returnsSA[1][i])
-                    startSigmas.append(returnsSA[2][i])
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            if hackMCMCstart:#HACK$$$$$$$$$$$$$$$$
+                for i in range(0,maxNumMCMCprocs):
+                    startParams.append(hackStartPars)
+                    startSigmas.append(hackSigs)
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            else:#HACK$$$$$$$$$$$$$$$$
+                for i in range(len(returnsSA[0])):
+                    if returnsSA[3][i]<settingsDict['chiMaxST'][0]:
+                        startParams.append(returnsSA[1][i])
+                        startSigmas.append(returnsSA[2][i])
             if len(startSigmas)>0:
                 (returns,b) = (returnsST,durStr) = multiProc(settingsDict,Sim,'ST',len(startSigmas),startParams,startSigmas)
                 durationStrings+=durStr
+            #check best results of ST and store to a file
+            if len(returnsST[0])>0:
+                bstChiSqr = np.sort(returnsST[3])[0]
+                for i in range(len(returnsST[0])):
+                    if returnsST[3][i] == bstChiSqr:
+                        bestSTpars = returnsST[1][i]
+                        bestSTsigs = returnsST[2][i]
+                hackSigs = bestSTsigs
+                filename = os.path.join(settingsDict['finalFolder'],'bestSTparamsAndSigs.txt')
+                tools.writeBestSTtoFile(filename,bestSTpars,bestSTsigs,bstChiSqr)
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            if hackMCMCstart:#HACK$$$$$$$$$$$$$$$$
+                print '\nsigs = '+repr(hackSigs)
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         else:
             log.critical("No SA results available to start the ST chains with.")
+    
     if 'MCMC' in stageList:
         if len(returnsST)>0:
             startParams = []
             startSigmas = []
-            #Filter inputs if more than max num MCMC proc available to use the best ones
-            chisSorted = np.sort(returnsST[3])
-            chisSorted = chisSorted[np.where(chisSorted<settingsDict['cMaxMCMC'][0])]
-            if len(chisSorted)>maxNumMCMCprocs:
-                chisSorted = chisSorted[:maxNumMCMCprocs]
-            for i in range(len(returnsST[0])):
-                if returnsST[3][i] in chisSorted:
-                    startParams.append(returnsST[1][i])
-                    startSigmas.append(returnsST[2][i])
+            chisSorted = []
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            if hackMCMCstart:#HACK$$$$$$$$$$$$$$$$
+                chisSorted = range(0,maxNumMCMCprocs)
+                for i in range(0,maxNumMCMCprocs):
+                    startParams.append(hackStartPars)
+                    startSigmas.append(hackSigs)
+            #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            else:#HACK$$$$$$$$$$$$$$$$
+                #Filter inputs if more than max num MCMC proc available to use the best ones
+                chisSorted = np.sort(returnsST[3])
+                chisSorted = chisSorted[np.where(chisSorted<settingsDict['cMaxMCMC'][0])]
+                if len(chisSorted)>maxNumMCMCprocs:
+                    chisSorted = chisSorted[:maxNumMCMCprocs]
+                for i in range(len(returnsST[0])):
+                    if returnsST[3][i] in chisSorted:
+                        startParams.append(returnsST[1][i])
+                        startSigmas.append(returnsST[2][i])
             if len(chisSorted)>0:
                 (returns,b) = (returnsMCMC,durStr) = multiProc(settingsDict,Sim,'MCMC',len(chisSorted),startParams,startSigmas)
                 durationStrings+=durStr
@@ -146,13 +186,7 @@ def exoSOFT():
     # Post-processing # 
     ###################
     log.warning("Starting Post-Processing")
-    tic2=timeit.default_timer()
-    ## load up list of output files
-#     outFiles = []
-#     for procNumber in range(settingsDict['nChains'][0]):
-#         fname = os.path.join(settingsDict['finalFolder'],'outputData'+settingsDict['symMode'][0]+str(procNumber)+'.fits')
-#         if os.path.exists(fname):
-#             outFiles.append(fname)      
+    tic2=timeit.default_timer()     
     
     ## combine the data files
     allFname = ''

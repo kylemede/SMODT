@@ -1059,7 +1059,23 @@ def findBestOrbit(filename,bestToFile=True,findAgain=False):
             f.close()
             log.info("Best fit params written to :\n"+bestFname)
     return orbBest
-                                                    
+                       
+def writeBestSTtoFile(filename,pars,sigs,bstChiSqr):
+    f = open(filename,'w')
+    f.write("Best-fit between all ST chains had a reduce chi squared of "+str(bstChiSqr)+'\n')
+    f.write("\nIts parameters were:\n")
+    s=''
+    for val in pars:
+        s+=str(val)+","
+    f.write(s[:-1])
+    f.write("\n\nIts sigmas were:\n")
+    s=''
+    for val in sigs:
+        s+=str(val)+","
+    f.write(s[:-1])
+    f.close()
+    log.info("Best fit params and sigmas from ST stage were written to :\n"+filename)  
+                               
 def copytree(src, dst):
     """
     Recursively copy a directory and its contents to another directory.

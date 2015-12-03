@@ -24,6 +24,14 @@ simpleSettingsDict={
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
 # mode to run simulation in, choices {'MC','SA','SAST','SASTMCMC,'MCMC'} [string]
 'symMode' : ('SASTMCMC',"Simulator mode (MC,SA,SAST,SASTMCMC,MCMC)"),
+############################################
+# Starting parameters and sigmas for MCMC  #
+# Can be found with prior run in SAST mode #
+############################################
+# if unknown, set to False!! else [comma separated list of doubles]
+'startParams' : False,
+# if unknown, set to False!! else [comma separated list of doubles]
+'startSigmas' : False,
 ###################################################
 # Ranges for acceptable random number inputs ######
 ###################################################

@@ -645,10 +645,13 @@ def startup(argv,rootDir,rePlot=False):
     ######################################################################### 
     startParams = getSimpleDictVal(settingsDict,'startParams')
     startSigmas = getSimpleDictVal(settingsDict,'startSigmas')
-    passed = True
-    if type(startParams)!=bool:
+    passed = False
+    if (type(startParams)==list)or(type(startParams)==np.ndarray):
+        if type(startParams)==list:
+            startParams = np.array(startParams)
         if len(startParams)==len(rangeMaxs):
             i=0
+            passed = True
             while (i<len(startParams))and(passed==True):
                 if i in paramInts:
                     if startParams[i]==0:
@@ -657,12 +660,18 @@ def startup(argv,rootDir,rePlot=False):
         else:
             passed=False
     if passed==False:
-        settingsDict['startParams'] = False
+        startParams = False
         log.info("Original startParams in settings files were not usable, so setting to False.")
-    passed = True
-    if type(startSigmas)!=bool:
+    if (startParams==False)and(settingsDict['symMode'][0] in ['ST','MCMC']):
+        log.critical('ST or MCMC mode requested, but not starting parameters provided.  Quiting ExoSOFT!!')
+        #***************************************************************************************************
+        sys.exit("MUST PROVIDE USEFUL STARTPARAMS IN SIMPLE SETTINGS DICT FOR ST or MCMC MODE, ELSE NOTHING TO START CHAINS WITH!\n\n!!EXITING ExoSOFT!!")
+        #***************************************************************************************************
+    passed = False
+    if (type(startSigmas)==list)or(type(startSigmas)==np.ndarray):
         if len(startSigmas)==len(rangeMaxs):
             i=0
+            passed = True
             while (i<len(startSigmas))and(passed==True):
                 if i in paramInts:
                     if startSigmas[i]==0:
@@ -688,6 +697,7 @@ def startup(argv,rootDir,rePlot=False):
     settingsDict['rangeMaxs'] = rangeMaxs
     settingsDict['paramInts'] = np.array(paramInts)
     settingsDict['startSigmas'] = startSigmas
+    settingsDict['startParams'] = startParams
     
     return settingsDict
         

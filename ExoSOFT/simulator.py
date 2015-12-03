@@ -33,8 +33,7 @@ class Simulator(object):
         self.settingsDict = settingsDict
         self.log = tools.getLogger('main.simulator',lvl=100,addFH=False)
         tools.logSystemInfo(self.log)
-        self.realData = tools.loadRealData(os.path.join(self.dictVal('settingsDir'),self.dictVal('prepend')),dataMode=self.dictVal('dataMode'))
-        (self.rangeMaxsRaw,self.rangeMinsRaw,self.rangeMaxs,self.rangeMins,self.starterSigmas,self.paramInts,self.nu,self.nuDI,self.nuRV) = self.starter() 
+        (self.realData,self.rangeMaxsRaw,self.rangeMinsRaw,self.rangeMaxs,self.rangeMins,self.starterSigmas,self.paramInts,self.nu,self.nuDI,self.nuRV) = self.starter() 
         self.Orbit = tools.cppTools.Orbit()
         self.Orbit.loadStaticVars(self.dictVal('omegaFdi'),self.dictVal('omegaFrv'),self.dictVal('lowEcc'),self.dictVal('pasa'))
         self.Orbit.loadRealData(self.realData)
@@ -49,122 +48,19 @@ class Simulator(object):
         Things needed by all simulator modes that can be internal, but 
         need code to load them up.
         """
-        ##check there are matching number of RV datasets and provided min/max vals for offsets
-        if np.min(self.realData[:,6])<1e6:
-            numVmins=len(self.dictVal('vMINs'))
-            if numVmins==0:
-                numVmins=1
-            if np.max(self.realData[:,7])!=(numVmins-1):
-                self.log.error("THE NUMBER OF vMINs DOES NOT MATCH THE NUMBER OF RV DATASETS!!!\n"+\
-                               "please check the vMINs/vMAXs arrays in the simple settings file\n"+\
-                               "to make sure they have matching lengths to the number of RV datasets.")
-        
-        if (self.dictVal('TMAX')==-1)and(self.dictVal('TMIN')==-1):
-            ## set T range to [earliest Epoch-max period,earliest epoch]
-            self.settingsDict['TMAX']=np.min(self.realData[:,0])
-            self.settingsDict['TMIN']=np.min(self.realData[:,0])-self.dictVal('PMAX')*const.daysPerYear
-        ##load up range min,max and sigma arrayS
-        rangeMaxs = [self.dictVal('mass1MAX'),\
-               self.dictVal('mass2MAX'),\
-               self.dictVal('paraMAX'),\
-               self.dictVal('OmegaMAX'),\
-               self.dictVal('eMAX'),\
-               self.dictVal('TMAX'),\
-               self.dictVal('TMAX'),\
-               self.dictVal('PMAX'),\
-               self.dictVal('incMAX'),\
-               self.dictVal('omegaMAX'),\
-               0,\
-               0,\
-               self.dictVal('KMAX')]
-        rangeMins = [self.dictVal('mass1MIN'),\
-               self.dictVal('mass2MIN'),\
-               self.dictVal('paraMIN'),\
-               self.dictVal('OmegaMIN'),\
-               self.dictVal('eMIN'),\
-               self.dictVal('TMIN'),\
-               self.dictVal('TMIN'),\
-               self.dictVal('PMIN'),\
-               self.dictVal('incMIN'),\
-               self.dictVal('omegaMIN'),\
-               0,\
-               0,\
-               self.dictVal('KMIN')]
-        ##start with uniform sigma values
-        sigSize = self.dictVal('strtSig')
-        sigmas = [sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,0,0,sigSize]
-        if len(self.dictVal('vMINs'))!=len(self.dictVal('vMAXs')):
-            self.log.critical("THE NUMBER OF vMINs NOT EQUAL TO NUMBER OF vMAXs!!!")
-        for i in range(0,len(self.dictVal('vMINs'))):
-            sigmas.append(sigSize)
-            rangeMins.append(self.dictVal('vMINs')[i])
-            rangeMaxs.append(self.dictVal('vMAXs')[i])
-        rangeMaxs = np.array(rangeMaxs)
-        rangeMins = np.array(rangeMins)
-        ##For lowEcc case, make Raw min/max vals for param drawing during MC mode
-        rangeMaxsRaw = copy.deepcopy(rangeMaxs)
-        rangeMinsRaw = copy.deepcopy(rangeMins)
-        if self.dictVal('lowEcc'):
-            ## run through the possible numbers for e and omega to find min/max for RAW versions
-            fourMin=1e6
-            fourMax=-1e6
-            nineMin=1e6
-            nineMax=-1e6
-            for omeg in range(int(rangeMins[9]*10),int(rangeMaxs[9]*10),1):
-                omega = float(omeg)/10.0
-                for e in range(int(rangeMins[4]*100),int(rangeMaxs[4]*100),1):
-                    ecc = float(e)/100.0
-                    four = np.sqrt(ecc)*np.sin((np.pi/180.0)*omega)
-                    nine = np.sqrt(ecc)*np.cos((np.pi/180.0)*omega)
-                    if four>fourMax:
-                        fourMax = four
-                    if four<fourMin:
-                        fourMin = four
-                    if nine>nineMax:
-                        nineMax = nine
-                    if nine<nineMin:
-                        nineMin = nine
-            rangeMaxsRaw[9] = nineMax
-            rangeMaxsRaw[4] = fourMax
-            rangeMinsRaw[9] = nineMin
-            rangeMinsRaw[4] = fourMin
-        ##figure out which parameters are varying in this run.
-        ##don't vary atot or chiSquared ever, 
-        ##and take care of TcEqualT and Kdirect cases
-        paramInts = []
-        for i in range(0,len(rangeMins)):
-            if (i!=10)and(i!=11):
-                if (i>12):
-                    if self.dictVal('dataMode')!='DI':
-                        if rangeMaxs[i]!=0:
-                            paramInts.append(i) 
-                elif (i==8)or(i==12):
-                    if (self.dictVal('dataMode')!='RV')or(self.dictVal('Kdirect')==False):
-                        if (rangeMaxs[8]!=0)and(i==8):
-                            paramInts.append(8)
-                    elif self.dictVal('Kdirect'):
-                        if (rangeMaxs[12]!=0)and(i==12):
-                            paramInts.append(12)                                           
-                elif (i==2)or(i==3)or(i==0)or(i==1):
-                    if (self.dictVal('dataMode')!='RV'):
-                        if(rangeMaxs[i]!=0):
-                            paramInts.append(i)
-                    elif (self.dictVal('Kdirect')==False)and((i!=3)and(i!=2)):
-                        if(rangeMaxs[i]!=0):
-                            paramInts.append(i)
-                elif rangeMaxs[i]!=0:
-                    if (i==5)or(i==6):
-                        if self.dictVal('TcStep')and(i!=5):
-                                paramInts.append(i)
-                        elif (self.dictVal('TcStep')==False)and(i!=6):
-                                paramInts.append(i)
-                    else:
-                        paramInts.append(i)
-        paramInts = np.array(paramInts)
+        ## Recover parameter related items in the settingsDict put there during startup
+        realData = self.dictVal('realData')
+        sigmas = self.dictVal('startSigmas')
+        rangeMinsRaw = self.dictVal('rangeMinsRaw')
+        rangeMaxsRaw = self.dictVal('rangeMaxsRaw') 
+        rangeMins = self.dictVal('rangeMins')
+        rangeMaxs = self.dictVal('rangeMaxs')
+        paramInts = self.dictVal('paramInts')
+
         ##find total number of RV and DI epochs in real data
-        nDIepochs = np.sum(np.where(self.realData[:,2]<1e6,1,0))
-        nRVepochs = np.sum(np.where(self.realData[:,6]<1e6,1,0))
-        nEpochs = len(self.realData[:,0])
+        nDIepochs = np.sum(np.where(realData[:,2]<1e6,1,0))
+        nRVepochs = np.sum(np.where(realData[:,6]<1e6,1,0))
+        nEpochs = len(realData[:,0])
         ##Take mass1, dist, inc and period from those include in nu calcs
         ##as they have clear priors.
         paramIntsClean = copy.deepcopy(paramInts)
@@ -206,7 +102,7 @@ class Simulator(object):
         ## check priors are ok with range mins
         self.combinedPriors(rangeMins,rangeMins,True)
         
-        return (rangeMaxsRaw,rangeMinsRaw,rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
+        return (realData,rangeMaxsRaw,rangeMinsRaw,rangeMaxs,rangeMins,sigmas,paramInts,nu,nuDI,nuRV)
     
     def combinedPriors(self,parsCurr,parsLast,test=False):
         """
@@ -265,7 +161,7 @@ class Simulator(object):
         sig = 0
         ## vary all the params if MC, 
         ##(or special cases at beginning of SA where this func is called pretending to be MC.)
-        if  ('MCMC'not in stage) and (stage=='MC'):
+        if  ('MCMC' not in stage) and (stage=='MC'):
             for i in range(0,len(pars)):
                 if i in self.paramInts:
                     parsOut[i]=np.random.uniform(self.rangeMinsRaw[i],self.rangeMaxsRaw[i])

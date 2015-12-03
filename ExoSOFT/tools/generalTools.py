@@ -3,6 +3,7 @@
 import exoSOFTlogger
 import cppTools
 import constants as const
+import copy
 import os
 import shutil
 import timeit
@@ -456,13 +457,16 @@ def loadSettingsDict(filenameRoot):
     
 def startup(argv,rootDir,rePlot=False):
     """
+    Perform the following vital start up steps (and return filled out and cleaned up settingsDict):
     -Figure out important directories
-    -copy settings files to temp directory to combine them into the master settings dict
-    -get master settings dict
-    -make output folder
-    -remake the SWIG tools?
-    -copy all ExoSOFT code into output dir for emergencies.    
-    
+    -Copy settings files to temp directory to combine them into the master settings dict
+    -Get master settings dict
+    -Make output folder
+    -Remake the SWIG tools?
+    -Copy all ExoSOFT code into output dir for emergencies.    
+    -Check range min and max values, including updates for 'lowecc' mode.
+    -find which parameters will be varying.
+    -Check if start startParams and startSigmas in dictionary make sense.
     NOTE: have rootDir handled with setup.py??
     """    
     ## Pull in settings filename prepend from command line args, if provided
@@ -518,10 +522,190 @@ def startup(argv,rootDir,rePlot=False):
         os.mkdir(codeCopyDir)
         log.debug('Copying all files in the RESULTS folder over to DropBox folder:\n '+codeCopyDir)
         copytree(settingsDict['ExoSOFTdir'], codeCopyDir)
+    #########################################################################################
+    ## Check parameter range settings make sense for data provided and mode of operation.   #
+    ## Then load up a list of the parameters to vary during simulation.                     #
+    ## Note: Originally this was done in simulator startup, but thought better to move here.#
+    #########################################################################################
+    filenameRoot = os.path.join(getSimpleDictVal(settingsDict,'settingsDir'),getSimpleDictVal(settingsDict,'prepend'))
+    realData = loadRealData(filenameRoot,dataMode=getSimpleDictVal(settingsDict,'dataMode'))
+    ##check there are matching number of RV datasets and provided min/max vals for offsets
+    if np.min(realData[:,6])<1e6:
+        numVmins=len(getSimpleDictVal(settingsDict,'vMINs'))
+        if numVmins==0:
+            numVmins=1
+        if np.max(realData[:,7])!=(numVmins-1):
+            log.error("THE NUMBER OF vMINs DOES NOT MATCH THE NUMBER OF RV DATASETS!!!\n"+\
+                           "please check the vMINs/vMAXs arrays in the simple settings file\n"+\
+                           "to make sure they have matching lengths to the number of RV datasets.")
+    if getSimpleDictVal(settingsDict,'TMAX')==getSimpleDictVal(settingsDict,'TMIN')==-1:
+        ## set T range to [earliest Epoch-max period,earliest epoch]
+        settingsDict['TMAX']=np.min(realData[:,0])
+        settingsDict['TMIN']=np.min(realData[:,0])-getSimpleDictVal(settingsDict,'PMAX')*const.daysPerYear
+    ##load up range min,max and sigma arrayS
+    rangeMaxs = [getSimpleDictVal(settingsDict,'mass1MAX'),\
+               getSimpleDictVal(settingsDict,'mass2MAX'),\
+               getSimpleDictVal(settingsDict,'paraMAX'),\
+               getSimpleDictVal(settingsDict,'OmegaMAX'),\
+               getSimpleDictVal(settingsDict,'eMAX'),\
+               getSimpleDictVal(settingsDict,'TMAX'),\
+               getSimpleDictVal(settingsDict,'TMAX'),\
+               getSimpleDictVal(settingsDict,'PMAX'),\
+               getSimpleDictVal(settingsDict,'incMAX'),\
+               getSimpleDictVal(settingsDict,'omegaMAX'),\
+               0,\
+               0,\
+               getSimpleDictVal(settingsDict,'KMAX')]
+    rangeMins = [getSimpleDictVal(settingsDict,'mass1MIN'),\
+               getSimpleDictVal(settingsDict,'mass2MIN'),\
+               getSimpleDictVal(settingsDict,'paraMIN'),\
+               getSimpleDictVal(settingsDict,'OmegaMIN'),\
+               getSimpleDictVal(settingsDict,'eMIN'),\
+               getSimpleDictVal(settingsDict,'TMIN'),\
+               getSimpleDictVal(settingsDict,'TMIN'),\
+               getSimpleDictVal(settingsDict,'PMIN'),\
+               getSimpleDictVal(settingsDict,'incMIN'),\
+               getSimpleDictVal(settingsDict,'omegaMIN'),\
+               0,\
+               0,\
+               getSimpleDictVal(settingsDict,'KMIN')]
+    ##start with uniform sigma values
+    sigSize = getSimpleDictVal(settingsDict,'strtSig')
+    sigmas = [sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,0,0,sigSize]
+    if len(getSimpleDictVal(settingsDict,'vMINs'))!=len(getSimpleDictVal(settingsDict,'vMAXs')):
+        log.critical("THE NUMBER OF vMINs NOT EQUAL TO NUMBER OF vMAXs!!!")
+    for i in range(0,len(getSimpleDictVal(settingsDict,'vMINs'))):
+        sigmas.append(sigSize)
+        rangeMins.append(getSimpleDictVal(settingsDict,'vMINs')[i])
+        rangeMaxs.append(getSimpleDictVal(settingsDict,'vMAXs')[i])
+    rangeMaxs = np.array(rangeMaxs)
+    rangeMins = np.array(rangeMins)
+    ##For lowEcc case, make Raw min/max vals for param drawing during MC mode
+    rangeMaxsRaw = copy.deepcopy(rangeMaxs)
+    rangeMinsRaw = copy.deepcopy(rangeMins)
+    if getSimpleDictVal(settingsDict,'lowEcc'):
+        ## run through the possible numbers for e and omega to find min/max for RAW versions
+        fourMin=1e6
+        fourMax=-1e6
+        nineMin=1e6
+        nineMax=-1e6
+        for omeg in range(int(rangeMins[9]*10),int(rangeMaxs[9]*10),1):
+            omega = float(omeg)/10.0
+            for e in range(int(rangeMins[4]*100),int(rangeMaxs[4]*100),1):
+                ecc = float(e)/100.0
+                four = np.sqrt(ecc)*np.sin((np.pi/180.0)*omega)
+                nine = np.sqrt(ecc)*np.cos((np.pi/180.0)*omega)
+                if four>fourMax:
+                    fourMax = four
+                if four<fourMin:
+                    fourMin = four
+                if nine>nineMax:
+                    nineMax = nine
+                if nine<nineMin:
+                    nineMin = nine
+        rangeMaxsRaw[9] = nineMax
+        rangeMaxsRaw[4] = fourMax
+        rangeMinsRaw[9] = nineMin
+        rangeMinsRaw[4] = fourMin
+    ## figure out which parameters are varying in this run.
+    ## Don't vary atot or chiSquared ever, and take care of TcEqualT and Kdirect cases
+    paramInts = []
+    for i in range(0,len(rangeMins)):
+        if (i!=10)and(i!=11):
+            if (i>12):
+                if getSimpleDictVal(settingsDict,'dataMode')!='DI':
+                    if rangeMaxs[i]!=0:
+                        paramInts.append(i) 
+            elif (i==8)or(i==12):
+                if (getSimpleDictVal(settingsDict,'dataMode')!='RV')or(getSimpleDictVal(settingsDict,'Kdirect')==False):
+                    if (rangeMaxs[8]!=0)and(i==8):
+                        paramInts.append(8)
+                elif getSimpleDictVal(settingsDict,'Kdirect'):
+                    if (rangeMaxs[12]!=0)and(i==12):
+                        paramInts.append(12)                                           
+            elif (i==2)or(i==3)or(i==0)or(i==1):
+                if (getSimpleDictVal(settingsDict,'dataMode')!='RV'):
+                    if(rangeMaxs[i]!=0):
+                        paramInts.append(i)
+                elif (getSimpleDictVal(settingsDict,'Kdirect')==False)and((i!=3)and(i!=2)):
+                    if(rangeMaxs[i]!=0):
+                        paramInts.append(i)
+            elif rangeMaxs[i]!=0:
+                if (i==5)or(i==6):
+                    if getSimpleDictVal(settingsDict,'TcStep')and(i!=5):
+                            paramInts.append(i)
+                    elif (getSimpleDictVal(settingsDict,'TcStep')==False)and(i!=6):
+                            paramInts.append(i)
+                else:
+                    paramInts.append(i)
+    #########################################################################        
+    ## Check if start startParams and startSigmas in dictionary make sense. #
+    ## Arrays must exist, be the right length, and have non-zeros values    #
+    ## for all varying parameters.                                          #
+    ######################################################################### 
+    startParams = getSimpleDictVal(settingsDict,'startParams')
+    startSigmas = getSimpleDictVal(settingsDict,'startSigmas')
+    passed = True
+    if type(startParams)!=bool:
+        if len(startParams)==len(rangeMaxs):
+            i=0
+            while (i<len(startParams))and(passed==True):
+                if i in paramInts:
+                    if startParams[i]==0:
+                        passed=False
+                i+=1
+        else:
+            passed=False
+    if passed==False:
+        settingsDict['startParams'] = False
+        log.info("Original startParams in settings files were not usable, so setting to False.")
+    passed = True
+    if type(startSigmas)!=bool:
+        if len(startSigmas)==len(rangeMaxs):
+            i=0
+            while (i<len(startSigmas))and(passed==True):
+                if i in paramInts:
+                    if startSigmas[i]==0:
+                        passed=False
+                i+=1
+        else:
+            passed=False
+    if passed==False:
+        log.info("Original startSigmas in settings files were not usable, so setting to default values.")
+        startSigmas = sigmas
+    # clean up sigs of pars that were not varying, and that ary is a ndarray.
+    for i in range(0,len(startSigmas)):
+        if i not in paramInts:
+            startSigmas[i] = 0
+    if type(startSigmas)!=np.ndarray:
+        startSigmas = np.array(startSigmas)
         
+    ## push all these important parameter related items into the dict for later use.
+    settingsDict['realData'] = realData
+    settingsDict['rangeMinsRaw'] = rangeMinsRaw
+    settingsDict['rangeMaxsRaw'] = rangeMaxsRaw
+    settingsDict['rangeMins'] = rangeMins
+    settingsDict['rangeMaxs'] = rangeMaxs
+    settingsDict['paramInts'] = np.array(paramInts)
+    settingsDict['startSigmas'] = startSigmas
+    
     return settingsDict
         
-
+def getSimpleDictVal(dict,key):
+    
+    """
+    Get the value for a key in the settings dictionary.
+    This will handle the values that are tuples and not
+    returning the value.
+    """
+    try:
+        if type(dict[key])==tuple:
+            return dict[key][0]
+        else:
+            return dict[key]
+    except:
+        return False
+    
 def cleanUp(settingsDict,stageList,allFname):
     """
     Clean up final directory after simulation completes
@@ -1060,7 +1244,9 @@ def findBestOrbit(filename,bestToFile=True,findAgain=False):
             log.info("Best fit params written to :\n"+bestFname)
     return orbBest
                        
-def writeBestSTtoFile(filename,pars,sigs,bstChiSqr):
+def writeBestSTtoFile(settingsDict,pars,sigs,bstChiSqr):
+    
+    filename = os.path.join(settingsDict['finalFolder'],'bestSTparamsAndSigs.txt')
     f = open(filename,'w')
     f.write("Best-fit between all ST chains had a reduce chi squared of "+str(bstChiSqr)+'\n')
     f.write("\nIts parameters were:\n")
@@ -1069,6 +1255,11 @@ def writeBestSTtoFile(filename,pars,sigs,bstChiSqr):
         s+=str(val)+","
     f.write(s[:-1])
     f.write("\n\nIts sigmas were:\n")
+    #double check clean up sigs of pars that were not varying
+    paramInts = settingsDict['paramInts']
+    for i in range(0,len(pars)):
+        if i not in paramInts:
+            sigs[i] = 0
     s=''
     for val in sigs:
         s+=str(val)+","

@@ -101,8 +101,11 @@ def exoSOFT():
     durationStrings = ''
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     hackMCMCstart = True
-    hackStartPars = np.array([1.39970078801,0.0,25.6840766966,93.989062488,0.0,2448191.06493,2448191.06493,49.0169583215,27.8196611322,0.0,14.9814423332,4.72629199329,0.0,0.0])
-    hackSigs = np.array([ 0.009 ,  0.0001,  0.0091,  0.0097,  0.0001,  0.0105,  0.0001, 0.0099,  0.0085,  0.0001,  0.0001,  0.0001,  0.0001,  0.0001])
+    if type(settingsDict['startParams'])!=bool:
+        hackStartPars = settingsDict['startParams']
+    else:
+        hackStartPars = np.array([1.39970078801,0.0,25.6840766966,93.989062488,0.0,2448191.06493,2448191.06493,49.0169583215,27.8196611322,0.0,14.9814423332,4.72629199329,0.0,0.0])
+    hackSigs = settingsDict['startSigmas']
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     if 'MC' in stageList:
         (returns,b) = (returnsMC,durStr) = multiProc(settingsDict,Sim,'MC',settingsDict['nChains'][0])
@@ -136,8 +139,7 @@ def exoSOFT():
                         bestSTpars = returnsST[1][i]
                         bestSTsigs = returnsST[2][i]
                 hackSigs = bestSTsigs
-                filename = os.path.join(settingsDict['finalFolder'],'bestSTparamsAndSigs.txt')
-                tools.writeBestSTtoFile(filename,bestSTpars,bestSTsigs,bstChiSqr)
+                tools.writeBestSTtoFile(settingsDict,bestSTpars,bestSTsigs,bstChiSqr)
             #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
             if hackMCMCstart:#HACK$$$$$$$$$$$$$$$$
                 print '\nsigs = '+repr(hackSigs)

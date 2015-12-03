@@ -21,8 +21,8 @@ simpleSettingsDict={
 #*************************************************************************************************************************
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
-# mode to run simulation in, choices {'MC','SA','MCMC'} [string]
-'symMode' : ('MCMC',"Simulator mode (MC,SA,MCMC)"),
+# mode to run simulation in, choices {'MC','SA','SAST','SASTMCMC,'MCMC'} [string]
+'symMode' : ('SASTMCMC',"Simulator mode (MC,SA,SAST,SASTMCMC,MCMC)"),
 ###################################################
 # Ranges for acceptable random number inputs ######
 ###################################################

@@ -104,7 +104,7 @@ def exoSOFT():
     hackStartPars = np.array([1.39970078801,0.0,25.6840766966,93.989062488,0.0,2448191.06493,2448191.06493,49.0169583215,27.8196611322,0.0,14.9814423332,4.72629199329,0.0,0.0])
     hackSigs = np.array([ 0.009 ,  0.0001,  0.0091,  0.0097,  0.0001,  0.0105,  0.0001, 0.0099,  0.0085,  0.0001,  0.0001,  0.0001,  0.0001,  0.0001])
     if hackMCMCstart:
-        stageList = ['ST']
+        stageList = ['MCMC']
         returnsSA = range(0,2)
         returnsST = range(0,2)
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -148,7 +148,6 @@ def exoSOFT():
             #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         else:
             log.critical("No SA results available to start the ST chains with.")
-    
     if 'MCMC' in stageList:
         if len(returnsST)>0:
             startParams = []
@@ -196,7 +195,7 @@ def exoSOFT():
     
     ## calc and strip burn-in?
     burnInStr = ''
-    if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
+    if (len(outFiles)>1)and(settingsDict['CalcBurn'] and ('MCMC' in stageList)):
         (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
         if settingsDict['rmBurn'][0]:
             strippedFnames = tools.burnInStripper(outFiles,burnInLengths)
@@ -225,14 +224,14 @@ def exoSOFT():
     
     ##calc R?
     grStr = ''
-    if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
+    if (len(outFiles)>1) and (settingsDict['CalcGR'] and ('MCMC' in stageList)):
         (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
     
     ## progress plots?  INCLUDE?? maybe kill this one. Function exists, but not decided how to use it here.
     
     ## calc correlation length & number effective points? 
     effPtsStr = ''
-    if ((len(outFiles)>1)and(settingsDict['symMode'][0]=='MCMC'))and (settingsDict['calcCL'] and os.path.exists(allFname)):
+    if ((len(outFiles)>1)and('MCMC' in stageList))and (settingsDict['calcCL'] and os.path.exists(allFname)):
         effPtsStr = tools.mcmcEffPtsCalc(allFname)
 
     ## Make a summary file of results 

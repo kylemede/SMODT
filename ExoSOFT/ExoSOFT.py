@@ -92,10 +92,10 @@ def exoSOFT():
     ###########################################     
     tic=timeit.default_timer()
     ##make list of stages to run
-    stgLstDict = {'MC':['MC'],'SA':['SA'],'MCMC':['SA','ST','MCMC']}
+    stgLstDict = {'MC':['MC'],'SA':['SA'],'SAST':['SA','ST'],'SASTMCMC':['SA','ST','MCMC'],'MCMC':['MCMC']}
     stageList = stgLstDict[settingsDict['symMode'][0]]
-    returnsSA = []
-    returnsST = []
+    returnsSA = range(0,2)
+    returnsST = range(0,2)
     tic=timeit.default_timer()
     maxNumMCMCprocs = settingsDict['nMCMCcns'][0]
     durationStrings = ''
@@ -103,10 +103,6 @@ def exoSOFT():
     hackMCMCstart = True
     hackStartPars = np.array([1.39970078801,0.0,25.6840766966,93.989062488,0.0,2448191.06493,2448191.06493,49.0169583215,27.8196611322,0.0,14.9814423332,4.72629199329,0.0,0.0])
     hackSigs = np.array([ 0.009 ,  0.0001,  0.0091,  0.0097,  0.0001,  0.0105,  0.0001, 0.0099,  0.0085,  0.0001,  0.0001,  0.0001,  0.0001,  0.0001])
-    if hackMCMCstart:
-        stageList = ['MCMC']
-        returnsSA = range(0,2)
-        returnsST = range(0,2)
     #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
     if 'MC' in stageList:
         (returns,b) = (returnsMC,durStr) = multiProc(settingsDict,Sim,'MC',settingsDict['nChains'][0])

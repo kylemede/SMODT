@@ -91,10 +91,7 @@ def exoSOFT():
     #  Then up to nMCMCcns if MCMC requested  #
     ###########################################     
     tic=timeit.default_timer()
-    ##make list of stages to run
-    stgLstDict = {'MC':['MC'],'SA':['SA'],'SAST':['SA','ST'],'ST':['ST'],'SASTMCMC':['SA','ST','MCMC'],'MCMC':['MCMC']}
-    stageList = stgLstDict[settingsDict['symMode'][0]]
-    tic=timeit.default_timer()
+    stageList = settingsDict['stageList'][0]
     maxNumMCMCprocs = settingsDict['nMCMCcns'][0]
     durationStrings = ''
     if 'MC' in stageList:
@@ -155,7 +152,7 @@ def exoSOFT():
             (returns,b) = (returnsMCMC,durStr) = multiProc(settingsDict,Sim,'MCMC',len(chisSorted),startParams,startSigmas)
             durationStrings+=durStr
     outFiles = returns[0]
-    toc=timeit.default_timer()
+    toc=tic2=timeit.default_timer()
     s = "ALL stages took a total of "+tools.timeStrMaker(int(toc-tic))
     durationStrings+=s+'\n'
     log.info(s)
@@ -163,8 +160,7 @@ def exoSOFT():
     ###################
     # Post-processing # 
     ###################
-    log.warning("Starting Post-Processing")
-    tic2=timeit.default_timer()     
+    log.warning("Starting Post-Processing")  
     
     ## combine the data files
     allFname = ''

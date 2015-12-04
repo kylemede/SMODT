@@ -7,9 +7,10 @@ from exoSOFTlogger import logSystemInfo
 from exoSOFTlogger import addFileHandler
 from exoSOFTlogger import addStreamHandler
 
+from startupTools import startup
+
 from generalTools import loadRealData
 from generalTools import loadSettingsDict
-from generalTools import startup
 from generalTools import loadFits
 from generalTools import writeFits
 from generalTools import combineFits

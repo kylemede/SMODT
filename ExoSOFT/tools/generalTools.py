@@ -535,6 +535,9 @@ def writeFits(baseFilename,data,settingsDict):
                     header[key]=settingsDict[key][0]
                     if len(settingsDict[key][1])>47:
                         log.warning("comment too long for pyfits headers:"+settingsDict[key][1])
+                    else:
+                        header.comments[key] = settingsDict[key][1]
+                        #print key+' = '+repr((header[key],header.comments[key]))
             hdulist.writeto(outFname)
             log.info("output file written to:below\n"+outFname)
             hdulist.close()

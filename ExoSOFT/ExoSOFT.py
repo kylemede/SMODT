@@ -45,7 +45,7 @@ class singleProc(Process):
         ## run the requested stage and [ickle its return values
         self.log.debug('Starting to run process #'+str(self.chainNum))
         (outFname,params,sigmas,bestRedChiSqr) = self.Sim.simulatorFunc(self.stage,self.chainNum,self.params,self.sigmas)
-        self.log.debug('chain #'+str(self.chainNum)+self.stage+'  OUTFILE :\n'+outFname)
+        self.log.debug('chain #'+str(self.chainNum)+" of "+self.stage+' stage  OUTFILE :\n'+outFname)
         pickle.dump([outFname,params,sigmas,bestRedChiSqr], open(self.pklFilename,'wb'))
         
 def multiProc(settingsDict,Sim,stage,numProcs,params=[],sigmas=[]):
@@ -91,7 +91,7 @@ def exoSOFT():
     #  Then up to nMCMCcns if MCMC requested  #
     ###########################################     
     tic=timeit.default_timer()
-    stageList = settingsDict['stageList'][0]
+    stageList = settingsDict['stageList']
     maxNumMCMCprocs = settingsDict['nMCMCcns'][0]
     durationStrings = ''
     if 'MC' in stageList:
@@ -103,7 +103,7 @@ def exoSOFT():
     if 'ST' in stageList:
         startParams = []
         startSigmas = []
-        if settingsDict['symMode'][0]=='ST':
+        if settingsDict['stages'] in ['ST','STMCMC']:
             for i in range(0,maxNumMCMCprocs):
                 startParams.append(settingsDict['startParams'])
                 startSigmas.append(settingsDict['startSigmas'])
@@ -130,7 +130,7 @@ def exoSOFT():
     if 'MCMC' in stageList:
         startParams = []
         startSigmas = []
-        if settingsDict['symMode'][0]=='MCMC':
+        if settingsDict['stages']=='MCMC':
             chisSorted = range(0,maxNumMCMCprocs)
             for i in range(0,maxNumMCMCprocs):
                 startParams.append(settingsDict['startParams'])
@@ -162,10 +162,11 @@ def exoSOFT():
     ###################
     log.warning("Starting Post-Processing")  
     
+    #figure out
     ## combine the data files
     allFname = ''
     if len(outFiles)>0:
-        allFname = os.path.join(os.path.dirname(outFiles[0]),"combined"+settingsDict['symMode'][0]+"data.fits")
+        allFname = os.path.join(os.path.dirname(outFiles[0]),"combined"+stageList[-1]+"data.fits")
         tools.combineFits(outFiles,allFname)
     
     ## calc and strip burn-in?
@@ -188,14 +189,14 @@ def exoSOFT():
             
     ## orbit plots?
     if settingsDict['pltOrbit'] and os.path.exists(allFname):
-        plotFnameBase = os.path.join(os.path.dirname(allFname),'orbitPlot'+settingsDict['symMode'][0])
+        plotFnameBase = os.path.join(os.path.dirname(allFname),'orbitPlot'+stageList[-1])
         tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps')
     
     ## plot posteriors?
     clStr = ''
     if settingsDict['pltDists'] and os.path.exists(allFname):
-        plotFilename = os.path.join(os.path.dirname(allFname),'summaryPlot'+settingsDict['symMode'][0])
-        clStr = tools.summaryPlotter(allFname,plotFilename,bestVals=bestFit,stage=settingsDict['symMode'][0],shadeConfLevels=True,plotALLpars=True)
+        plotFilename = os.path.join(os.path.dirname(allFname),'summaryPlot'+stageList[-1])
+        clStr = tools.summaryPlotter(allFname,plotFilename,bestVals=bestFit,stage=settingsDict['stages'],shadeConfLevels=True,plotALLpars=True)
     
     ##calc R?
     grStr = ''

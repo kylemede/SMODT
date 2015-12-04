@@ -204,57 +204,96 @@ def startup(argv,rootDir,rePlot=False):
     settingsDict['rangeMaxs'] = rangeMaxs
     settingsDict['paramInts'] = np.array(paramInts)
     
-    settingsDict = modePrep(settingsDict)
+    settingsDict = modePrep(settingsDict,sigmas)
     
     return settingsDict
 
-def modePrep(settingsDict):
+def modePrep(settingsDict,sigmas):
     """
     Check if start startParams and startSigmas in dictionary make sense.
     Arrays must exist, be the right length, and have non-zeros values for all varying parameters.     
+    Mode logic:
+    
     """
-
     startParams = genTools.getSimpleDictVal(settingsDict,'startParams')
     startSigmas = genTools.getSimpleDictVal(settingsDict,'startSigmas')
     paramInts = genTools.getSimpleDictVal(settingsDict,'paramInts')
     rangeMaxs = genTools.getSimpleDictVal(settingsDict,'rangeMaxs')
-    passed = False
+    autoMode = genTools.getSimpleDictVal(settingsDict,'autoMode')
+    ##check if startParams in settings files are useful
+    gotParams = False
     if (type(startParams)==list)or(type(startParams)==np.ndarray):
         if type(startParams)==list:
             startParams = np.array(startParams)
         if len(startParams)==len(rangeMaxs):
             i=0
-            passed = True
-            while (i<len(startParams))and(passed==True):
+            gotParams = True
+            while (i<len(startParams))and(gotParams==True):
                 if i in paramInts:
                     if startParams[i]==0:
-                        passed=False
+                        gotParams=False
                 i+=1
         else:
-            passed=False
-    if passed==False:
-        startParams = False
+            gotParams=False
+    if gotParams==False:
         log.info("Original startParams in settings files were not usable, so setting to False.")
-    if (startParams==False)and(settingsDict['symMode'][0] in ['ST','MCMC']):
-        log.critical('ST or MCMC mode requested, but not starting parameters provided.  Quiting ExoSOFT!!')
-        #***************************************************************************************************
-        sys.exit("MUST PROVIDE USEFUL STARTPARAMS IN SIMPLE SETTINGS DICT FOR ST or MCMC MODE, ELSE NOTHING TO START CHAINS WITH!\n\n!!EXITING ExoSOFT!!")
-        #***************************************************************************************************
-    passed = False
+        startParams = False
+    #check if startSigmas in settings files are useful
+    gotSigmas = False
     if (type(startSigmas)==list)or(type(startSigmas)==np.ndarray):
         if len(startSigmas)==len(rangeMaxs):
             i=0
-            passed = True
-            while (i<len(startSigmas))and(passed==True):
+            gotSigmas = True
+            while (i<len(startSigmas))and(gotSigmas==True):
                 if i in paramInts:
                     if startSigmas[i]==0:
-                        passed=False
+                        gotSigmas=False
                 i+=1
         else:
-            passed=False
-    if passed==False:
-        log.info("Original startSigmas in settings files were not usable, so setting to default values.")
+            gotSigmas=False       
+    ## check out logic between provided parameters and requested mode/stages
+    if gotParams==False:
+        if autoMode==False:
+            #check if manual settings make sense
+            if (settingsDict['stages'] in ['ST','MCMC']):
+                log.info('ST or MCMC mode requested, but not starting parameters provided.  Quiting ExoSOFT!!')
+                #***************************************************************************************************
+                s="MUST PROVIDE USEFUL STARTPARAMS IN SIMPLE SETTINGS DICT FOR ST or MCMC MODE, ELSE NOTHING TO START CHAINS WITH"
+                s+="\n\nRUN IN AUTO MODE, OR PERFORM A ROUND OF SA OR SAST TO GET USEFUL VALUES TO STARTING VALUES."
+                s+="!\n\n!!EXITING ExoSOFT!!"
+                sys.exit(s)
+                #***************************************************************************************************
+        else:
+            log.critical("Auto mode and no params provided, so run default stages: SASTMCMC.")
+            settingsDict['stages']='SASTMCMC'  
+    elif gotSigmas==False:
+        #Got params, but useful sigmas in settings file, so check if there should be and update stages or exit.
+        if autoMode==False:
+            #check if manual settings make sense
+            if (settingsDict['stages'] in ['MCMC']):
+                log.info('MCMC mode requested, but not starting sigmas provided.  Quiting ExoSOFT!!')
+                #***************************************************************************************************
+                s = "MUST PROVIDE USEFUL STARTSIGMAS IN SIMPLE SETTINGS DICT FOR MCMC MODE, ELSE NOTHING TO START CHAINS WITH."
+                s+="\n\nRUN IN AUTO MODE OR PERFORM ST TO GET STARTING VALUES.\n\n!!EXITING ExoSOFT!!"
+                sys.exit(s)
+                #***************************************************************************************************
+        else:
+            if type(startParams)!=np.ndarray:
+                log.info("Auto mode and no params or sigmas provided, so run default stages: SASTMCMC.")
+                settingsDict['stages']='SASTMCMC'
+            else:
+                log.info("Auto mode and params, but no sigmas provided, so run default stages: STMCMC.")
+                settingsDict['stages']='STMCMC'
+            log.info("Original startSigmas in settings files were not usable, so setting to default values.")
         startSigmas = sigmas
+    else:
+        #got params and sigmas.
+        log.info("Both startParams and startSigmas passed examination :-D")
+        if autoMode:
+            #So we can skip all the initialization and go right to the juicy MCMC stage :-D
+            settingsDict['stages']='MCMC'
+            log.info("Skipping initialization stages and going straight to MCMC.")
+    log.info("Logic checks on mode/stages requested, and startParams/startSigmas provided, the resulting stages to run are: "+settingsDict['stages'][0])
     # clean up sigs of pars that were not varying, and that ary is a ndarray.
     for i in range(0,len(startSigmas)):
         if i not in paramInts:
@@ -263,12 +302,12 @@ def modePrep(settingsDict):
         startSigmas = np.array(startSigmas)
         
     ##make list of stages to run
-    stgLstDict = {'MC':['MC'],'SA':['SA'],'SAST':['SA','ST'],'ST':['ST'],'SASTMCMC':['SA','ST','MCMC'],'MCMC':['MCMC']}
-    stageList = stgLstDict[genTools.getSimpleDictVal(settingsDict,'symMode')]
+    stgLstDict = {'MC':['MC'],'SA':['SA'],'SAST':['SA','ST'],'ST':['ST'],'SASTMCMC':['SA','ST','MCMC'],'STMCMC':['ST','MCMC'],'MCMC':['MCMC']}
+    stageList = stgLstDict[genTools.getSimpleDictVal(settingsDict,'stages')]
         
     settingsDict['startParams'] = startParams
     settingsDict['startSigmas'] = startSigmas
-    settingsDict['stageList'] = (stageList, 'List of stages to run')
+    settingsDict['stageList'] = stageList
     
     return settingsDict
 

@@ -41,7 +41,7 @@ class Simulator(object):
         #Just initial seed val, reset in resetTracked() to be unique for each chain.
         self.seed = int(timeit.default_timer())
         np.random.seed(self.seed)
-        self.tmpDataFile = os.path.join(self.dictVal('tmpDir'),self.dictVal('outRoot')+"-"+str(self.chainNum)+".npy")
+        self.tmpDataFile = os.path.join(self.dictVal('finalFolder'),"tmpOutdata-"+str(self.chainNum)+".npy")
         
     def starter(self):
         """
@@ -369,7 +369,7 @@ class Simulator(object):
         self.seed = int((timeit.default_timer()/(self.chainNum+1))/t)
         self.log.debug("Chain# "+str(self.chainNum)+" has random number seed = "+str(self.seed))
         np.random.seed(self.seed)
-        self.tmpDataFile = os.path.join(self.dictVal('tmpDir'),self.dictVal('outRoot')+"-"+str(self.chainNum)+".npy")
+        self.tmpDataFile = os.path.join(self.dictVal('finalFolder'),"tmpOutdata-"+str(self.chainNum)+".npy")
         if os.path.exists(self.tmpDataFile):
             os.remove(self.tmpDataFile)
             self.log.debug("just removed data file from disk:\n"+self.tmpDataFile)

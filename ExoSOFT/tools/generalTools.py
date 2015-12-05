@@ -689,15 +689,19 @@ def findBestOrbit(filename,bestToFile=True,findAgain=False):
         orbBest = data[loc[0][0],:]
         log.info("Best fit found to be:\n"+repr(orbBest))
         if bestToFile:
-            s=''
-            for val in orbBest:
-                s+=str(val)+","
             f = open(bestFname,'w')
-            f.write(s[:-1])
+            f.write(nparyTolistStr(orbBest)+'\n')
             f.close()
             log.info("Best fit params written to :\n"+bestFname)
     return orbBest
-                               
+                            
+def nparyTolistStr(ary):
+    s='['
+    for val in ary:
+        s+=str(val)+","
+    s=s[:-1]+"]"
+    return s
+   
 def copytree(src, dst):
     """
     Recursively copy a directory and its contents to another directory.

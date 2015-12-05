@@ -34,9 +34,11 @@ def startup(argv,rootDir,rePlot=False):
         except:
             print '\nWarning: the settings file prepended feature is not working correctly !!\n'    
     ## Load up the required specific directory paths in dict
-    settingsDict = rwTools.loadSettingsDict(rootDir+'settings_and_inputData/'+prepend)
+    origSettFileRoot = rootDir+'settings_and_inputData/'+prepend
+    settingsDict = rwTools.loadSettingsDict(origSettFileRoot)
     settingsDict['ExoSOFTdir']=rootDir
     settingsDict['settingsDir']=os.path.join(settingsDict['ExoSOFTdir'],'settings_and_inputData/')
+    settingsDict['origSettFileRoot']= origSettFileRoot
     settingsDict['prepend']=prepend
     ## Make a directory (folder) to place all the files from this simulation run
     settingsDict['finalFolder'] = os.path.join(settingsDict['outDir'],settingsDict['outRoot'])
@@ -86,6 +88,16 @@ def startup(argv,rootDir,rePlot=False):
     #########################################################################################
     filenameRoot = os.path.join(genTools.getSimpleDictVal(settingsDict,'settingsDir'),genTools.getSimpleDictVal(settingsDict,'prepend'))
     realData = rwTools.loadRealData(filenameRoot,dataMode=genTools.getSimpleDictVal(settingsDict,'dataMode'))
+    if (type(realData)!=list)and(type(realData)!=np.ndarray):
+        log.critical('Critical error occured while trying to load real data files.  Quiting ExoSOFT!!')
+        #***************************************************************************************************
+        s = "THERE WAS A PROBLEM LOADING THE REAL DATA."
+        s+= "IF 3D OR DI DATA MODE RQUESTED: MAKE SURE A DI FILENAME WITH THE SAME PREPEND AS THE SETTINGS FILES EXISTS."
+        s+= "IF 3D OR RV DATA MODE RQUESTED: MAKE SURE A RV FILENAME WITH THE SAME PREPEND AS THE SETTINGS FILES EXISTS."
+        s+= "IF THEY EXIST, MAKE SURE THEIR FORMATS MATCH THAT DESCRIBED IN THE readWriteTools.loadDIdata AND loadRVdata FUNCTIONS."
+        s+="\n\n!!EXITING ExoSOFT!!"
+        sys.exit(s)
+        #***************************************************************************************************
     ##check there are matching number of RV datasets and provided min/max vals for offsets
     if np.min(realData[:,6])<1e6:
         numVmins=len(genTools.getSimpleDictVal(settingsDict,'vMINs'))
@@ -257,7 +269,7 @@ def modePrep(settingsDict,sigmas):
         if autoMode==False:
             #check if manual settings make sense
             if (settingsDict['stages'] in ['ST','MCMC']):
-                log.info('ST or MCMC mode requested, but not starting parameters provided.  Quiting ExoSOFT!!')
+                log.critical('ST or MCMC mode requested, but not starting parameters provided.  Quiting ExoSOFT!!')
                 #***************************************************************************************************
                 s="MUST PROVIDE USEFUL STARTPARAMS IN SIMPLE SETTINGS DICT FOR ST or MCMC MODE, ELSE NOTHING TO START CHAINS WITH"
                 s+="\n\nRUN IN AUTO MODE, OR PERFORM A ROUND OF SA OR SAST TO GET USEFUL VALUES TO STARTING VALUES."
@@ -272,7 +284,7 @@ def modePrep(settingsDict,sigmas):
         if autoMode==False:
             #check if manual settings make sense
             if (settingsDict['stages'] in ['MCMC']):
-                log.info('MCMC mode requested, but not starting sigmas provided.  Quiting ExoSOFT!!')
+                log.critical('MCMC mode requested, but not starting sigmas provided.  Quiting ExoSOFT!!')
                 #***************************************************************************************************
                 s = "MUST PROVIDE USEFUL STARTSIGMAS IN SIMPLE SETTINGS DICT FOR MCMC MODE, ELSE NOTHING TO START CHAINS WITH."
                 s+="\n\nRUN IN AUTO MODE OR PERFORM ST TO GET STARTING VALUES.\n\n!!EXITING ExoSOFT!!"

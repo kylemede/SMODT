@@ -117,15 +117,16 @@ def exoSOFT():
         if len(startSigmas)>0:
             (returns,b) = (returnsST,durStr) = multiProc(settingsDict,Sim,'ST',len(startSigmas),startParams,startSigmas)
             durationStrings+=durStr
-        #check best results of ST and store to a file
+        # check best results of ST and store to a file.
+        # Maybe replace pars and sigs in original settings files?
         if len(returnsST[0])>0:
             bstChiSqr = np.sort(returnsST[3])[0]
             for i in range(len(returnsST[0])):
                 if returnsST[3][i] == bstChiSqr:
                     bestSTpars = returnsST[1][i]
                     bestSTsigs = returnsST[2][i]
-            hackSigs = bestSTsigs
             tools.writeBestSTtoFile(settingsDict,bestSTpars,bestSTsigs,bstChiSqr)
+            tools.pushIntoOrigSettFiles(settingsDict,bestSTpars,sigs=bestSTsigs)
         
     if 'MCMC' in stageList:
         startParams = []
@@ -151,6 +152,12 @@ def exoSOFT():
         if len(chisSorted)>0:
             (returns,b) = (returnsMCMC,durStr) = multiProc(settingsDict,Sim,'MCMC',len(chisSorted),startParams,startSigmas)
             durationStrings+=durStr
+            # Maybe replace pars in original settings files?
+            bstChiSqr = np.sort(returnsMCMC[3])[0]
+            for i in range(len(returnsMCMC[0])):
+                if returnsMCMC[3][i] == bstChiSqr:
+                    bestMCMCpars = returnsMCMC[1][i]
+            tools.pushIntoOrigSettFiles(settingsDict,bestMCMCpars,sigs=[])
     outFiles = returns[0]
     toc=tic2=timeit.default_timer()
     s = "ALL stages took a total of "+tools.timeStrMaker(int(toc-tic))

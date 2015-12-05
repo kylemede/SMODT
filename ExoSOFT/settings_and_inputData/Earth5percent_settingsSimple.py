@@ -12,17 +12,21 @@ simpleSettingsDict={
 'nMCMCcns' : (7,"Number MCMC of chains"),
 # Directory where you want the output data folder to go [string, at least 2 chars long]
 'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
-# Directory on an SSD for fast reading/writting of temp data files to save on RAM usage.
-##NOTE: just set to same as outDir if you don't have an SSD.
-'tmpDir': '/run/media/kmede/HOME/tmp',
 # General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
 #*************************************************************************************************************************
 'outRoot' : "SMODT2-EARTH-DI-5percent-retro-lowEccTrue",
 #*************************************************************************************************************************
+# set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
+# choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
+'logLevel' : 10,
 # data mode, choices {'RV','DI','3D'} [string]
 'dataMode' : ('DI',"Data Mode (RV,DI,3D)"),
-# mode to run simulation in, choices {'MC','SA','SAST','SASTMCMC,'MCMC'} [string]
-'symMode' : ('SASTMCMC',"Simulator mode (MC,SA,SAST,SASTMCMC,MCMC)"),
+# Run in Automatic mode? This will perform checks and select the stages to run automatically. [bool]
+'autoMode' : (True, 'Run in Automatic mode?'),
+# mode to run simulation in, choices {'MC','SA','ST','SAST','SASTMCMC,'MCMC'} [string]
+# NOTE: 'ST' and 'MCMC' modes need a full list of parameters for startParams, else they fail!
+#       'MCMC' also needs a full list of sigmas in startSigmas.
+'stages' : 'MCMC',
 ############################################
 # Starting parameters and sigmas for MCMC  #
 # Can be found with prior run in SAST mode #
@@ -31,45 +35,9 @@ simpleSettingsDict={
 'startParams' : False,
 # if unknown, set to False!! else [comma separated list of doubles]
 'startSigmas' : False,
-###################################################
-# Ranges for acceptable random number inputs ######
-###################################################
-# Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-# NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
-'mass1MIN' : 0.7,
-'mass1MAX' : 1.3,
-# Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.000002,#0.00000298949193585
-'mass2MAX' : 0.000004,
-# Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 980.00,
-'paraMAX' : 1020.00,
-# Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-'OmegaMIN' : 340.0,
-'OmegaMAX' : 370.0,
-# Minimum/Maximum allowed value for the Eccentricity [double]
-'eMIN' : 0.001,
-'eMAX' : 0.07,
-# Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
-#(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2450650,
-'TMAX' : 2450850,
-# Minimum/Maximum allowed value for the Period [double][yrs]
-'PMIN' : 0.7,
-'PMAX' : 1.3,
-# Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 30,
-'incMAX' : 60.0,
-# Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : -30,
-'omegaMAX' : 160,
-# Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
-'KMIN' : 0,
-'KMAX' : 0,
-# Minimum/Maximum values of Radial Velocity Offsets.  
-# Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-'vMINs' :[-150],
-'vMAXs' :[150],
+# If better startParams are found during ExoSOFT, push them and the newest sigmas into this file? [bool]
+# NOTE: this can be helpful, but use caution if you do not wish to overwrite the values in here.
+"pushToSettFiles":True,
 }
 
 

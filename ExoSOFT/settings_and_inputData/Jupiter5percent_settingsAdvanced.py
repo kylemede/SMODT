@@ -101,9 +101,6 @@ advancedDict = {
 'chiMaxST':(5,'Max reduced chiSquared to enter ST.'),
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
 'cMaxMCMC':(5,'Max reduced chiSquared to enter MCMC.'),
-# set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
-# choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
-'logLevel' : 30,
 #number of times to produce a summary log msg during a stage's progress [int]
 'nSumry'  :20,
 # make plot of posterior distributions? [bool]
@@ -211,6 +208,45 @@ advancedDict = {
 'M1Prior':(True,'Use prior for m1?',mass1PriorRatio),
 'M2Prior':(True,'Use prior for m2?',mass2PriorRatio),
 'parPrior' :(True,'Use prior for parallax?',paraPriorRatio),
+###################################################
+# Ranges for acceptable random number inputs ######
+###################################################
+# Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
+# NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
+'mass1MIN' : 0.2,
+'mass1MAX' : 2.35,
+# Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
+'mass2MIN' : 0.0001,
+'mass2MAX' : 0.005,
+# Minimum/Maximum allowed value for the Parallax [double][mas]
+'paraMIN' : 30.0,
+'paraMAX' : 70.0,
+# Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
+'OmegaMIN' : 80.0,
+'OmegaMAX' : 130.0,
+# Minimum/Maximum allowed value for the Eccentricity [double]
+'eMIN' : 0.00000001,
+'eMAX' : 0.15,
+# Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
+#(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
+'TMIN' : 2449550,
+'TMAX' : 2452500,
+# Minimum/Maximum allowed value for the Period [double][yrs]
+'PMIN' : 8.0,
+'PMAX' : 16.0,
+# Minimum/Maximum allowed value for the Inclination [double][deg]
+'incMIN' : 20,
+'incMAX' : 65,
+# Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
+'omegaMIN' : -70,
+'omegaMAX' : 170,
+# Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
+'KMIN' : 0,
+'KMAX' : 0,
+# Minimum/Maximum values of Radial Velocity Offsets.  
+# Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
+'vMINs' :[-3],
+'vMAXs' :[3],
 }
 
 def gaussian(x,mu,sig):

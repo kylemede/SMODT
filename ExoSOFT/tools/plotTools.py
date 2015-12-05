@@ -14,6 +14,7 @@ patches = pylab.matplotlib.patches
 MultLoc = pylab.matplotlib.ticker.MultipleLocator
 import constants as const
 import generalTools as genTools
+import readWriteTools as rwTools
 import cppTools
 import exoSOFTlogger
 import warnings
@@ -332,7 +333,7 @@ def stackedPosteriorsPlotter(outputDataFilenames, plotFilename,paramsToPlot=[],x
         log.debug("writing resulting figure to:\n"+plotFilename)
         
         ## load first data file to get param lists 
-        (head,data) = genTools.loadFits(outputDataFilenames[0])
+        (head,data) = rwTools.loadFits(outputDataFilenames[0])
         ## get parameter lists and filter accordingly
         (paramList,paramStrs,paramFileStrs) = genTools.getParStrs(head,latex=latex,getALLpars=plotALLpars)
         (paramList2,paramStrs2,paramFileStrs2) = genTools.getParStrs(head,latex=False,getALLpars=plotALLpars)
@@ -468,7 +469,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
         os.mkdir(plotDataDir)
     plotDataDir+='/'
     
-    (head,data) = genTools.loadFits(outputDataFilename)
+    (head,data) = rwTools.loadFits(outputDataFilename)
     if head!=False:  
         log.debug(' Inside summaryPlotter')
         s= '\nCreating summary plot for file:\n'+outputDataFilename
@@ -704,7 +705,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         os.mkdir(plotDataDir)
     plotDataDir+='/'
     ##get the real data
-    realData = genTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
+    realData = rwTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
     ## Make Orbit cpp obj
     Orbit = cppTools.Orbit()
     try:
@@ -1230,7 +1231,7 @@ def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=No
         plt.rc('text', usetex=False)
         
     if len(paramsToPlot)==2:
-        (head,data) = genTools.loadFits(outputDataFilename)
+        (head,data) = rwTools.loadFits(outputDataFilename)
         if head!=False:  
             log.debug(' Inside densityPlotter')
             s= '\nCreating 2D density plot for file:\n'+outputDataFilename
@@ -1382,7 +1383,7 @@ def cornerPlotter(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=[],sm
         plt.rc('font',family='serif')
         plt.rc('text', usetex=False)
         
-    (head,data) = genTools.loadFits(outputDataFilename)
+    (head,data) = rwTools.loadFits(outputDataFilename)
     
     if head!=False:  
         log.debug(' Inside tranglePlotter')
@@ -1484,7 +1485,7 @@ def progressPlotter(outputDataFilename,plotFilename,paramToPlot,yLims=[],bestVal
         plt.rc('font',family='serif')
         plt.rc('text', usetex=False)
         
-    (head,data) = genTools.loadFits(outputDataFilename)
+    (head,data) = rwTools.loadFits(outputDataFilename)
     
     if head!=False:  
         log.debug(' Inside progressPlotter')

@@ -12,6 +12,7 @@ import numpy as np
 import sys
 import pyfits
 import warnings
+import readWriteTools as rwTools
 warnings.simplefilter("error")
 
 log = exoSOFTlogger.getLogger('main.genTools',lvl=100,addFH=False)  
@@ -27,7 +28,7 @@ def mcmcEffPtsCalc(outputDataFilename):
     length step.  This way it produces an average value that is more reliable.
     """
     log.info("Starting to calculate correlation lengths")
-    (head,data) = loadFits(outputDataFilename)
+    (head,data) = rwTools.loadFits(outputDataFilename)
     numSteps = data.shape[0]
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
     completeStr=""
@@ -71,7 +72,7 @@ def burnInCalc(mcmcFnames,combinedFname):
     chiSquaredsALL = np.array([])
     burnInLengths = []
     # calculate median of combined data ary
-    (head0,data0) = loadFits(combinedFname)
+    (head0,data0) = rwTools.loadFits(combinedFname)
     #nu = float(head0['NU'])
     chiSqsALL = data0[:,11]
     if type(chiSqsALL)!=np.ndarray:
@@ -86,7 +87,7 @@ def burnInCalc(mcmcFnames,combinedFname):
     ## calculate location of medianALL in each chain
     for filename in mcmcFnames:
         if os.path.exists(filename):
-            (head,data) = loadFits(filename)
+            (head,data) = rwTools.loadFits(filename)
             chiSqsChain = data[:,11]
             likelihoodsChain = np.exp(-chiSqsChain/2.0)
             #medianChain = np.median(chiSquaredsChain)
@@ -116,7 +117,7 @@ def burnInStripper(mcmcFnames,burnInLengths):
         filename = mcmcFnames[i]
         burnIn = burnInLengths[i]
         if os.path.exists(filename):
-            (head,data) = loadFits(filename)
+            (head,data) = rwTools.loadFits(filename)
             ##strip burn-in and write to new fits             
             hdu = pyfits.PrimaryHDU(data[burnIn:,:])
             hdulist = pyfits.HDUList([hdu])
@@ -150,7 +151,7 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
             ## stage 2 ->  Use them to compare between chains 
             ##             then calc R and T.
             ###########################################################
-            (head,data) = loadFits(mcmcFileList[0])
+            (head,data) = rwTools.loadFits(mcmcFileList[0])
             (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
             
             Nc = len(mcmcFileList)
@@ -158,7 +159,7 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
             allStg1vals=np.zeros((Nc,len(paramList),3))
             for i in range(0,len(mcmcFileList)):
                 log.debug("Starting to calc chain #"+str(i)+' GR values')
-                (head,data) = loadFits(mcmcFileList[i])
+                (head,data) = rwTools.loadFits(mcmcFileList[i])
                 allStg1vals[i,:,2]=data.shape[0]
                 for j in range(0,len(paramList)):
                     log.debug("calculating stage 1 of GR for chain #"+str(i)+", param: "+paramStrs[j])
@@ -258,202 +259,6 @@ def getParStrs(head,latex=True,getALLpars=False):
     elif getALLpars:
         paramList=np.arange(0,len(paramStrs))
     return (paramList,paramStrs,paramFileStrs)
-
-def loadDIdata(filename):
-    """
-    Load the astrometry data into a numpy array.
-    
-    file format:
-    title 
-    column headers
-    data
-    .
-    .
-    .
-    
-    Data must be in the columns:
-    obsDate[JD] x["] x_error["] y["] y_error["]
-    """
-    if filename[-4:]!='.dat':
-        filename = filename+'.dat'
-    file = open(filename, 'r')
-    diData = []
-    lines = file.readlines()
-    file.close()
-    for line in lines:
-        #log.debug("line was:'"+line+"'")#$$$$$$$$$$$$$$$$$$$$$$$$
-        if len(line.split())>2:
-            if line.split()[0].replace('.','',1).isdigit() and line.split()[3].replace('.','',1).replace('-','',1).isdigit():
-                diData.append([float(line.split()[0]),float(line.split()[1]),float(line.split()[2]),float(line.split()[3]),float(line.split()[4])])  
-    return np.array(diData)
-    
-def loadRVdata(filename):
-    """
-    Load the radial velocity data into a numpy array.  Provided jitter values will be added in quadrature with 
-    the errors.
-    
-    file format:
-    title 
-    column headers
-    data
-    .
-    .
-    Empty line between data sets
-    data
-    .
-    .
-    
-    Data must be in the columns:
-    obsDate[JD] RV[m/s] RV_error[m/s] jitter[m/s] datasetNumber[int]
-    NOTE: datasetNumber is optional, if not provided they will be automatically set to 0,1,2... following the order of the data in the file.
-          If jitter is not provided, it will be assumed zero.
-    """
-    if filename[-4:]!='.dat':
-        filename = filename+'.dat'
-    file = open(filename, 'r')
-    lines = file.readlines()
-    file.close()
-    rvData = []
-    datasetNumLast = 0
-    jitterLast = 0
-    lastWasDataLine=False
-    thisIsDataLine = False
-    for line in lines:
-        #print "line = "+line
-        lastWasDataLine=thisIsDataLine
-        thisIsDataLine=False
-        if len(line.split())>2:
-            if line.split()[0].replace('.','',1).isdigit() and line.split()[1].replace('.','',1).replace('-','',1).isdigit():
-                thisIsDataLine=True
-                curDataAry = [float(line.split()[0]),float(line.split()[1])]
-                #if jitter was provided on first line of data set
-                if len(line.split())>3:
-                    try:
-                        jitterLast = float(line.split()[3])
-                    except:
-                         log.error("could not convert 4th element of split into jitter.  4th element was: "+str(line.split()[3]))
-                curDataAry.append(np.sqrt(float(line.split()[2])**2+jitterLast**2))
-                #if datasetNum was provided on first line of data set
-                if len(line.split())>4:
-                    try:
-                        datasetNumLast = float(line.split()[4])
-                    except:
-                        log.error("could not convert 5th element of split into datasetNum.  5th element was: "+str(line.split()[4]))
-                curDataAry.append(datasetNumLast)
-                #print repr(curDataAry)
-                rvData.append(curDataAry)
-        if lastWasDataLine and (thisIsDataLine==False):
-            jitterLast = 0
-            datasetNumLast+=1
-            #print 'incrementing datasetNum'
-    return np.array(rvData)
-    
-def loadRealData(filenameRoot,dataMode='3D'):
-    """
-    Load the observed real data into a numpy array.
-    This will be a combination of the RV and DI data,sorted into cronological order.
-    filenameRoot would be the absolute path plus the prepend to the settings files.
-    ex. '/run/..../ExoSOFT/settings_and_inputData/FakeData_'
-    """
-    diEpochs = []
-    rvEpochs = []
-    if dataMode!='RV':
-        diFilename = filenameRoot+'DIdata.dat'
-        #print 'using diFilename = '+diFilename        
-        if os.path.exists(diFilename):
-            diData = loadDIdata(diFilename)
-            diEpochs = diData[:,0]
-    if dataMode!='DI':
-        rvFilename = filenameRoot+'RVdata.dat'
-        #print 'using rvFilename = '+rvFilename
-        if os.path.exists(rvFilename):
-            rvData = loadRVdata(rvFilename)
-            rvEpochs = rvData[:,0]
-    #print 'rvData = '+repr(rvData)
-    #for i in range(0,rvData.shape[0]):
-    #    print 'ORIG rv data = '+str(rvData[i,0])+', '+str(rvData[i,1])+", "+str(rvData[i,2])+", "+str(rvData[i,3])
-    ##load in epochs from both sets, sort and kill double entries
-    epochsTemp = np.concatenate((diEpochs,rvEpochs))
-    epochsTemp.sort()
-    epochs = []
-    for epoch in epochsTemp:
-        if epoch not in epochs:
-            epochs.append(epoch)
-    epochs = np.array(epochs)
-    realData = np.zeros((epochs.shape[0],8))
-    ##set error values to 1e6 which signals not to calculate the predicted version in orbit.cc
-    realData[:,2]=realData[:,4]=realData[:,6]=1e6
-    realData[:,0]=epochs[:]
-    for i in range(epochs.shape[0]):
-        if len(diEpochs)>0:
-            if epochs[i] in diData[:,0]:
-                realData[i,1:5]=diData[np.where(diData[:,0]==epochs[i])[0],1:]
-        if len(rvEpochs)>0:
-            if epochs[i] in rvData[:,0]:
-                realData[i,5:]=rvData[np.where(rvData[:,0]==epochs[i])[0],1:]
-    #print 'dataMode'+dataMode+'->realData = '+repr(realData)
-    #for i in range(0,realData.shape[0]):
-    #    print 'realData = '+str(realData[i,0])+', '+str(realData[i,5])+", "+str(realData[i,6])+", "+str(realData[i,7])
-    return realData
-            
-def loadSettingsDict(filenameRoot):
-    """
-    Load the values from both the simple (symSettingsSimple.py) and advanced (symSettingsAdvanced.py)
-    into a dictionary for use throughout the simulation and post-processing.
-    Those that are deemed useful will be loaded in as a tuple with a comment for later adding to 
-    the resulting simulation data file fits header.
-    NOTE: the first step is to copy these files to standardized names so they can be called in to 
-          use.  They will overwrite the files:
-          ExoSOFT/tools/temp/simpleSettings.py   &   advancedSettings.py 
-    
-    filenameRoot would be the absolute path plus the prepend to the settings files.
-    ex. '/run/..../ExoSOFT/settings_and_inputData/FakeData_'
-    """
-    ## A BIT HACKY FOR NOW, NEED TO FIND A CLEANER WAY TO DO THIS!?!?! $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-    cwd = os.getenv('PWD')
-    ExoSOFTHeadDir = filenameRoot.split("ExoSOFT")[0]
-    try:
-        os.remove(os.path.join(ExoSOFTHeadDir,'ExoSOFT/tools/temp/settingsSimple.py'))
-        os.remove(os.path.join(ExoSOFTHeadDir,'ExoSOFT/tools/temp/settingsAdvanced.py'))
-        os.remove(os.path.join(ExoSOFTHeadDir,'ExoSOFT/tools/temp/constants.py'))
-    except:
-        temp=True
-    shutil.copy(filenameRoot+'settingsSimple.py',os.path.join(ExoSOFTHeadDir,'ExoSOFT/tools/temp/settingsSimple.py'))
-    shutil.copy(filenameRoot+'settingsAdvanced.py',os.path.join(ExoSOFTHeadDir,'ExoSOFT/tools/temp/settingsAdvanced.py'))
-    shutil.copy(os.path.join(ExoSOFTHeadDir,'ExoSOFT/tools/constants.py'),os.path.join(ExoSOFTHeadDir,'ExoSOFT/tools/temp/constants.py'))
-    if False:
-        print 'Copied simple to:\n'+os.path.join(ExoSOFTHeadDir,'ExoSOFT/tools/temp/settingsSimple.py')
-        print 'Copied advanced to:\n'+os.path.join(ExoSOFTHeadDir,'ExoSOFT/tools/temp/settingsAdvanced.py')
-        print 'Copied constants to:\n'+os.path.join(ExoSOFTHeadDir,'ExoSOFT/tools/temp/constants.py')
-    os.chdir(os.path.join(ExoSOFTHeadDir,'ExoSOFT'))
-    from tools.temp.settingsAdvanced import settingsDict
-    os.chdir(cwd)
-    
-    #######################################################
-    ## determine argPeriOffsetRV and argPeriOffsetDI values
-    #######################################################
-    omegaFdi = 0
-    omegaFrv = 0
-    #first using RV special bools
-    if (settingsDict['primeRVs'][0] and settingsDict['fitPrime'][0]):
-        omegaFdi=-180.0
-    elif (settingsDict['primeRVs'][0] and(settingsDict['fitPrime'][0]==False)):
-        omegaFrv=180.0
-    #now update due to fixed argPeriPlus values
-    omegaFdi+=settingsDict['omegaPdi'][0]
-    omegaFrv+=settingsDict['omegaPrv'][0]
-    settingsDict['omegaFdi'] = (omegaFdi,"Total fixed val added to DI omega in model")
-    settingsDict['omegaFrv'] = (omegaFrv,"Total fixed val added to RV omega in model")
-    log.debug("Setting fixed omega offsets to:\nomegaFdi = "+str(omegaFdi)+"\nomegaFrv = "+str(omegaFrv))
-    ##In DI mode can only find Mtotal, thus push all mass into M1 and kill M2
-    if settingsDict['dataMode'][0]=='DI':
-        settingsDict['mass1MIN']=settingsDict['mass1MIN']+settingsDict['mass2MIN']
-        settingsDict['mass1MAX']=settingsDict['mass1MAX']+settingsDict['mass2MAX']
-        settingsDict['mass2MIN']=0
-        settingsDict['mass2MAX']=0
-        log.debug("DI dataMode, so pushed all mass range vals into M1 and set ones for M2 to zero")
-        
-    return settingsDict
         
 def getSimpleDictVal(dict,key):
     
@@ -504,108 +309,7 @@ def cleanUp(settingsDict,stageList,allFname):
         except:
             log.error('Failed to delete file: '+os.path.basename(fname))
 
-def writeFits(baseFilename,data,settingsDict):
-    """
-    Data will be written to a fits file with a single PrimaryHDU,
-    with the .header loaded up with the tuples from the settingsDict 
-    and .data = provided data.
-    File will be stored in the 'finalFolder' directory from the settingsDict.
-    If data variable is a string, this function will assume it is a filename 
-    of where the data is stored in a .npy file, and load it in.
-    """
-    outFname=''
-    try:
-        ##check if data is a .npy filename
-        if type(data)==str:
-            if os.path.exists(data):
-                dataFname = data
-                data = np.load(dataFname)
-                os.remove(dataFname)
-                log.debug("just removed data file from disk:\n"+dataFname)
-        if len(data)>0:
-            if '.fits' not in baseFilename:
-                baseFilename=baseFilename+'.fits'
-            outFname = os.path.join(settingsDict['finalFolder'],baseFilename)
-            hdu = pyfits.PrimaryHDU(data)
-            hdulist = pyfits.HDUList([hdu])
-            header = hdulist[0].header
-            ##load up header with tuples from settingsDict
-            for key in settingsDict:
-                if type(settingsDict[key])==tuple:
-                    header[key]=settingsDict[key][0]
-                    if len(settingsDict[key][1])>47:
-                        log.warning("comment too long for pyfits headers:"+settingsDict[key][1])
-                    else:
-                        header.comments[key] = settingsDict[key][1]
-                        #print key+' = '+repr((header[key],header.comments[key]))
-            hdulist.writeto(outFname)
-            log.info("output file written to:below\n"+outFname)
-            hdulist.close()
-            ## check resulting fits file header
-            if False:
-                f = pyfits.open(os.path.join(settingsDict['finalFolder'],baseFilename),'readonly')
-                head = f[0].header
-                f.close()
-                if False:
-                    for key in head:
-                        print key+' = '+repr((header[key],header.comments[key]))
-                        #print 'type(header[key] = '+repr(type(header[key]))
-                print '\n\nEntire Header as a repr:\n'+repr(head)
-        else:
-            log.error("No data to write to file:\n"+baseFilename)
-    except:
-        log.error("could not write file to disk for some reason")
-    return outFname
-    
-def loadFits(filename):
-    """
-    Load in a fits file written by ExoSOFT.
-    Return (header dict, data)
-    """
-    if os.path.exists(filename):
-        f = pyfits.open(filename,'readonly')
-        head = f[0].header
-        data = f[0].data
-        f.close()
-    else:
-        log.critical("fits file does not exist!!! filename =\n"+str(filename))
-        head=data=False
-    return (head,data)
 
-def periodicDataDump(filename,d):
-    """
-    dump a ndarray to disk.  If first time, just dump it.
-    Else, load current ary and cat d to it before dumping.
-    """
-    if len(d)!=0:
-        if os.path.exists(filename):
-            d0 = np.load(filename)
-            np.save(filename,np.concatenate((d0,d)))
-        else:
-            np.save(filename,d)
-
-def combineFits(filenames,outFname):
-    """
-    combine the data in multiple ExoSOFT fits files together.
-    Used primarily for after multi-process runs.
-    """
-    nFiles = len(filenames)
-    (head0,dataALL) = loadFits(filenames[0])
-    for filename in filenames:
-        (head,data) = loadFits(filename)
-        dataALL = np.concatenate((dataALL,data))
-    hdu = pyfits.PrimaryHDU(dataALL)
-    hdulist = pyfits.HDUList([hdu])
-    header = hdulist[0].header
-    for key in head0:
-        if key=='NSAMPLES':
-            ##load in total number of samples for this combined file
-            header['NSAMPLES'] = (int(head0['NSAMPLES'])*nFiles,head0.comments['NSAMPLES'])
-        else:
-            header[key] = (head0[key],head0.comments[key])
-    hdulist.writeto(outFname)
-    hdulist.close()
-    log.info("output file written to:below\n"+outFname)
     
 def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,effPtsStr,allTime,postTime,durationStrings):
     """
@@ -616,7 +320,7 @@ def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,e
         f = open(summaryFname,'a')
     else:
         f = open(summaryFname,'w')
-    (head,data) = loadFits(finalFits)
+    (head,data) = rwTools.loadFits(finalFits)
     totalSamps = head['NSAMPLES']
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False,getALLpars=True)
     (paramListCleaned,paramStrsCleaned,paramFileStrsCleaned) = getParStrs(head,latex=False)
@@ -656,7 +360,7 @@ def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,e
         ## calculate chi squareds for the best fit #
         ############################################
         ##get the real data
-        realData = loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
+        realData = rwTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
         ## Make Orbit cpp obj
         Orbit = cppTools.Orbit()
         try:
@@ -723,7 +427,7 @@ def keplersThird(p=0,atot=0,mtot=0):
     
 def recheckFit3D(orbParams,settingsDict,finalFits='',nus=[]):
     if finalFits!='':
-        (head,data) = loadFits(finalFits)
+        (head,data) = rwTools.loadFits(finalFits)
         nu = head['NU']
         nuDI = head['NUDI']
         nuRV = head['NURV']
@@ -738,7 +442,7 @@ def recheckFit3D(orbParams,settingsDict,finalFits='',nus=[]):
         nuRV = 1.0
         
     ##get the real data
-    realData = loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
+    realData = rwTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
     ## Make Orbit cpp obj
     Orbit = cppTools.Orbit()
     try:
@@ -762,7 +466,7 @@ def recheckFit3D(orbParams,settingsDict,finalFits='',nus=[]):
 def predictLocation(orbParams,settingsDict,epochs=[]):
     
     ##get the real data
-    realData = loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
+    realData = rwTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
     ## Make Orbit cpp obj
     Orbit = cppTools.Orbit()
     try:
@@ -861,7 +565,7 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
     log.debug('Inside confLevelFinder')
     outStr=''
     if os.path.exists(filename):
-        (dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = dataReader(filename, colNum)
+        (dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = rwTools.dataReader(filename, colNum)
     
         if len(dataAry>0) or (dataValueStart!=dataValueMid!=dataValueEnd):
             #Convert data array to a sorted numpy array
@@ -962,24 +666,7 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
         return returnList 
         
     else:
-        log.critical( "confLevelFinder: ERROR!!!! file doesn't exist")
-        
-def dataReader(filename, colNum=0):
-    """
-    Read in the data for a single column of data.
-    """
-    verboseInternal = False
-    ## First get ranges of param and ChiSquared values
-    log.debug('\nOpening and finding ranges for data in column # '+str(colNum))
-    
-    ## Check if file has useful data for that column#
-    (head,data) = loadFits(filename)
-    if head!=False:
-        TotalSamples=data.shape[0]
-        dataAry = data[:,colNum]
-        chiSquareds = data[:,11]
-        bestDataVal = dataAry[np.where(chiSquareds==np.min(chiSquareds))][0]          
-        return (dataAry,chiSquareds,[bestDataVal,np.median(dataAry),dataAry[0],dataAry[len(dataAry)//2],dataAry[-1]])                
+        log.critical( "confLevelFinder: ERROR!!!! file doesn't exist")            
                                          
 def findBestOrbit(filename,bestToFile=True,findAgain=False):        
     """
@@ -996,7 +683,7 @@ def findBestOrbit(filename,bestToFile=True,findAgain=False):
             log.error("Tried to load previously found best orbit from file, but failed, so will find it from data again.")
     if gotIt==False:
         log.debug("trying to find best orbit in file:\n"+filename)   
-        (head,data) = loadFits(filename)
+        (head,data) = rwTools.loadFits(filename)
         chiBest = np.min(data[:,11])
         loc = np.where(data[:,11]==chiBest)
         orbBest = data[loc[0][0],:]
@@ -1010,29 +697,6 @@ def findBestOrbit(filename,bestToFile=True,findAgain=False):
             f.close()
             log.info("Best fit params written to :\n"+bestFname)
     return orbBest
-                       
-def writeBestSTtoFile(settingsDict,pars,sigs,bstChiSqr):
-    
-    filename = os.path.join(settingsDict['finalFolder'],'bestSTparamsAndSigs.txt')
-    f = open(filename,'w')
-    f.write("Best-fit between all ST chains had a reduce chi squared of "+str(bstChiSqr)+'\n')
-    f.write("\nIts parameters were:\n")
-    s=''
-    for val in pars:
-        s+=str(val)+","
-    f.write(s[:-1])
-    f.write("\n\nIts sigmas were:\n")
-    #double check clean up sigs of pars that were not varying
-    paramInts = settingsDict['paramInts']
-    for i in range(0,len(pars)):
-        if i not in paramInts:
-            sigs[i] = 0
-    s=''
-    for val in sigs:
-        s+=str(val)+","
-    f.write(s[:-1])
-    f.close()
-    log.info("Best fit params and sigmas from ST stage were written to :\n"+filename)  
                                
 def copytree(src, dst):
     """

@@ -5,11 +5,12 @@ import copy
 import numpy as np
 import exoSOFTlogger
 import generalTools as genTools
+import readWriteTools as rwTools
 import warnings
 warnings.simplefilter("error")
 
 
-log = exoSOFTlogger.getLogger('main.startupTools',lvl=100,addFH=False) 
+log = exoSOFTlogger.getLogger('main.suTools',lvl=100,addFH=False) 
 
 def startup(argv,rootDir,rePlot=False):
     """
@@ -33,7 +34,7 @@ def startup(argv,rootDir,rePlot=False):
         except:
             print '\nWarning: the settings file prepended feature is not working correctly !!\n'    
     ## Load up the required specific directory paths in dict
-    settingsDict = genTools.loadSettingsDict(rootDir+'settings_and_inputData/'+prepend)
+    settingsDict = rwTools.loadSettingsDict(rootDir+'settings_and_inputData/'+prepend)
     settingsDict['ExoSOFTdir']=rootDir
     settingsDict['settingsDir']=os.path.join(settingsDict['ExoSOFTdir'],'settings_and_inputData/')
     settingsDict['prepend']=prepend
@@ -84,7 +85,7 @@ def startup(argv,rootDir,rePlot=False):
     ## Note: Originally this was done in simulator startup, but thought better to move here.#
     #########################################################################################
     filenameRoot = os.path.join(genTools.getSimpleDictVal(settingsDict,'settingsDir'),genTools.getSimpleDictVal(settingsDict,'prepend'))
-    realData = genTools.loadRealData(filenameRoot,dataMode=genTools.getSimpleDictVal(settingsDict,'dataMode'))
+    realData = rwTools.loadRealData(filenameRoot,dataMode=genTools.getSimpleDictVal(settingsDict,'dataMode'))
     ##check there are matching number of RV datasets and provided min/max vals for offsets
     if np.min(realData[:,6])<1e6:
         numVmins=len(genTools.getSimpleDictVal(settingsDict,'vMINs'))

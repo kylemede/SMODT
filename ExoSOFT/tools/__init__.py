@@ -9,11 +9,14 @@ from exoSOFTlogger import addStreamHandler
 
 from startupTools import startup
 
-from generalTools import loadRealData
-from generalTools import loadSettingsDict
-from generalTools import loadFits
-from generalTools import writeFits
-from generalTools import combineFits
+from readWriteTools import loadRealData
+from readWriteTools import loadSettingsDict
+from readWriteTools import loadFits
+from readWriteTools import writeFits
+from readWriteTools import combineFits
+from readWriteTools import periodicDataDump
+from readWriteTools import writeBestSTtoFile
+
 from generalTools import findBestOrbit
 from generalTools import mcmcEffPtsCalc
 from generalTools import summaryFile
@@ -24,11 +27,9 @@ from generalTools import burnInStripper
 from generalTools import timeStrMaker
 from generalTools import copyToDB
 from generalTools import copytree
-from generalTools import periodicDataDump
 from generalTools import chiSquaredCalc3D
 from generalTools import recheckFit3D
 from generalTools import predictLocation
-from generalTools import writeBestSTtoFile
 from generalTools import getSimpleDictVal
 
 from progressbar.progressbar import ProgressBar

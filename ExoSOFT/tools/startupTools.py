@@ -36,6 +36,7 @@ def startup(argv,rootDir,rePlot=False):
     ## Load up the required specific directory paths in dict
     origSettFileRoot = rootDir+'settings_and_inputData/'+prepend
     settingsDict = rwTools.loadSettingsDict(origSettFileRoot)
+    log.setStreamLevel(settingsDict['logLevel'])
     settingsDict['ExoSOFTdir']=rootDir
     settingsDict['settingsDir']=os.path.join(settingsDict['ExoSOFTdir'],'settings_and_inputData/')
     settingsDict['origSettFileRoot']= origSettFileRoot
@@ -143,6 +144,12 @@ def startup(argv,rootDir,rePlot=False):
     sigmas = [sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,sigSize,0,0,sigSize]
     if len(genTools.getSimpleDictVal(settingsDict,'vMINs'))!=len(genTools.getSimpleDictVal(settingsDict,'vMAXs')):
         log.critical("THE NUMBER OF vMINs NOT EQUAL TO NUMBER OF vMAXs!!!")
+        #***************************************************************************************************
+        s="THE NUMBER OF vMINs NOT EQUAL TO NUMBER OF vMAXs!!!\n"
+        s+="PLEASE CHECK THE ADVANCED SETTINGS FILES AND FIX THIS"
+        s+="!\n\n!!EXITING ExoSOFT!!"
+        sys.exit(s)
+        #***************************************************************************************************
     for i in range(0,len(genTools.getSimpleDictVal(settingsDict,'vMINs'))):
         sigmas.append(sigSize)
         rangeMins.append(genTools.getSimpleDictVal(settingsDict,'vMINs')[i])
@@ -233,6 +240,7 @@ def modePrep(settingsDict,sigmas):
     paramInts = genTools.getSimpleDictVal(settingsDict,'paramInts')
     rangeMaxs = genTools.getSimpleDictVal(settingsDict,'rangeMaxs')
     autoMode = genTools.getSimpleDictVal(settingsDict,'autoMode')
+    
     ##check if startParams in settings files are useful
     gotParams = False
     if (type(startParams)==list)or(type(startParams)==np.ndarray):
@@ -279,6 +287,8 @@ def modePrep(settingsDict,sigmas):
         else:
             log.critical("Auto mode and no params provided, so run default stages: SASTMCMC.")
             settingsDict['stages']='SASTMCMC'  
+        if gotSigmas==False:
+            startSigmas = sigmas
     elif gotSigmas==False:
         #Got params, but useful sigmas in settings file, so check if there should be and update stages or exit.
         if autoMode==False:

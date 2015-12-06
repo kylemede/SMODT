@@ -33,6 +33,7 @@ from generalTools import recheckFit3D
 from generalTools import predictLocation
 from generalTools import getSimpleDictVal
 from generalTools import nparyTolistStr
+from generalTools import rmFiles
 
 from progressbar.progressbar import ProgressBar
 

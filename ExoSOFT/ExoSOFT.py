@@ -30,7 +30,7 @@ class singleProc(Process):
         lives.
     :param int chainNum: number of this chain
     """
-    def __init__(self, settingsDict, SimObj, stage, chainNum, pklFilename = '', params=[],sigmas=[]):
+    def __init__(self, settingsDict, SimObj, stage, chainNum, pklFilename = '', params=[],sigmas=[],strtTemp=1.0):
         Process.__init__(self)
         self.chainNum = chainNum
         self.log = tools.getLogger('main.singleProcess',lvl=100,addFH=False)
@@ -38,17 +38,18 @@ class singleProc(Process):
         self.stage = stage
         self.params = params
         self.sigmas = sigmas
+        self.strtTemp = strtTemp
         self.Sim = SimObj
         self.pklFilename = pklFilename
         
     def run(self):        
         ## run the requested stage and [ickle its return values
         self.log.debug('Starting to run process #'+str(self.chainNum))
-        (outFname,params,sigmas,bestRedChiSqr) = self.Sim.simulatorFunc(self.stage,self.chainNum,self.params,self.sigmas)
+        (outFname,params,sigmas,bestRedChiSqr) = self.Sim.simulatorFunc(self.stage,self.chainNum,self.params,self.sigmas,self.strtTemp)
         self.log.debug('chain #'+str(self.chainNum)+" of "+self.stage+' stage  OUTFILE :\n'+outFname)
         pickle.dump([outFname,params,sigmas,bestRedChiSqr], open(self.pklFilename,'wb'))
         
-def multiProc(settingsDict,Sim,stage,numProcs,params=[],sigmas=[]):
+def multiProc(settingsDict,Sim,stage,numProcs,params=[],sigmas=[],strtTemp=1.0):
     log = tools.getLogger('main.multiProc',lvl=100,addFH=False)
     if stage in ['ST','MCMC']:
         if len(params)==0:
@@ -58,10 +59,13 @@ def multiProc(settingsDict,Sim,stage,numProcs,params=[],sigmas=[]):
         sigmas = params = range(numProcs)
     master = []
     tic=timeit.default_timer()
-    log.warning("Going to start "+str(numProcs)+" chains for the  "+stage+" stage")
+    extra = ''
+    if stage=='SA':
+        extra+=" with a starting temperature of "+str(strtTemp)
+    log.warning("Going to start "+str(numProcs)+" chains for the "+stage+" stage"+extra)
     for procNumber in range(numProcs):
         pklFilename = os.path.join(settingsDict['finalFolder'],'pklTemp'+"-"+stage+'-'+str(procNumber)+".p")
-        master.append(singleProc(settingsDict,Sim,stage,procNumber,pklFilename=pklFilename,params=params[procNumber],sigmas=sigmas[procNumber]))
+        master.append(singleProc(settingsDict,Sim,stage,procNumber,pklFilename=pklFilename,params=params[procNumber],sigmas=sigmas[procNumber],strtTemp=strtTemp))
         master[procNumber].start()
     for procNumber in range(numProcs):
         master[procNumber].join()    
@@ -74,6 +78,68 @@ def multiProc(settingsDict,Sim,stage,numProcs,params=[],sigmas=[]):
         ret = pickle.load(open(master[procNumber].pklFilename,'rb'))
         for i in range(4):
             retAry[i].append(ret[i])
+    return (retAry,retStr)
+
+def iterativeSA(settingsDict,Sim):
+    """
+    Perform SA with multiProc nSAiters times, droping the starting temperature each time by strtTemp/nSAiters.
+    """
+    log = tools.getLogger('main.iterativeSA',lvl=100,addFH=False)
+    maxNumMCMCprocs = settingsDict['nMCMCcns'][0]
+    numProcs = settingsDict['nChains'][0]
+    nSAiters = settingsDict['nSAiters'][0]
+    strtT = settingsDict['strtTemp'][0]
+    strtPars = range(0,numProcs)
+    bestRetAry = [[],[],[],[]]
+    for iter in range(0,nSAiters):
+        if iter>0:
+            #clean up previous SA data files on disk to avoid clash
+            #[outFname,params,sigmas,bestRedChiSqr]
+            tools.rmFiles(retAry[0][:])
+        temp = strtT-(strtT/float(nSAiters))*float(iter)
+        #print 'repr(strtPars) = '+repr(strtPars)
+        (retAry,retStr) = multiProc(settingsDict,Sim,'SA',numProcs,params=strtPars,sigmas=[],strtTemp=temp)
+        if len(retAry)>0:
+            chisSorted = [] 
+            goodParams = []           
+            #Filter inputs if more than max num MCMC proc available to use the best ones
+            chisSorted = np.sort(retAry[3])
+            chisSorted = chisSorted[np.where(chisSorted<settingsDict['cMaxMCMC'][0])]
+            #print 'Full list of chiSquareds back from SA '+repr(chisSorted)
+            #first updated bestRetAry
+            for i in range(len(retAry[0])):
+                if retAry[3][i] in chisSorted:                       
+                    if len(bestRetAry[0])<numProcs:
+                        for j in range(4):
+                            bestRetAry[j].append(retAry[j][i])
+                    else:
+                        bestChis = np.sort(bestRetAry[3])
+                        if retAry[3][i]<bestChis[-1]:
+                            for j in range(4):
+                                bestRetAry[j].append(retAry[j][i])
+            #now make list of best ones to use in next round
+            if len(bestRetAry[0])>numProcs:
+                bestChis = np.sort(bestRetAry[3])
+                bestRetAry2 = [[],[],[],[]]
+                #trim best lists down to size
+                for i in range(0,len(bestChis)):
+                    if bestRetAry[3][i] in bestChis[:numProcs]:
+                        for j in range(4):
+                            bestRetAry2[j].append(bestRetAry[j][i])
+                bestRetAry = bestRetAry2
+            #print 'repr(np.sort(bestRetAry[3])) = '+repr(np.sort(bestRetAry[3]))
+            goodParams = bestRetAry[1]
+            log.info("Iteration #"+str(iter+1)+" resulted in the chiSquareds "+repr(chisSorted))
+            ## Now fill out an array of starting parameter sets from the best above.
+            ## first load up with one set of goodParams, then randomly from it till full.
+            strtPars=[]
+            if len(goodParams)>1:
+                for i in range(0,len(goodParams)):
+                    strtPars.append(goodParams[i])
+                while len(strtPars)<numProcs:
+                    rndVal = np.random.randint(0,len(goodParams))
+                    #print 'rndVal = '+str(rndVal)
+                    strtPars.append(goodParams[rndVal])
     return (retAry,retStr)
 
 def exoSOFT():
@@ -98,7 +164,7 @@ def exoSOFT():
         (returns,b) = (returnsMC,durStr) = multiProc(settingsDict,Sim,'MC',settingsDict['nChains'][0])
         durationStrings+=durStr
     if 'SA' in stageList:
-        (returns,b) = (returnsSA,durStr) = multiProc(settingsDict,Sim,'SA',settingsDict['nChains'][0])
+        (returns,b) = (returnsSA,durStr) = iterativeSA(settingsDict,Sim)
         durationStrings+=durStr
     if 'ST' in stageList:
         startParams = []

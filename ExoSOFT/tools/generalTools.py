@@ -302,7 +302,11 @@ def cleanUp(settingsDict,stageList,allFname):
             delFiles.append(nm)
             
     ##try to delete files
-    for fname in delFiles:
+    rmFiles(delFiles)
+    
+def rmFiles(files):
+    ##try to delete files
+    for fname in files:
         try:
             log.debug('Deleting file: '+os.path.basename(fname))
             os.remove(fname) 

@@ -274,7 +274,7 @@ class Simulator(object):
                 self.log.debug(sumStr)
         return (paramsOut,accept)
     
-    def tempDrop(self,sample,temp,stage=''):
+    def tempDrop(self,sample,strtTemp,temp,stage=''):
         """
         Determine if it is time to drop the temp, and drop if it is.
         Total temperature range is [strtTemp,0.01), so the minimum 
@@ -284,7 +284,7 @@ class Simulator(object):
         """
         if stage=='SA':
             if sample%self.dictVal('tempInt')==0:
-                temp-=(self.dictVal('strtTemp')-0.01)*(float(self.dictVal('tempInt'))/float(self.dictVal('nSAsamp')))
+                temp-=(strtTemp-0.01)*(float(self.dictVal('tempInt'))/float(self.dictVal('nSAsamp')))
         return temp
     
     def sigTune(self,sample,sigs=[],stage=''):
@@ -387,7 +387,7 @@ class Simulator(object):
         startStr+= '[nu,nuDI,nuRV] = ['+str(self.nu)+', '+str(self.nuDI)+', '+str(self.nuRV)+']\n'
         self.log.debug(startStr)
         
-    def simulatorFunc(self,stage='',chainNum=1,startParams=[],startSigmas=[]):
+    def simulatorFunc(self,stage='',chainNum=1,startParams=[],startSigmas=[],temp=1.0):
         """
         The core function to perform the requested stage of the simulation ('MC','SA','ST','MCMC').
         If stage is SA or ST: final (params,sigmas) are returned, else nothing.
@@ -399,15 +399,19 @@ class Simulator(object):
         bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
         modelData = np.zeros((len(self.realData),3))
         acceptedParams = []
-        temp = 1.0
         self.settingsDict['curStg']=(stage,'Current stage either [SA,ST,MCMC or MC]')
+        strtTemp = temp
         if (stage=='SA')or(stage=='MC'):
-            ## get starting params and sigmas as these two stages start at a random point
             sigmas = copy.deepcopy(self.starterSigmas)
-            proposedParsRaw = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
+            ## if valid startParams provided, start there, else start at random point.
+            if (type(startParams)==list)or(type(startParams)==np.ndarray):
+                if len(startParams)>0:
+                    proposedParsRaw = copy.deepcopy(self.startParams)
+                else:
+                    proposedParsRaw = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
+            else:
+                proposedParsRaw = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
             proposedParsRaw[11]=self.dictVal('chiMAX')*10*self.nu
-            if stage=='SA':
-                temp=self.dictVal('strtTemp')
         else:
             proposedParsRaw = copy.deepcopy(startParams)
             sigmas = copy.deepcopy(startSigmas)
@@ -441,7 +445,7 @@ class Simulator(object):
             else:
                 self.acceptBoolAry.append(0)
             proposedParsRaw = self.increment(latestParsRaw,sigmas,stage)
-            temp = self.tempDrop(sample,temp,stage)
+            temp = self.tempDrop(sample,strtTemp,temp,stage)
             sigmas = self.sigTune(sample,sigmas,stage)
             if (self.nSavedPeriodic>0)and((self.nSaved%self.dictVal('dmpInt'))==0):
                 ## dump acceptedParams array to disk and collect garbage

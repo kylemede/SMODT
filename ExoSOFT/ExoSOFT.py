@@ -127,7 +127,14 @@ def iterativeSA(settingsDict,Sim):
                         for j in range(4):
                             bestRetAry2[j].append(bestRetAry[j][i])
                 bestRetAry = bestRetAry2
-            #print 'repr(np.sort(bestRetAry[3])) = '+repr(np.sort(bestRetAry[3]))
+            #copy resulting data files to new temp names
+            for i in range(0,len(bestRetAry[0])):
+                curNm = bestRetAry[0][i]
+                outNm = os.path.join(os.path.dirname(curNm),"SAtempData-"+str(iter)+"-"+str(i)+".fits")
+                tools.renameFits(curNm,outNm,killInput=True)
+                bestRetAry[0][i] = outNm
+            
+            print 'repr(np.sort(bestRetAry[3])) = '+repr(np.sort(bestRetAry[3]))
             goodParams = bestRetAry[1]
             log.info("Iteration #"+str(iter+1)+" resulted in the chiSquareds "+repr(chisSorted))
             ## Now fill out an array of starting parameter sets from the best above.
@@ -140,7 +147,15 @@ def iterativeSA(settingsDict,Sim):
                     rndVal = np.random.randint(0,len(goodParams))
                     #print 'rndVal = '+str(rndVal)
                     strtPars.append(goodParams[rndVal])
-    return (retAry,retStr)
+    #rename final data files to standard SA convention
+    for i in range(0,len(bestRetAry[0])):
+        curNm = bestRetAry[0][i]
+        outNm = os.path.join(os.path.dirname(curNm),'outputDataSA'+str(i)+'.fits')
+        tools.renameFits(curNm,outNm)
+        bestRetAry[0][i] = outNm
+        
+        
+    return (bestRetAry,retStr)
 
 def exoSOFT():
     """

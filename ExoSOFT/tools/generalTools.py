@@ -292,6 +292,10 @@ def cleanUp(settingsDict,stageList,allFname):
             fnames = glob.glob(os.path.join(settingsDict['finalFolder'],"outputData"+stage+"*.fits"))
             for i in range(0,len(fnames)):
                 delFiles.append(fnames[i])
+            if stage=='SA':
+                fnames = glob.glob(os.path.join(settingsDict['finalFolder'],"SAtempData*.fits"))
+                for i in range(0,len(fnames)):
+                    delFiles.append(fnames[i])
     ##get combined data filename to delete
     if settingsDict["delCombined"]:
         delFiles.append(allFname)
@@ -302,18 +306,7 @@ def cleanUp(settingsDict,stageList,allFname):
             delFiles.append(nm)
             
     ##try to delete files
-    rmFiles(delFiles)
-    
-def rmFiles(files):
-    ##try to delete files
-    for fname in files:
-        try:
-            log.debug('Deleting file: '+os.path.basename(fname))
-            os.remove(fname) 
-        except:
-            log.error('Failed to delete file: '+os.path.basename(fname))
-
-
+    rwTools.rmFiles(delFiles)
     
 def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,effPtsStr,allTime,postTime,durationStrings):
     """

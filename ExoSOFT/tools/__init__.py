@@ -17,6 +17,8 @@ from readWriteTools import combineFits
 from readWriteTools import periodicDataDump
 from readWriteTools import writeBestSTtoFile
 from readWriteTools import pushIntoOrigSettFiles
+from readWriteTools import renameFits
+from readWriteTools import rmFiles
 
 from generalTools import findBestOrbit
 from generalTools import mcmcEffPtsCalc
@@ -33,7 +35,6 @@ from generalTools import recheckFit3D
 from generalTools import predictLocation
 from generalTools import getSimpleDictVal
 from generalTools import nparyTolistStr
-from generalTools import rmFiles
 
 from progressbar.progressbar import ProgressBar
 

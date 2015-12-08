@@ -692,6 +692,18 @@ def findBestOrbit(filename,bestToFile=True,findAgain=False):
             log.info("Best fit params written to :\n"+bestFname)
     return orbBest
                             
+def unitlessSTD(ary):
+    """
+    Calculate the bias corrected standard deviation, then divide by the mean to make it unitless.
+    """
+    if type(ary)!=np.ndarray:
+        if type(ary)==list:
+            ary = np.array(ary)
+        else:
+            return 0.0
+    bcstd = np.sqrt((1.0/(len(ary)-1.0))*np.sum(abs(ary-ary.mean())**2))
+    return bcstd/np.mean(ary)
+
 def nparyTolistStr(ary):
     s='['
     for val in ary:

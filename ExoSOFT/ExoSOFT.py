@@ -84,6 +84,7 @@ def iterativeSA(settingsDict,Sim):
     """
     Perform SA with multiProc nSAiters times, droping the starting temperature each time by strtTemp/nSAiters.
     """
+    tic=timeit.default_timer()
     log = tools.getLogger('main.iterativeSA',lvl=100,addFH=False)
     maxNumMCMCprocs = settingsDict['nMCMCcns'][0]
     numProcs = settingsDict['nChains'][0]
@@ -91,7 +92,12 @@ def iterativeSA(settingsDict,Sim):
     strtT = settingsDict['strtTemp'][0]
     strtPars = range(0,numProcs)
     bestRetAry = [[],[],[],[]]
-    for iter in range(0,nSAiters):
+    uSTD = 1e6
+    #for iter in range(0,nSAiters):
+    iter = -1
+    retStr2 = ''
+    while uSTD>0.01:
+        iter+=1
         if iter>0:
             #clean up previous SA data files on disk to avoid clash
             #[outFname,params,sigmas,bestRedChiSqr]
@@ -99,6 +105,7 @@ def iterativeSA(settingsDict,Sim):
         temp = strtT-(strtT/float(nSAiters))*float(iter)
         #print 'repr(strtPars) = '+repr(strtPars)
         (retAry,retStr) = multiProc(settingsDict,Sim,'SA',numProcs,params=strtPars,sigmas=[],strtTemp=temp)
+        retStr2 +=retStr
         if len(retAry)>0:
             chisSorted = [] 
             goodParams = []           
@@ -134,11 +141,10 @@ def iterativeSA(settingsDict,Sim):
                 tools.renameFits(curNm,outNm,killInput=True)
                 bestRetAry[0][i] = outNm
             
-            print 'repr(np.sort(bestRetAry[3])) = '+repr(np.sort(bestRetAry[3]))
-            goodParams = bestRetAry[1]
             log.info("Iteration #"+str(iter+1)+" resulted in the chiSquareds "+repr(chisSorted))
             ## Now fill out an array of starting parameter sets from the best above.
             ## first load up with one set of goodParams, then randomly from it till full.
+            goodParams = bestRetAry[1]
             strtPars=[]
             if len(goodParams)>1:
                 for i in range(0,len(goodParams)):
@@ -147,15 +153,30 @@ def iterativeSA(settingsDict,Sim):
                     rndVal = np.random.randint(0,len(goodParams))
                     #print 'rndVal = '+str(rndVal)
                     strtPars.append(goodParams[rndVal])
+            print 'best chis:\n' +repr(np.sort(bestRetAry[3]))
+            print 'top '+str(maxNumMCMCprocs)+' best chis:\n' +repr(np.sort(bestRetAry[3])[:maxNumMCMCprocs])
+            print 'STD = '+str(np.std(bestRetAry[3]))
+            uSTD = tools.unitlessSTD(bestRetAry[3])
+            print 'uSTD = '+str(uSTD)+'\n'
+    
     #rename final data files to standard SA convention
     for i in range(0,len(bestRetAry[0])):
         curNm = bestRetAry[0][i]
         outNm = os.path.join(os.path.dirname(curNm),'outputDataSA'+str(i)+'.fits')
         tools.renameFits(curNm,outNm)
         bestRetAry[0][i] = outNm
-        
-        
-    return (bestRetAry,retStr)
+    if len(bestRetAry[0])>0:
+        bstChiSqr = np.sort(bestRetAry[3])[0]
+        for i in range(len(bestRetAry[0])):
+            if bestRetAry[3][i] == bstChiSqr:
+                bestpars = bestRetAry[1][i]
+                bestsigs = bestRetAry[2][i]
+        tools.writeBestsFile(settingsDict,bestpars,bestsigs,bstChiSqr,'ST')
+    toc=timeit.default_timer()
+    s = "ALL "+str(iter+1)+" iterations of SA took a total of "+tools.timeStrMaker(int(toc-tic))
+    retStr2 +=s+"\n"
+    log.warning(s)
+    return (bestRetAry,retStr2)
 
 def exoSOFT():
     """
@@ -177,6 +198,13 @@ def exoSOFT():
     durationStrings = ''
     if 'MC' in stageList:
         (returns,b) = (returnsMC,durStr) = multiProc(settingsDict,Sim,'MC',settingsDict['nChains'][0])
+        if len(returnsMC[0])>0:
+            bstChiSqr = np.sort(returnsMC[3])[0]
+            for i in range(len(returnsMC[0])):
+                if returnsMC[3][i] == bstChiSqr:
+                    bestpars = returnsMC[1][i]
+                    bestsigs = []
+            tools.writeBestsFile(settingsDict,bestpars,bestsigs,bstChiSqr,'MC')
         durationStrings+=durStr
     if 'SA' in stageList:
         (returns,b) = (returnsSA,durStr) = iterativeSA(settingsDict,Sim)
@@ -204,10 +232,10 @@ def exoSOFT():
             bstChiSqr = np.sort(returnsST[3])[0]
             for i in range(len(returnsST[0])):
                 if returnsST[3][i] == bstChiSqr:
-                    bestSTpars = returnsST[1][i]
-                    bestSTsigs = returnsST[2][i]
-            tools.writeBestSTtoFile(settingsDict,bestSTpars,bestSTsigs,bstChiSqr)
-            tools.pushIntoOrigSettFiles(settingsDict,bestSTpars,sigs=bestSTsigs)
+                    bestpars = returnsST[1][i]
+                    bestsigs = returnsST[2][i]
+            tools.writeBestsFile(settingsDict,bestpars,bestsigs,bstChiSqr,'ST')
+            tools.pushIntoOrigSettFiles(settingsDict,bestpars,sigs=bestsigs)
         
     if 'MCMC' in stageList:
         startParams = []
@@ -237,8 +265,10 @@ def exoSOFT():
             bstChiSqr = np.sort(returnsMCMC[3])[0]
             for i in range(len(returnsMCMC[0])):
                 if returnsMCMC[3][i] == bstChiSqr:
-                    bestMCMCpars = returnsMCMC[1][i]
-            tools.pushIntoOrigSettFiles(settingsDict,bestMCMCpars,sigs=[])
+                    bestpars = returnsMCMC[1][i]
+                    bestsigs = returnsMCMC[2][i]
+            tools.writeBestsFile(settingsDict,bestpars,bestsigs,bstChiSqr,'MCMC')
+            tools.pushIntoOrigSettFiles(settingsDict,bestpars,sigs=[])
     outFiles = returns[0]
     toc=tic2=timeit.default_timer()
     s = "ALL stages took a total of "+tools.timeStrMaker(int(toc-tic))

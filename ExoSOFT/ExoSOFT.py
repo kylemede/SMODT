@@ -88,22 +88,21 @@ def iterativeSA(settingsDict,Sim):
     log = tools.getLogger('main.iterativeSA',lvl=100,addFH=False)
     maxNumMCMCprocs = settingsDict['nMCMCcns'][0]
     numProcs = settingsDict['nChains'][0]
-    nSAiters = settingsDict['nSAiters'][0]
-    strtT = settingsDict['strtTemp'][0]
+    nSAiters = 10.0
     strtPars = range(0,numProcs)
     bestRetAry = [[],[],[],[]]
     uSTD = 1e6
-    #for iter in range(0,nSAiters):
     iter = -1
     retStr2 = ''
-    while uSTD>0.01:
+    temp = settingsDict['strtTemp'][0]
+    while uSTD>settingsDict['maxUstd']:
         iter+=1
         if iter>0:
             #clean up previous SA data files on disk to avoid clash
-            #[outFname,params,sigmas,bestRedChiSqr]
             tools.rmFiles(retAry[0][:])
-        temp = strtT-(strtT/float(nSAiters))*float(iter)
-        #print 'repr(strtPars) = '+repr(strtPars)
+            if iter<nSAiters:
+                temp -= settingsDict['strtTemp'][0]/nSAiters
+        retStr2 +="Iteration #"+str(iter+1)+"\n"
         (retAry,retStr) = multiProc(settingsDict,Sim,'SA',numProcs,params=strtPars,sigmas=[],strtTemp=temp)
         retStr2 +=retStr
         if len(retAry)>0:
@@ -112,7 +111,6 @@ def iterativeSA(settingsDict,Sim):
             #Filter inputs if more than max num MCMC proc available to use the best ones
             chisSorted = np.sort(retAry[3])
             chisSorted = chisSorted[np.where(chisSorted<settingsDict['cMaxMCMC'][0])]
-            #print 'Full list of chiSquareds back from SA '+repr(chisSorted)
             #first updated bestRetAry
             for i in range(len(retAry[0])):
                 if retAry[3][i] in chisSorted:                       
@@ -140,8 +138,6 @@ def iterativeSA(settingsDict,Sim):
                 outNm = os.path.join(os.path.dirname(curNm),"SAtempData-"+str(iter)+"-"+str(i)+".fits")
                 tools.renameFits(curNm,outNm,killInput=True)
                 bestRetAry[0][i] = outNm
-            
-            log.info("Iteration #"+str(iter+1)+" resulted in the chiSquareds "+repr(chisSorted))
             ## Now fill out an array of starting parameter sets from the best above.
             ## first load up with one set of goodParams, then randomly from it till full.
             goodParams = bestRetAry[1]
@@ -151,20 +147,21 @@ def iterativeSA(settingsDict,Sim):
                     strtPars.append(goodParams[i])
                 while len(strtPars)<numProcs:
                     rndVal = np.random.randint(0,len(goodParams))
-                    #print 'rndVal = '+str(rndVal)
                     strtPars.append(goodParams[rndVal])
-            print 'best chis:\n' +repr(np.sort(bestRetAry[3]))
-            print 'top '+str(maxNumMCMCprocs)+' best chis:\n' +repr(np.sort(bestRetAry[3])[:maxNumMCMCprocs])
-            print 'STD = '+str(np.std(bestRetAry[3]))
+            #print 'best chis:\n' +repr(np.sort(bestRetAry[3]))
+            #print 'top '+str(maxNumMCMCprocs)+' best chis:\n' +repr(np.sort(bestRetAry[3])[:maxNumMCMCprocs])
+            #print 'STD = '+str(np.std(bestRetAry[3]))
             uSTD = tools.unitlessSTD(bestRetAry[3])
-            print 'uSTD = '+str(uSTD)+'\n'
-    
+            log.warning("After iteration #"+str(iter+1)+" the top "+str(len(bestRetAry[3]))+" solutions with reduced chiSquared < "+str(settingsDict['cMaxMCMC'][0])+" have a unitless STD of "+str(uSTD))
+            retStr2 +="The latest top "+str(len(bestRetAry[3]))+" reduced chiSquareds had a unitless STD of "+str(uSTD)+'\n'
+    ## wrap up
     #rename final data files to standard SA convention
     for i in range(0,len(bestRetAry[0])):
         curNm = bestRetAry[0][i]
         outNm = os.path.join(os.path.dirname(curNm),'outputDataSA'+str(i)+'.fits')
         tools.renameFits(curNm,outNm)
         bestRetAry[0][i] = outNm
+    #Find best fit, write to file, maybe push into settings files if better than one in there already.
     if len(bestRetAry[0])>0:
         bstChiSqr = np.sort(bestRetAry[3])[0]
         for i in range(len(bestRetAry[0])):
@@ -172,6 +169,7 @@ def iterativeSA(settingsDict,Sim):
                 bestpars = bestRetAry[1][i]
                 bestsigs = bestRetAry[2][i]
         tools.writeBestsFile(settingsDict,bestpars,bestsigs,bstChiSqr,'ST')
+        tools.pushIntoOrigSettFiles(settingsDict,bestpars,sigs=bestsigs)
     toc=timeit.default_timer()
     s = "ALL "+str(iter+1)+" iterations of SA took a total of "+tools.timeStrMaker(int(toc-tic))
     retStr2 +=s+"\n"
@@ -205,10 +203,10 @@ def exoSOFT():
                     bestpars = returnsMC[1][i]
                     bestsigs = []
             tools.writeBestsFile(settingsDict,bestpars,bestsigs,bstChiSqr,'MC')
-        durationStrings+=durStr
+        durationStrings+='** MC stage **\n'+durStr
     if 'SA' in stageList:
         (returns,b) = (returnsSA,durStr) = iterativeSA(settingsDict,Sim)
-        durationStrings+=durStr
+        durationStrings+='** Iterative SA stage **\n'+durStr
     if 'ST' in stageList:
         startParams = []
         startSigmas = []
@@ -225,7 +223,7 @@ def exoSOFT():
             log.critical("No SA results available to start the ST chains with.")
         if len(startSigmas)>0:
             (returns,b) = (returnsST,durStr) = multiProc(settingsDict,Sim,'ST',len(startSigmas),startParams,startSigmas)
-            durationStrings+=durStr
+            durationStrings+='** ST stage **\n'+durStr
         # check best results of ST and store to a file.
         # Maybe replace pars and sigs in original settings files?
         if len(returnsST[0])>0:
@@ -260,7 +258,7 @@ def exoSOFT():
             log.critical("No ST results available to start the MCMC chains with.")
         if len(chisSorted)>0:
             (returns,b) = (returnsMCMC,durStr) = multiProc(settingsDict,Sim,'MCMC',len(chisSorted),startParams,startSigmas)
-            durationStrings+=durStr
+            durationStrings+='** MCMC stage **\n'+durStr
             # Maybe replace pars in original settings files?
             bstChiSqr = np.sort(returnsMCMC[3])[0]
             for i in range(len(returnsMCMC[0])):

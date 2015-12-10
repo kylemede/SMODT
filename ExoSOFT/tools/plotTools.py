@@ -705,7 +705,7 @@ def orbitPlotter(orbParams,settingsDict,plotFnameBase="",format='png',DIlims=[],
         os.mkdir(plotDataDir)
     plotDataDir+='/'
     ##get the real data
-    realData = rwTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
+    realData = rwTools.loadRealData(diFilename=settingsDict['DIdataFile'],rvFilename=settingsDict['RVdataFile'],dataMode=genTools.getSimpleDictVal(settingsDict,'dataMode'))
     ## Make Orbit cpp obj
     Orbit = cppTools.Orbit()
     try:

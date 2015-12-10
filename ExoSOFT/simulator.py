@@ -457,9 +457,9 @@ class Simulator(object):
                 self.nSavedPeriodic = 0
                 self.log.debug('about to collect the garbage')
                 gc.collect()
-            if (self.dictVal('logLevel')<40)and(sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0):
+            if (self.dictVal('logLevel')<30)and(sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0):
                 bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), stage+str(chainNum)+' complete so far.')
-        if self.dictVal('logLevel')<40:
+        if self.dictVal('logLevel')<30:
             bar.render(100,stage+str(chainNum)+' complete!\n')
         self.log.debug(stage+" took: "+tools.timeStrMaker(timeit.default_timer()-tic))
         self.endSummary(temp,sigmas,stage)

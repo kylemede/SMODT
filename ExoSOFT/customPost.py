@@ -1,13 +1,13 @@
 import tools
 from tools import constants as const
+from exosoftpath import ExoSOFTdir
 import sys
 import os
 import numpy as np
 import glob
 
 def customPost():
-    rootDir = '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/ExoSOFT/'
-    settingsDict = tools.startup(sys.argv,rootDir,rePlot=True)
+    settingsDict = tools.startup(sys.argv,ExoSOFTdir,rePlot=True)
     allFname = os.path.join(settingsDict['finalFolder'],"combined-BIstripped-MCMCdata.fits")
     skipBurnInStrip=True
     if os.path.exists(allFname)==False:

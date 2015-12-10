@@ -357,7 +357,7 @@ def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,e
         ## calculate chi squareds for the best fit #
         ############################################
         ##get the real data
-        realData = rwTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
+        realData = rwTools.loadRealData(diFilename=settingsDict['DIdataFile'],rvFilename=settingsDict['RVdataFile'],dataMode=getSimpleDictVal(settingsDict,'dataMode'))
         ## Make Orbit cpp obj
         Orbit = cppTools.Orbit()
         try:
@@ -439,7 +439,7 @@ def recheckFit3D(orbParams,settingsDict,finalFits='',nus=[]):
         nuRV = 1.0
         
     ##get the real data
-    realData = rwTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
+    realData = rwTools.loadRealData(diFilename=settingsDict['DIdataFile'],rvFilename=settingsDict['RVdataFile'],dataMode=genTools.getSimpleDictVal(settingsDict,'dataMode'))
     ## Make Orbit cpp obj
     Orbit = cppTools.Orbit()
     try:
@@ -463,7 +463,7 @@ def recheckFit3D(orbParams,settingsDict,finalFits='',nus=[]):
 def predictLocation(orbParams,settingsDict,epochs=[]):
     
     ##get the real data
-    realData = rwTools.loadRealData(os.path.join(settingsDict['settingsDir'],settingsDict['prepend']),dataMode=settingsDict['dataMode'][0])
+    realData = rwTools.loadRealData(diFilename=settingsDict['DIdataFile'],rvFilename=settingsDict['RVdataFile'],dataMode=genTools.getSimpleDictVal(settingsDict,'dataMode'))
     ## Make Orbit cpp obj
     Orbit = cppTools.Orbit()
     try:

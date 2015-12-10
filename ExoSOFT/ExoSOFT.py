@@ -2,7 +2,7 @@
 #import numpy as np
 import tools
 import simulator
-from exosoftpath import rootDir
+from exosoftpath import ExoSOFTdir
 import sys
 import os
 import timeit
@@ -88,7 +88,7 @@ def iterativeSA(settingsDict,Sim):
     log = tools.getLogger('main.iterativeSA',lvl=100,addFH=False)
     maxNumMCMCprocs = settingsDict['nMCMCcns'][0]
     numProcs = settingsDict['nChains'][0]
-    nSAiters = 10.0
+    nSAiters = 7.0
     strtPars = range(0,numProcs)
     bestRetAry = [[],[],[],[]]
     uSTD = 1e6
@@ -102,6 +102,9 @@ def iterativeSA(settingsDict,Sim):
             tools.rmFiles(retAry[0][:])
             if iter<nSAiters:
                 temp -= settingsDict['strtTemp'][0]/nSAiters
+            #else:
+            #    temp = 2.0
+        print "\nIteration #"+str(iter+1)
         retStr2 +="Iteration #"+str(iter+1)+"\n"
         (retAry,retStr) = multiProc(settingsDict,Sim,'SA',numProcs,params=strtPars,sigmas=[],strtTemp=temp)
         retStr2 +=retStr
@@ -125,6 +128,7 @@ def iterativeSA(settingsDict,Sim):
             #now make list of best ones to use in next round
             if len(bestRetAry[0])>numProcs:
                 bestChis = np.sort(bestRetAry[3])
+                print "len best before filtering = "+str(len(bestRetAry[0]))+", worst was "+str(bestChis[-1])
                 bestRetAry2 = [[],[],[],[]]
                 #trim best lists down to size
                 for i in range(0,len(bestChis)):
@@ -181,9 +185,9 @@ def exoSOFT():
     'main'
     """
     ## Call startup to get dict and load up final directories into it.
-    settingsDict = tools.startup(sys.argv,rootDir)
+    settingsDict = tools.startup(sys.argv,ExoSOFTdir)
     log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=settingsDict['logLevel'])
-    log.debug("Prepend string passed in was '"+settingsDict['prepend']+"'")
+    #log.debug("Prepend string passed in was '"+settingsDict['prepend']+"'")
     Sim = simulator.Simulator(settingsDict)
        
     ###########################################

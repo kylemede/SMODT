@@ -2,7 +2,7 @@
 #import numpy as np
 import tools
 import simulator
-from exosoftpath import ExoSOFTdir
+from exosoftpath import rootDir as ExoSOFTdir
 import sys
 import os
 import timeit
@@ -62,7 +62,7 @@ def multiProc(settingsDict,Sim,stage,numProcs,params=[],sigmas=[],strtTemp=1.0):
     extra = ''
     if stage=='SA':
         extra+=" with a starting temperature of "+str(strtTemp)
-    log.warning("Going to start "+str(numProcs)+" chains for the "+stage+" stage"+extra)
+    log.info("Going to start "+str(numProcs)+" chains for the "+stage+" stage"+extra)
     for procNumber in range(numProcs):
         pklFilename = os.path.join(settingsDict['finalFolder'],'pklTemp'+"-"+stage+'-'+str(procNumber)+".p")
         master.append(singleProc(settingsDict,Sim,stage,procNumber,pklFilename=pklFilename,params=params[procNumber],sigmas=sigmas[procNumber],strtTemp=strtTemp))
@@ -72,7 +72,7 @@ def multiProc(settingsDict,Sim,stage,numProcs,params=[],sigmas=[],strtTemp=1.0):
     toc=timeit.default_timer()
     s = "ALL "+str(numProcs)+" chains of the "+stage+" stage took a total of "+tools.timeStrMaker(int(toc-tic))
     retStr =s+"\n"
-    log.warning(s)
+    log.info(s)
     retAry = [[],[],[],[]]
     for procNumber in range(numProcs):
         ret = pickle.load(open(master[procNumber].pklFilename,'rb'))
@@ -114,57 +114,64 @@ def iterativeSA(settingsDict,Sim):
             #Filter inputs if more than max num MCMC proc available to use the best ones
             chisSorted = np.sort(retAry[3])
             chisSorted = chisSorted[np.where(chisSorted<settingsDict['cMaxMCMC'][0])]
-            #first updated bestRetAry
-            for i in range(len(retAry[0])):
-                if retAry[3][i] in chisSorted:                       
-                    if len(bestRetAry[0])<numProcs:
-                        for j in range(4):
-                            bestRetAry[j].append(retAry[j][i])
-                    else:
-                        bestChis = np.sort(bestRetAry[3])
-                        if retAry[3][i]<bestChis[-1]:
+            if len(chisSorted)==0:
+                strtPars = range(0,numProcs)
+            elif (len(chisSorted)==1)and(numProcs==1):
+                bestRetAry=retAry
+                uSTD=1e-6
+            else:
+                #first updated bestRetAry
+                for i in range(len(retAry[0])):
+                    if retAry[3][i] in chisSorted:                       
+                        if len(bestRetAry[0])<numProcs:
                             for j in range(4):
                                 bestRetAry[j].append(retAry[j][i])
-            #now make list of best ones to use in next round
-            if len(bestRetAry[0])>numProcs:
-                bestChis = np.sort(bestRetAry[3])
-                print "len best before filtering = "+str(len(bestRetAry[0]))+", worst was "+str(bestChis[-1])
-                bestRetAry2 = [[],[],[],[]]
-                #trim best lists down to size
-                for i in range(0,len(bestChis)):
-                    if bestRetAry[3][i] in bestChis[:numProcs]:
-                        for j in range(4):
-                            bestRetAry2[j].append(bestRetAry[j][i])
-                bestRetAry = bestRetAry2
-            #copy resulting data files to new temp names
-            for i in range(0,len(bestRetAry[0])):
-                curNm = bestRetAry[0][i]
-                outNm = os.path.join(os.path.dirname(curNm),"SAtempData-"+str(iter)+"-"+str(i)+".fits")
-                tools.renameFits(curNm,outNm,killInput=True)
-                bestRetAry[0][i] = outNm
-            ## Now fill out an array of starting parameter sets from the best above.
-            ## first load up with one set of goodParams, then randomly from it till full.
-            goodParams = bestRetAry[1]
-            strtPars=[]
-            if len(goodParams)>1:
-                for i in range(0,len(goodParams)):
-                    strtPars.append(goodParams[i])
-                while len(strtPars)<numProcs:
-                    rndVal = np.random.randint(0,len(goodParams))
-                    strtPars.append(goodParams[rndVal])
-            #print 'best chis:\n' +repr(np.sort(bestRetAry[3]))
-            #print 'top '+str(maxNumMCMCprocs)+' best chis:\n' +repr(np.sort(bestRetAry[3])[:maxNumMCMCprocs])
-            #print 'STD = '+str(np.std(bestRetAry[3]))
-            uSTD = tools.unitlessSTD(bestRetAry[3])
-            log.warning("After iteration #"+str(iter+1)+" the top "+str(len(bestRetAry[3]))+" solutions with reduced chiSquared < "+str(settingsDict['cMaxMCMC'][0])+" have a unitless STD of "+str(uSTD))
-            retStr2 +="The latest top "+str(len(bestRetAry[3]))+" reduced chiSquareds had a unitless STD of "+str(uSTD)+'\n'
+                        else:
+                            bestChis = np.sort(bestRetAry[3])
+                            if retAry[3][i]<bestChis[-1]:
+                                for j in range(4):
+                                    bestRetAry[j].append(retAry[j][i])
+                #now make list of best ones to use in next round
+                if len(bestRetAry[0])>numProcs:
+                    bestChis = np.sort(bestRetAry[3])
+                    log.debug("len best before filtering = "+str(len(bestRetAry[0]))+", worst was "+str(bestChis[-1]))
+                    bestRetAry2 = [[],[],[],[]]
+                    #trim best lists down to size
+                    for i in range(0,len(bestChis)):
+                        if bestRetAry[3][i] in bestChis[:numProcs]:
+                            for j in range(4):
+                                bestRetAry2[j].append(bestRetAry[j][i])
+                    bestRetAry = bestRetAry2
+                #copy resulting data files to new temp names
+                for i in range(0,len(bestRetAry[0])):
+                    curNm = bestRetAry[0][i]
+                    outNm = os.path.join(os.path.dirname(curNm),"SAtempData-"+str(iter)+"-"+str(i)+".fits")
+                    tools.renameFits(curNm,outNm,killInput=True)
+                    bestRetAry[0][i] = outNm
+                ## Now fill out an array of starting parameter sets from the best above.
+                ## first load up with one set of goodParams, then randomly from it till full.
+                goodParams = bestRetAry[1]
+                strtPars=[]
+                if len(goodParams)>1:
+                    for i in range(0,len(goodParams)):
+                        strtPars.append(goodParams[i])
+                    while len(strtPars)<numProcs:
+                        rndVal = np.random.randint(0,len(goodParams))
+                        strtPars.append(goodParams[rndVal])
+                #print 'best chis:\n' +repr(np.sort(bestRetAry[3]))
+                #print 'top '+str(maxNumMCMCprocs)+' best chis:\n' +repr(np.sort(bestRetAry[3])[:maxNumMCMCprocs])
+                #print 'STD = '+str(np.std(bestRetAry[3]))
+                uSTD = tools.unitlessSTD(bestRetAry[3])
+                log.warning("After iteration #"+str(iter+1)+" the top "+str(len(bestRetAry[3]))+" solutions with reduced chiSquared < "+str(settingsDict['cMaxMCMC'][0])+" have a unitless STD of "+str(uSTD))
+                retStr2 +="The latest top "+str(len(bestRetAry[3]))+" reduced chiSquareds had a unitless STD of "+str(uSTD)+'\n'
     ## wrap up
-    #rename final data files to standard SA convention
-    for i in range(0,len(bestRetAry[0])):
-        curNm = bestRetAry[0][i]
-        outNm = os.path.join(os.path.dirname(curNm),'outputDataSA'+str(i)+'.fits')
-        tools.renameFits(curNm,outNm)
-        bestRetAry[0][i] = outNm
+    if len(bestRetAry[0])>1:
+        #rename final data files to standard SA convention
+        for i in range(0,len(bestRetAry[0])):
+            curNm = bestRetAry[0][i]
+            outNm = os.path.join(os.path.dirname(curNm),'outputDataSA'+str(i)+'.fits')
+            tools.renameFits(curNm,outNm)
+            bestRetAry[0][i] = outNm
     #Find best fit, write to file, maybe push into settings files if better than one in there already.
     if len(bestRetAry[0])>0:
         bstChiSqr = np.sort(bestRetAry[3])[0]

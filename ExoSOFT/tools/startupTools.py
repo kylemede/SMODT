@@ -226,7 +226,6 @@ def startup(argv,ExoSOFTdir,rePlot=False):
                                 paramInts.append(i)
                     else:
                         paramInts.append(i)
-        
             
         ## push all these important parameter related items into the dict for later use.
         settingsDict['realData'] = realData

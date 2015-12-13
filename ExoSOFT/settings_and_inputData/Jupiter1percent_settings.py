@@ -1,94 +1,56 @@
+
 #@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
-import numpy as np
-from settingsSimple import simpleSettingsDict
-import constants
+from priors import ePriorRatio,pPriorRatio,incPriorRatio,mass1PriorRatio,mass2PriorRatio,paraPriorRatio,chabrierPrior
 
-########################################
-#Define the priors as python functions #
-########################################
-#NOTE: only change the code and not the name of the functions or their inputs.
-def ePriorRatio(eProposed,eLast):
-    if (advancedDict['lowEcc'][0]==False)and(simpleSettingsDict['eMAX']!=0):
-        if eProposed!=eLast!=0:
-            if (simpleSettingsDict['PMIN']*constants.daysPerYear)>1000.0:
-                return eProposed/eLast
-            else:
-                return 1.0
-        else:
-            return 1.0
-    else:
-        return 1.0
-    
-def pPriorRatio(Pproposed,Plast):
-    if simpleSettingsDict['PMAX']!=0:
-        if Pproposed!=0:
-            return Plast/Pproposed
-        else:
-            return 1.0
-    else:
-        return 1.0
-    
-def incPriorRatio(incProposed,incLast):
-    if simpleSettingsDict['incMAX']!=0:
-        if (incLast%90.0)!=0:
-            return np.sin(incProposed*(constants.pi/180.0))/np.sin(incLast*(constants.pi/180.0))
-        else:
-            return 1.0
-    else:
-        return 1.0
-    
-def mass1PriorRatio(MProposed,MLast):
-    if (simpleSettingsDict['mass1MAX']!=0)and True:
-        if MProposed!=MLast!=0:
-            prop = chabrierPrior(MProposed,IMF=False)
-            lst = chabrierPrior(MLast,IMF=False)
-            return prop/lst
-        else:
-            return 1.0
-    else:
-        return 1.0
-    
-def mass2PriorRatio(MProposed,MLast):
-    if (simpleSettingsDict['mass2MAX']!=0)and True:
-        if MProposed!=MLast!=0:
-            prop = chabrierPrior(MProposed,IMF=False)
-            lst = chabrierPrior(MLast,IMF=False)
-            return prop/lst
-        else:
-            return 1.0
-    else:
-        return 1.0
-    
-def paraPriorRatio(paraProposed,paraLast):
-    if paraProposed!=paraLast!=simpleSettingsDict['paraMAX']!=0:
-        ratioA = (paraLast**4.0)/(paraProposed**4.0)
-        ratioB = 1.0
-        if advancedDict['paraEst'][0]!=0:
-            ## a Gaussian prior centered on hipparcos and width of hipparcos estimated error
-            top = gaussian(paraProposed, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
-            btm = gaussian(paraLast, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
-            ratioB = top/btm
-        return ratioA*ratioB
-    else:
-        return 1.0
-    
-def chabrierPrior(m,IMF=False):
-    if IMF==False:
-        if m<1.0:
-            d = (0.068618528140713786/m)*np.exp((-(np.log10(m)+1.1023729087095586)**2)/0.9521999999999998)
-        elif m<3.47:
-            d = 0.019108957203743077*(m**(-5.37))
-        elif m<18.20:
-            d = 0.0065144172285487769*(m**(-4.53))
-        else:
-            d = 0.00010857362047581295*(m**(-3.11))
-    else:
-        if m<1.0:
-            d = (0.068618528140713786/m)*np.exp((-(np.log10(m)+1.1023729087095586)**2)/0.9521999999999998)
-        else:
-            d = 0.019239245548314052*(m**(-2.3))
-    return d
+simpleSettingsDict={
+# The number of samples orbital parameters to try/draw [int]
+'nSamples' : (240000000,"Number of MCMC or MC samples"),
+# Number of simulation chains to run in parallel, [1,100] [int].  
+# NOTE: greater than numCores-1 causes system to slow down!
+# For MCMC mode this is the number of SA and ST chains.
+'nChains' : (25,"Number MC/SA/ST of chains"),
+# Number of MCMC chains to run in parallel. ONLY available in 'MCMC' mode. [1,100] [int].  
+# NOTE: greater than numCores-1 causes system to slow down!
+'nMCMCcns' : (7,"Number MCMC of chains"),
+# set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
+# choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
+'logLevel' : 30,
+# data mode, choices {'RV','DI','3D'} [string]
+'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
+# Run in Automatic mode? This will perform checks and select the stages to run automatically. [bool]
+'autoMode' : (True, 'Run in Automatic mode?'),
+# mode to run simulation in, choices {'MC','SA','ST','SAST','SASTMCMC,'MCMC'} [string]
+# NOTE: 'ST' and 'MCMC' modes need a full list of parameters for startParams, else they fail!
+#       'MCMC' also needs a full list of sigmas in startSigmas.
+'stages' : 'MCMC',
+# If in autoMode, how strict should the initialization (SA & ST) be? [string]
+# choices ('loose','enough','tight')
+'initCrit' : 'enough',
+############################################
+# Starting parameters and sigmas for MCMC  #
+# Can be found with prior run in SAST mode #
+############################################
+# if unknown, set to False!! else [comma separated list of doubles]
+'startParams' : False,
+# if unknown, set to False!! else [comma separated list of doubles]
+'startSigmas' : False,
+# If better startParams are found during ExoSOFT, push them and the newest sigmas into this file? [bool]
+# NOTE: this can be helpful, but use caution if you do not wish to overwrite the values in here.
+"pushToSettFiles":True,
+}
 
+directoriesDict = {
+# Directory where you want the output data folder to go [string, at least 2 chars long]
+'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
+# General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
+#*************************************************************************************************************************
+'outRoot' : "JUPITER2-3D-MCMC-1percent-lowEcc-PDMFm1m2-newParaPrior-SUPERlong3",
+#*************************************************************************************************************************               
+# full path to input astrometry data file. [string]
+'DIdataFile': '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/ExoSOFT/settings_and_inputData/Jupiter1percent_DIdata.dat',                
+# full path to input radial velocity data file. [string]
+'RVdataFile': '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/ExoSOFT/settings_and_inputData/Jupiter1percent_RVdata.dat',
+}
 
 advancedDict = {
 #NOTE: key max = 8characters, value+comment max = 68 characters, comment Max=47 it seems in testing.
@@ -100,9 +62,9 @@ advancedDict = {
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(5,'Max reduced chiSquared to enter ST.'),
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(5,'Max reduced chiSquared to enter MCMC.'),
+'cMaxMCMC':(1.0,'Max reduced chiSquared to enter MCMC.'),
 #number of times to produce a summary log msg during a stage's progress [int]
-'nSumry'  :20,
+'nSumry'  :10,
 # make plot of posterior distributions? [bool]
 'pltDists' :True,
 # make plots of RV and DI/AM orbit fits [bool]
@@ -123,23 +85,24 @@ advancedDict = {
 ############################
 # Calculate the length of the burn in for each chain (must be more than 1 chain)? [bool] 
 'CalcBurn' :True,
-# remove burn-in of output MCMC chains before combining (must be more than 1 chain) (should already be handled by SimAnneal stage2 though...)?
+# remove burn-in of output MCMC chains before combining (must be more than 1 chain) [bool]
+# (should already be handled by SimAnneal stage2 though...)?
 'rmBurn' : (True,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 # NOTE: CAUTION, can take a long time for long runs.  Still needs to be sped up somehow.
 'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
-'nSAsamp' :(1500000,"Num SA samples"),
+'nSAsamp' :(3000000,"Num SA samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (500.0,"SA start temp."),
+'strtTemp' : (50.0,"SA start temp."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
-'strtSig' : (0.15,"start percent param range for SA"),
+'strtSig' : (0.01,"start percent param range for SA"),
 # Number of samples till temperature drop. [int]
 # Allowed vals [1,nSAsamp), Ideal is ~50.
 'tempInt'  : (50,"Num steps till temp drops in SA."),
 # number of samples to draw for sigma tuning stage [int].
-'nSTsamp' :(100000,"Num ST samples"),
+'nSTsamp' :(1000000,"Num ST samples"),
 # number of steps per varying parameter until calculating the acceptance rate and tuning sigmas. [int]
 # Allowed vals [1,nSTsamp), testing shows a value of ~200 works well.
 'sigInt': (200,"Num steps/par till calc acc rate/tune sigs."),
@@ -151,8 +114,9 @@ advancedDict = {
 # Make sure to save enough that R~1.0 at max, posteriors look smooth, BUT not too much data is saved that you are just wasting disk space.
 'saveInt' : (10,"Int between saving params, for all but MC."),
 # Interval of saved values before write/dump the data to disk to avoid consuming too much RAM during long runs. They take 11MB/100000.
+'dmpInt'   : 100000,
 ## NOTE: progress plots have no code yet, so MUST be False!!!
-# Make plots of MCMC progress plots? [bool]
+# Make plots of MCMC progress plots? [bool]  
 'pltMCMCprog' :False,
 # Make plots of Simulated Annealing progress plots? [bool]
 'pltSAprog' :False,
@@ -184,9 +148,56 @@ advancedDict = {
 'omegaPdi' : (0.0,"Custom fixed val added to DI omega in model"),
 # Is the data in the DIdata.dat in PA,SA format? else, it is in E,N (x,y) format [bool]
 'pasa'     : (False,"Is astrometry data in PA,SA format?"),
-######################
-# System Information #
-######################
+}
+
+
+rangesDict={
+###################################################
+# Ranges for acceptable random number inputs ######
+###################################################
+# Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
+# NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
+'mass1MIN' : 0.4,
+'mass1MAX' : 2.4,
+# Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
+'mass2MIN' : 0.00004,
+'mass2MAX' : 0.0025,
+# Minimum/Maximum allowed value for the Parallax [double][mas]
+'paraMIN' : 37.0,
+'paraMAX' : 64,
+# Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
+'OmegaMIN' : 91.0,
+'OmegaMAX' : 110.0,
+# Minimum/Maximum allowed value for the Eccentricity [double]
+'eMIN' : 0.02,
+'eMAX' : 0.07,
+# Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
+#(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
+'TMIN' : 2450500,
+'TMAX' : 2450800,
+# Minimum/Maximum allowed value for the Period [double][yrs]
+'PMIN' : 10,
+'PMAX' : 14.0,
+# Minimum/Maximum allowed value for the Inclination [double][deg]
+'incMIN' : 35,
+'incMAX' : 60.0,
+# Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
+'omegaMIN' : 1,
+'omegaMAX' : 40,
+# Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
+'KMIN' : 0,
+'KMAX' : 0,
+# Minimum/Maximum values of Radial Velocity Offsets.  
+# Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
+'vMINs' :[-1],
+'vMAXs' :[1],
+}
+
+priorsDict={
+############################
+#    System Information    #
+# ONLY FOR GAUSSIAN PRIORS #
+############################
 #best estimate of primary's mass, and error [double][Msun]
 'mass1Est' : (0.0,"Primary's estimated mass"),
 'mass1Err' : (0.0,"Primary's estimated mass error"),
@@ -194,67 +205,31 @@ advancedDict = {
 'mass2Est' : (0.0,"Secondary's estimated mass"),
 'mass2Err' : (0.0,"Secondary's estimated mass error"),
 #best estimate of parallax, and error [double][mas]
-'paraEst' : (50,"Estimated parallax"),
-'paraErr' : (2.5,"Estimated parallax error"),
+'paraEst'  : (50,"Estimated parallax"),
+'paraErr'  : (2.5,"Estimated parallax error"),
 ##################################
 # Push prior functions into dict #
 ##################################
 'ePrior'    :(True,'Use prior for eccentricity?',ePriorRatio),
 'pPrior'    :(True,'Use prior for period?',pPriorRatio),
 'incPrior'  :(True,'Use prior for inclination?',incPriorRatio),
-'M1Prior':(False,'Use prior for M1?',mass1PriorRatio),
-'M2Prior':(False,'Use prior for M2?',mass2PriorRatio),
+'M1Prior':(True,'Use prior for m1?',mass1PriorRatio),
+'M2Prior':(True,'Use prior for m2?',mass2PriorRatio),
 'parPrior' :(True,'Use prior for parallax?',paraPriorRatio),
-###################################################
-# Ranges for acceptable random number inputs ######
-###################################################
-# Minimum/Maximum allowed value for the mass of the primary body [double][Msun]
-# NOTE: For DI only cases, use mass1 values as total mass and set mass2 values to zero.
-'mass1MIN' : 0.1,
-'mass1MAX' : 3.0,
-# Minimum/Maximum allowed value for the mass of the secondary body [double][Msun]
-'mass2MIN' : 0.0001,
-'mass2MAX' : 0.0030,
-# Minimum/Maximum allowed value for the Parallax [double][mas]
-'paraMIN' : 40.00,
-'paraMAX' : 60.00,
-# Minimum/Maximum allowed value for the Longitude of the Ascending Node [double][deg]
-'OmegaMIN' : 1.0,
-'OmegaMAX' : 180.0,
-# Minimum/Maximum allowed value for the Eccentricity [double]
-'eMIN' : 0.0001,
-'eMAX' : 0.4,
-# Minimum/Maximum value for the Time of Last Periapsis (or Time of Center Transit) [JD]
-#(-1 indicates to use [earliestsEpoch-period,earliestEpoch])
-'TMIN' : 2448500,
-'TMAX' : 2452500,
-# Minimum/Maximum allowed value for the Period [double][yrs]
-'PMIN' : 0.01,
-'PMAX' : 20.0,
-# Minimum/Maximum allowed value for the Inclination [double][deg]
-'incMIN' : 1,
-'incMAX' : 80.0,
-# Minimum/Maximum allowed value for the Argument of Perigee [double][deg]
-'omegaMIN' : 90,
-'omegaMAX' : 440,
-# Minimum/Maximum value for Semi-major amplitude of RV curve [m/s]
-'KMIN' : 0,
-'KMAX' : 0,
-# Minimum/Maximum values of Radial Velocity Offsets.  
-# Must be one per set of RV data in same order as data comes in RVdata.dat, or the a single value to be used by all [comma separated list of doubles]
-'vMINs' :[-50],
-'vMAXs' :[50],
 }
 
-
-def gaussian(x,mu,sig):
-    return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
-
 ######################
-# Merge the two dicts#
+# Merge All dicts#
 ######################
 settingsDict = {}
 for key in simpleSettingsDict:
     settingsDict[key]=simpleSettingsDict[key]
-for key in advancedDict:
-    settingsDict[key]=advancedDict[key]
+for key in directoriesDict:
+    settingsDict[key]=directoriesDict[key]
+for key in advancedSettingsDict:
+    settingsDict[key]=advancedSettingsDict[key]
+for key in rangesDict:
+    settingsDict[key]=rangesDict[key]
+for key in priorsDict:
+    settingsDict[key]=priorsDict[key]
+

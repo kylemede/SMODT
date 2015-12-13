@@ -1,94 +1,55 @@
 #@Author: Kyle Mede, kylemede@astron.s.u-tokyo.ac.jp
-import numpy as np
-from settingsSimple import simpleSettingsDict
-import constants
+from priors import ePriorRatio,pPriorRatio,incPriorRatio,mass1PriorRatio,mass2PriorRatio,paraPriorRatio,chabrierPrior
 
-########################################
-#Define the priors as python functions #
-########################################
-#NOTE: only change the code and not the name of the functions or their inputs.
-def ePriorRatio(eProposed,eLast):
-    if (advancedDict['lowEcc'][0]==False)and(simpleSettingsDict['eMAX']!=0):
-        if eProposed!=eLast!=0:
-            if (simpleSettingsDict['PMIN']*constants.daysPerYear)>1000.0:
-                return eProposed/eLast
-            else:
-                return 1.0
-        else:
-            return 1.0
-    else:
-        return 1.0
-    
-def pPriorRatio(Pproposed,Plast):
-    if simpleSettingsDict['PMAX']!=0:
-        if Pproposed!=0:
-            return Plast/Pproposed
-        else:
-            return 1.0
-    else:
-        return 1.0
-    
-def incPriorRatio(incProposed,incLast):
-    if simpleSettingsDict['incMAX']!=0:
-        if (incLast%90.0)!=0:
-            return np.sin(incProposed*(constants.pi/180.0))/np.sin(incLast*(constants.pi/180.0))
-        else:
-            return 1.0
-    else:
-        return 1.0
-    
-def mass1PriorRatio(MProposed,MLast):
-    if (simpleSettingsDict['mass1MAX']!=0)and True:
-        if MProposed!=MLast!=0:
-            prop = chabrierPrior(MProposed,IMF=False)
-            lst = chabrierPrior(MLast,IMF=False)
-            return prop/lst
-        else:
-            return 1.0
-    else:
-        return 1.0
-    
-def mass2PriorRatio(MProposed,MLast):
-    if (simpleSettingsDict['mass2MAX']!=0)and True:
-        if MProposed!=MLast!=0:
-            prop = chabrierPrior(MProposed,IMF=False)
-            lst = chabrierPrior(MLast,IMF=False)
-            return prop/lst
-        else:
-            return 1.0
-    else:
-        return 1.0
-    
-def paraPriorRatio(paraProposed,paraLast):
-    if paraProposed!=paraLast!=simpleSettingsDict['paraMAX']!=0:
-        ratioA = (paraLast**4.0)/(paraProposed**4.0)
-        ratioB = 1.0
-        if advancedDict['paraEst'][0]!=0:
-            ## a Gaussian prior centered on hipparcos and width of hipparcos estimated error
-            top = gaussian(paraProposed, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
-            btm = gaussian(paraLast, advancedDict['paraEst'][0], advancedDict['paraErr'][0])
-            ratioB = top/btm
-        return ratioA*ratioB
-    else:
-        return 1.0
-    
-def chabrierPrior(m,IMF=False):
-    if IMF==False:
-        if m<1.0:
-            d = (0.068618528140713786/m)*np.exp((-(np.log10(m)+1.1023729087095586)**2)/0.9521999999999998)
-        elif m<3.47:
-            d = 0.019108957203743077*(m**(-5.37))
-        elif m<18.20:
-            d = 0.0065144172285487769*(m**(-4.53))
-        else:
-            d = 0.00010857362047581295*(m**(-3.11))
-    else:
-        if m<1.0:
-            d = (0.068618528140713786/m)*np.exp((-(np.log10(m)+1.1023729087095586)**2)/0.9521999999999998)
-        else:
-            d = 0.019239245548314052*(m**(-2.3))
-    return d
+simpleSettingsDict={
+# The number of samples orbital parameters to try/draw [int]
+'nSamples' : (240000000,"Number of MCMC or MC samples"),
+# Number of simulation chains to run in parallel, [1,100] [int].  
+# NOTE: greater than numCores-1 causes system to slow down!
+# For MCMC mode this is the number of SA and ST chains.
+'nChains' : (25,"Number MC/SA/ST of chains"),
+# Number of MCMC chains to run in parallel. ONLY available in 'MCMC' mode. [1,100] [int].  
+# NOTE: greater than numCores-1 causes system to slow down!
+'nMCMCcns' : (7,"Number MCMC of chains"),
+# set level of log messages to screen [int],recommend 50, ignoring critical msgs can cause problems. 
+# choices: ('NONE'=100,'CRITICAL'=50,'ERROR'=40,'WARNING'=30,'INFO'=20,'DEBUG'10,'ALL'=0)
+'logLevel' : 30,
+# data mode, choices {'RV','DI','3D'} [string]
+'dataMode' : ('3D',"Data Mode (RV,DI,3D)"),
+# Run in Automatic mode? This will perform checks and select the stages to run automatically. [bool]
+'autoMode' : (True, 'Run in Automatic mode?'),
+# mode to run simulation in, choices {'MC','SA','ST','SAST','SASTMCMC,'MCMC'} [string]
+# NOTE: 'ST' and 'MCMC' modes need a full list of parameters for startParams, else they fail!
+#       'MCMC' also needs a full list of sigmas in startSigmas.
+'stages' : 'MCMC',
+# If in autoMode, how strict should the initialization (SA & ST) be? [string]
+# choices ('loose','enough','tight')
+'initCrit' : 'enough',
+############################################
+# Starting parameters and sigmas for MCMC  #
+# Can be found with prior run in SAST mode #
+############################################
+# if unknown, set to False!! else [comma separated list of doubles]
+'startParams' : False,
+# if unknown, set to False!! else [comma separated list of doubles]
+'startSigmas' : False,
+# If better startParams are found during ExoSOFT, push them and the newest sigmas into this file? [bool]
+# NOTE: this can be helpful, but use caution if you do not wish to overwrite the values in here.
+"pushToSettFiles":True,
+}
 
+directoriesDict = {
+# Directory where you want the output data folder to go [string, at least 2 chars long]
+'outDir' : '/run/media/kmede/Data1/Todai_Work/Data/data_SMODT',
+# General filename for the simulation output folder to distinguish between simulation runs [string, at least 2 chars long]
+#*************************************************************************************************************************
+'outRoot' : "TEST-ArtificialJupiter-5percentError",
+#*************************************************************************************************************************               
+# full path to input astrometry data file. [string]
+'DIdataFile': '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/ExoSOFT/settings_and_inputData/DIdata.dat',                
+# full path to input radial velocity data file. [string]
+'RVdataFile': '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/ExoSOFT/settings_and_inputData/RVdata.dat',
+}
 
 advancedDict = {
 #NOTE: key max = 8characters, value+comment max = 68 characters, comment Max=47 it seems in testing.
@@ -96,13 +57,13 @@ advancedDict = {
 ### General Settings ###
 ########################
 # This will set the maximum reduced ChiSquared value to accept and write to the output file during MC mode. [double]
-'chiMAX' : (500.0,"Max reduced chiSquared during MC"),
+'chiMAX' : (300.0,"Max reduced chiSquared during MC"),
 # maximum allowed reduced chiSquared out of SA before entering ST [double]
 'chiMaxST':(5,'Max reduced chiSquared to enter ST.'),
 # maximum allowed reduced chiSquared out of ST before entering MCMC [double]
-'cMaxMCMC':(5,'Max reduced chiSquared to enter MCMC.'),
+'cMaxMCMC':(1.0,'Max reduced chiSquared to enter MCMC.'),
 #number of times to produce a summary log msg during a stage's progress [int]
-'nSumry'  :20,
+'nSumry'  :10,
 # make plot of posterior distributions? [bool]
 'pltDists' :True,
 # make plots of RV and DI/AM orbit fits [bool]
@@ -128,14 +89,14 @@ advancedDict = {
 'rmBurn' : (True,"Remove Burn-in?"),
 # Calculate the Correlation lengths and number of effective points of each chain (must be more than 1 chain)? [bool]
 # NOTE: CAUTION, can take a long time for long runs.  Still needs to be sped up somehow.
-'calcCL' :True,
+'calcCL' :False,
 # number of samples to draw for simulated annealing stage [int] 
 'nSAsamp' :(3000000,"Num SA samples"),
 # Simulated Annealing starting temperature [double]
-'strtTemp' : (100.0,"SA start temp."),
+'strtTemp' : (50.0,"SA start temp."),
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
-'strtSig' : (0.08,"start percent param range for SA"),
+'strtSig' : (0.01,"start percent param range for SA"),
 # Number of samples till temperature drop. [int]
 # Allowed vals [1,nSAsamp), Ideal is ~50.
 'tempInt'  : (50,"Num steps till temp drops in SA."),
@@ -186,28 +147,10 @@ advancedDict = {
 'omegaPdi' : (0.0,"Custom fixed val added to DI omega in model"),
 # Is the data in the DIdata.dat in PA,SA format? else, it is in E,N (x,y) format [bool]
 'pasa'     : (False,"Is astrometry data in PA,SA format?"),
-############################
-#    System Information    #
-# ONLY FOR GAUSSIAN PRIORS #
-############################
-#best estimate of primary's mass, and error [double][Msun]
-'mass1Est' : (0.0,"Primary's estimated mass"),
-'mass1Err' : (0.0,"Primary's estimated mass error"),
-#best estimate of secondary's mass, and error [double][Msun]
-'mass2Est' : (0.0,"Secondary's estimated mass"),
-'mass2Err' : (0.0,"Secondary's estimated mass error"),
-#best estimate of parallax, and error [double][mas]
-'paraEst'  : (50,"Estimated parallax"),
-'paraErr'  : (2.5,"Estimated parallax error"),
-##################################
-# Push prior functions into dict #
-##################################
-'ePrior'    :(True,'Use prior for eccentricity?',ePriorRatio),
-'pPrior'    :(True,'Use prior for period?',pPriorRatio),
-'incPrior'  :(True,'Use prior for inclination?',incPriorRatio),
-'M1Prior':(True,'Use prior for m1?',mass1PriorRatio),
-'M2Prior':(True,'Use prior for m2?',mass2PriorRatio),
-'parPrior' :(True,'Use prior for parallax?',paraPriorRatio),
+}
+
+
+rangesDict={
 ###################################################
 # Ranges for acceptable random number inputs ######
 ###################################################
@@ -249,14 +192,42 @@ advancedDict = {
 'vMAXs' :[3],
 }
 
-def gaussian(x,mu,sig):
-    return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+priorsDict={
+############################
+#    System Information    #
+# ONLY FOR GAUSSIAN PRIORS #
+############################
+#best estimate of primary's mass, and error [double][Msun]
+'mass1Est' : (0.0,"Primary's estimated mass"),
+'mass1Err' : (0.0,"Primary's estimated mass error"),
+#best estimate of secondary's mass, and error [double][Msun]
+'mass2Est' : (0.0,"Secondary's estimated mass"),
+'mass2Err' : (0.0,"Secondary's estimated mass error"),
+#best estimate of parallax, and error [double][mas]
+'paraEst'  : (50,"Estimated parallax"),
+'paraErr'  : (2.5,"Estimated parallax error"),
+##################################
+# Push prior functions into dict #
+##################################
+'ePrior'    :(True,'Use prior for eccentricity?',ePriorRatio),
+'pPrior'    :(True,'Use prior for period?',pPriorRatio),
+'incPrior'  :(True,'Use prior for inclination?',incPriorRatio),
+'M1Prior':(True,'Use prior for m1?',mass1PriorRatio),
+'M2Prior':(True,'Use prior for m2?',mass2PriorRatio),
+'parPrior' :(True,'Use prior for parallax?',paraPriorRatio),
+}
 
 ######################
-# Merge the two dicts#
+# Merge All dicts#
 ######################
 settingsDict = {}
 for key in simpleSettingsDict:
     settingsDict[key]=simpleSettingsDict[key]
-for key in advancedDict:
-    settingsDict[key]=advancedDict[key]
+for key in directoriesDict:
+    settingsDict[key]=directoriesDict[key]
+for key in advancedSettingsDict:
+    settingsDict[key]=advancedSettingsDict[key]
+for key in rangesDict:
+    settingsDict[key]=rangesDict[key]
+for key in priorsDict:
+    settingsDict[key]=priorsDict[key]

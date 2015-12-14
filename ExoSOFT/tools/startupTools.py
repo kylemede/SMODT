@@ -6,6 +6,7 @@ import numpy as np
 import exoSOFTlogger
 import generalTools as genTools
 import readWriteTools as rwTools
+import constants as const
 import warnings
 warnings.simplefilter("error")
 

@@ -35,7 +35,7 @@ simpleSettingsDict={
 'startSigmas' : False,
 # If better startParams are found during ExoSOFT, push them and the newest sigmas into this file? [bool]
 # NOTE: this can be helpful, but use caution if you do not wish to overwrite the values in here.
-"pushToSettFiles":True,
+"pushToSettFiles":False,
 }
 
 directoriesDict = {
@@ -51,7 +51,7 @@ directoriesDict = {
 'RVdataFile': '/run/media/kmede/HOME/Dropbox/EclipseWorkspaceDB/SMODT/ExoSOFT/settings_and_inputData/SuperEarth5percent_RVdata.dat',
 }
 
-advancedDict = {
+advancedSettingsDict = {
 #NOTE: key max = 8characters, value+comment max = 68 characters, comment Max=47 it seems in testing.
 ########################
 ### General Settings ###
@@ -93,6 +93,8 @@ advancedDict = {
 'nSAsamp' :(1500000,"Num SA samples"),
 # Simulated Annealing starting temperature [double]
 'strtTemp' : (500.0,"SA start temp."),
+# Maximum unitless bias-corrected standard deviation allowed between best reduced chi squareds of SA results. [double]
+'maxUstd': 0.02,
 # Starting sigma size, % of parameter range, recommend [0.05,0.25].  [double]
 # After first trial of SA and ST, take ST output and use here.
 'strtSig' : (0.15,"start percent param range for SA"),

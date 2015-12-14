@@ -104,7 +104,7 @@ def iterativeSA(settingsDict,Sim):
                 temp -= settingsDict['strtTemp'][0]/nSAiters
             #else:
             #    temp = 2.0
-        print "\nIteration #"+str(iter+1)
+        log.info("\nIteration #"+str(iter+1))
         retStr2 +="Iteration #"+str(iter+1)+"\n"
         (retAry,retStr) = multiProc(settingsDict,Sim,'SA',numProcs,params=strtPars,sigmas=[],strtTemp=temp)
         retStr2 +=retStr
@@ -113,7 +113,7 @@ def iterativeSA(settingsDict,Sim):
             goodParams = []           
             #Filter inputs if more than max num MCMC proc available to use the best ones
             chisSorted = np.sort(retAry[3])
-            chisSorted = chisSorted[np.where(chisSorted<settingsDict['cMaxMCMC'][0])]
+            chisSorted = chisSorted[np.where(chisSorted<settingsDict['chiMaxST'][0])]
             if len(chisSorted)==0:
                 strtPars = range(0,numProcs)
             elif (len(chisSorted)==1)and(numProcs==1):
@@ -158,11 +158,11 @@ def iterativeSA(settingsDict,Sim):
                     while len(strtPars)<numProcs:
                         rndVal = np.random.randint(0,len(goodParams))
                         strtPars.append(goodParams[rndVal])
-                #print 'best chis:\n' +repr(np.sort(bestRetAry[3]))
+                print 'best chis:\n' +repr(np.sort(bestRetAry[3]))
                 #print 'top '+str(maxNumMCMCprocs)+' best chis:\n' +repr(np.sort(bestRetAry[3])[:maxNumMCMCprocs])
                 #print 'STD = '+str(np.std(bestRetAry[3]))
                 uSTD = tools.unitlessSTD(bestRetAry[3])
-                log.warning("After iteration #"+str(iter+1)+" the top "+str(len(bestRetAry[3]))+" solutions with reduced chiSquared < "+str(settingsDict['cMaxMCMC'][0])+" have a unitless STD of "+str(uSTD))
+                log.warning("After iteration #"+str(iter+1)+" the top "+str(len(bestRetAry[3]))+" solutions with reduced chiSquared < "+str(settingsDict['chiMaxST'][0])+" have a unitless STD of "+str(uSTD))
                 retStr2 +="The latest top "+str(len(bestRetAry[3]))+" reduced chiSquareds had a unitless STD of "+str(uSTD)+'\n'
     ## wrap up
     if len(bestRetAry[0])>1:
@@ -179,7 +179,7 @@ def iterativeSA(settingsDict,Sim):
             if bestRetAry[3][i] == bstChiSqr:
                 bestpars = bestRetAry[1][i]
                 bestsigs = bestRetAry[2][i]
-        tools.writeBestsFile(settingsDict,bestpars,bestsigs,bstChiSqr,'ST')
+        tools.writeBestsFile(settingsDict,bestpars,bestsigs,bstChiSqr,'SA')
         tools.pushIntoOrigSettFiles(settingsDict,bestpars,sigs=bestsigs)
     toc=timeit.default_timer()
     s = "ALL "+str(iter+1)+" iterations of SA took a total of "+tools.timeStrMaker(int(toc-tic))

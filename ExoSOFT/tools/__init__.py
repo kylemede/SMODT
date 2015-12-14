@@ -39,7 +39,7 @@ from generalTools import unitlessSTD
 
 from progressbar.progressbar import ProgressBar
 
-from artificialDataMaker2 import calcOrbit
+from artificialDataMaker import calcOrbit
  
 import cppTools
 

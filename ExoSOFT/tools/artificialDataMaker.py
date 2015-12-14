@@ -25,7 +25,7 @@ def calcOrbit(outDir='',outBaseName='mockdata_'):
     #6. RV of primary (or secondary) rel to CofM [m/s]
     #7. RV ERROR [m/s]
     """
-    quiet = True
+    quiet = False
     #Computer Directory
     if outDir=='':
         outDir='/run/media/kmede/Data1/Todai_Work/Data/data_SMODT/'#$$$$$$$$$$$$$$$$$$$$ MAKE SURE THIS IS SET TO MACH YOUR COMPUTER!!! 
@@ -39,20 +39,19 @@ def calcOrbit(outDir='',outBaseName='mockdata_'):
     overlapEnds = False # will ensure some points near end overlap the beginning of the orbit.
 
     #System settings
-    M_secondary =  0.2#1.0*(const.KGperMjupiter/const.KGperMsun    #Solar masses
+    M_secondary =  1.0*(const.KGperMjupiter/const.KGperMsun)    #Solar masses
     M_primary = 1.00 #Solar masses
     distance = 20.0 #parsecs
-    km_to_arcsec = 1/(const.MperAU/1000.0)/distance # convert km to arcsecond
-    massratio=M_primary/M_secondary
-
     #Orbital Elements
     TimeLastPeri =2450639.5  #JD  #2450817.5
     e =0.048#0.017  #
     period = 11.9#1.0000697145834374#0.99997862 # years  #11.9#
-    Omega =100.6*const.pi/180# Longitude of ascending node#348.73936 100.6
+    Omega =180.*const.pi/180# Longitude of ascending node#348.73936 100.6
     omega = 14.8*const.pi/180 # Argument of periastron$ 102.94719    14.8
     i = 45.0*const.pi/180 # Inclination
     
+    km_to_arcsec = 1/(const.MperAU/1000.0)/distance # convert km to arcsecond
+    massratio=M_primary/M_secondary
     mu = const.Gcgs*M_primary*(const.KGperMsun*1000.0)*(1 + 1./massratio) #gravitational parameter
     a = (mu*(period*const.secPerYear)**2/4/const.pi**2)**(1./3) #in cm
     a_km = a/1e5 #to km
@@ -195,7 +194,7 @@ def calcOrbit(outDir='',outBaseName='mockdata_'):
             data2[i,4] += np.random.normal(0,errorRVsecondary)
     
     #########################################################
-    #load up data for into arys for NewBEAT DI, NewBEAT RV.
+    #load up data for into arys for ExoSOFT DI, ExoSOFT RV.
     #########################################################
     #dataDI2 has columns:
     #1. JD

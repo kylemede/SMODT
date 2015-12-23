@@ -323,7 +323,7 @@ def exoSOFT():
     clStr = ''
     if settingsDict['pltDists'] and os.path.exists(allFname):
         plotFilename = os.path.join(os.path.dirname(allFname),'summaryPlot'+stageList[-1])
-        clStr = tools.summaryPlotter(allFname,plotFilename,bestVals=bestFit,stage=settingsDict['stages'],shadeConfLevels=True,plotALLpars=True)
+        clStr = tools.summaryPlotter(allFname,plotFilename,bestVals=bestFit,stage=settingsDict['stages'][-1],shadeConfLevels=True,plotALLpars=True)
     
     ##calc R?
     grStr = ''

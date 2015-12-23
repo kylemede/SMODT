@@ -687,7 +687,7 @@ def findBestOrbit(filename,bestToFile=True,findAgain=False):
         log.info("Best fit found to be:\n"+repr(orbBest))
         if bestToFile:
             f = open(bestFname,'w')
-            f.write(nparyTolistStr(orbBest)+'\n')
+            f.write(nparyTolistStr(orbBest,brackets=False)+'\n')
             f.close()
             log.info("Best fit params written to :\n"+bestFname)
     return orbBest
@@ -708,11 +708,15 @@ def unitlessSTD(ary):
         bcstd = np.sqrt((1.0/(len(ary)-1.0))*np.sum(abs(ary-ary.mean())**2))
         return bcstd/np.mean(ary)
 
-def nparyTolistStr(ary):
-    s='['
+def nparyTolistStr(ary,brackets=True):
+    s=''
+    if brackets:
+        s+='['
     for val in ary:
         s+=str(val)+","
-    s=s[:-1]+"]"
+    s=s[:-1]
+    if brackets:
+        s+=']'
     return s
    
 def copytree(src, dst):

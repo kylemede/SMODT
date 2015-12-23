@@ -1210,7 +1210,7 @@ def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
             contour = ax.plot([np.median(xdata),np.median(xdata)],[Y.min(),Y.max()],linewidth=3,color='red')
     return contour 
 
-def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=None,ranges=None,smooth=True):
+def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=None,ranges=None,rectangular=True,smooth=True):
     """
     Will create a 2D density contour plot.
     Must pass in ONLY 2 params to plot.

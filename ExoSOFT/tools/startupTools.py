@@ -57,7 +57,7 @@ def startup(argv,ExoSOFTdir,rePlot=False):
         settingsDict['settFilePath']= settFilePath
         ## Make a directory (folder) to place all the files from this simulation run
         settingsDict['finalFolder'] = os.path.join(settingsDict['outDir'],settingsDict['outRoot'])
-        ##if not doing a re-post analysis with rePlot.py
+        ##if not doing a re-post analysis with customPost.py
         if rePlot==False:
             if os.path.exists(settingsDict['finalFolder']):
                 if settingsDict['logLevel']<50: ## Handle this with a 'clob' bool in dict??? $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$

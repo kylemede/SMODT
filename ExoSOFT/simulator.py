@@ -83,10 +83,14 @@ class Simulator(object):
         self.log.debug('[nVars, nDIvars, nRVvars] = ['+str(nVars)+', '+str(nDIvars)+', '+str(nRVvars)+']')
         nuDI = 1
         nuRV=1
-        if nDIepochs>0:
+        if nDIepochs*2>nDIvars:
             nuDI = nDIepochs*2-nDIvars
-        if nRVepochs>0:
+        else:
+            self.log.debug("nDIepochs*2>nDIvars is False so setting nuDI=1")
+        if nRVepochs>nRVvars:
             nuRV = nRVepochs-nRVvars
+        else:
+            self.log.debug("nRVepochs>nRVvars is False so setting nuRV=1")
         self.log.debug('[nu, nuDI, nuRV] = ['+str(nu)+', '+str(nuDI)+', '+str(nuRV)+']')
         #load these into settings dict
         self.settingsDict["nRVdsets"] = (len(self.dictVal('vMINs')),"Number of RV data sets")
@@ -406,7 +410,7 @@ class Simulator(object):
             ## if valid startParams provided, start there, else start at random point.
             if (type(startParams)==list)or(type(startParams)==np.ndarray):
                 if len(startParams)>0:
-                    proposedParsRaw = copy.deepcopy(self.startParams)
+                    proposedParsRaw = copy.deepcopy(startParams)
                 else:
                     proposedParsRaw = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
             else:

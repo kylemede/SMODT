@@ -1,6 +1,6 @@
 import tools
 from tools import constants as const
-from exosoftpath import ExoSOFTdir
+from exosoftpath import rootDir as ExoSOFTdir
 import sys
 import os
 import numpy as np
@@ -13,15 +13,7 @@ def customPost():
     if os.path.exists(allFname)==False:
         allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
         skipBurnInStrip=False
-    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=10)
-    ##make list of stages to run
-    stageList = []
-    if settingsDict['symMode'][0]=='MC':
-        stageList = ['MC']
-    elif settingsDict['symMode'][0]=='SA':
-        stageList = ['SA']
-    elif settingsDict['symMode'][0]=='MCMC':
-        stageList = ['SA','ST','MCMC']
+    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=25)
 
     ## run make for swig if requested??
     if settingsDict['remake'] and False:
@@ -32,9 +24,6 @@ def customPost():
         os.system('make')
         os.chdir(cwd)
         log.debug("-"*45+" Done re-making CPP/SWIG tools "+45*"-")
-    if False:
-        completeStr = tools.mcmcEffPtsCalc(allFname)
-        print completeStr
 
     ##make hack list of output files
     outFiles = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputDataMCMC*_BIstripped.fits")))
@@ -57,8 +46,7 @@ def customPost():
         
     ## find best fit
     if True:
-        if os.path.exists(allFname):
-            bestFit = tools.findBestOrbit(allFname,bestToFile=False,findAgain=False)
+        bestFit = tools.findBestOrbit(allFname,bestToFile=False,findAgain=False)
     else:
         bestFit = np.array([  1.08516940e+00,   9.86617236e-04,   4.85701122e+01,
                      1.01827347e+02,   4.10252219e-02,   2.45073957e+06,
@@ -66,7 +54,7 @@ def customPost():
                      2.57947523e+01,   5.41039136e+00,   2.60726725e+01,
                      8.69376155e+00,  -8.76996105e-02])
     
-    if False:
+    if True:
         ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
         ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
         #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-0mult-1thk-')
@@ -81,27 +69,28 @@ def customPost():
         #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-1mult-3thk-crop3')
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[[[-210,425],[-310,325]],[[413.3,421.1],[124.7,139.6]]],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=1,diLnThk=3)
         
-        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-1mult-2thk-')
-        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=1,diLnThk=2)
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-1mult-2thk-')
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=1,diLnThk=2)
         plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5mult-2thk-')
         tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=5,diLnThk=2)
         
     clStr=''
-    if False:
-        plotFilename = os.path.join(settingsDict['finalFolder'],'summaryPlot-MANUAL-full')
-        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
+    if True:
+        plotFilename = os.path.join(settingsDict['finalFolder'],'posteriors-Dec23PASAfit-151224')
+        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
         #for fake jupiter
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.01],[0.5,1.7],[-0.00,0.1],[39,56]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True)
         #for HIP10321
-        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,5,13,14,15],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5],[35,40],[150,172],[242,248],[348,353],[2452295,2452399],[6150,6250],[350,450],[6291,6360]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,5,13,14,15],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5],[35,40],[150,172],[242,248],[348,353],[2452295,2452399],[6150,6250],[350,450],[6291,6360]],bestVals=bestFit,stage=settingsDict['stages'][-1], shadeConfLevels=True,forceRecalc=False)
         #for HIP10321-SIMPLE
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
     
-    if False: 
-        plotFilename = os.path.join(settingsDict['finalFolder'],'densityPlot-2')
+    if True: 
+        plotFilename = os.path.join(settingsDict['finalFolder'],'m1m2-densPlot-Dec23PASAfit-151224-sqr')
         #ranges=[[xMin,xMax],[yMin,yMax]]
-        #tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]])
-        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]],ranges=[[0.60,1.48],[0.16,0.74]])
+        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]],rectangular=False)
+        plotFilename = os.path.join(settingsDict['finalFolder'],'m1m2-densPlot-Dec23PASAfit-151224-rect')
+        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]],ranges=[[0.60,1.48],[0.16,0.74]],rectangular=True)
         #plotFilename = os.path.join(settingsDict['finalFolder'],'cornerPlot-2')
         #tools.cornerPlotter(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]])
         
@@ -123,7 +112,7 @@ def customPost():
             (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
         
     ## custom re check of the orbit fit     
-    if True: 
+    if False: 
         orbParams = bestFit
         finalFits=''
         nus = [19, 19, 1]
@@ -141,12 +130,11 @@ def customPost():
     ## summary information to the summary file and add the rest later
     if False:
         if os.path.exists(allFname):
-            tools.summaryFile(settingsDict,stageList,allFname,clStr,burnInStr,bestFit,grStr,effPtsStr,1,1,'')
-            
+            tools.summaryFile(settingsDict,settingsDict['stageList'],allFname,clStr,burnInStr,bestFit,grStr,effPtsStr,1,1,'')
         
     ##clean up files (move to folders or delete them)
     if False:
-        tools.cleanUp(settingsDict,stageList,allFname)
+        tools.cleanUp(settingsDict,settingsDict['stageList'],allFname)
         if settingsDict['CopyToDB']:
             tools.copyToDB(settingsDict)
     

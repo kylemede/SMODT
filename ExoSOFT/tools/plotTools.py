@@ -556,7 +556,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
 #         gs.update(wspace=0.1,hspace=0)
         
         ## run through all the data files and parameters requested and make histogram files
-        completeCLstr = '-'*22+'\nConfidence Levels are:\n'+'-'*75+'\n'
+        completeCLstr = '-'*22+'\nConfidence Levels are:\n'+'-'*80+'\n'
         for i in range(0,len(paramList)):
             if (os.path.exists(os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
                 log.debug('Checking parameter has useful data '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
@@ -568,7 +568,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
                     (CLevels,data,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=False, returnBestDataVal=True)
                     chiSquareds = []
                 if bestDataVal!=0:
-                    completeCLstr+=paramStrs2[i]+clStr+'\n'+'-'*75+'\n'
+                    completeCLstr+=paramStrs2[i]+clStr+'\n'+'-'*80+'\n'
                     log.debug('Making hist file for parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
                     histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')
                     #print 'histDataBaseName = '+histDataBaseName
@@ -1210,13 +1210,12 @@ def densityContourFunc(xdata, ydata, nbins, ax=None,ranges=None,bests=None):
             contour = ax.plot([np.median(xdata),np.median(xdata)],[Y.min(),Y.max()],linewidth=3,color='red')
     return contour 
 
-def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=None,ranges=None,rectangular=True,smooth=True):
+def densityPlotter2D(outputDataFilename,plotFilename,paramsToPlot=[],bestVals=None,ranges=None,rectanglePlot=True,smooth=True):
     """
     Will create a 2D density contour plot.
     Must pass in ONLY 2 params to plot.
     """    
     scatterTest = False
-    rectanglePlot=True
     latex=True
     plotFormat='eps'
     plt.rcParams['ps.useafm']= True

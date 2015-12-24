@@ -41,7 +41,7 @@ def mcmcEffPtsCalc(outputDataFilename):
         dataC=np.array(dataC,dtype=np.dtype('d'),order='C')
         PostCTools.loadParamData(dataC)
         
-        completeStr+= '\n'+'-'*45+'\nThe mean correlation lengths of all params are:\n'+'-'*45+'\nparam #, param name, mean correlation length'
+        completeStr+= '\n'+'-'*47+'\nThe mean correlation lengths of all params are:\n'+'-'*47+'\nparam #, param name, mean correlation length'
         completeStr+= ' -> total # of steps/mean correlation length = number of effective points\n'
         for i in range(0,len(paramList)):
             log.debug( "*"*60+"\n"+'starting to mean calculate corr length for '+paramStrs[i]+' with CPP')
@@ -140,7 +140,7 @@ def gelmanRubinCalc(mcmcFileList,nMCMCsamp=1):
     """
     GRs=[]
     Ts = []
-    grStr = '\n'+'-'*30+"\nGelman-Rubin Results:\n"+'-'*30+'\n'
+    grStr = '\n'+'-'*21+"\nGelman-Rubin Results:\n"+'-'*21+'\n'
     try:
         Lcfloat = float(nMCMCsamp)
         if os.path.exists(mcmcFileList[0]):
@@ -349,7 +349,7 @@ def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,e
                     except:
                         log.error("A problem occurred while trying to find best fit of:\n"+fname)
                 chiSquaredsStr = chiSquaredsStr[:-2]+']\n'
-        numFilesStr+="\n"+"*"*65+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*65+'\n'
+        numFilesStr+="\n"+"*"*61+"\nThe final combined file was for a total of "+str(totalSamps)+" samples\n"+"*"*61+'\n'
         f.write(numFilesStr)
         f.write(chiSquaredsStr)
         bestStr = '\n'+'-'*21+'\nBest fit values were:\n'+'-'*21+'\n'
@@ -390,7 +390,7 @@ def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,e
                     bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
             else:
                 bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
-        bestStr+='\n'+'*'*100+'\nBEST REDUCED CHISQUAREDS: [total,DI,RV] = ['+str(reduced3D)+", "+str(reducedDI)+", "+str(reducedRV)+"]\n"+'*'*100
+        bestStr+='\n'+'*'*90+'\nBEST REDUCED CHISQUAREDS: [total,DI,RV] = ['+str(reduced3D)+", "+str(reducedDI)+", "+str(reducedRV)+"]\n"+'*'*90
         f.write(bestStr)
     except:
         log.critical("A problem occured while trying to produce advanced summary strings.")

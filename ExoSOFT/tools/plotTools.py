@@ -24,7 +24,7 @@ log = exoSOFTlogger.getLogger('main.plotTools',lvl=100,addFH=False)
 colorsList =['Red','Orange','Purple','Fuchsia','Crimson','Green','Aqua','DarkGreen','Gold','DarkCyan','OrangeRed','Plum','Chartreuse','Chocolate','Teal','Salmon','Brown','Blue']
 
 
-def histMakeAndDump(chiSquareds,data,outFilename='',nbins=50,weight=False, normed=False, nu=1):
+def histMakeAndDump(chiSquareds,data,outFilename='',nbins=100,weight=False, normed=False, nu=1):
     """
     This will make a matplotlib histogram using the input settings, then writing the resulting  
     centers of the bins and number of data points in said bin values to disk, with '.dat' extension

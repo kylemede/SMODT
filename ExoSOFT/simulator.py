@@ -124,17 +124,26 @@ class Simulator(object):
         priorsRatio = 1.0
         try:
             if self.dictVal('ePrior'):
+                #print 'ePrior'
                 priorsRatio*=self.settingsDict['ePrior'][2](parsCurr[4],parsLast[4])
             if self.dictVal('pPrior'):
+                #print 'pPrior'
                 priorsRatio*=self.settingsDict['pPrior'][2](parsCurr[7],parsLast[7])
             if self.dictVal('incPrior'):
+                #print 'incPrior'
                 priorsRatio*=self.settingsDict['incPrior'][2](parsCurr[8],parsLast[8])
             if self.dictVal('M1Prior'):
+                #print 'M1Prior'
                 priorsRatio*=self.settingsDict['M1Prior'][2](parsCurr[0],parsLast[0])
+                #print 'M1Prior'
             if self.dictVal('M2Prior'):
+                #print 'M2Prior'
                 priorsRatio*=self.settingsDict['M2Prior'][2](parsCurr[1],parsLast[1])
+                #print 'M2Prior'
             if self.dictVal('parPrior'):
+                #print 'parPrior'
                 priorsRatio*=self.settingsDict['parPrior'][2](parsCurr[2],parsLast[2])
+                #print 'parPrior out'
             if test==False:
                 return priorsRatio
         except:

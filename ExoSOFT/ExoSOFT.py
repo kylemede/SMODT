@@ -107,8 +107,10 @@ def iterativeSA(settingsDict,Sim):
         log.info("\nIteration #"+str(iter+1))
         retStr2 +="Iteration #"+str(iter+1)+"\n"
         (retAry,retStr) = multiProc(settingsDict,Sim,'SA',numProcs,params=strtPars,sigmas=[],strtTemp=temp)
+        #print '\n'*10
         retStr2 +=retStr
         if len(retAry)>0:
+            #print 'filtering'
             chisSorted = [] 
             goodParams = []           
             #Filter inputs if more than max num MCMC proc available to use the best ones
@@ -150,18 +152,19 @@ def iterativeSA(settingsDict,Sim):
                     bestRetAry[0][i] = outNm
                 ## Now fill out an array of starting parameter sets from the best above.
                 ## first load up with one set of goodParams, then randomly from it till full.
+                #print 'best chis:\n' +repr(np.sort(bestRetAry[3]))
                 goodParams = bestRetAry[1]
                 strtPars=[]
-                if len(goodParams)>1:
+                if len(goodParams)>0:
                     for i in range(0,len(goodParams)):
                         strtPars.append(goodParams[i])
                     while len(strtPars)<numProcs:
                         rndVal = np.random.randint(0,len(goodParams))
                         strtPars.append(goodParams[rndVal])
-                print 'best chis:\n' +repr(np.sort(bestRetAry[3]))
-                #print 'top '+str(maxNumMCMCprocs)+' best chis:\n' +repr(np.sort(bestRetAry[3])[:maxNumMCMCprocs])
+                #print 'len(strtPars) = '+str(len(strtPars))
                 #print 'STD = '+str(np.std(bestRetAry[3]))
-                uSTD = tools.unitlessSTD(bestRetAry[3])
+                if len(bestRetAry[3])==numProcs:
+                    uSTD = tools.unitlessSTD(bestRetAry[3])
                 log.warning("After iteration #"+str(iter+1)+" the top "+str(len(bestRetAry[3]))+" solutions with reduced chiSquared < "+str(settingsDict['chiMaxST'][0])+" have a unitless STD of "+str(uSTD))
                 retStr2 +="The latest top "+str(len(bestRetAry[3]))+" reduced chiSquareds had a unitless STD of "+str(uSTD)+'\n'
     ## wrap up

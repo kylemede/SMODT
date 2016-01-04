@@ -13,7 +13,7 @@ def customPost():
     if os.path.exists(allFname)==False:
         allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
         skipBurnInStrip=False
-    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=25)
+    log = tools.getLogger('main',dir=settingsDict['finalFolder'],lvl=100)
 
     ## run make for swig if requested??
     if settingsDict['remake'] and False:
@@ -54,7 +54,7 @@ def customPost():
                      2.57947523e+01,   5.41039136e+00,   2.60726725e+01,
                      8.69376155e+00,  -8.76996105e-02])
     
-    if True:
+    if False:
         ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
         ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
         #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-0mult-1thk-')
@@ -76,21 +76,21 @@ def customPost():
         
     clStr=''
     if True:
-        plotFilename = os.path.join(settingsDict['finalFolder'],'posteriors-Dec23PASAfit-151225')
+        plotFilename = os.path.join(settingsDict['finalFolder'],'posteriors-Dec26fit-151226')
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
         #for fake jupiter
-        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.01],[0.5,1.7],[-0.00,0.1],[39,56]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True)
+        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.01],[0.5,1.7],[-0.00,0.1],[39,56]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True)   [345.9,355]
         #for HIP10321
-        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,5,13,14,15],xLims=[[0.7,1.5],[0.19,0.52],[0.36,0.40],[20.5,21.5],[35,40],[150,173],[242,248],[347,353],[2452295,2452399],[6150,6225],[355,425],[6295,6355]],bestVals=bestFit,stage=settingsDict['stages'][-1], shadeConfLevels=True,forceRecalc=False)
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,5,13,14,15],xLims=[[0.7,1.5],[0.19,0.52],[0.36,0.40],[20.5,21.5],[35,40],[150,171],[242,248],[345.9,355],[2452295,2452393],[6170,6220],[360,405],[6300,6350]],bestVals=bestFit,stage=settingsDict['stages'][-1], shadeConfLevels=True,forceRecalc=False)
         #for HIP10321-SIMPLE
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
     
-    if True: 
-        plotFilename = os.path.join(settingsDict['finalFolder'],'m1m2-densPlot-Dec23PASAfit-151225-autoRanges')
+    if False: 
+        plotFilename = os.path.join(settingsDict['finalFolder'],'m1m2-densPlot-Dec23PASAfit-151226-autoRanges')
         #ranges=[[xMin,xMax],[yMin,yMax]]
-        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]])
-        plotFilename = os.path.join(settingsDict['finalFolder'],'m1m2-densPlot-Dec23PASAfit-151225-manualRanges')
-        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]],ranges=[[0.69,1.47],[0.19,0.63]])
+        #tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]])
+        plotFilename = os.path.join(settingsDict['finalFolder'],'m1m2-densPlot-Dec26fit-151226-manualRanges')
+        tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]],ranges=[[0.64,1.45],[0.18,0.62]])
         #plotFilename = os.path.join(settingsDict['finalFolder'],'cornerPlot-2')
         #tools.cornerPlotter(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]])
         

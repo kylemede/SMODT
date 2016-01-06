@@ -51,11 +51,11 @@ class singleProc(Process):
         
 def multiProc(settingsDict,Sim,stage,numProcs,params=[],sigmas=[],strtTemp=1.0):
     log = tools.getLogger('main.multiProc',lvl=100,addFH=False)
-    if stage in ['ST','MCMC']:
+    if stage != 'MC':
         if len(params)==0:
-            log.error("params and sigmas parameter inputs to multiproc must have a set of values for each requested proc to start for ST and MCMC modes!")
+            log.error("params and sigmas parameter inputs to multiproc must have a set of values for each requested proc to start for SA, ST and MCMC modes!")
     else:
-        #load up basically empty arrays for params and sigmas for MC and SA cases
+        #load up basically empty arrays for params and sigmas for MC case
         sigmas = params = range(numProcs)
     master = []
     tic=timeit.default_timer()
@@ -89,7 +89,8 @@ def iterativeSA(settingsDict,Sim):
     maxNumMCMCprocs = settingsDict['nMCMCcns'][0]
     numProcs = settingsDict['nChains'][0]
     nSAiters = 7.0
-    strtPars = range(0,numProcs)
+    strtPars = range(numProcs)
+    strtsigmas = range(numProcs)
     bestRetAry = [[],[],[],[]]
     uSTD = 1e6
     iter = -1
@@ -102,12 +103,10 @@ def iterativeSA(settingsDict,Sim):
             tools.rmFiles(retAry[0][:])
             if iter<nSAiters:
                 temp -= settingsDict['strtTemp'][0]/nSAiters
-            #else:
-            #    temp = 2.0
         log.info("\nIteration #"+str(iter+1))
         retStr2 +="Iteration #"+str(iter+1)+"\n"
-        (retAry,retStr) = multiProc(settingsDict,Sim,'SA',numProcs,params=strtPars,sigmas=[],strtTemp=temp)
-        #print '\n'*10
+        (retAry,retStr) = multiProc(settingsDict,Sim,'SA',numProcs,params=strtPars,sigmas=strtsigmas,strtTemp=temp)
+        print '\n'*5
         retStr2 +=retStr
         if len(retAry)>0:
             #print 'filtering'
@@ -152,7 +151,7 @@ def iterativeSA(settingsDict,Sim):
                     bestRetAry[0][i] = outNm
                 ## Now fill out an array of starting parameter sets from the best above.
                 ## first load up with one set of goodParams, then randomly from it till full.
-                #print 'best chis:\n' +repr(np.sort(bestRetAry[3]))
+                print 'best chis:\n' +repr(np.sort(bestRetAry[3]))
                 goodParams = bestRetAry[1]
                 strtPars=[]
                 if len(goodParams)>0:
@@ -161,7 +160,7 @@ def iterativeSA(settingsDict,Sim):
                     while len(strtPars)<numProcs:
                         rndVal = np.random.randint(0,len(goodParams))
                         strtPars.append(goodParams[rndVal])
-                #print 'len(strtPars) = '+str(len(strtPars))
+                print 'len(strtPars) = '+str(len(strtPars))
                 #print 'STD = '+str(np.std(bestRetAry[3]))
                 if len(bestRetAry[3])==numProcs:
                     uSTD = tools.unitlessSTD(bestRetAry[3])

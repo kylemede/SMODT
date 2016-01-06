@@ -420,11 +420,13 @@ class Simulator(object):
             if (type(startParams)==list)or(type(startParams)==np.ndarray):
                 if len(startParams)>0:
                     proposedParsRaw = copy.deepcopy(startParams)
+                    print 'Initial SA param set has reduced chi sqr of '+str(proposedParsRaw[11]/self.nu)
                 else:
                     proposedParsRaw = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
+                    proposedParsRaw[11]=self.dictVal('chiMAX')*self.nu
             else:
                 proposedParsRaw = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
-            proposedParsRaw[11]=self.dictVal('chiMAX')*10*self.nu
+                proposedParsRaw[11]=self.dictVal('chiMAX')*self.nu
         else:
             proposedParsRaw = copy.deepcopy(startParams)
             sigmas = copy.deepcopy(startSigmas)

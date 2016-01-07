@@ -406,10 +406,12 @@ class Simulator(object):
         If stage is SA or ST: final (params,sigmas) are returned, else nothing.
         """
         tic=timeit.default_timer()
+        lastTic=tic
+        timesAry = []
         self.log.debug("Trying "+str(self.dictVal(self.stgNsampDict[stage]))+" samples for chain #"+str(chainNum)+" in "+stage+" mode.")
         self.chainNum = chainNum
         self.resetTracked(stage)
-        bar = tools.ProgressBar('green',width=30,block='=',empty='-',lastblock='>')
+        bar = tools.ProgressBar('green',width=10,block='=',empty='-',lastblock='>')
         modelData = np.zeros((len(self.realData),3))
         acceptedParams = []
         self.settingsDict['curStg']=(stage,'Current stage either [SA,ST,MCMC or MC]')
@@ -421,12 +423,13 @@ class Simulator(object):
                 if len(startParams)>0:
                     proposedParsRaw = copy.deepcopy(startParams)
                     print 'Initial SA param set has reduced chi sqr of '+str(proposedParsRaw[11]/self.nu)
+                    proposedParsRaw[11]*=self.nu
                 else:
                     proposedParsRaw = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
-                    proposedParsRaw[11]=self.dictVal('chiMAX')*self.nu
+                    proposedParsRaw[11]=self.dictVal('chiMAX')*self.nu*10
             else:
                 proposedParsRaw = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
-                proposedParsRaw[11]=self.dictVal('chiMAX')*self.nu
+                proposedParsRaw[11]=self.dictVal('chiMAX')*self.nu*10
         else:
             proposedParsRaw = copy.deepcopy(startParams)
             sigmas = copy.deepcopy(startSigmas)
@@ -472,10 +475,15 @@ class Simulator(object):
                 self.nSavedPeriodic = 0
                 self.log.debug('about to collect the garbage')
                 gc.collect()
+            if sample%(self.dictVal(self.stgNsampDict[stage])//100)==0:
+                timesAry.append(timeit.default_timer()-lastTic)
+                lastTic = timeit.default_timer()
             if (self.dictVal('logLevel')<30)and(sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0):
-                bar.render(sample * 100 // self.dictVal(self.stgNsampDict[stage]), stage+str(chainNum)+' complete so far.')
+                timeRemSec = np.mean(timesAry)*(float(self.dictVal(self.stgNsampDict[stage]))/float(sample)*float(self.dictVal('nSumry')))
+                timeStr = ' about '+tools.timeStrMaker(timeRemSec)+' remaining.'
+                bar.render(sample*100//self.dictVal(self.stgNsampDict[stage]), stage+str(chainNum)+' Completed,'+timeStr)
         if self.dictVal('logLevel')<30:
-            bar.render(100,stage+str(chainNum)+' complete!\n')
+            bar.render(100,stage+str(chainNum)+' Complete!\n')
         self.log.debug(stage+" took: "+tools.timeStrMaker(timeit.default_timer()-tic))
         self.endSummary(temp,sigmas,stage)
         tools.periodicDataDump(self.tmpDataFile,np.array(acceptedParams))

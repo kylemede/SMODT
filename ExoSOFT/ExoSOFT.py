@@ -106,7 +106,7 @@ def iterativeSA(settingsDict,Sim):
         log.info("\nIteration #"+str(iter+1))
         retStr2 +="Iteration #"+str(iter+1)+"\n"
         (retAry,retStr) = multiProc(settingsDict,Sim,'SA',numProcs,params=strtPars,sigmas=strtsigmas,strtTemp=temp)
-        print '\n'*5
+        #print '\n'*5
         retStr2 +=retStr
         if len(retAry)>0:
             #print 'filtering'
@@ -151,7 +151,7 @@ def iterativeSA(settingsDict,Sim):
                     bestRetAry[0][i] = outNm
                 ## Now fill out an array of starting parameter sets from the best above.
                 ## first load up with one set of goodParams, then randomly from it till full.
-                print 'best chis:\n' +repr(np.sort(bestRetAry[3]))
+                log.debug('best chis:\n' +repr(np.sort(bestRetAry[3])))
                 goodParams = bestRetAry[1]
                 strtPars=[]
                 if len(goodParams)>0:
@@ -160,7 +160,7 @@ def iterativeSA(settingsDict,Sim):
                     while len(strtPars)<numProcs:
                         rndVal = np.random.randint(0,len(goodParams))
                         strtPars.append(goodParams[rndVal])
-                print 'len(strtPars) = '+str(len(strtPars))
+                log.debug('len(strtPars) = '+str(len(strtPars)))
                 #print 'STD = '+str(np.std(bestRetAry[3]))
                 if len(bestRetAry[3])==numProcs:
                     uSTD = tools.unitlessSTD(bestRetAry[3])

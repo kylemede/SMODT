@@ -479,7 +479,7 @@ class Simulator(object):
                 timesAry.append(timeit.default_timer()-lastTic)
                 lastTic = timeit.default_timer()
             if (self.dictVal('logLevel')<30)and(sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0):
-                timeRemSec = np.mean(timesAry)*(float(self.dictVal(self.stgNsampDict[stage]))/float(sample)*float(self.dictVal('nSumry')))
+                timeRemSec = np.mean(timesAry)*(100.0-(float(sample)*100.0)/float(self.dictVal(self.stgNsampDict[stage])))
                 timeStr = ' about '+tools.timeStrMaker(timeRemSec)+' remaining.'
                 bar.render(sample*100//self.dictVal(self.stgNsampDict[stage]), stage+str(chainNum)+' Completed,'+timeStr)
         if self.dictVal('logLevel')<30:

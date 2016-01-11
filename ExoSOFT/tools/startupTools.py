@@ -254,7 +254,7 @@ def modePrep(settingsDict,sigmas):
     rangeMaxs = genTools.getSimpleDictVal(settingsDict,'rangeMaxs')
     autoMode = genTools.getSimpleDictVal(settingsDict,'autoMode')
     
-    ##check if startParams in settings files are useful
+    ##check if startParams in settings file are useful
     gotParams = False
     if (type(startParams)==list)or(type(startParams)==np.ndarray):
         if type(startParams)==list:
@@ -272,7 +272,7 @@ def modePrep(settingsDict,sigmas):
     if gotParams==False:
         log.info("Original startParams in settings files were not usable, so setting to False.")
         startParams = False
-    #check if startSigmas in settings files are useful
+    #check if startSigmas in settings file are useful
     gotSigmas = False
     if (type(startSigmas)==list)or(type(startSigmas)==np.ndarray):
         if len(startSigmas)==len(rangeMaxs):
@@ -288,7 +288,7 @@ def modePrep(settingsDict,sigmas):
     ## check out logic between provided parameters and requested mode/stages
     if gotParams==False:
         if autoMode==False:
-            #check if manual settings make sense
+            #No useful params proided, so check if manual settings make sense
             if (settingsDict['stages'] in ['ST','MCMC']):
                 log.critical('ST or MCMC mode requested, but not starting parameters provided.  Quiting ExoSOFT!!')
                 #***************************************************************************************************
@@ -303,7 +303,7 @@ def modePrep(settingsDict,sigmas):
         if gotSigmas==False:
             startSigmas = sigmas
     elif gotSigmas==False:
-        #Got params, but useful sigmas in settings file, so check if there should be and update stages or exit.
+        #Got params, but no useful sigmas in settings file, so check if there should be and update stages or exit.
         if autoMode==False:
             #check if manual settings make sense
             if (settingsDict['stages'] in ['MCMC']):

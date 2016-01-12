@@ -196,7 +196,7 @@ class Simulator(object):
             parsOut[12] = 0
         return parsOut
     
-    def rangeCheck(self,pars,stage=''):
+    def rangeCheck(self,pars,sample,stage=''):
         """
         Check if values inside allowed range
         """
@@ -215,9 +215,9 @@ class Simulator(object):
                 elif (i!=5) and (i!=6):
                     if (self.rangeMins[i]>paramsOut[i])or(paramsOut[i]>self.rangeMaxs[i]):
                         inRange=False
-        if (self.acceptCount==0)and(stage=='SA'):
-            ##Jump as starting position was in poor part of param space. for SA only.
-            paramsOut = self.increment(pars,np.zeros(pars.shape),stage='MC')
+        if (sample>=10)and((self.acceptCount==0)and(stage=='SA')):
+            ##Jump as starting position after first 10 tries was in poor part of param space. for SA only.
+            paramsOut = self.increment(self.rangeMinsRaw,np.zeros(pars.shape),stage='MC')
             ## convert from Raw form if in lowEcc mode
             self.Orbit.convertParsFromRaw(paramsOut)
             inRange=True
@@ -415,26 +415,26 @@ class Simulator(object):
         modelData = np.zeros((len(self.realData),3))
         acceptedParams = []
         self.settingsDict['curStg']=(stage,'Current stage either [SA,ST,MCMC or MC]')
-        strtTemp = temp
-        if (stage=='SA')or(stage=='MC'):
-            sigmas = copy.deepcopy(self.starterSigmas)
-            ## if valid startParams provided, start there, else start at random point.
-            if (type(startParams)==list)or(type(startParams)==np.ndarray):
-                if len(startParams)>0:
-                    proposedParsRaw = copy.deepcopy(startParams)
-                    print 'Initial SA param set has reduced chi sqr of '+str(proposedParsRaw[11]/self.nu)
-                    proposedParsRaw[11]*=self.nu
-                else:
-                    proposedParsRaw = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
-                    proposedParsRaw[11]=self.dictVal('chiMAX')*self.nu*10
-            else:
-                proposedParsRaw = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
-                proposedParsRaw[11]=self.dictVal('chiMAX')*self.nu*10
-        else:
-            proposedParsRaw = copy.deepcopy(startParams)
-            sigmas = copy.deepcopy(startSigmas)
-        latestParsRaw = copy.deepcopy(proposedParsRaw)
-        paramsLast = copy.deepcopy(proposedParsRaw)
+        strtTemp = temp      
+        sigmas = copy.deepcopy(self.starterSigmas)
+        ## if valid startSigmas provided, start with them, else use defaults.
+        if (type(startSigmas)==list)or(type(startSigmas)==np.ndarray):
+            if len(startSigmas)>0:
+                sigmas = copy.deepcopy(startSigmas)
+        ## if valid startParams provided, start there, else start at random point.
+        if (type(startParams)==list)or(type(startParams)==np.ndarray):
+            if len(startParams)>0:
+                paramsLast = copy.deepcopy(startParams)
+                log.info('initial/latest pars have reduced chi sqr of '+str(paramsLast[11]/self.nu))
+            else: 
+                paramsLast = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
+        else: 
+            paramsLast = self.increment(self.rangeMinsRaw,sigmas,stage='MC')           
+        ## load up starting params as 'latest' and perform first increment from these to start loop with.
+        latestParsRaw = copy.deepcopy(paramsLast)
+        proposedParsRaw = self.increment(latestParsRaw,sigmas,stage)
+        self.acceptBoolAry.append(0)
+        #print 'proposed pars have reduced chi sqr of '+str(proposedParsRaw[11]/self.nu)#$$$$$$$$$$$$$$$$$$$$$$$$$$$
         ## convert from Raw form if in lowEcc mode
         self.Orbit.convertParsFromRaw(paramsLast)
         self.paramsLast = paramsLast
@@ -444,7 +444,7 @@ class Simulator(object):
         sample=0
         while sample<(self.dictVal(self.stgNsampDict[stage])+1):
             sample+=1
-            (proposedPars,inRange)=self.rangeCheck(proposedParsRaw,stage)
+            (proposedPars,inRange)=self.rangeCheck(proposedParsRaw,sample,stage)
             if inRange:
                 self.Orbit.calculate(modelData,proposedPars)
                 (params,accept) = self.accept(sample,proposedPars,modelData,temp,stage)

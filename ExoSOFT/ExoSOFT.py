@@ -106,7 +106,7 @@ def iterativeSA(settingsDict,Sim):
         log.info("\nIteration #"+str(iter+1))
         retStr2 +="Iteration #"+str(iter+1)+"\n"
         (retAry,retStr) = multiProc(settingsDict,Sim,'SA',numProcs,params=strtPars,sigmas=strtsigmas,strtTemp=temp)
-        #print '\n'*5
+        print '\n'*5
         retStr2 +=retStr
         if len(retAry)>0:
             #print 'filtering'
@@ -160,7 +160,7 @@ def iterativeSA(settingsDict,Sim):
                     while len(strtPars)<numProcs:
                         rndVal = np.random.randint(0,len(goodParams))
                         strtPars.append(goodParams[rndVal])
-                log.debug('len(strtPars) = '+str(len(strtPars)))
+                log.info(str(len(strtPars))+' sets of starting parameters being passed to next iteration.')
                 #print 'STD = '+str(np.std(bestRetAry[3]))
                 if len(bestRetAry[3])==numProcs:
                     uSTD = tools.unitlessSTD(bestRetAry[3])
@@ -301,16 +301,17 @@ def exoSOFT():
     ## calc and strip burn-in?
     burnInStr = ''
     if (len(outFiles)>1)and(settingsDict['CalcBurn'] and ('MCMC' in stageList)):
-        (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
-        if settingsDict['rmBurn'][0]:
-            strippedFnames = tools.burnInStripper(outFiles,burnInLengths)
-            outFiles = strippedFnames
-            ## combine stripped files to make final file?
-            if len(strippedFnames)>0:
-                strippedAllFname = os.path.join(os.path.dirname(strippedFnames[0]),"combined-BIstripped-MCMCdata.fits")
-                tools.combineFits(strippedFnames,strippedAllFname)
-                ## replace final combined filename with new stripped version
-                allFname = strippedAllFname
+        if 'MCMC' in outFiles[0]:
+            (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
+            if settingsDict['rmBurn'][0]:
+                strippedFnames = tools.burnInStripper(outFiles,burnInLengths)
+                outFiles = strippedFnames
+                ## combine stripped files to make final file?
+                if len(strippedFnames)>0:
+                    strippedAllFname = os.path.join(os.path.dirname(strippedFnames[0]),"combined-BIstripped-MCMCdata.fits")
+                    tools.combineFits(strippedFnames,strippedAllFname)
+                    ## replace final combined filename with new stripped version
+                    allFname = strippedAllFname
                 
     ## find best fit
     if os.path.exists(allFname):

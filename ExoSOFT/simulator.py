@@ -425,7 +425,7 @@ class Simulator(object):
         if (type(startParams)==list)or(type(startParams)==np.ndarray):
             if len(startParams)>0:
                 paramsLast = copy.deepcopy(startParams)
-                log.info('initial/latest pars have reduced chi sqr of '+str(paramsLast[11]/self.nu))
+                self.log.info('initial/latest pars have reduced chi sqr of '+str(paramsLast[11]/self.nu))
             else: 
                 paramsLast = self.increment(self.rangeMinsRaw,sigmas,stage='MC')
         else: 
@@ -478,7 +478,7 @@ class Simulator(object):
             if sample%(self.dictVal(self.stgNsampDict[stage])//100)==0:
                 timesAry.append(timeit.default_timer()-lastTic)
                 lastTic = timeit.default_timer()
-            if (self.dictVal('logLevel')<30)and(sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0):
+            if (self.dictVal('logLevel')<30)and(sample%(self.dictVal(self.stgNsampDict[stage])//100)==0):
                 timeRemSec = np.mean(timesAry)*(100.0-(float(sample)*100.0)/float(self.dictVal(self.stgNsampDict[stage])))
                 timeStr = ' about '+tools.timeStrMaker(timeRemSec)+' remaining.'
                 bar.render(sample*100//self.dictVal(self.stgNsampDict[stage]), stage+str(chainNum)+' Completed,'+timeStr)

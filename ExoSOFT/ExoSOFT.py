@@ -106,7 +106,7 @@ def iterativeSA(settingsDict,Sim):
         log.info("\nIteration #"+str(iter+1))
         retStr2 +="Iteration #"+str(iter+1)+"\n"
         (retAry,retStr) = multiProc(settingsDict,Sim,'SA',numProcs,params=strtPars,sigmas=strtsigmas,strtTemp=temp)
-        print '\n'*5
+        #print '\n'*5
         retStr2 +=retStr
         if len(retAry)>0:
             #print 'filtering'

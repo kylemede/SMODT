@@ -7,8 +7,10 @@ def nightRun():
     cmdList = [
                #"python ExoSOFT.py HR7672_",
                #"python ExoSOFT.py HR7672-1_",
-               "python ExoSOFT.py HD129333_",
-               "python ExoSOFT.py HD129333-1_",
+               #"python ExoSOFT.py HD129333_",
+               #"python ExoSOFT.py HD129333-1_",
+               "python ExoSOFT.py GJ1108A_",
+               "python ExoSOFT.py GJ1108A-1_",
                #"python ExoSOFT.py HIP10321-1_",
                #"python customPost.py HIP10321-1_",
                #"python ExoSOFT.py HIP10321-2_",

@@ -33,20 +33,19 @@ def mcmcEffPtsCalc(outputDataFilename):
     (paramList,paramStrs,paramFileStrs) = getParStrs(head,latex=False)
     completeStr=""
     try:
-        ## Make post tools cpp obj
-        PostCTools = cppTools.PostCtools()
-        dataC = []
-        for i in range(0,numSteps):
-            dataC.append(data[i,:])
-        dataC=np.array(dataC,dtype=np.dtype('d'),order='C')
-        PostCTools.loadParamData(dataC)
+        ## Make post tools cpp obj, the 1D version.  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ kill other version?
+        PostCTools1D = cppTools.PostCtools1D()
         
         completeStr+= '\n'+'-'*47+'\nThe mean correlation lengths of all params are:\n'+'-'*47+'\nparam #, param name, mean correlation length'
         completeStr+= ' -> total # of steps/mean correlation length = number of effective points\n'
         for i in range(0,len(paramList)):
             log.debug( "*"*60+"\n"+'starting to mean calculate corr length for '+paramStrs[i]+' with CPP')
+            #print 'starting to load up dataC'
+            dataC = np.ascontiguousarray(data[:,paramList[i]],dtype=np.dtype('d'))
+            PostCTools1D.loadParamData(dataC)
             #Call CPP tool to calculate average correlation length.
-            meanCorrLength = PostCTools.corrLenCalc(paramList[i])
+            meanCorrLength = PostCTools1D.corrLenCalc()
+            
             currParamStr = str(paramList[i])+', '+paramStrs[i]+", "+str(meanCorrLength)
             currParamStr+=    ' -> '+str(numSteps)+'/'+str(meanCorrLength)+' = '+str(numSteps/meanCorrLength)+'\n'
             completeStr+=currParamStr
@@ -69,18 +68,18 @@ def burnInCalc(mcmcFnames,combinedFname):
     """
     log.info("Starting to calculate burn-in.")
      
-    chiSquaredsALL = np.array([])
+    #chiSquaredsALL = np.array([])
     burnInLengths = []
     # calculate median of combined data ary
-    (head0,data0) = rwTools.loadFits(combinedFname)
+    (head,data) = rwTools.loadFits(combinedFname)
     #nu = float(head0['NU'])
-    chiSqsALL = data0[:,11]
-    if type(chiSqsALL)!=np.ndarray:
-        chiSqsALL = np.array(chiSqsALL)
-    likelihoodsALL = np.exp(-chiSqsALL/2.0)
-    log.debug("likelihoodsALL min = "+repr(np.min(likelihoodsALL)))
-    log.debug("likelihoodsALL max = "+repr(np.max(likelihoodsALL)))
-    medainALL = np.median(likelihoodsALL)         
+    chiSqs = data[:,11]
+    if type(chiSqs)!=np.ndarray:
+        chiSqs = np.array(chiSqs)
+    likelihoods = np.exp(-chiSqs/2.0)
+    log.debug("likelihoodsALL min = "+repr(np.min(likelihoods)))
+    log.debug("likelihoodsALL max = "+repr(np.max(likelihoods)))
+    medainALL = np.median(likelihoods)         
     log.debug("medainALL = "+str(medainALL))
     s =21*'-'+'\nBurn-In lengths were:\n'+21*'-'
     s+='\nmedian value for all chains = '+str(medainALL)
@@ -88,20 +87,20 @@ def burnInCalc(mcmcFnames,combinedFname):
     for filename in mcmcFnames:
         if os.path.exists(filename):
             (head,data) = rwTools.loadFits(filename)
-            chiSqsChain = data[:,11]
-            likelihoodsChain = np.exp(-chiSqsChain/2.0)
+            chiSqs = data[:,11]
+            likelihoods = np.exp(-chiSqs/2.0)
             #medianChain = np.median(chiSquaredsChain)
-            burnInLength = len(likelihoodsChain)
+            burnInLength = len(likelihoods)
             i=0
-            while i<(len(likelihoodsChain)-1):
+            while i<(len(likelihoods)-1):
                 i+=1
-                if likelihoodsChain[i]>medainALL:
-                    #print 'chiSqsChain[i] = '+str(chiSqsChain[i])
+                if likelihoods[i]>medainALL:
+                    #print 'chiSqs[i] = '+str(chiSqs[i])
                     burnInLength = i+1
                     break
             burnInLengths.append(burnInLength)
             s2 = "\nfor chain #"+str(head['chainNum'])
-            s2 += "\nTotal number of points in the chain = "+str(len(chiSqsChain))+"\n"
+            s2 += "\nTotal number of points in the chain = "+str(len(chiSqs))+"\n"
             s2 += "Burn-in length = "+str(burnInLength)+"\n"
             s+=s2
             log.debug(s2)
@@ -383,11 +382,16 @@ def summaryFile(settingsDict,stageList,finalFits,clStr,burnInStr,bestFit,grStr,e
                 else:
                     bestStr+='\n'
             elif i==1:
-                if bestFit[i]<0.1:
+                if bestFit[1]<0.1:
                     mJupMult=(const.KGperMsun/const.KGperMjupiter)
-                    bestStr+=paramStrs[i]+" = "+str(bestFit[i])+", OR "+str(bestFit[i]*mJupMult)+' in [Mjupiter]\n'
+                    bestStr+=paramStrs[1]+" = "+str(bestFit[1])+", OR "+str(bestFit[1]*mJupMult)+' in [Mjupiter]\n'
                 else:
-                    bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
+                    bestStr+=paramStrs[1]+" = "+str(bestFit[1])+'\n'
+            elif i==0:
+                if bestFit[1]==0:
+                    bestStr+="m1 = m_total [Msun] = "+str(bestFit[0])+'\n'
+                else:
+                    bestStr+=paramStrs[0]+" = "+str(bestFit[0])+'\n'
             else:
                 bestStr+=paramStrs[i]+" = "+str(bestFit[i])+'\n'
         bestStr+='\n'+'*'*90+'\nBEST REDUCED CHISQUAREDS: [total,DI,RV] = ['+str(reduced3D)+", "+str(reducedDI)+", "+str(reducedRV)+"]\n"+'*'*90

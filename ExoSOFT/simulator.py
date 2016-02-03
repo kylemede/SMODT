@@ -280,9 +280,11 @@ class Simulator(object):
         ##log a status summary?
         if self.dictVal('nSumry')>0:
             if sample%(self.dictVal(self.stgNsampDict[stage])//self.dictVal('nSumry'))==0:
+                perc = sample*100//self.dictVal(self.stgNsampDict[stage])
+                ####str(self.nSaved)+' (curr '+str(self.nSavedPeriodic)+"), Finished: "+str(sample)+"/"+\
                 sumStr = "below\n"+stage+" chain #"+str(self.chainNum)+", # Accepted: "+str(self.acceptCount)+", # Saved: "+\
-                str(self.nSaved)+' (curr '+str(self.nSavedPeriodic)+"), Finished: "+str(sample)+"/"+\
-                str(self.dictVal(self.stgNsampDict[stage]))+", Current Temp = "+str(temp)+"\n"
+                str(self.nSaved)+", Finished: "+str(sample)+"/"+\
+                str(self.dictVal(self.stgNsampDict[stage]))+" = "+str(perc)+"%, Current T: "+str(temp)+"\n"
                 sumStr+=self.latestSumStr+'\n'+self.bestSumStr+'\n'
                 self.log.debug(sumStr)
         return (paramsOut,accept)

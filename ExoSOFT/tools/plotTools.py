@@ -19,6 +19,8 @@ import cppTools
 import exoSOFTlogger
 import warnings
 warnings.simplefilter("error")
+pylab.matplotlib.pyplot.ioff() #turns off I/O for matplotlib so it doesn't need to plot to screen, which is impossible during ssh/screen sessions.
+
 
 log = exoSOFTlogger.getLogger('main.plotTools',lvl=100,addFH=False)  
 colorsList =['Red','Orange','Purple','Fuchsia','Crimson','Green','Aqua','DarkGreen','Gold','DarkCyan','OrangeRed','Plum','Chartreuse','Chocolate','Teal','Salmon','Brown','Blue']

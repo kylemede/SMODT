@@ -9,6 +9,7 @@ import glob
 def customPost():
     settingsDict = tools.startup(sys.argv,ExoSOFTdir,rePlot=True)
     allFname = os.path.join(settingsDict['finalFolder'],"combined-BIstripped-MCMCdata.fits")
+    #allFname = os.path.join(settingsDict['finalFolder'],"combinedSubSampledMCMC.fits")
     skipBurnInStrip=True
     if os.path.exists(allFname)==False:
         allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
@@ -27,12 +28,14 @@ def customPost():
 
     ##make hack list of output files
     outFiles = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"outputDataMCMC*_BIstripped.fits")))
+    #outFiles = np.sort(glob.glob(os.path.join(settingsDict['finalFolder'],"subSampledDataMCMC*.fits")))
     
     ## calc and strip burn-in?
     burnInStr = ''
-    if False:
+    if True:
         if skipBurnInStrip==False:
-            if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['symMode'][0]=='MCMC')):
+            print 'about to strip burn-in'
+            if (len(outFiles)>1)and(settingsDict['CalcBurn'] and(settingsDict['stageList'][-1]=='MCMC')):
                 (burnInStr,burnInLengths) = tools.burnInCalc(outFiles,allFname)    
                 if settingsDict['rmBurn'][0]:
                     strippedFnames = tools.burnInStripper(outFiles,burnInLengths)
@@ -46,6 +49,7 @@ def customPost():
         
     ## find best fit
     if True:
+        print 'about to find best orbit'
         bestFit = tools.findBestOrbit(allFname,bestToFile=False,findAgain=False)
     else:
         bestFit = np.array([  1.08516940e+00,   9.86617236e-04,   4.85701122e+01,
@@ -55,10 +59,11 @@ def customPost():
                      8.69376155e+00,  -8.76996105e-02])
     
     if False:
+        print 'about to make orbit plots'
         ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
         ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
-        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-6-0mult-1thk-')
-        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-Manual')
+        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.5],[-0.8,0.8],[-0.515,0.515]],diErrMult=0,diLnThk=1)
         
         ##super cropped HIP10321 trials
@@ -69,23 +74,25 @@ def customPost():
         #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-1mult-3thk-crop3')
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[[[-210,425],[-310,325]],[[413.3,421.1],[124.7,139.6]]],RVlims=[[-1250,600],[-65,65],[-0.515,0.515]],diErrMult=1,diLnThk=3)
         
-        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-1mult-2thk-')
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,620],[-60,60],[-0.515,0.515]],diErrMult=1,diLnThk=2)
-        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5mult-2thk-')
-        tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,620],[-60,60],[-0.515,0.515]],diErrMult=5,diLnThk=2)
+        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-1mult-2thk-')
+        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,620],[-60,60],[-0.515,0.515]],diErrMult=1,diLnThk=2)
+        #plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-MANUAL-5mult-2thk-')
+        #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,620],[-60,60],[-0.515,0.515]],diErrMult=5,diLnThk=2)
         
     clStr=''
-    if True:
-        plotFilename = os.path.join(settingsDict['finalFolder'],'posteriors-Dec26fit-151226')
-        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
+    if False:
+        print 'about to plot posteriors'
+        plotFilename = os.path.join(settingsDict['finalFolder'],'posteriors')
+        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['stageList'][-1], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
         #for fake jupiter
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,8],xLims=[[0.5,2.01],[0.5,1.7],[-0.00,0.1],[39,56]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=True)   [345.9,355]
         #for HIP10321
-        clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,5,13,14,15],xLims=[[0.7,1.5],[0.19,0.52],[0.36,0.40],[20.5,21.5],[35,40],[150,171],[242,248],[345.9,355],[2452295,2452393],[6170,6220],[360,405],[6300,6350]],bestVals=bestFit,stage=settingsDict['stages'][-1], shadeConfLevels=True,forceRecalc=False)
+        #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7,2,8,3,9,5,13,14,15],xLims=[[0.7,1.5],[0.19,0.52],[0.36,0.40],[20.5,21.5],[35,40],[150,171],[242,248],[345.9,355],[2452295,2452393],[6170,6220],[360,405],[6300,6350]],bestVals=bestFit,stage=settingsDict['stages'][-1], shadeConfLevels=True,forceRecalc=False)
         #for HIP10321-SIMPLE
         #clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[0,1,4,7],xLims=[[0.7,1.5],[0.19,0.5],[0.36,0.40],[20.5,21.5]],bestVals=bestFit,stage=settingsDict['symMode'][0], shadeConfLevels=True,forceRecalc=False)
     
     if False: 
+        print 'about to make 2D density plot'
         plotFilename = os.path.join(settingsDict['finalFolder'],'m1m2-densPlot-Dec23PASAfit-151226-autoRanges')
         #ranges=[[xMin,xMax],[yMin,yMax]]
         #tools.densityPlotter2D(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]])
@@ -95,6 +102,7 @@ def customPost():
         #tools.cornerPlotter(allFname, plotFilename,paramsToPlot=[0,1],bestVals=[bestFit[0],bestFit[1]])
         
     if False:
+        print ' about to make progress plots'
         #make progress plot
         for stgStr in ['SA','ST','MCMC']:
             for procNum in range(0,4):
@@ -107,12 +115,14 @@ def customPost():
                         print 'could not make plot for proc# '+str(procNum)+', and par# '+str(parNum)
     ##calc R?
     grStr = ''
-    if False:
-        if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['symMode'][0]=='MCMC')):
+    if True:
+        print 'about to calc GR'
+        if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['stageList'][-1]=='MCMC')):
             (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
         
     ## custom re check of the orbit fit     
     if False: 
+        print 'about to calculate predicted location for custom date'
         orbParams = bestFit
         finalFits=''
         nus = [19, 19, 1]
@@ -122,21 +132,26 @@ def customPost():
     
     ## calc correlation length & number effective points? 
     effPtsStr = ''
-    if False:
-        if ((len(outFiles)>1)and(settingsDict['symMode'][0]=='MCMC'))and (settingsDict['calcCL'] and os.path.exists(allFname)):
+    if True:
+        print 'about to calc # effective points'
+        if ((len(outFiles)>1)and(settingsDict['stageList'][-1]=='MCMC'))and (settingsDict['calcCL'] and os.path.exists(allFname)):
             effPtsStr = tools.mcmcEffPtsCalc(allFname)
+            print effPtsStr
     
     ## following post-processing stages can take a long time, so write the current
     ## summary information to the summary file and add the rest later
-    if False:
+    if True:
         if os.path.exists(allFname):
+            print 'about to make summary file'
             tools.summaryFile(settingsDict,settingsDict['stageList'],allFname,clStr,burnInStr,bestFit,grStr,effPtsStr,1,1,'')
         
     ##clean up files (move to folders or delete them)
     if False:
+        print 'about to clean up output directory'
         tools.cleanUp(settingsDict,settingsDict['stageList'],allFname)
-        if settingsDict['CopyToDB']:
-            tools.copyToDB(settingsDict)
+    if False and settingsDict['CopyToDB']:
+        print 'about to copy files to dropbox'
+        tools.copyToDB(settingsDict)
     
 def stackedPosteriorsPlotterHackStarter():
     outputDataFilenames = []

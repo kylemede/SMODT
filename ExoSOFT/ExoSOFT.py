@@ -205,7 +205,6 @@ def exoSOFT():
     ###########################################     
     tic=timeit.default_timer()
     stageList = settingsDict['stageList']
-    maxNumMCMCprocs = settingsDict['nMCMCcns'][0]
     durationStrings = ''
     if 'MC' in stageList:
         (returns,b) = (returnsMC,durStr) = multiProc(settingsDict,Sim,'MC',settingsDict['nChains'][0])
@@ -224,7 +223,7 @@ def exoSOFT():
         startParams = []
         startSigmas = []
         if settingsDict['stages'] in ['ST','STMCMC']:
-            for i in range(0,maxNumMCMCprocs):
+            for i in range(0,settingsDict['nChains'][0]):
                 startParams.append(settingsDict['startParams'])
                 startSigmas.append(settingsDict['startSigmas'])
         elif len(returnsSA)>0:
@@ -252,8 +251,8 @@ def exoSOFT():
         startParams = []
         startSigmas = []
         if settingsDict['stages']=='MCMC':
-            chisSorted = range(0,maxNumMCMCprocs)
-            for i in range(0,maxNumMCMCprocs):
+            chisSorted = range(0,settingsDict['nMCMCcns'][0])
+            for i in range(0,settingsDict['nMCMCcns'][0]):
                 startParams.append(settingsDict['startParams'])
                 startSigmas.append(settingsDict['startSigmas'])
         elif len(returnsST)>0:
@@ -261,8 +260,8 @@ def exoSOFT():
             #Filter inputs if more than max num MCMC proc available to use the best ones
             chisSorted = np.sort(returnsST[3])
             chisSorted = chisSorted[np.where(chisSorted<settingsDict['cMaxMCMC'][0])]
-            if len(chisSorted)>maxNumMCMCprocs:
-                chisSorted = chisSorted[:maxNumMCMCprocs]
+            if len(chisSorted)>settingsDict['nMCMCcns'][0]:
+                chisSorted = chisSorted[:settingsDict['nMCMCcns'][0]]
             for i in range(len(returnsST[0])):
                 if returnsST[3][i] in chisSorted:
                     startParams.append(returnsST[1][i])

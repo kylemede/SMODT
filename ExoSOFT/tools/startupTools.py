@@ -33,7 +33,7 @@ def startup(argv,ExoSOFTdir,rePlot=False):
         try:
             inArg = argv[1]
         except:
-            print '\nWarning: the settings file prepended feature is not working correctly !!\n'    
+            print '\nWarning: Only able to handle a single argument on the cmd !!\n'    
     ## Load up the required specific directory paths in dict
     if '/' in inArg:
         #assume full path

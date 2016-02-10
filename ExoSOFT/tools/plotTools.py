@@ -561,7 +561,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
         completeCLstr = '-'*22+'\nConfidence Levels are:\n'+'-'*80+'\n'
         for i in range(0,len(paramList)):
             if (os.path.exists(os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat'))==False)or forceRecalc:
-                log.debug('Checking parameter has useful data '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
+                log.debug('Checking parameter has useful data '+str(i)+"/"+str(len(paramStrs2)-1)+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
                 weightHists = False
                 if stage in ['SA','MC']:
                     (CLevels,data,chiSquareds,bestDataVal,clStr) = genTools.confLevelFinder(outputDataFilename,paramList[i], returnData=True, returnChiSquareds=True, returnBestDataVal=True)
@@ -571,7 +571,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
                     chiSquareds = []
                 if bestDataVal!=0:
                     completeCLstr+=paramStrs2[i]+clStr+'\n'+'-'*80+'\n'
-                    log.debug('Making hist file for parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
+                    log.debug('Making hist file for parameter '+str(i)+"/"+str(len(paramStrs2)-1)+": "+paramStrs2[i]+", for file:\n"+outputDataFilename)
                     histDataBaseName = os.path.join(os.path.dirname(plotDataDir),'hist-'+stage+"-"+paramFileStrs[i]+'.dat')
                     #print 'histDataBaseName = '+histDataBaseName
                     histMakeAndDump(chiSquareds,data,outFilename=histDataBaseName,weight=weightHists, normed=False, nu=1)
@@ -579,7 +579,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
                         np.savetxt(os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'),CLevels)
                         log.debug('confidence levels data stored to:\n'+os.path.join(os.path.dirname(plotDataDir),'confLevels-'+stage+"-"+paramFileStrs[i]+'.dat'))
                 else:
-                    log.debug("Nope! no useful data for "+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i])#+", in file:\n"+outputDataFilename)
+                    log.debug("Nope! no useful data for "+str(i)+"/"+str(len(paramStrs2)-1)+": "+paramStrs2[i])#+", in file:\n"+outputDataFilename)
        
         ## Create empty figure to be filled up with plots
         sumFig = plt.figure(figsize=figSizes[sz])       
@@ -594,7 +594,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
                 #print 'gs[i] = '+repr(gs[0,i])+'\n\n'
                 subPlot = plt.subplot(gridSizes[sz][0],gridSizes[sz][1],i+1)#gs[i])
                 #print '\nLoading and re-plotting parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i]
-                log.debug('Loading and re-plotting parameter '+str(i+1)+"/"+str(len(paramStrs2))+": "+paramStrs2[i])#+" for file:\n"+outputDataFilename)
+                log.debug('Loading and re-plotting parameter '+str(i)+"/"+str(len(paramStrs2)-1)+": "+paramStrs2[i])#+" for file:\n"+outputDataFilename)
                 CLevels=False
                 xLim=False
                 if len(xLims)>0:

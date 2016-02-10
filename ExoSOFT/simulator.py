@@ -252,7 +252,8 @@ class Simulator(object):
             self.paramsBest = bestPars
         ## check if this step is accepted
         accept = False
-        if stage=='MC':
+        if (stage=='MC')or(stage=='SA'and(self.acceptCount==0)):
+            ## for MC or first step of SA
             if (paramsOut[11]/self.nu)<self.dictVal('chiMAX'):
                 accept=True
         else:

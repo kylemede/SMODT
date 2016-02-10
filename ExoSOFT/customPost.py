@@ -10,6 +10,7 @@ def customPost():
     settingsDict = tools.startup(sys.argv,ExoSOFTdir,rePlot=True)
     allFname = os.path.join(settingsDict['finalFolder'],"combined-BIstripped-MCMCdata.fits")
     #allFname = os.path.join(settingsDict['finalFolder'],"combinedSubSampledMCMC.fits")
+    allFname = os.path.join(settingsDict['finalFolder'],"combinedSAdata.fits")
     skipBurnInStrip=True
     if os.path.exists(allFname)==False:
         allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
@@ -80,7 +81,7 @@ def customPost():
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,620],[-60,60],[-0.515,0.515]],diErrMult=5,diLnThk=2)
         
     clStr=''
-    if False:
+    if True:
         print 'about to plot posteriors'
         plotFilename = os.path.join(settingsDict['finalFolder'],'posteriors')
         clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['stageList'][-1], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
@@ -115,7 +116,7 @@ def customPost():
                         print 'could not make plot for proc# '+str(procNum)+', and par# '+str(parNum)
     ##calc R?
     grStr = ''
-    if True:
+    if False:
         print 'about to calc GR'
         if (len(outFiles)>1) and (settingsDict['CalcGR'] and (settingsDict['stageList'][-1]=='MCMC')):
             (GRs,Ts,grStr) = tools.gelmanRubinCalc(outFiles,settingsDict['nSamples'][0])
@@ -132,7 +133,7 @@ def customPost():
     
     ## calc correlation length & number effective points? 
     effPtsStr = ''
-    if True:
+    if False:
         print 'about to calc # effective points'
         if ((len(outFiles)>1)and(settingsDict['stageList'][-1]=='MCMC'))and (settingsDict['calcCL'] and os.path.exists(allFname)):
             effPtsStr = tools.mcmcEffPtsCalc(allFname)

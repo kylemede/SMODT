@@ -85,9 +85,17 @@ def histLoadAndPlot_StackedPosteriors(plot,outFilename='',xLabel='X',lineColor='
         minSub = int(np.min(histData[:,0]))
         histData[:,0]-=minSub
         if latex:
-            xLabel = xLabel[:-3]+"+"+str(minSub)+"]}$"
+            if xLabel not in [r'$e$',r'$\chi^2$']:
+                xLabel = xLabel[:-3]+"+"+str(minSub)+"]}$"
+            elif xLabel== r'$m_2$ [$M_{J}$]':
+                xLabel = xLabel[:-1]+"+"+str(minSub)+"]"
+            else:            
+                xLabel = xLabel[:-1]+"+"+str(minSub)+"$"
         else:
-            xLabel = xLabel[:-1]+"+"+str(minSub)+"]"
+            if xLabel not in ['e','chiSquared']:
+                xLabel = xLabel[:-1]+"+"+str(minSub)+"]"
+            else:
+                xLabel = xLabel+"+"+str(minSub)
             
     halfBinWidth = (histData[1][0]-histData[0][0])/2.0
     # load up list of x,y values for tops of bins
@@ -161,9 +169,17 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
         minSub = int(np.min(histData[:,0]))
         histData[:,0]-=minSub
         if latex:
-            xLabel = xLabel[:-3]+"+"+str(minSub)+"]}$"
+            if xLabel not in [r'$e$',r'$\chi^2$']:
+                xLabel = xLabel[:-3]+"+"+str(minSub)+"]}$"
+            elif xLabel== r'$m_2$ [$M_{J}$]':
+                xLabel = xLabel[:-1]+"+"+str(minSub)+"]"
+            else:            
+                xLabel = xLabel[:-1]+"+"+str(minSub)+"$"
         else:
-            xLabel = xLabel[:-1]+"+"+str(minSub)+"]"
+            if xLabel not in ['e','chiSquared']:
+                xLabel = xLabel[:-1]+"+"+str(minSub)+"]"
+            else:
+                xLabel = xLabel+"+"+str(minSub)
         
     halfBinWidth = (histData[1][0]-histData[0][0])/2.0
     # load up list of x,y values for tops of bins
@@ -218,7 +234,7 @@ def histLoadAndPlot_ShadedPosteriors(plot,outFilename='',confLevels=False,xLabel
         fsize=fsize+10
     if 'JD' in xLabel:
         fsize=fsize-3
-    #print 'xlabel = '+repr(xLabel)+", fsize = "+str(fsize)
+    log.debug('xlabel = '+repr(xLabel)+", fsize = "+str(fsize))
     plot.axes.set_xlabel(xLabel,fontsize=fsize)
         
     return plot
@@ -618,6 +634,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
                     log.debug("Parameter "+str(i)+" not in paramList: \n"+repr(paramList))
                 #print 'about to make hist plot for file base '+histDataBaseName
                 subPlot = histLoadAndPlot_ShadedPosteriors(subPlot,outFilename=histDataBaseName,confLevels=CLevels,xLabel=paramStrs[i],xLims=xLim,bestVal=bestVal,latex=latex,showYlabel=showYlabel,parInt=par)         
+                log.debug('Done to plot shaded hist for '+paramStrs2[i])
             else:
                 log.debug("Not plotting shaded hist for "+paramStrs2[i]+" as its hist file doesn't exist:\n"+histDataBaseName)
         plt.tight_layout()

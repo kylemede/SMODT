@@ -329,7 +329,7 @@ def modePrep(settingsDict,sigmas):
             #So we can skip all the initialization and go right to the juicy MCMC stage :-D
             settingsDict['stages']='MCMC'
             log.info("Skipping initialization stages and going straight to MCMC.")
-    log.info("Logic checks on mode/stages requested, and startParams/startSigmas provided, the resulting stages to run are: "+settingsDict['stages'][0])
+    log.info("Logic checks on mode/stages requested, and startParams/startSigmas provided, the resulting stages to run are: "+settingsDict['stages'])
     # clean up sigs of pars that were not varying, and that ary is a ndarray.
     for i in range(0,len(startSigmas)):
         if i not in paramInts:

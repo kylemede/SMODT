@@ -567,7 +567,6 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
     outStr=''
     if os.path.exists(filename):
         (dataAry,chiSquareds,[bestDataVal,dataMedian,dataValueStart,dataValueMid,dataValueEnd]) = rwTools.dataReader(filename, colNum)
-    
         if len(dataAry>0) or (dataValueStart!=dataValueMid!=dataValueEnd):
             #Convert data array to a sorted numpy array
             dataAry = np.sort(dataAry)

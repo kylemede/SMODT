@@ -526,7 +526,7 @@ def summaryPlotter(outputDataFilename,plotFilename,paramsToPlot=[],xLims=[],best
             for par in paramList:
                 bestValsUse.append(bestVals[par])
             bestVals = bestValsUse
-                
+        log.debug('\nparamStrs2 = '+repr(paramStrs2)+'\nparamStrs = '+repr(paramStrs)+'\nparamFileStrs = '+repr(paramFileStrs)+'\nparamList = '+repr(paramList)+'\nbestVals = '+repr(bestVals)+'\n')
         ## determine appropriate figure size for number of params to plot
         figSizes =  [(5.5,7),(8,7),(9,7),(10,3.5),(11,8),(11,11),(11,14),(11,16)]
         gridSizes = [(1,1),(1,2),(1,3),(1,4),(2,4),(3,4),(4,4),(5,4)]

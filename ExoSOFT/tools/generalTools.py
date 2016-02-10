@@ -615,6 +615,7 @@ def confLevelFinder(filename, colNum=False, returnData=False, returnChiSquareds=
             conf68Vals = [dataValueStart,dataValueStart]
             conf95Vals = [dataValueStart,dataValueStart]
             chiSquareds = 0
+            log.error("confLevelFinder: Entire column had a constant value of "+str(dataValueStart))
             
         mJupMult=(const.KGperMsun/const.KGperMjupiter)
         s = "\nFinal Range values:\nTOTAL "+repr([dataAry[0],dataAry[-1]])

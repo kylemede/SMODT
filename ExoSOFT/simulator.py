@@ -77,12 +77,12 @@ class Simulator(object):
             nVars = nDIvars
         else:
             nVars = len(paramInts)
-        nu = nDIepochs*2+nRVepochs-nVars
         self.log.debug("vars = "+repr(paramInts))
         self.log.debug('[nEpochs, nDIepochs, nRVepochs] = ['+str(nEpochs)+', '+str(nDIepochs)+', '+str(nRVepochs)+']')
         self.log.debug('[nVars, nDIvars, nRVvars] = ['+str(nVars)+', '+str(nDIvars)+', '+str(nRVvars)+']')
         nuDI = 1
-        nuRV=1
+        nuRV = 1
+        nu = 1
         if nDIepochs*2>nDIvars:
             nuDI = nDIepochs*2-nDIvars
         else:
@@ -91,6 +91,10 @@ class Simulator(object):
             nuRV = nRVepochs-nRVvars
         else:
             self.log.debug("nRVepochs>nRVvars is False so setting nuRV=1")
+        if (nDIepochs*2+nRVepochs)>nVars:
+            nu = nDIepochs*2+nRVepochs-nVars
+        else:
+            self.log.debug("(nDIepochs*2+nRVepochs)>nVars is False so setting nu=1")
         self.log.debug('[nu, nuDI, nuRV] = ['+str(nu)+', '+str(nuDI)+', '+str(nuRV)+']')
         #load these into settings dict
         self.settingsDict["nRVdsets"] = (len(self.dictVal('vMINs')),"Number of RV data sets")

@@ -10,7 +10,7 @@ def customPost():
     settingsDict = tools.startup(sys.argv,ExoSOFTdir,rePlot=True)
     allFname = os.path.join(settingsDict['finalFolder'],"combined-BIstripped-MCMCdata.fits")
     #allFname = os.path.join(settingsDict['finalFolder'],"combinedSubSampledMCMC.fits")
-    allFname = os.path.join(settingsDict['finalFolder'],"combinedSAdata.fits")
+    allFname = os.path.join(settingsDict['finalFolder'],"combinedSTdata.fits")
     skipBurnInStrip=True
     if os.path.exists(allFname)==False:
         allFname = os.path.join(settingsDict['finalFolder'],'combinedMCMCdata.fits')
@@ -49,21 +49,18 @@ def customPost():
                         allFname = strippedAllFname
         
     ## find best fit
-    if True:
+    if False:
         print 'about to find best orbit'
         bestFit = tools.findBestOrbit(allFname,bestToFile=False,findAgain=False)
     else:
-        bestFit = np.array([  1.08516940e+00,   9.86617236e-04,   4.85701122e+01,
-                     1.01827347e+02,   4.10252219e-02,   2.45073957e+06,
-                     2.45073957e+06,   1.20762039e+01,   4.57744546e+01,
-                     2.57947523e+01,   5.41039136e+00,   2.60726725e+01,
-                     8.69376155e+00,  -8.76996105e-02])
-    
-    if False:
+        bestFit = np.array([0.605838520481,0.146024522998,48.0692312367,98.8893962294,0.640666046184,2445709.98532,2445709.98532,8.2093394771,40.2779824043,166.743572004,3.39834214958,43.3616906776,0.0,9730.87607461,11612.1046117,12586.0296274])
+        #best assuming 3 offsets due possibly to a linear trend of a distant companion
+        #bestFit = np.array([0.535838520481,0.0466024522998,48.0692312367,98.8893962294,0.640666046184,2445709.98532,2445709.98532,8.2093394771,40.2779824043,166.743572004,3.39834214958,43.3616906776,0.0,9730.87607461,11612.1046117,12586.0296274])
+    if True:
         print 'about to make orbit plots'
         ##for reference: DIlims=[[[xMin,xMax],[yMin,yMax]],[[xCropMin,xCropMax],[yCropMin,yCropMax]]]   [[[,],[,]],[[,],[]]]
         ##               RVlims=[[yMin,yMax],[yResidMin,yResidMax],[xMin,xMax]]
-        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-Manual')
+        plotFnameBase = os.path.join(settingsDict['finalFolder'],'orbPlot-Manual2')
         tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[])
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-9.9,9.5],[-0.8,0.8],[-0.515,0.515]],diErrMult=0,diLnThk=1)
         
@@ -81,7 +78,7 @@ def customPost():
         #tools.orbitPlotter(bestFit,settingsDict,plotFnameBase,format='eps',DIlims=[],RVlims=[[-1250,620],[-60,60],[-0.515,0.515]],diErrMult=5,diLnThk=2)
         
     clStr=''
-    if True:
+    if False:
         print 'about to plot posteriors'
         plotFilename = os.path.join(settingsDict['finalFolder'],'posteriors')
         clStr = tools.summaryPlotter(allFname, plotFilename,paramsToPlot=[],xLims=[],bestVals=bestFit,stage=settingsDict['stageList'][-1], shadeConfLevels=True,forceRecalc=True,plotALLpars=True)
@@ -141,7 +138,7 @@ def customPost():
     
     ## following post-processing stages can take a long time, so write the current
     ## summary information to the summary file and add the rest later
-    if True:
+    if False:
         if os.path.exists(allFname):
             print 'about to make summary file'
             tools.summaryFile(settingsDict,settingsDict['stageList'],allFname,clStr,burnInStr,bestFit,grStr,effPtsStr,1,1,'')
